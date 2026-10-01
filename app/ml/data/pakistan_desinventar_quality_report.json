@@ -1,0 +1,37 @@
+{
+  "raw_flood_records": 2912,
+  "unmapped_district_records": 33,
+  "pre_2000_records_excluded": 719,
+  "invalid_date_records": 8,
+  "duplicate_district_dates_removed": 448,
+  "cleaned_positive_district_dates": 1704,
+  "source_url": "https://www.desinventar.net/DesInventar/download/DI_export_pak.zip",
+  "minimum_year": 2000,
+  "dataset_rows": 10097,
+  "positive_rows": 1584,
+  "negative_rows": 8513,
+  "districts_in_dataset": 67,
+  "geographic_blocks": 23,
+  "feature_names": [
+    "rainfall_1d",
+    "rainfall_3d",
+    "rainfall_7d",
+    "rainfall_14d",
+    "rainfall_30d",
+    "forecast_rainfall_1d",
+    "soil_moisture",
+    "river_discharge",
+    "discharge_change_1d",
+    "discharge_ratio_7d",
+    "discharge_ratio_30d",
+    "discharge_zscore_30d",
+    "elevation_m",
+    "month_sin",
+    "month_cos"
+  ],
+  "covariate_years_excluded": [
+    2007
+  ],
+  "covariate_exclusion_reason": "The free Open-Meteo hourly quota was exhausted before complete national coverage; the whole year was excluded to avoid partial-district selection bias.",
+  "negative_sampling": "Matched same-district dates at +/-7, 14, 21, and 28 days, excluding +/-3 days around a recorded event."
+}

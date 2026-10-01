@@ -1,0 +1,126 @@
+{
+  "model_name": "xgboost_pakistan_gfd_v1",
+  "created_at": "2026-09-30T17:51:50.635183+00:00",
+  "operational_status": "rejected_holdout_quality",
+  "deployment_eligible": false,
+  "acceptance_gate": {
+    "minimum_roc_auc": 0.75,
+    "minimum_precision_at_0_5": 0.6,
+    "minimum_recall_at_0_5": 0.6,
+    "must_pass": [
+      "event_holdout",
+      "geographic_holdout"
+    ]
+  },
+  "label_definition": "Day falls within a satellite-mapped Global Flood Database event window at the DFO event centroid.",
+  "limitations": [
+    "Event-centroid daily classification is not district-scale inundation prediction.",
+    "The Global Flood Database ends in 2018 and contains 28 Pakistan-associated events.",
+    "GloFAS discharge is modeled, not measured gauge height.",
+    "Negative examples are matched pre/post-event days and are not proof of no local flooding."
+  ],
+  "sources": {
+    "labels": "https://storage.googleapis.com/event_stats/gfd_event_stats_20215_13_error_fixed_2.csv",
+    "weather": "https://archive-api.open-meteo.com/v1/archive",
+    "river_discharge": "https://flood-api.open-meteo.com/v1/flood"
+  },
+  "features": [
+    "rainfall_last_1h",
+    "rainfall_last_6h",
+    "rainfall_last_24h",
+    "forecast_rainfall_24h",
+    "river_level",
+    "river_level_relative_to_warning",
+    "river_rise_rate",
+    "river_discharge",
+    "river_discharge_change",
+    "soil_moisture"
+  ],
+  "rows": 2410,
+  "positive_rows": 730,
+  "events": 28,
+  "geographic_blocks": 15,
+  "event_split": {
+    "train_groups": [
+      "DFO_2160_From_20030216_to_20030222",
+      "DFO_2279_From_20030715_to_20030901",
+      "DFO_2641_From_20050320_to_20050324",
+      "DFO_2675_From_20050621_to_20050805",
+      "DFO_2689_From_20050705_to_20050814",
+      "DFO_2931_From_20060724_to_20060822",
+      "DFO_2958_From_20060831_to_20060911",
+      "DFO_3101_From_20070616_to_20070620",
+      "DFO_3116_From_20070628_to_20070722",
+      "DFO_3162_From_20070810_to_20070813",
+      "DFO_3165_From_20070812_to_20070814",
+      "DFO_3359_From_20080809_to_20080820",
+      "DFO_3658_From_20100606_to_20100607",
+      "DFO_3974_From_20120823_to_20120829",
+      "DFO_3984_From_20120910_to_20121029",
+      "DFO_4078_From_20130801_to_20130807",
+      "DFO_4339_From_20160312_to_20160413",
+      "DFO_4640_From_20180625_to_20180711"
+    ],
+    "validation_groups": [
+      "DFO_3112_From_20070626_to_20070720",
+      "DFO_3857_From_20110812_to_20111101",
+      "DFO_4272_From_20150715_to_20150819",
+      "DFO_4645_From_20180703_to_20180711"
+    ],
+    "test_groups": [
+      "DFO_2916_From_20060709_to_20060713",
+      "DFO_2935_From_20060728_to_20060912",
+      "DFO_3666_From_20100622_to_20100624",
+      "DFO_3696_From_20100727_to_20101115",
+      "DFO_4082_From_20130807_to_20130821",
+      "DFO_4179_From_20140901_to_20141011"
+    ]
+  },
+  "geographic_split": {
+    "train_groups": [
+      "N24_E66",
+      "N24_E68",
+      "N28_E68",
+      "N28_E72",
+      "N32_E70",
+      "N34_E72",
+      "N34_E74"
+    ],
+    "validation_groups": [
+      "N20_E72",
+      "N32_E74",
+      "N34_E70",
+      "N36_E72"
+    ],
+    "test_groups": [
+      "N26_E68",
+      "N30_E72",
+      "N32_E68",
+      "N32_E72"
+    ]
+  },
+  "event_holdout_metrics": {
+    "roc_auc": 0.5936,
+    "precision_at_0_5": 0.0,
+    "recall_at_0_5": 0.0,
+    "f1_at_0_5": 0.0,
+    "accuracy_at_0_5": 0.6175,
+    "specificity_at_0_5": 1.0,
+    "balanced_accuracy_at_0_5": 0.5,
+    "brier_score": 0.2446,
+    "test_rows": 583
+  },
+  "geographic_holdout_metrics": {
+    "roc_auc": 0.3836,
+    "precision_at_0_5": 0.4038,
+    "recall_at_0_5": 0.104,
+    "f1_at_0_5": 0.1654,
+    "accuracy_at_0_5": 0.6891,
+    "specificity_at_0_5": 0.9354,
+    "balanced_accuracy_at_0_5": 0.5197,
+    "brier_score": 0.2219,
+    "test_rows": 682
+  },
+  "best_iteration": 15,
+  "artifact": "app\\ml\\artifacts\\flood_risk_xgboost_real.json"
+}

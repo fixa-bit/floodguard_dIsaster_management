@@ -1,0 +1,321 @@
+{
+  "model_name": "xgboost_pakistan_desinventar_v2",
+  "created_at": "2026-10-01T10:09:22.204009+00:00",
+  "operational_status": "rejected_holdout_quality",
+  "deployment_eligible": false,
+  "acceptance_gate": {
+    "minimum_roc_auc": 0.75,
+    "minimum_precision": 0.6,
+    "minimum_recall": 0.6,
+    "must_pass": [
+      "district_holdout",
+      "geographic_holdout",
+      "temporal_holdout"
+    ]
+  },
+  "label_definition": "District-date is a UNDRR DesInventar FLOOD or FLASH FLOOD record; controls are matched seasonal dates for the same district.",
+  "sources": {
+    "labels": "https://www.desinventar.net/DesInventar/download/DI_export_pak.zip",
+    "weather": "https://archive-api.open-meteo.com/v1/archive",
+    "river_discharge": "https://flood-api.open-meteo.com/v1/flood"
+  },
+  "features": [
+    "rainfall_1d",
+    "rainfall_3d",
+    "rainfall_7d",
+    "rainfall_14d",
+    "rainfall_30d",
+    "forecast_rainfall_1d",
+    "soil_moisture",
+    "river_discharge",
+    "discharge_change_1d",
+    "discharge_ratio_7d",
+    "discharge_ratio_30d",
+    "discharge_zscore_30d",
+    "elevation_m",
+    "month_sin",
+    "month_cos"
+  ],
+  "rows": 10097,
+  "positive_rows": 1584,
+  "districts": 67,
+  "geographic_blocks": 23,
+  "data_quality_report": "app\\ml\\data\\pakistan_desinventar_quality_report.json",
+  "data_quality_summary": {
+    "raw_flood_records": 2912,
+    "unmapped_district_records": 33,
+    "pre_2000_records_excluded": 719,
+    "invalid_date_records": 8,
+    "duplicate_district_dates_removed": 448,
+    "cleaned_positive_district_dates": 1704,
+    "source_url": "https://www.desinventar.net/DesInventar/download/DI_export_pak.zip",
+    "minimum_year": 2000,
+    "dataset_rows": 10097,
+    "positive_rows": 1584,
+    "negative_rows": 8513,
+    "districts_in_dataset": 67,
+    "geographic_blocks": 23,
+    "feature_names": [
+      "rainfall_1d",
+      "rainfall_3d",
+      "rainfall_7d",
+      "rainfall_14d",
+      "rainfall_30d",
+      "forecast_rainfall_1d",
+      "soil_moisture",
+      "river_discharge",
+      "discharge_change_1d",
+      "discharge_ratio_7d",
+      "discharge_ratio_30d",
+      "discharge_zscore_30d",
+      "elevation_m",
+      "month_sin",
+      "month_cos"
+    ],
+    "covariate_years_excluded": [
+      2007
+    ],
+    "covariate_exclusion_reason": "The free Open-Meteo hourly quota was exhausted before complete national coverage; the whole year was excluded to avoid partial-district selection bias.",
+    "negative_sampling": "Matched same-district dates at +/-7, 14, 21, and 28 days, excluding +/-3 days around a recorded event."
+  },
+  "feature_importance_gain": {
+    "rainfall_1d": 17.825783,
+    "rainfall_3d": 27.421904,
+    "rainfall_7d": 33.664864,
+    "rainfall_14d": 35.37109,
+    "rainfall_30d": 24.068262,
+    "forecast_rainfall_1d": 21.679394,
+    "soil_moisture": 30.083447,
+    "river_discharge": 30.100822,
+    "discharge_change_1d": 19.445379,
+    "discharge_ratio_7d": 25.115847,
+    "discharge_ratio_30d": 14.334381,
+    "discharge_zscore_30d": 26.128328,
+    "elevation_m": 17.61278,
+    "month_sin": 36.037453,
+    "month_cos": 55.247086
+  },
+  "operational_feature_parity": {
+    "ready": false,
+    "missing_live_history": [
+      "rainfall_3d",
+      "rainfall_7d",
+      "rainfall_14d",
+      "rainfall_30d",
+      "discharge_ratio_30d",
+      "discharge_zscore_30d"
+    ],
+    "reason": "The current detailed live providers fetch 24 weather hours and seven discharge days; V2 requires up to 30 days."
+  },
+  "validation_results": {
+    "district_holdout": {
+      "roc_auc": 0.6815,
+      "brier_score": 0.2019,
+      "selected_threshold": 0.42,
+      "precision": 0.1765,
+      "recall": 0.8039,
+      "f1": 0.2894,
+      "accuracy": 0.5065,
+      "balanced_accuracy": 0.634,
+      "selected_hyperparameters": {
+        "max_depth": 3,
+        "eta": 0.06,
+        "min_child_weight": 5,
+        "best_iteration": 11
+      },
+      "metrics_at_0_5": {
+        "roc_auc": 0.6815,
+        "precision_at_0_5": 0.2353,
+        "recall_at_0_5": 0.3399,
+        "f1_at_0_5": 0.2781,
+        "accuracy_at_0_5": 0.7794,
+        "specificity_at_0_5": 0.8422,
+        "balanced_accuracy_at_0_5": 0.591,
+        "brier_score": 0.2019,
+        "test_rows": 1224
+      },
+      "test_rows": 1224,
+      "test_positive_rows": 153
+    },
+    "geographic_holdout": {
+      "roc_auc": 0.5704,
+      "brier_score": 0.2129,
+      "selected_threshold": 0.5,
+      "precision": 0.2654,
+      "recall": 0.2877,
+      "f1": 0.2761,
+      "accuracy": 0.6709,
+      "balanced_accuracy": 0.5328,
+      "selected_hyperparameters": {
+        "max_depth": 3,
+        "eta": 0.06,
+        "min_child_weight": 15,
+        "best_iteration": 23
+      },
+      "metrics_at_0_5": {
+        "roc_auc": 0.5704,
+        "precision_at_0_5": 0.2654,
+        "recall_at_0_5": 0.2877,
+        "f1_at_0_5": 0.2761,
+        "accuracy_at_0_5": 0.6709,
+        "specificity_at_0_5": 0.7778,
+        "balanced_accuracy_at_0_5": 0.5328,
+        "brier_score": 0.2129,
+        "test_rows": 2677
+      },
+      "test_rows": 2677,
+      "test_positive_rows": 584
+    },
+    "temporal_holdout": {
+      "roc_auc": 0.7029,
+      "brier_score": 0.235,
+      "selected_threshold": 0.62,
+      "precision": 0.3396,
+      "recall": 0.36,
+      "f1": 0.3495,
+      "accuracy": 0.8027,
+      "balanced_accuracy": 0.6196,
+      "selected_hyperparameters": {
+        "max_depth": 4,
+        "eta": 0.03,
+        "min_child_weight": 15,
+        "best_iteration": 83
+      },
+      "metrics_at_0_5": {
+        "roc_auc": 0.7029,
+        "precision_at_0_5": 0.262,
+        "recall_at_0_5": 0.6,
+        "f1_at_0_5": 0.3647,
+        "accuracy_at_0_5": 0.6922,
+        "specificity_at_0_5": 0.7081,
+        "balanced_accuracy_at_0_5": 0.6541,
+        "brier_score": 0.235,
+        "test_rows": 679
+      },
+      "test_rows": 679,
+      "test_positive_rows": 100
+    }
+  },
+  "split_membership": {
+    "district": {
+      "train_groups": [
+        "Kharan",
+        "Upper Dir",
+        "Lakki Marwat",
+        "Kohlu",
+        "Mianwali",
+        "Swabi",
+        "Khuzdar",
+        "Mastung",
+        "Kalat",
+        "Qilla Saifullah",
+        "Attock",
+        "Barkhan",
+        "Hangu",
+        "Charsadda",
+        "Mandi Bahauddin",
+        "Tank",
+        "Buner",
+        "Awaran",
+        "Multan",
+        "Diamer",
+        "Panjgur",
+        "Loralai",
+        "Thatta",
+        "Pishin",
+        "Gwadar",
+        "Dera Ismail Khan",
+        "Kachhi",
+        "Bhakkar",
+        "Ghotki",
+        "Gilgit",
+        "Bahawalnagar",
+        "Azad Kashmir",
+        "Chitral",
+        "Quetta",
+        "Hyderabad",
+        "Skardu",
+        "Mardan",
+        "Dadu",
+        "Abbottabad",
+        "Lasbela",
+        "Musakhel",
+        "Kohat",
+        "Battagram",
+        "Rawalpindi"
+      ],
+      "validation_groups": [
+        "Umerkot",
+        "Astore",
+        "Lodhran",
+        "Islamabad Capital Territory",
+        "Jacobabad",
+        "Badin",
+        "Kech",
+        "Jafarabad",
+        "Haripur",
+        "Swat"
+      ],
+      "test_groups": [
+        "Zhob",
+        "Sibi",
+        "Karak",
+        "Jhal Magsi",
+        "Ghizer",
+        "Mansehra",
+        "Gujranwala",
+        "Sialkot",
+        "Nasirabad",
+        "Nushki",
+        "Ghanche",
+        "Bahawalpur",
+        "Lower Dir"
+      ]
+    },
+    "geographic": {
+      "train_groups": [
+        "N34_E74",
+        "N28_E66",
+        "N28_E72",
+        "N24_E66",
+        "N24_E62",
+        "N30_E66",
+        "N34_E76",
+        "N26_E62",
+        "N24_E68",
+        "N26_E66",
+        "N30_E70",
+        "N26_E64",
+        "N34_E72",
+        "N30_E68"
+      ],
+      "validation_groups": [
+        "N32_E70",
+        "N26_E68",
+        "N28_E64",
+        "N28_E68"
+      ],
+      "test_groups": [
+        "N32_E72",
+        "N32_E74",
+        "N34_E70",
+        "N28_E70",
+        "N36_E72"
+      ]
+    },
+    "temporal": {
+      "train": "2000-2010",
+      "validation": "2011-2012",
+      "test": "2013-2014"
+    }
+  },
+  "limitations": [
+    "DesInventar records impacts and reports, not continuous sensor-confirmed inundation.",
+    "Reporting density varies strongly by district and year.",
+    "Historical district aliases and boundary changes introduce spatial uncertainty.",
+    "Weather and GloFAS values use district representative points, not catchment averages.",
+    "Measured gauge height and official station thresholds are unavailable.",
+    "The 2007 covariate year was excluded because the free provider quota ended before complete national coverage."
+  ],
+  "artifact": "app\\ml\\artifacts\\flood_risk_xgboost_desinventar_v2.json"
+}

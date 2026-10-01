@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FloodGuard AI Backend - Technical Overview</title>
+  <style>
+    @page { size: A4; margin: 16mm 15mm 18mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #18232b; font: 9.4pt/1.42 "Segoe UI", Arial, sans-serif; }
+    h1, h2, h3 { margin: 0; color: #12394a; page-break-after: avoid; }
+    h1 { font-size: 26pt; line-height: 1.08; }
+    h2 { margin-top: 18px; padding-bottom: 4px; border-bottom: 2px solid #2b7a78; font-size: 15pt; }
+    h3 { margin-top: 12px; font-size: 11pt; }
+    p { margin: 5px 0 8px; }
+    ul, ol { margin: 5px 0 9px 19px; padding: 0; }
+    li { margin: 2px 0; }
+    code { color: #8c2f39; font-family: Consolas, monospace; font-size: 8.7pt; }
+    table { width: 100%; margin: 7px 0 12px; border-collapse: collapse; page-break-inside: auto; }
+    tr { page-break-inside: avoid; }
+    th { color: white; background: #235b68; text-align: left; }
+    th, td { padding: 5px 6px; border: 1px solid #b9c8cc; vertical-align: top; }
+    tbody tr:nth-child(even) { background: #f3f7f7; }
+    .cover { min-height: 235mm; display: flex; flex-direction: column; justify-content: space-between; }
+    .brand { border-left: 8px solid #d94f4f; padding: 14px 0 14px 22px; }
+    .subtitle { margin-top: 12px; color: #3f5b66; font-size: 14pt; }
+    .meta { width: 100%; max-width: 470px; }
+    .meta td { border-width: 0 0 1px; padding: 7px 2px; }
+    .meta td:first-child { width: 135px; color: #48636d; font-weight: 600; }
+    .notice { padding: 9px 11px; border-left: 4px solid #d49b22; background: #fff7df; }
+    .good { color: #176b45; font-weight: 600; }
+    .flow { margin: 10px 0 14px; padding: 12px; background: #edf5f4; border: 1px solid #aac7c3; text-align: center; font-weight: 600; }
+    .small { color: #536a73; font-size: 8.3pt; }
+    .page-break { page-break-before: always; }
+    .footer-note { margin-top: 16px; color: #536a73; font-size: 8pt; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="brand">
+      <h1>FloodGuard AI Backend</h1>
+      <div class="subtitle">Technical Features and Implementation Overview</div>
+    </div>
+    <table class="meta">
+      <tr><td>Backend</td><td>FastAPI / Python</td></tr>
+      <tr><td>Document version</td><td>1.3</td></tr>
+      <tr><td>Backend version</td><td>0.1.0</td></tr>
+      <tr><td>Last updated</td><td>1 October 2026</td></tr>
+      <tr><td>Default data mode</td><td><code>live</code></td></tr>
+      <tr><td>Primary risk model</td><td><code>rule_based_v1</code> on live inputs</td></tr>
+    </table>
+    <div class="notice">
+      <strong>Model status:</strong> Two real-data XGBoost research models have been trained and geographically backtested. Both failed the documented promotion gate and are not deployed. Production remains on the declared rule engine with live inputs.
+    </div>
+  </section>
+
+  <h2>1. Purpose and Scope</h2>
+  <p>FloodGuard AI is a backend for flood-condition monitoring, national district screening, risk inference, prediction history, operational state, incidents, citizen reports, emergency resources, and downstream automation context. It exposes versioned REST APIs under <code>/api/v1</code>.</p>
+  <div class="flow">Live national weather batches + station river discharge &rarr; district screening and detailed XGBoost risk &rarr; cached GIS layer + persisted predictions and events</div>
+
+  <h2>2. Runtime Architecture</h2>
+  <table>
+    <thead><tr><th>Layer</th><th>Implementation</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td>API</td><td>FastAPI</td><td>Routing, validation, OpenAPI documentation, CORS, and structured errors.</td></tr>
+      <tr><td>Providers</td><td>Async <code>httpx</code> adapters</td><td>Retrieve and normalize weather and river data behind common interfaces.</td></tr>
+      <tr><td>Risk</td><td>XGBoost with configurable rule engine</td><td>Calculate flood probability, severity, status, factors, and confidence. Production defaults do not silently change models.</td></tr>
+      <tr><td>Services</td><td>Python service classes</td><td>Coordinate providers, inference, persistence, trends, events, and monitoring state.</td></tr>
+      <tr><td>National GIS</td><td>GeoJSON + cached batch processing</td><td>Serve Pakistan district geometry, weather screening, viewport filtering, provenance, and freshness metadata.</td></tr>
+      <tr><td>Persistence</td><td>SQLAlchemy</td><td>Predictions, incidents, citizen reports, system events, and system state.</td></tr>
+      <tr><td>Database</td><td>SQLite by default</td><td>Local persistence; configurable for another SQLAlchemy database URL.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. Data Sources and Modes</h2>
+  <table>
+    <thead><tr><th>Mode</th><th>Weather</th><th>River</th><th>Intended use</th></tr></thead>
+    <tbody>
+      <tr><td><code>live</code></td><td>Open-Meteo Forecast API</td><td>Open-Meteo Flood API / GloFAS</td><td>Default operational mode.</td></tr>
+      <tr><td><code>hybrid</code></td><td>Same live provider</td><td>Same live provider</td><td>Backward-compatible alias.</td></tr>
+      <tr><td><code>simulation</code></td><td>Deterministic scenarios</td><td>Deterministic scenarios</td><td>Development and automated tests only; rejected unless <code>ENABLE_SIMULATION=true</code>.</td></tr>
+    </tbody>
+  </table>
+  <h3>Weather normalization</h3>
+  <p>The live provider requests hourly precipitation, temperature, relative humidity, and 0-7 cm soil moisture. It calculates current, previous 1/6/24-hour, and forecast 6/24-hour rainfall totals.</p>
+  <h3>River normalization</h3>
+  <p>The live river provider uses GloFAS daily modeled discharge at configured river coordinates. It returns current discharge, daily change, next-day forecast, and a simple rising/normal status.</p>
+  <div class="notice"><strong>River-level constraint:</strong> GloFAS provides modeled discharge, not measured gauge height. Live responses therefore return level-related fields as <code>null</code>. FloodGuard does not fabricate a water level.</div>
+
+  <div class="page-break"></div>
+  <h2>4. Flood-Risk Model</h2>
+  <table>
+    <thead><tr><th>Model</th><th>Purpose and status</th></tr></thead>
+    <tbody>
+      <tr><td><code>rule_based_v1</code></td><td>Current production model. Applies documented hydrometeorological weights to live weather and modeled discharge. It is deterministic and not a learned model.</td></tr>
+      <tr><td><code>xgboost_v1</code></td><td>Development-only regressor trained on 6,000 synthetic rows. Disabled in production and never represented as historical training.</td></tr>
+      <tr><td><code>xgboost_pakistan_gfd_v1</code></td><td>Real-data binary classifier trained on historical Pakistan event windows. Failed event and geographic validation; retained as a rejected research artifact and not used by the API.</td></tr>
+      <tr><td><code>xgboost_pakistan_desinventar_v2</code></td><td>Real-data district-date classifier with richer antecedent rainfall and normalized discharge features. Failed district, geographic, and temporal validation; retained as a rejected research artifact and not used by the API.</td></tr>
+      <tr><td><code>xgboost_lower_indus_pilot_v1</code></td><td>Explicit partial-coverage experiment for 18 districts in six contiguous Lower Indus geographic blocks. Failed district, block, and temporal validation; not used by the API.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Synthetic development dataset</h3>
+  <p>The generator in <code>app/ml/synthetic_data.py</code> remains only for development and regression tests:</p>
+  <ul>
+    <li>Rainfall, river conditions, discharge, discharge change, and soil moisture are sampled from bounded synthetic ranges.</li>
+    <li>Discharge is correlated with synthetic river level; discharge change is correlated with synthetic rise rate.</li>
+    <li>The probability label is a weighted hydrometeorological score plus a high-rain/high-river interaction and small random noise.</li>
+    <li>35% of rows have level-related inputs removed to train the model to operate when only discharge is available.</li>
+  </ul>
+  <p class="small">This synthetic artifact is disabled by default with <code>ML_MODEL_ENABLED=false</code>.</p>
+
+  <h3>Real historical dataset</h3>
+  <table>
+    <thead><tr><th>Item</th><th>Implementation</th></tr></thead>
+    <tbody>
+      <tr><td>Flood-event source</td><td>Global Flood Database v1 event catalogue produced from MODIS flood mapping and Dartmouth Flood Observatory events.</td></tr>
+      <tr><td>Coverage</td><td>28 events associated with Pakistan between 2003 and 2018; 2,410 daily rows, including 730 event-window rows.</td></tr>
+      <tr><td>Weather source</td><td>Open-Meteo Historical Weather API: hourly precipitation and 0-7 cm soil moisture, aggregated into daily model features.</td></tr>
+      <tr><td>Hydrology source</td><td>Open-Meteo Flood API / GloFAS historical modeled daily discharge and day-to-day discharge change.</td></tr>
+      <tr><td>Label</td><td>1 when the date is inside the DFO/GFD event interval at the event centroid; 0 for matched 31-day pre/post-event windows.</td></tr>
+      <tr><td>Missing fields</td><td>Measured gauge height, warning-level ratio, and gauge rise rate remain missing because no authorized historical gauge series is connected.</td></tr>
+      <tr><td>Dataset artifact</td><td><code>app/ml/data/pakistan_real_flood_training.csv</code>.</td></tr>
+      <tr><td>Rebuild command</td><td><code>python -m app.ml.train_real_model --rebuild</code>.</td></tr>
+    </tbody>
+  </table>
+  <div class="notice"><strong>Label limitation:</strong> the event catalogue confirms mapped inundation somewhere in the event footprint. It does not prove that the event centroid flooded on every date in the full event interval. The next-day observed rainfall is used as a historical proxy for the operational 24-hour forecast feature. These limitations make this useful for research, not operational certification.</div>
+
+  <h3>Model input features</h3>
+  <table>
+    <thead><tr><th>Feature</th><th>Operational source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>rainfall_last_1h</code></td><td>Open-Meteo weather</td><td>Previous-hour precipitation total.</td></tr>
+      <tr><td><code>rainfall_last_6h</code></td><td>Open-Meteo weather</td><td>Six-hour accumulated precipitation.</td></tr>
+      <tr><td><code>rainfall_last_24h</code></td><td>Open-Meteo weather</td><td>Twenty-four-hour accumulated precipitation.</td></tr>
+      <tr><td><code>forecast_rainfall_24h</code></td><td>Open-Meteo weather</td><td>Next 24-hour precipitation forecast.</td></tr>
+      <tr><td><code>river_level</code></td><td>Authorized gauge feed when available</td><td>Missing in current live mode and passed as an XGBoost missing value.</td></tr>
+      <tr><td><code>river_level_relative_to_warning</code></td><td>Derived from gauge values</td><td>Missing when observed level and warning level are unavailable.</td></tr>
+      <tr><td><code>river_rise_rate</code></td><td>Authorized gauge feed when available</td><td>Missing in current live mode.</td></tr>
+      <tr><td><code>river_discharge</code></td><td>GloFAS</td><td>Modeled daily discharge in cubic metres per second.</td></tr>
+      <tr><td><code>river_discharge_change</code></td><td>Derived from GloFAS</td><td>Current discharge minus previous-day discharge.</td></tr>
+      <tr><td><code>soil_moisture</code></td><td>Open-Meteo weather</td><td>0-7 cm volumetric soil moisture converted to percent.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Severity classification</h3>
+  <table>
+    <thead><tr><th>Probability</th><th>Severity</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>&lt; 0.38</td><td>LOW</td><td>NORMAL</td></tr>
+      <tr><td>0.38 to &lt; 0.58</td><td>MEDIUM</td><td>UNDER_VERIFICATION</td></tr>
+      <tr><td>0.58 to &lt; 0.78</td><td>HIGH</td><td>PREDICTED</td></tr>
+      <tr><td>&ge; 0.78</td><td>CRITICAL</td><td>PREDICTED</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Failure policy</h3>
+  <p>Production uses <code>ALLOW_RULE_BASED_FALLBACK=false</code>. If the enabled ML artifact is missing, corrupt, or fails inference, the API returns structured HTTP 503 instead of silently changing models. A rule-based fallback can be enabled deliberately for a separate degraded-mode deployment. Provider failures never substitute simulation data and return structured HTTP 502.</p>
+  <p>Production also defaults to <code>ML_MODEL_ENABLED=false</code> because the bundled XGBoost artifact is trained on synthetic development data. In this mode <code>rule_based_v1</code> is the declared primary model operating on live inputs, not a silent fallback. Enable the bundled artifact only for development, or replace it with a historically trained and validated artifact before operational ML use.</p>
+  <h3>Real-data research run</h3>
+  <p>The classifier uses <code>binary:logistic</code>, depth 3, learning rate 0.04, row subsampling 0.85, column subsampling 0.90, early stopping, and seed 42. Two independent holdouts are required:</p>
+  <table>
+    <thead><tr><th>Metric</th><th>Event holdout</th><th>Geographic holdout</th></tr></thead>
+    <tbody>
+      <tr><td>Test rows</td><td>583</td><td>682</td></tr>
+      <tr><td>ROC-AUC</td><td>0.5936</td><td>0.3836</td></tr>
+      <tr><td>Accuracy at 0.5</td><td>0.6175</td><td>0.6891</td></tr>
+      <tr><td>Balanced accuracy at 0.5</td><td>0.5000</td><td>0.5197</td></tr>
+      <tr><td>Precision at 0.5</td><td>0.0000</td><td>0.4038</td></tr>
+      <tr><td>Recall at 0.5</td><td>0.0000</td><td>0.1040</td></tr>
+      <tr><td>F1 at 0.5</td><td>0.0000</td><td>0.1654</td></tr>
+      <tr><td>Brier score</td><td>0.2446</td><td>0.2219</td></tr>
+    </tbody>
+  </table>
+  <p>Event holdout keeps complete events in one split only. Geographic holdout assigns all rows in each 2-degree latitude/longitude block to one split only; 15 geographic blocks are represented. This tests transfer to unseen areas.</p>
+  <p>Promotion requires both holdouts to achieve ROC-AUC at least 0.75, precision at least 0.60, and recall at least 0.60. The model failed. Ordinary accuracy is not accepted by itself because majority non-flood predictions can inflate it. Status is <code>rejected_holdout_quality</code>, <code>deployment_eligible=false</code>, and production remains on <code>rule_based_v1</code>.</p>
+  <p>Full provenance, exact split membership, metrics, limitations, and acceptance gates are stored in <code>app/ml/artifacts/flood_risk_xgboost_real.model-card.json</code>.</p>
+
+  <h3>DesInventar district-date research run</h3>
+  <p>The second experiment uses the official UNDRR DesInventar Pakistan export. The cleaning pipeline keeps <code>FLOOD</code> and <code>FLASH FLOOD</code>, validates dates from 2000 onward, applies explicit historical district aliases, rejects unknown districts, and deduplicates district-date labels. It produced 1,704 cleaned positive district-dates from 2,912 raw flood records. Year 2007 was excluded completely from model rows because the free historical provider quota ended before national covariate coverage was complete; excluding the whole year avoids partial-district selection bias.</p>
+  <table>
+    <thead><tr><th>Item</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Training rows</td><td>10,097: 1,584 positive and 8,513 matched controls.</td></tr>
+      <tr><td>Spatial coverage</td><td>67 mapped districts in 23 two-degree geographic blocks.</td></tr>
+      <tr><td>Controls</td><td>Same-district dates at +/-7, 14, 21, and 28 days, excluding +/-3 days around a recorded event.</td></tr>
+      <tr><td>Weather</td><td>Open-Meteo historical daily precipitation and 0-7 cm soil moisture.</td></tr>
+      <tr><td>Hydrology</td><td>Open-Meteo Flood API / GloFAS modeled daily discharge.</td></tr>
+      <tr><td>Artifacts</td><td><code>app/ml/data/pakistan_desinventar_training.csv</code>, quality report, model JSON, and model card.</td></tr>
+      <tr><td>Rebuild</td><td><code>python -m app.ml.train_desinventar_model --rebuild</code>.</td></tr>
+    </tbody>
+  </table>
+  <p>XGBoost uses binary logistic loss, class weighting, 500 maximum rounds, early stopping, row/column subsampling, seed 42, and a validation-only grid over depth 2/3/4, learning rate 0.03/0.06, and minimum child weight 5/15. The classification threshold is selected only from validation predictions.</p>
+  <table>
+    <thead><tr><th>Metric</th><th>District holdout</th><th>Geographic holdout</th><th>Temporal holdout</th></tr></thead>
+    <tbody>
+      <tr><td>Test rows / positives</td><td>1,224 / 153</td><td>2,677 / 584</td><td>679 / 100</td></tr>
+      <tr><td>ROC-AUC</td><td>0.6815</td><td>0.5704</td><td>0.7029</td></tr>
+      <tr><td>Selected threshold</td><td>0.42</td><td>0.50</td><td>0.62</td></tr>
+      <tr><td>Precision</td><td>0.1765</td><td>0.2654</td><td>0.3396</td></tr>
+      <tr><td>Recall</td><td>0.8039</td><td>0.2877</td><td>0.3600</td></tr>
+      <tr><td>F1</td><td>0.2894</td><td>0.2761</td><td>0.3495</td></tr>
+      <tr><td>Balanced accuracy</td><td>0.6340</td><td>0.5328</td><td>0.6196</td></tr>
+      <tr><td>Brier score</td><td>0.2019</td><td>0.2129</td><td>0.2350</td></tr>
+    </tbody>
+  </table>
+  <p>The richer feature set improved spatial ROC-AUC over the first experiment from 0.3836 to 0.5704, but it still fails the gate of ROC-AUC 0.75, precision 0.60, and recall 0.60 on every holdout. Status is <code>rejected_holdout_quality</code>; it is not loaded by the API.</p>
+
+  <h3>V2 feature availability and sufficiency</h3>
+  <table>
+    <thead><tr><th>Feature group</th><th>Historical training</th><th>Current live availability</th></tr></thead>
+    <tbody>
+      <tr><td>Rainfall 1/3/7/14/30 days</td><td>Available from Open-Meteo reanalysis.</td><td>Only the latest 24 hours are currently fetched. Longer windows require persisted observations or a larger live request.</td></tr>
+      <tr><td>Next-day rainfall</td><td>Next observed day is a forecast proxy.</td><td>Available as an actual Open-Meteo forecast.</td></tr>
+      <tr><td>0-7 cm soil moisture</td><td>Available from Open-Meteo reanalysis.</td><td>Available from Open-Meteo forecast/current data.</td></tr>
+      <tr><td>Discharge, daily change</td><td>Available from GloFAS reanalysis.</td><td>Available as modeled discharge, not a gauge observation.</td></tr>
+      <tr><td>7/30-day discharge ratios and 30-day z-score</td><td>Available from GloFAS history.</td><td>The live provider fetches seven past days; 30-day features require an extended request or persisted history.</td></tr>
+      <tr><td>Elevation and month seasonality</td><td>Available.</td><td>Available or directly derived.</td></tr>
+      <tr><td>Gauge height, warning threshold, rise rate</td><td>Unavailable in the connected public datasets.</td><td>Unavailable until an authorized FFD/WAPDA gauge feed and station thresholds are integrated.</td></tr>
+    </tbody>
+  </table>
+  <div class="notice"><strong>Conclusion:</strong> XGBoost capacity and tuning are not the main blocker. Geographic transfer remains weak because district representative points do not describe full catchments, DesInventar is an impact-reporting catalogue rather than continuous inundation truth, and measured gauge levels, station thresholds, catchment rainfall, terrain slope, river distance, drainage capacity, and flood-protection context are absent. Recommended next data work is authority gauge integration, catchment/raster aggregation, static susceptibility layers, and event-based geographic backtesting before another promotion decision.</div>
+
+  <h3>Declared partial-coverage experiment</h3>
+  <p>A smaller model was tested rather than assuming national coverage. The Lower Indus pilot was fixed before evaluation as six contiguous blocks covering Badin, Barkhan, Dadu, Ghotki, Hyderabad, Jacobabad, Jafarabad, Jhal Magsi, Kachhi, Kalat, Khuzdar, Kohlu, Lasbela, Mastung, Nasirabad, Sibi, Thatta, and Umerkot. The dataset contains 4,597 rows and 652 positive district-dates.</p>
+  <table>
+    <thead><tr><th>Validation</th><th>ROC-AUC</th><th>Precision</th><th>Recall</th><th>Decision</th></tr></thead>
+    <tbody>
+      <tr><td>District holdout</td><td>0.5295</td><td>0.1479</td><td>0.6488</td><td>Failed</td></tr>
+      <tr><td>Leave-one-block-out</td><td>0.5567</td><td>0.1646</td><td>0.4831</td><td>Failed</td></tr>
+      <tr><td>Temporal holdout</td><td>0.4962</td><td>0.0000</td><td>0.0000</td><td>Failed</td></tr>
+    </tbody>
+  </table>
+  <p>Each of the six blocks is used as an unseen test block once, with a different validation block and the remaining blocks used for training. The experiment shows that geographic size is not the main issue: regional labels still describe district-wide reported impacts while the predictors describe one representative point. The artifact is <code>rejected_holdout_quality</code> and cannot return predictions outside its declared coverage.</p>
+
+  <div class="page-break"></div>
+  <h2>5. Trends and Adaptive Monitoring</h2>
+  <p>Each prediction is compared with the latest previous prediction for the same location.</p>
+  <table>
+    <thead><tr><th>Probability change</th><th>Trend</th></tr></thead>
+    <tbody>
+      <tr><td>&le; -0.05</td><td>FALLING</td></tr>
+      <tr><td>&gt; -0.05 and &lt; 0.05</td><td>STABLE</td></tr>
+      <tr><td>&ge; 0.05 and &lt; 0.15</td><td>RISING</td></tr>
+      <tr><td>&ge; 0.15</td><td>RAPIDLY_RISING</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Base severity</th><th>Base interval</th><th>Trend adjustment</th></tr></thead>
+    <tbody>
+      <tr><td>LOW</td><td>60 minutes</td><td rowspan="4">RISING shortens by one tier. RAPIDLY_RISING sets 5 minutes. Downgrades respect the configured 30-minute cooldown.</td></tr>
+      <tr><td>MEDIUM</td><td>30 minutes</td></tr>
+      <tr><td>HIGH</td><td>15 minutes</td></tr>
+      <tr><td>CRITICAL</td><td>5 minutes</td></tr>
+    </tbody>
+  </table>
+
+  <h2>6. National GIS Screening</h2>
+  <p>The endpoint <code>GET /api/v1/gis/national-risk</code> returns a GeoJSON FeatureCollection covering 126 Pakistan ADM2 district geometries. The packaged simplified boundaries are from geoBoundaries PAK ADM2 (2019), distributed as public-domain data. The optional <code>bbox=west,south,east,north</code> parameter filters output to a map viewport.</p>
+  <table>
+    <thead><tr><th>Item</th><th>Implementation</th></tr></thead>
+    <tbody>
+      <tr><td>Live ingestion</td><td>District representative coordinates are sent to Open-Meteo in configurable batches of 40.</td></tr>
+      <tr><td>Cache</td><td>Successful national layers are cached for 1,800 seconds by default. A stale successful layer is returned with a warning if a later provider refresh fails.</td></tr>
+      <tr><td>Screening inputs</td><td>Recent 6/24-hour rainfall, forecast 24-hour rainfall, and 0-7 cm soil moisture.</td></tr>
+      <tr><td>Score</td><td><code>0.34*min(rain24/120,1) + 0.38*min(forecast24/100,1) + 0.18*min(soil/90,1) + 0.10*min(rain6/50,1)</code>, constrained to [0.01, 0.98].</td></tr>
+      <tr><td>Output labels</td><td><code>district_weather_screening</code>, <code>district_weather_screening_v1</code>, and <code>screening_index</code>.</td></tr>
+      <tr><td>Confidence</td><td>0.62 for live screening. This is a prioritization layer, not a calibrated flood forecast.</td></tr>
+      <tr><td>Simulation</td><td>Scenario-dependent deterministic district scores, clearly marked with <code>data_mode=simulation</code>.</td></tr>
+    </tbody>
+  </table>
+  <div class="notice"><strong>Interpretation:</strong> The national district layer is weather-derived screening for prioritization. It does not infer gauge height, flood depth, inundation extent, or district exposure. The existing station endpoint remains the river-aware XGBoost prediction path.</div>
+
+  <h2>7. Backend Feature Inventory</h2>
+  <table>
+    <thead><tr><th>Feature</th><th>Implementation summary</th></tr></thead>
+    <tbody>
+      <tr><td>Health and system status</td><td>Reports process status, version, environment, data mode, active scenario, and monitoring state.</td></tr>
+      <tr><td>Weather</td><td>Normalized current and accumulated live weather by configured location.</td></tr>
+      <tr><td>River conditions</td><td>Live modeled discharge, daily change, next-day forecast, and status.</td></tr>
+      <tr><td>Flood risk</td><td>ML probability with severity, status, trend, factors, model identity, monitoring interval, and source metadata.</td></tr>
+      <tr><td>National GIS risk</td><td>Cached district GeoJSON with live weather screening, viewport filtering, source timestamps, model labels, and boundary provenance.</td></tr>
+      <tr><td>Prediction history</td><td>Persists and filters predictions by location and limit.</td></tr>
+      <tr><td>Incidents</td><td>Create, retrieve, list, and update flood incidents.</td></tr>
+      <tr><td>Citizen reports</td><td>Create, retrieve, and list geolocated reports with pending verification state.</td></tr>
+      <tr><td>System events</td><td>Records risk updates, monitoring changes, incident/report activity, simulation transitions, and critical alert requirements.</td></tr>
+      <tr><td>Simulation</td><td>Deterministic normal-to-confirmed scenarios isolated from live operational inference.</td></tr>
+      <tr><td>Automation context</td><td>Provides risk, severity, status, interval, and verification/alert flags for downstream workflows.</td></tr>
+      <tr><td>Dashboard summary</td><td>Aggregates incident, report, prediction, and monitoring statistics.</td></tr>
+      <tr><td>Emergency resources</td><td>Returns approved configured shelters, hospitals, and emergency contacts. Lists remain empty until an authority dataset is connected; no placeholder facilities are shipped.</td></tr>
+      <tr><td>API contract</td><td>Pydantic validation, structured 404/422/502 responses, Swagger UI, ReDoc, and OpenAPI schema.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8. Stored Data</h2>
+  <table>
+    <thead><tr><th>Entity</th><th>Stored information</th></tr></thead>
+    <tbody>
+      <tr><td>Prediction</td><td>Probability, severity, status, confidence, trend, change, factors, model identity, source identity, interval, and timestamp.</td></tr>
+      <tr><td>Incident</td><td>Location, flood type, severity, lifecycle status, confidence, description, source, and timestamps.</td></tr>
+      <tr><td>Citizen report</td><td>Location, coordinates, description, optional image URL/depth, source, verification state, and timestamp.</td></tr>
+      <tr><td>System event</td><td>Event type, message, location, structured metadata, and timestamp.</td></tr>
+      <tr><td>System state</td><td>Active scenario/location, monitoring mode/interval, simulation time, and last monitoring change.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9. Known Limitations and Next Production Steps</h2>
+  <ol>
+    <li>Obtain quality-controlled gauge observations, official station warning thresholds, and verified flood extents/outcomes from FFD, WAPDA, NDMA, or provincial authorities.</li>
+    <li>Add catchment-average rainfall, terrain slope/elevation distribution, river distance, drainage, land cover, and flood-protection features.</li>
+    <li>Integrate authorized FFD/WAPDA gauge observations and station-specific flood thresholds.</li>
+    <li>Use station-specific rating curves only when validated; never convert discharge to level with a generic formula.</li>
+    <li>Replace the 2019 public-domain demonstration boundaries with NDMA-authorized current administrative boundaries.</li>
+    <li>Add provider retry/backoff, detailed-location caching, dependency-aware health checks, and production database migrations.</li>
+    <li>Move high-volume historical GIS observations to PostGIS and vector/raster tiles as data density grows.</li>
+    <li>Verify and routinely update static emergency-resource records.</li>
+  </ol>
+
+  <h2>10. Maintenance</h2>
+  <p>This HTML file is the editable source for the PDF. Update it whenever providers, model features, thresholds, endpoints, persistence fields, or validation status change. Regenerate on Windows with:</p>
+  <p><code>powershell -ExecutionPolicy Bypass -File scripts\generate_backend_pdf.ps1</code></p>
+  <p class="footer-note">Source of truth: current FloodGuard AI backend implementation. This document describes implemented behavior; it does not certify hydrological or emergency-response accuracy.</p>
+</body>
+</html>
