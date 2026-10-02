@@ -17,9 +17,9 @@ export function AppShell({ activeView, onViewChange, children }: { activeView: V
   return (
     <div className="app-shell">
       <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
-        <div className="brand-lockup"><div><ShieldCheck size={24} /></div><span><strong>FloodGuard AI</strong><small>Authority Command</small></span><button className="mobile-close" onClick={() => setOpen(false)}><X size={20} /></button></div>
+        <div className="brand-lockup"><div><ShieldCheck size={24} /></div><span><strong>FloodGuard AI</strong><small>NDMA Command Screen</small></span><button className="mobile-close" onClick={() => setOpen(false)}><X size={20} /></button></div>
         <nav>{navItems.map(({ id, label, icon: Icon }) => <button className={activeView === id ? "active" : ""} key={id} onClick={() => { onViewChange(id); setOpen(false); }}><Icon size={18} /><span>{label}</span></button>)}</nav>
-        <div className="sidebar-foot"><span>Operations console</span><strong>Pakistan Region</strong></div>
+        <div className="sidebar-foot"><span>National display mode</span><strong>Pakistan Region</strong></div>
       </aside>
       {open && <button className="sidebar-backdrop" aria-label="Close navigation" onClick={() => setOpen(false)} />}
       <main className="main-content"><button className="mobile-menu" onClick={() => setOpen(true)}><Menu size={20} /> Menu</button>{children}</main>
