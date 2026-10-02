@@ -12,7 +12,7 @@ import { OverviewPage } from "./pages/OverviewPage";
 import { GISPage } from "./pages/GISPage";
 
 const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
-  overview: { title: "National Operations View", subtitle: "Live flood intelligence and emergency coordination" },
+  overview: { title: "Operational Overview", subtitle: "Live flood intelligence and emergency coordination" },
   gis: { title: "GIS Operations", subtitle: "National hazard screening and operational geography" },
   incidents: { title: "Incident Management", subtitle: "Review active and historical emergency incidents" },
   reports: { title: "Citizen Reports", subtitle: "Field observations awaiting authority verification" },
@@ -30,7 +30,7 @@ export default function App() {
   return (
     <AppShell activeView={view} onViewChange={setView}>
       <header className="topbar">
-        <div><p className="eyebrow">NDMA Emergency Command Display</p><h1>{heading.title}</h1><span>{heading.subtitle}</span></div>
+        <div><p className="eyebrow">Emergency Command Dashboard</p><h1>{heading.title}</h1><span>{heading.subtitle}</span></div>
         <div className="topbar-actions">
           <label className="location-select"><span>Operational area</span><div><strong>{location.name}</strong><small>{location.river} River · {location.id}</small><ChevronDown size={17} /></div><select aria-label="Operational location" value={locationId} onChange={(event) => setLocationId(event.target.value as LocationId)}>{LOCATIONS.map((item) => <option value={item.id} key={item.id}>{item.name} ({item.id})</option>)}</select></label>
           <button className="refresh-button" disabled={refreshing} onClick={() => void refresh(false)} title="Refresh dashboard"><RefreshCw className={refreshing ? "spinning" : ""} size={18} /><span>Refresh</span></button>

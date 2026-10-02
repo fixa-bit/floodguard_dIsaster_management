@@ -22,7 +22,7 @@ export function AppShell({ activeView, onViewChange, children }: { activeView: V
         <div className="sidebar-foot"><span>National display mode</span><strong>Pakistan Region</strong></div>
       </aside>
       {open && <button className="sidebar-backdrop" aria-label="Close navigation" onClick={() => setOpen(false)} />}
-      <main className="main-content"><button className="mobile-menu" onClick={() => setOpen(true)}><Menu size={20} /> Menu</button>{children}</main>
+      <main className={`main-content main-${activeView}`}><button className="mobile-menu" onClick={() => setOpen(true)}><Menu size={20} /> Menu</button>{children}</main>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import * as maplibregl from "maplibre-gl";
 import type { GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent, StyleSpecification } from "maplibre-gl";
 import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import type { FeatureCollection, Geometry, Point, Polygon } from "geojson";
 
 import { LOCATIONS, MAP_STYLE_URL, type LocationId } from "../config";
@@ -26,6 +27,7 @@ interface NationalRiskMapProps {
   selectedLocation: LocationId;
   onLocationChange: (location: LocationId) => void;
   expanded?: boolean;
+  mapOverlay?: ReactNode;
 }
 
 const baseStyle: StyleSpecification = {
@@ -178,7 +180,7 @@ function fitPakistanExtent(map: MapLibreMap, duration = 0) {
   });
 }
 
-export function NationalRiskMap({ nationalRisk, waterIntelligence, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false }: NationalRiskMapProps) {
+export function NationalRiskMap({ nationalRisk, waterIntelligence, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false, mapOverlay }: NationalRiskMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const nationalRiskRef = useRef(nationalRisk);
@@ -379,6 +381,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, incidents, re
       </header>
       <div className="map-workspace">
         <div ref={containerRef} className="national-map" aria-label="Interactive Pakistan district flood risk map" />
+        {mapOverlay && <div className="map-command-overlay">{mapOverlay}</div>}
         <div className="map-layer-control">
           <strong><Layers3 size={14} /> Operational layers</strong>
           {([

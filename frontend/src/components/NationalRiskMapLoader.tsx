@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import type { ReactNode } from "react";
 
 import type { LocationId } from "../config";
 import type { CitizenReport, Incident, NationalRiskCollection, ResourceGroups, WaterIntelligenceCollection } from "../types/api";
@@ -15,6 +16,7 @@ interface NationalRiskMapLoaderProps {
   selectedLocation: LocationId;
   onLocationChange: (location: LocationId) => void;
   expanded?: boolean;
+  mapOverlay?: ReactNode;
 }
 
 export function NationalRiskMapLoader(props: NationalRiskMapLoaderProps) {
