@@ -7,6 +7,8 @@ from app.core.config import get_settings
 from app.core.exceptions import AppError, app_error_handler
 from app.core.logging import configure_logging
 from app.db.init_db import init_db
+from app.services.upstream_forecast_cache_service import upstream_forecast_cache
+from app.services.river_monitoring_service import river_monitoring_cache
 
 configure_logging()
 settings = get_settings()
@@ -30,5 +32,13 @@ app.include_router(api_router)
 
 
 @app.on_event("startup")
-def startup() -> None:
+async def startup() -> None:
     init_db()
+    upstream_forecast_cache.start()
+    river_monitoring_cache.start()
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    await upstream_forecast_cache.stop()
+    await river_monitoring_cache.stop()

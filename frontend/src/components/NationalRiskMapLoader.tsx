@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import type { ReactNode } from "react";
 
 import type { LocationId } from "../config";
-import type { CitizenReport, Incident, NationalRiskCollection, ResourceGroups, WaterIntelligenceCollection } from "../types/api";
+import type { CitizenReport, Incident, NationalRiskCollection, ResourceGroups, RiverResponse, WaterIntelligenceCollection, WeatherResponse } from "../types/api";
 
 
 const LazyNationalRiskMap = lazy(() => import("./NationalRiskMap").then((module) => ({ default: module.NationalRiskMap })));
@@ -10,12 +10,15 @@ const LazyNationalRiskMap = lazy(() => import("./NationalRiskMap").then((module)
 interface NationalRiskMapLoaderProps {
   nationalRisk: NationalRiskCollection | null;
   waterIntelligence: WaterIntelligenceCollection | null;
+  locationWeather: WeatherResponse[];
+  locationRivers: RiverResponse[];
   incidents: Incident[];
   reports: CitizenReport[];
   resources: ResourceGroups;
   selectedLocation: LocationId;
   onLocationChange: (location: LocationId) => void;
   expanded?: boolean;
+  initialRainfallEnabled?: boolean;
   mapOverlay?: ReactNode;
 }
 

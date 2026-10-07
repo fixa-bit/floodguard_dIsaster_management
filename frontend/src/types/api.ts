@@ -33,6 +33,23 @@ export interface RiskResponse {
   data_sources: Record<string, string>;
 }
 
+export interface ModelForecastPoint {
+  id: number;
+  model_case: string;
+  target_id: string;
+  target_name: string;
+  issued_at: string;
+  valid_at: string;
+  horizon_hours: number;
+  value: number;
+  value_unit: string;
+  probability: number | null;
+  risk_class: string;
+  model_name: string;
+  point_metadata: Record<string, unknown>;
+  created_at: string;
+}
+
 export interface WeatherResponse {
   location_id: string;
   location_name: string;
@@ -59,6 +76,10 @@ export interface RiverResponse {
   river_name: string;
   station_name: string;
   river_level_m: number | null;
+  observed_level_value: number | null;
+  observed_level_unit: string | null;
+  official_recording_time: string | null;
+  data_note: string | null;
   normal_level_m: number | null;
   warning_level_m: number | null;
   danger_level_m: number | null;
@@ -66,6 +87,12 @@ export interface RiverResponse {
   discharge_cumecs: number | null;
   discharge_change_cumecs_per_day: number | null;
   forecast_discharge_next_24h_cumecs: number | null;
+  discharge_mean_cumecs: number | null;
+  discharge_median_cumecs: number | null;
+  discharge_min_cumecs: number | null;
+  discharge_max_cumecs: number | null;
+  discharge_p25_cumecs: number | null;
+  discharge_p75_cumecs: number | null;
   status: string;
 }
 
@@ -89,9 +116,16 @@ export interface CitizenReport {
   longitude: number;
   description: string;
   image_url: string | null;
+  video_url: string | null;
+  image_latitude: number | null;
+  image_longitude: number | null;
   reported_water_depth_cm: number | null;
   source: string;
   verification_status: string;
+  report_status: string;
+  is_important: boolean;
+  important_marked_at: string | null;
+  closed_at: string | null;
   timestamp: string;
 }
 
@@ -218,6 +252,7 @@ export interface WaterIntelligenceProperties {
   location_id?: string;
   scenario?: string;
   details_endpoint?: string;
+  monitoring_station_id?: string | null;
   observed_level_m?: number | null;
   observed_discharge_cumecs?: number | null;
   forecast_discharge_cumecs?: number | null;
@@ -249,4 +284,90 @@ export interface WaterIntelligenceCollection {
     forecast_provider: string;
   };
   features: WaterIntelligenceFeature[];
+}
+
+export interface HydroSeriesPoint {
+  time: string;
+  value: number | null;
+  phase: "past" | "forecast" | string;
+  low?: number | null;
+  high?: number | null;
+}
+
+export interface RainfallPoint {
+  date: string;
+  precipitation_mm: number | null;
+  probability_percent: number | null;
+  phase: "past" | "forecast" | string;
+}
+
+export interface ProviderForecast {
+  provider: string;
+  source: string;
+  status: string;
+  river_id: number | null;
+  generated_at: string | null;
+  current_cumecs: number | null;
+  peak_forecast_cumecs: number | null;
+  peak_forecast_time: string | null;
+  recent_trend_cumecs: number | null;
+  series: HydroSeriesPoint[];
+  retrospective: HydroSeriesPoint[];
+  note: string | null;
+}
+
+export interface FloodTypeSignal {
+  type: string;
+  severity: Severity;
+  probability: number;
+  basis: string;
+  lead_time: string;
+}
+
+export interface UpstreamStationForecast {
+  id: string;
+  name: string;
+  river: string;
+  basin: string;
+  latitude: number;
+  longitude: number;
+  why_selected: string;
+  source_focus: string;
+  facts: string[];
+  providers: ProviderForecast[];
+  rainfall: RainfallPoint[];
+  flood_types: FloodTypeSignal[];
+  stats: Record<string, number | string | null>;
+}
+
+export interface UpstreamForecastResponse {
+  generated_at: string;
+  stations: UpstreamStationForecast[];
+  notes: string[];
+  cached_at: string | null;
+  last_attempt_at: string | null;
+  next_refresh_at: string | null;
+  refresh_interval_minutes: number;
+  refreshing: boolean;
+  refresh_error: string | null;
+}
+
+export interface RiverMonitoringStation extends UpstreamStationForecast {
+  current_discharge_cumecs: number | null;
+  current_source: string;
+  observed_at: string | null;
+  forecast_discharge_cumecs: number | null;
+  forecast_valid_at: string | null;
+  change_24h_cumecs: number | null;
+  change_source: string;
+  flood_category: string;
+  official_forecast_text: string | null;
+  expected_peak_at: string | null;
+  expected_peak_cumecs: number | null;
+  upstream_station_ids: string[];
+}
+
+export interface RiverMonitoringResponse extends Omit<UpstreamForecastResponse, "stations"> {
+  stations: RiverMonitoringStation[];
+  chains: Record<string, string[]>;
 }

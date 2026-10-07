@@ -2,6 +2,7 @@ import { AlertCircle } from "lucide-react";
 
 import type { DashboardData } from "../hooks/useDashboardData";
 import { CommandStatsDeck } from "../components/CommandStatsDeck";
+import { HourlyAnalyticsTicker } from "../components/HourlyAnalyticsTicker";
 import { KpiGrid } from "../components/KpiGrid";
 import { NationalRiskMapLoader } from "../components/NationalRiskMapLoader";
 import type { LocationId } from "../config";
@@ -15,6 +16,8 @@ export function OverviewPage({ data, locationId, onLocationChange, onRefresh }: 
       <NationalRiskMapLoader
         nationalRisk={data.nationalRisk}
         waterIntelligence={data.waterIntelligence}
+        locationWeather={data.locationWeather}
+        locationRivers={data.locationRivers}
         incidents={data.incidents}
         reports={data.reports}
         resources={data.resources}
@@ -24,10 +27,11 @@ export function OverviewPage({ data, locationId, onLocationChange, onRefresh }: 
         mapOverlay={
           <div className="overview-map-hud">
             <KpiGrid summary={data.summary} currentRisk={highestRisk} monitoringInterval={data.risk?.monitoring_interval_minutes ?? data.system?.monitoring_interval_minutes ?? null} />
-            <CommandStatsDeck data={data} />
+            <CommandStatsDeck data={data} onRefresh={onRefresh} />
           </div>
         }
       />
+      <HourlyAnalyticsTicker data={data} />
     </div>
   );
 }

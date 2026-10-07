@@ -25,5 +25,13 @@ class SimulationRiverProvider(RiverProvider):
             danger_level_m=river[3],
             rate_of_rise_m_per_hour=river[4],
             discharge_cumecs=river[5],
+            discharge_change_cumecs_per_day=round(river[4] * 24, 2),
+            forecast_discharge_next_24h_cumecs=round(river[5] * (1 + min(max(river[4], -1), 1) * 0.08), 2),
+            discharge_mean_cumecs=river[5],
+            discharge_median_cumecs=river[5],
+            discharge_min_cumecs=round(river[5] * 0.82, 2),
+            discharge_max_cumecs=round(river[5] * 1.18, 2),
+            discharge_p25_cumecs=round(river[5] * 0.92, 2),
+            discharge_p75_cumecs=round(river[5] * 1.08, 2),
             status=river[6].value,
         )

@@ -11,6 +11,9 @@ class CitizenReportCreate(BaseModel):
     longitude: float
     description: str
     image_url: str | None = None
+    video_url: str | None = None
+    image_latitude: float | None = None
+    image_longitude: float | None = None
     reported_water_depth_cm: float | None = None
     source: str = "citizen"
     timestamp: datetime | None = None
@@ -23,7 +26,14 @@ class CitizenReportResponse(ORMModel):
     longitude: float
     description: str
     image_url: str | None
+    video_url: str | None
+    image_latitude: float | None
+    image_longitude: float | None
     reported_water_depth_cm: float | None
     source: str
     verification_status: str
+    report_status: str
+    is_important: bool
+    important_marked_at: datetime | None
+    closed_at: datetime | None
     timestamp: datetime

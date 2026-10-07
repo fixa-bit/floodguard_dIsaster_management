@@ -1,8 +1,9 @@
-import { Activity, BarChart3, ChevronDown, CloudRain, DatabaseZap, Droplets, RadioTower } from "lucide-react";
+import { BarChart3, ChevronDown, CloudRain, DatabaseZap, Droplets, RadioTower, RefreshCw } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { LOCATIONS } from "../config";
 import type { DashboardData } from "../hooks/useDashboardData";
-import type { DistrictRiskFeature, Severity, WaterIntelligenceFeature } from "../types/api";
+import type { DistrictRiskFeature, RiverResponse, Severity, WaterIntelligenceFeature, WeatherResponse } from "../types/api";
 import { StatusBadge } from "./StatusBadge";
 
 type DeckPanel = "risk" | "rivers" | "weather" | "operations" | "system";
@@ -37,6 +38,23 @@ function formatTime(value: string | null | undefined) {
   if (!value) return "-";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+}
+
+function maxNumber(values: Array<number | null | undefined>) {
+  const numbers = values.filter((value): value is number => value !== null && value !== undefined && !Number.isNaN(value));
+  return numbers.length > 0 ? Math.max(...numbers) : null;
+}
+
+function newestTime(values: Array<string | null | undefined>) {
+  const timestamps = values
+    .map((value) => value ? new Date(value) : null)
+    .filter((date): date is Date => date !== null && !Number.isNaN(date.getTime()))
+    .sort((a, b) => b.getTime() - a.getTime());
+  return timestamps[0]?.toISOString() ?? null;
+}
+
+function keyedByLocation<T extends { location_id: string }>(items: T[]) {
+  return new Map(items.map((item) => [item.location_id, item]));
 }
 
 function metricClass(metric: Metric) {
@@ -75,13 +93,23 @@ function topWaterStations(features: WaterIntelligenceFeature[]) {
     .slice(0, 6);
 }
 
-export function CommandStatsDeck({ data }: { data: DashboardData }) {
+export function CommandStatsDeck({ data, onRefresh }: { data: DashboardData; onRefresh?: () => Promise<unknown> | void }) {
   const [activePanel, setActivePanel] = useState<DeckPanel | null>(null);
   const districts = data.nationalRisk?.features ?? [];
+  const locationWeather = data.locationWeather.length > 0 ? data.locationWeather : (data.weather ? [data.weather] : []);
+  const locationRivers = data.locationRivers.length > 0 ? data.locationRivers : (data.river ? [data.river] : []);
+  const weatherByLocation = useMemo(() => keyedByLocation<WeatherResponse>(locationWeather), [locationWeather]);
+  const riversByLocation = useMemo(() => keyedByLocation<RiverResponse>(locationRivers), [locationRivers]);
   const counts = useMemo(() => severityCounts(districts), [districts]);
   const topDistricts = useMemo(() => topRiskDistricts(districts), [districts]);
   const topStations = useMemo(() => topWaterStations(data.waterIntelligence?.features ?? []), [data.waterIntelligence]);
   const highestRisk = data.summary?.highest_risk_probability ?? data.risk?.flood_probability ?? null;
+  const maxDischarge = maxNumber(locationRivers.map((river) => river.discharge_cumecs));
+  const maxForecastDischarge = maxNumber(locationRivers.map((river) => river.forecast_discharge_next_24h_cumecs));
+  const maxRain24h = maxNumber(locationWeather.map((weather) => weather.rainfall_last_24h_mm));
+  const maxForecastRain24h = maxNumber(locationWeather.map((weather) => weather.forecast_rainfall_next_24h_mm));
+  const weatherUpdatedAt = newestTime(locationWeather.map((weather) => weather.timestamp));
+  const riversUpdatedAt = newestTime(locationRivers.map((river) => river.timestamp));
 
   const riskMetrics: Metric[] = [
     { label: "Highest risk", value: formatPercent(highestRisk), accent: highestRisk && highestRisk >= 70 ? "red" : "green" },
@@ -91,17 +119,17 @@ export function CommandStatsDeck({ data }: { data: DashboardData }) {
   ];
 
   const riverMetrics: Metric[] = [
-    { label: "River station", value: data.river?.station_name ?? "-" },
-    { label: "River level", value: `${formatNumber(data.river?.river_level_m)} m` },
-    { label: "Discharge", value: `${formatNumber(data.river?.discharge_cumecs, 0)} cumecs`, accent: "blue" },
-    { label: "24h forecast", value: `${formatNumber(data.river?.forecast_discharge_next_24h_cumecs, 0)} cumecs` },
+    { label: "Cities reporting", value: `${locationRivers.length}/${LOCATIONS.length}`, accent: "green" },
+    { label: "Max discharge", value: `${formatNumber(maxDischarge, 0)} cumecs`, accent: "blue" },
+    { label: "Max 24h forecast", value: `${formatNumber(maxForecastDischarge, 0)} cumecs` },
+    { label: "Updated", value: formatTime(riversUpdatedAt) },
   ];
 
   const weatherMetrics: Metric[] = [
-    { label: "Rain 24h", value: `${formatNumber(data.weather?.rainfall_last_24h_mm)} mm`, accent: "blue" },
-    { label: "Forecast 24h", value: `${formatNumber(data.weather?.forecast_rainfall_next_24h_mm)} mm`, accent: "amber" },
-    { label: "Soil moisture", value: `${formatNumber(data.weather?.soil_moisture_percent, 0)}%` },
-    { label: "Humidity", value: `${formatNumber(data.weather?.humidity_percent, 0)}%` },
+    { label: "Cities reporting", value: `${locationWeather.length}/${LOCATIONS.length}`, accent: "green" },
+    { label: "Max rain 24h", value: `${formatNumber(maxRain24h)} mm`, accent: "blue" },
+    { label: "Max forecast 24h", value: `${formatNumber(maxForecastRain24h)} mm`, accent: "amber" },
+    { label: "Updated", value: formatTime(weatherUpdatedAt) },
   ];
 
   const operationsMetrics: Metric[] = [
@@ -139,8 +167,8 @@ export function CommandStatsDeck({ data }: { data: DashboardData }) {
 
       <div className="command-stats-snapshot">
         <div><span>National risk</span><strong>{formatPercent(highestRisk)}</strong></div>
-        <div><span>River discharge</span><strong>{formatNumber(data.river?.discharge_cumecs, 0)} cumecs</strong></div>
-        <div><span>Rain forecast</span><strong>{formatNumber(data.weather?.forecast_rainfall_next_24h_mm)} mm</strong></div>
+        <div><span>Max river discharge</span><strong>{formatNumber(maxDischarge, 0)} cumecs</strong></div>
+        <div><span>Max rain forecast</span><strong>{formatNumber(maxForecastRain24h)} mm</strong></div>
         <div><span>Active incidents</span><strong>{formatNumber(data.summary?.active_incidents ?? data.incidents.length, 0)}</strong></div>
         <div><span>Mode</span><strong>{data.system?.data_mode ?? "-"}</strong></div>
       </div>
@@ -179,19 +207,49 @@ export function CommandStatsDeck({ data }: { data: DashboardData }) {
 
       {activePanel === "rivers" && (
         <div className="command-stats-panel">
+          <div className="command-panel-head">
+            <div><strong>River Water Telemetry</strong><span>Official FFD observations are used where available; GloFAS remains fallback/forecast context.</span></div>
+            {onRefresh && <button className="command-panel-refresh" onClick={() => void onRefresh()} type="button"><RefreshCw size={13} /> Refresh</button>}
+          </div>
           <CommandMetrics metrics={activeMetrics} />
-          <div className="command-panel-grid">
-            <div className="command-river-levels">
-              <div><span>Normal</span><strong>{formatNumber(data.river?.normal_level_m)} m</strong></div>
-              <div><span>Warning</span><strong>{formatNumber(data.river?.warning_level_m)} m</strong></div>
-              <div><span>Danger</span><strong>{formatNumber(data.river?.danger_level_m)} m</strong></div>
-              <div><span>Rate of rise</span><strong>{formatNumber(data.river?.rate_of_rise_m_per_hour)} m/hr</strong></div>
+          <div className="command-panel-grid command-panel-grid-wide">
+            <div className="command-table-wrap">
+              <table className="data-table command-data-table command-location-table">
+                <thead><tr><th>River</th><th>Reach / station</th><th>Source</th><th>Fetched time</th><th>Observed level</th><th>Discharge</th><th>24h forecast</th><th>Mean</th><th>Median</th><th>Min / max</th><th>P25 / P75</th><th>Daily change</th><th>Status</th></tr></thead>
+                <tbody>
+                  {LOCATIONS.map((location) => {
+                    const river = riversByLocation.get(location.id);
+                    const level = river?.observed_level_value != null
+                      ? `${formatNumber(river.observed_level_value, 2)} ${river.observed_level_unit ?? ""}`.trim()
+                      : river?.river_level_m != null
+                        ? `${formatNumber(river.river_level_m, 2)} m`
+                        : "-";
+                    return (
+                      <tr key={location.id}>
+                        <td><strong>{river?.river_name ?? location.river}</strong><small>{location.region}</small></td>
+                        <td>{river ? <><strong>{river.station_name}</strong><small>{river.location_name}</small></> : location.name}</td>
+                        <td>{river?.source ?? "-"}</td>
+                        <td>{river?.official_recording_time ?? formatTime(river?.timestamp)}</td>
+                        <td>{level}</td>
+                        <td>{formatNumber(river?.discharge_cumecs, 0)} cumecs</td>
+                        <td>{formatNumber(river?.forecast_discharge_next_24h_cumecs, 0)} cumecs</td>
+                        <td>{formatNumber(river?.discharge_mean_cumecs, 0)} cumecs</td>
+                        <td>{formatNumber(river?.discharge_median_cumecs, 0)} cumecs</td>
+                        <td>{formatNumber(river?.discharge_min_cumecs, 0)} / {formatNumber(river?.discharge_max_cumecs, 0)}</td>
+                        <td>{formatNumber(river?.discharge_p25_cumecs, 0)} / {formatNumber(river?.discharge_p75_cumecs, 0)}</td>
+                        <td>{formatNumber(river?.discharge_change_cumecs_per_day, 0)} cumecs/day</td>
+                        <td>{river?.status ? <StatusBadge value={river.status} subtle /> : "-"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
             <div className="command-table-wrap">
               <table className="data-table command-data-table">
-                <thead><tr><th>Station / Feature</th><th>System</th><th>Class</th><th>Status</th><th>Forecast</th></tr></thead>
+                <thead><tr><th>Water feature</th><th>System</th><th>Class</th><th>Status</th><th>Forecast</th></tr></thead>
                 <tbody>
-                  {topStations.map((feature) => (
+                  {topStations.slice(0, 4).map((feature) => (
                     <tr key={feature.id}>
                       <td><strong>{feature.properties.name}</strong><small>{feature.properties.feature_kind}</small></td>
                       <td>{feature.properties.water_system}</td>
@@ -210,20 +268,36 @@ export function CommandStatsDeck({ data }: { data: DashboardData }) {
 
       {activePanel === "weather" && (
         <div className="command-stats-panel">
+          <div className="command-panel-head">
+            <div><strong>Rainfall Telemetry</strong><span>Live Open-Meteo values can be 0 mm when monitored cities are currently dry.</span></div>
+            {onRefresh && <button className="command-panel-refresh" onClick={() => void onRefresh()} type="button"><RefreshCw size={13} /> Refresh</button>}
+          </div>
           <CommandMetrics metrics={activeMetrics} />
-          <div className="command-panel-grid command-panel-grid-compact">
-            <div className="command-weather-stack">
-              <div><span>Current rain</span><strong>{formatNumber(data.weather?.rainfall_current_mm)} mm</strong></div>
-              <div><span>Last 1h</span><strong>{formatNumber(data.weather?.rainfall_last_1h_mm)} mm</strong></div>
-              <div><span>Last 6h</span><strong>{formatNumber(data.weather?.rainfall_last_6h_mm)} mm</strong></div>
-              <div><span>Forecast 6h</span><strong>{formatNumber(data.weather?.forecast_rainfall_next_6h_mm)} mm</strong></div>
-            </div>
-            <div className="command-weather-focus">
-              <Activity size={20} />
-              <span>{data.weather?.location_name ?? "Selected area"}</span>
-              <strong>{formatNumber(data.weather?.temperature_c)} C</strong>
-              <small>Temperature with {formatNumber(data.weather?.humidity_percent, 0)}% humidity</small>
-            </div>
+          <div className="command-table-wrap">
+            <table className="data-table command-data-table command-location-table">
+              <thead><tr><th>City</th><th>Source</th><th>Updated</th><th>Current</th><th>1h</th><th>6h</th><th>24h</th><th>Forecast 6h</th><th>Forecast 24h</th><th>Temp</th><th>Humidity</th><th>Soil</th></tr></thead>
+              <tbody>
+                {LOCATIONS.map((location) => {
+                  const weather = weatherByLocation.get(location.id);
+                  return (
+                    <tr key={location.id}>
+                      <td><strong>{location.name}</strong><small>{location.region} - {location.river}</small></td>
+                      <td>{weather?.source ?? "-"}</td>
+                      <td>{formatTime(weather?.timestamp)}</td>
+                      <td>{formatNumber(weather?.rainfall_current_mm)} mm</td>
+                      <td>{formatNumber(weather?.rainfall_last_1h_mm)} mm</td>
+                      <td>{formatNumber(weather?.rainfall_last_6h_mm)} mm</td>
+                      <td>{formatNumber(weather?.rainfall_last_24h_mm)} mm</td>
+                      <td>{formatNumber(weather?.forecast_rainfall_next_6h_mm)} mm</td>
+                      <td>{formatNumber(weather?.forecast_rainfall_next_24h_mm)} mm</td>
+                      <td>{formatNumber(weather?.temperature_c)} C</td>
+                      <td>{formatNumber(weather?.humidity_percent, 0)}%</td>
+                      <td>{formatNumber(weather?.soil_moisture_percent, 0)}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

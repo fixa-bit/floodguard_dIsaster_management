@@ -7,6 +7,7 @@ from typing import Any
 from app.core.config import get_settings
 from app.core.enums import DataMode, Scenario
 from app.locations import LOCATIONS
+from app.gis.river_stations import STATIONS
 
 
 Feature = dict[str, Any]
@@ -54,6 +55,15 @@ OBSERVED_STATIONS: list[tuple[str, str, str, float, float, str, str]] = [
     ("Sutlej at Sulemanki", "Sutlej", "headworks_gauge", 30.379, 73.885, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
     ("Panjnad Headworks", "Panjnad", "headworks_gauge", 29.347, 71.034, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
 ]
+
+
+MONITORING_IDS = {f"{river} at {name}": station_id for station_id, name, river, *_ in STATIONS}
+OBSERVED_STATIONS = [station for station in OBSERVED_STATIONS if station[0] not in MONITORING_IDS and station[0] != "Panjnad Headworks"]
+OBSERVED_STATIONS.extend(
+    (f"{river} at {name}", river, "river_gauge" if station_id != "TARBELA" else "dam_gauge", lat, lon,
+     "FFD Lahore river-state feed", "Observed river monitoring station with cached FFD readings and GloFAS forecast hydrographs.")
+    for station_id, name, river, lat, lon, _ in STATIONS
+)
 
 
 def _point_feature(feature_id: str, longitude: float, latitude: float, properties: dict[str, Any]) -> Feature:
@@ -117,8 +127,8 @@ class WaterIntelligenceService:
                 "scenario": scenario.value,
                 "methodology": "GIS reference features are separated from observed stations and model forecast points; observed station features do not include fabricated readings.",
                 "source_summary": "WaterwayMap/OpenStreetMap river geometry; FFD Lahore public river-state pages; WAPDA/provincial irrigation station network summaries; Open-Meteo GloFAS for modeled discharge hooks.",
-                "map_notice": "River alignments are schematic unless source geometry is marked official.",
-                "public_live_reading_note": "Official FFD public pages expose river-state summaries, but this app does not currently ingest an authenticated/current observed gauge API.",
+                "map_notice": "",
+                "public_live_reading_note": "FFD observations and GloFAS forecasts for the river monitoring network are available through the cached river monitoring endpoint.",
                 "forecast_provider": get_settings().flood_api_base_url,
             },
             "features": filtered,
@@ -164,6 +174,8 @@ class WaterIntelligenceService:
                     "forecast_discharge_cumecs": None,
                     "source": source,
                     "description": description,
+                    "monitoring_station_id": MONITORING_IDS.get(name),
+                    "details_endpoint": "/api/v1/river/monitoring" if name in MONITORING_IDS else None,
                 },
             )
             for name, river, station_type, latitude, longitude, source, description in OBSERVED_STATIONS

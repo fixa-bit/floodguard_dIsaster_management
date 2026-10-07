@@ -4,6 +4,7 @@ import type {
   CitizenReport,
   DashboardSummary,
   Incident,
+  ModelForecastPoint,
   NationalRiskCollection,
   Resource,
   RiskResponse,
@@ -11,6 +12,8 @@ import type {
   SimulationStatus,
   SystemEvent,
   SystemStatus,
+  UpstreamForecastResponse,
+  RiverMonitoringResponse,
   WaterIntelligenceCollection,
   WeatherResponse,
 } from "../types/api";
@@ -33,16 +36,24 @@ export class ApiError extends Error {
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   let response: Response;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 30000);
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...options,
+      signal: options?.signal ?? controller.signal,
       headers: {
         "Content-Type": "application/json",
         ...options?.headers,
       },
     });
-  } catch {
-    throw new ApiError(0, "BACKEND_UNAVAILABLE", "Cannot reach the FloodGuard backend");
+  } catch (error) {
+    const message = error instanceof DOMException && error.name === "AbortError"
+      ? "FloodGuard backend request timed out"
+      : "Cannot reach the FloodGuard backend";
+    throw new ApiError(0, "BACKEND_UNAVAILABLE", message);
+  } finally {
+    window.clearTimeout(timeout);
   }
 
   if (!response.ok) {
@@ -66,10 +77,33 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 export const api = {
   dashboard: () => apiFetch<DashboardSummary>("/dashboard/summary"),
   risk: (locationId: string) => apiFetch<RiskResponse>(`/flood/risk?location_id=${locationId}`),
+  modelForecasts: () => apiFetch<ModelForecastPoint[]>("/flood/model-forecasts"),
   weather: (locationId: string) => apiFetch<WeatherResponse>(`/weather/current?location_id=${locationId}`),
   river: (locationId: string) => apiFetch<RiverResponse>(`/river/current?location_id=${locationId}`),
+  upstreamForecasts: () => apiFetch<UpstreamForecastResponse>("/river/upstream-forecasts"),
+  refreshUpstreamForecasts: () => apiFetch<UpstreamForecastResponse>("/river/upstream-forecasts/refresh", { method: "POST" }),
+  riverMonitoring: () => apiFetch<RiverMonitoringResponse>("/river/monitoring"),
+  refreshRiverMonitoring: () => apiFetch<RiverMonitoringResponse>("/river/monitoring/refresh", { method: "POST" }),
   incidents: () => apiFetch<Incident[]>("/incidents"),
   citizenReports: () => apiFetch<CitizenReport[]>("/citizen-reports"),
+  createCitizenReport: (payload: {
+    location_id: string;
+    latitude: number;
+    longitude: number;
+    description: string;
+    image_url?: string | null;
+    video_url?: string | null;
+    image_latitude?: number | null;
+    image_longitude?: number | null;
+    reported_water_depth_cm?: number | null;
+    source?: string;
+  }) =>
+    apiFetch<CitizenReport>("/citizen-reports", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  toggleCitizenReportImportant: (reportId: number) => apiFetch<CitizenReport>(`/citizen-reports/${reportId}/important`, { method: "PATCH" }),
+  closeCitizenReport: (reportId: number) => apiFetch<CitizenReport>(`/citizen-reports/${reportId}/close`, { method: "PATCH" }),
   events: () => apiFetch<SystemEvent[]>("/events?limit=40"),
   systemStatus: () => apiFetch<SystemStatus>("/system/status"),
   simulationStatus: () => apiFetch<SimulationStatus>("/simulation/status"),

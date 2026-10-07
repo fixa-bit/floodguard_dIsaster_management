@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from app.schemas.common import ORMModel
+from app.schemas.model_forecast import ModelForecastPointResponse
 
 
 class RiskResponse(ORMModel):

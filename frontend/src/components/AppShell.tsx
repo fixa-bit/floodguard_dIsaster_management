@@ -1,11 +1,13 @@
-import { Activity, AlertTriangle, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical } from "lucide-react";
+import { Activity, AlertTriangle, CloudRain, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-export type ViewId = "overview" | "gis" | "incidents" | "reports" | "activity" | "simulation";
+export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "upstream" | "incidents" | "reports" | "activity" | "simulation";
 
 const navItems = [
   { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
   { id: "gis" as const, label: "GIS Operations", icon: Map },
+  { id: "predictive" as const, label: "Predictive Risk Views", icon: ChartNoAxesCombined },
+  { id: "upstream" as const, label: "Upstream Source Flood Watch", icon: Waves },
   { id: "incidents" as const, label: "Incidents", icon: AlertTriangle },
   { id: "reports" as const, label: "Citizen Reports", icon: MessageSquareText },
   { id: "activity" as const, label: "System Activity", icon: Activity },
@@ -18,7 +20,11 @@ export function AppShell({ activeView, onViewChange, children }: { activeView: V
     <div className="app-shell">
       <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
         <div className="brand-lockup"><div><ShieldCheck size={24} /></div><span><strong>FloodGuard AI</strong><small>NDMA Command Screen</small></span><button className="mobile-close" onClick={() => setOpen(false)}><X size={20} /></button></div>
-        <nav>{navItems.map(({ id, label, icon: Icon }) => <button className={activeView === id ? "active" : ""} key={id} onClick={() => { onViewChange(id); setOpen(false); }}><Icon size={18} /><span>{label}</span></button>)}</nav>
+        <nav aria-label="Main navigation">
+          {navItems.map(({ id, label, icon: Icon }) => <button className={activeView === id ? "active" : ""} aria-current={activeView === id ? "page" : undefined} key={id} onClick={() => { onViewChange(id); setOpen(false); }}><Icon size={18} /><span>{label}</span></button>)}
+          <p className="sidebar-section-label">Feature visualization</p>
+          <button className={activeView === "rainfall" ? "active" : ""} aria-current={activeView === "rainfall" ? "page" : undefined} onClick={() => { onViewChange("rainfall"); setOpen(false); }}><CloudRain size={18} /><span>Rainfall heatmap</span></button>
+        </nav>
         <div className="sidebar-foot"><span>National display mode</span><strong>Pakistan Region</strong></div>
       </aside>
       {open && <button className="sidebar-backdrop" aria-label="Close navigation" onClick={() => setOpen(false)} />}
