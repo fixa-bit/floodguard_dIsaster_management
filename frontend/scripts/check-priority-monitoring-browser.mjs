@@ -14,6 +14,9 @@ try {
   const visible = () => page.locator(".national-map").evaluate((element) => JSON.parse(element.dataset.priorityMonitoringSites ?? "null"));
   await page.waitForFunction(() => Boolean(document.querySelector(".national-map")?.dataset.priorityMonitoringSites), null, { timeout: 90000 });
   assert.equal((await visible()).features.length, 0, "Off by default");
+  const symbols = page.locator(".priority-monitoring-controls svg.monitoring-symbol");
+  assert.equal(await symbols.count(), 4, "Each category has a suggestive icon");
+  assert.deepEqual(await symbols.evaluateAll((elements) => [...new Set(elements.map((element) => element.getAttribute("stroke")))]), ["#e5eeee"], "Category icons use one neutral color");
   for (const category of monitoringCategories) {
     const checkbox = page.getByRole("checkbox", { name: category.label, exact: true });
     await checkbox.check();

@@ -183,7 +183,9 @@ the Mercator latitude range (+/-85.051129) are rejected explicitly.
 The static layer panel includes 28 priority reference points: 15 major
 barrages/headworks, six upstream river stations, three dams/reservoirs and
 four confluence watch locations. Each category has a separate checkbox and
-shape/color, and starts off. Click a point for coordinates, provenance and
+suggestive symbol (gated barrier, monitoring tower, dam wall or merging
+branches), and starts off. All category symbols use one neutral off-white
+color; category priority does not encode live flood risk. Click a point for coordinates, provenance and
 an existing station-observations link where a station ID is available.
 FFD points exactly reuse `app/gis/river_stations.py` coordinates. Chakdara
 uses the published WAPDA gauge reference in the 2017 PWRI/ICHARM study;
@@ -199,6 +201,20 @@ Verification: `node scripts/check-priority-monitoring.mjs` and
 `node scripts/check-priority-monitoring-browser.mjs` in `frontend`.
 
 ### Station hover cards
+
+"Open station details" retains the original readings, hydrograph and upstream
+network in the Station details tab. The Discharge forecast tab opens a
+lazy-loaded, larger chart window with stored FFD observations, separately
+labelled modeled history and up to five forecast days, a selectable legend,
+keyboard/pointer date inspection, a readings table and CSV download.
+Verified discharge thresholds/records render only when their values and
+source are provided in station metadata; missing values remain unavailable.
+The compact window shows seven days of model history and five forecast days;
+date inspection does not carry readings across gaps or outside their period.
+The observed-history request is abortable and cached in memory. Escape or
+the close button closes the station window; Station details returns to the
+original panel. Test with `node scripts/check-station-forecast.mjs` and
+`node scripts/check-station-hover-browser.mjs`.
 
 The map uses one shared MapLibre popup and a memoized `StationInfoCard` in
 an isolated React root. `useStationHover` queries visible native point/reach

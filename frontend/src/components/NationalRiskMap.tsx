@@ -1,4 +1,4 @@
-import { AlertTriangle, Building2, ChevronDown, ChevronUp, CloudRain, Crosshair, Database, Gauge, Layers3, LoaderCircle, MapPinned, MessageSquareText, MousePointer2, RadioTower, Waves, X } from "lucide-react";
+import { AlertTriangle, Building2, ChevronDown, ChevronUp, CloudRain, Crosshair, Dam, Database, Fence, Gauge, Layers3, LoaderCircle, MapPinned, Merge, MessageSquareText, MousePointer2, RadioTower, Waves, X } from "lucide-react";
 import * as maplibregl from "maplibre-gl";
 import type { GeoJSONSource, ImageSource, Map as MapLibreMap, MapLayerMouseEvent, MapMouseEvent, StyleSpecification } from "maplibre-gl";
 import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
@@ -217,25 +217,38 @@ function addIcon(map: MapLibreMap, name: string, draw: (context: CanvasRendering
   map.addImage(name, context.getImageData(0, 0, canvas.width, canvas.height), { pixelRatio: 2 });
 }
 
+function MonitoringSymbol({ category }: { category: MonitoringCategory }) {
+  const Icon = { barrages: Fence, upstream: RadioTower, dams: Dam, confluences: Merge }[category];
+  return <Icon className="monitoring-symbol" size={18} color="#e5eeee" aria-hidden="true" />;
+}
+
 function addWaterIcons(map: MapLibreMap) {
   for (const category of monitoringCategories) addIcon(map, `priority-${category.id}`, (context) => {
-    context.fillStyle = category.color;
-    context.strokeStyle = "#ffffff";
-    context.lineWidth = 3;
-    context.beginPath();
-    if (category.shape === "square") context.rect(5, 5, 22, 22);
-    else {
-      const vertices = category.shape === "triangle" ? [[16, 3], [29, 27], [3, 27]]
-        : category.shape === "diamond" ? [[16, 2], [30, 16], [16, 30], [2, 16]]
-        : [[10, 4], [22, 4], [29, 27], [3, 27]];
-      vertices.forEach(([x, y], index) => index ? context.lineTo(x, y) : context.moveTo(x, y));
-      context.closePath();
+    const path = new Path2D();
+    if (category.shape === "barrier") {
+      path.moveTo(3, 13); path.lineTo(29, 13);
+      path.moveTo(3, 22); path.lineTo(29, 22);
+      for (const x of [7, 16, 25]) { path.moveTo(x, 27); path.lineTo(x, 7); path.lineTo(x + 2, 4); }
+    } else if (category.shape === "tower") {
+      path.moveTo(10, 28); path.lineTo(16, 13); path.lineTo(22, 28);
+      path.moveTo(12, 24); path.lineTo(20, 24);
+      path.moveTo(18, 10); path.arc(16, 10, 2, 0, Math.PI * 2);
+      for (const radius of [6, 10]) {
+        path.moveTo(16 + radius * Math.cos(-0.8), 10 + radius * Math.sin(-0.8)); path.arc(16, 10, radius, -0.8, 0.8);
+        path.moveTo(16 + radius * Math.cos(Math.PI - 0.8), 10 + radius * Math.sin(Math.PI - 0.8)); path.arc(16, 10, radius, Math.PI - 0.8, Math.PI + 0.8);
+      }
+    } else if (category.shape === "dam") {
+      path.moveTo(4, 27); path.lineTo(10, 5); path.lineTo(22, 5); path.lineTo(28, 27); path.closePath();
+      for (const x of [13, 19]) { path.moveTo(x, 10); path.lineTo(x, 23); }
+      path.moveTo(4, 17); path.lineTo(1, 17); path.moveTo(28, 17); path.lineTo(31, 17);
+    } else {
+      path.moveTo(5, 5); path.bezierCurveTo(5, 15, 16, 12, 16, 20);
+      path.moveTo(27, 5); path.bezierCurveTo(27, 15, 16, 12, 16, 20); path.lineTo(16, 28);
+      path.moveTo(11, 23); path.lineTo(16, 28); path.lineTo(21, 23);
     }
-    context.fill(); context.stroke();
-    if (category.shape === "dam") {
-      context.beginPath(); context.moveTo(12, 11); context.lineTo(12, 23);
-      context.moveTo(20, 11); context.lineTo(20, 23); context.stroke();
-    }
+    context.lineCap = "round"; context.lineJoin = "round";
+    context.strokeStyle = "#10282c"; context.lineWidth = 5; context.stroke(path);
+    context.strokeStyle = category.color; context.lineWidth = 2.5; context.stroke(path);
   });
   addIcon(map, "water-dot", (context) => {
     context.fillStyle = "#38bdf8";
@@ -1539,7 +1552,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
                 onChange={(event) => {
                   if (studyActive) setStudyMonitoringHidden((current) => event.target.checked ? current.filter((id) => id !== category.id) : [...current, category.id]);
                   else setMonitoringCategoriesOn((current) => event.target.checked ? [...current, category.id] : current.filter((id) => id !== category.id));
-                }} /><i className={`monitoring-symbol monitoring-${category.shape}`} style={{ backgroundColor: category.color }} aria-hidden="true" />
+                }} /><MonitoringSymbol category={category.id} />
                 <span>{category.label}<small>{category.priority} / {count} points</small></span></label>;
             })}
             <small className="rainfall-source-note">{visibleMonitoringSites.features.length} / {scopedMonitoringSites.features.length} selected</small>
@@ -1617,7 +1630,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         <button className="map-home-button" type="button" title="Show regional Pakistan overview" aria-label="Show regional Pakistan overview" onClick={() => { setPickingMode(false); setCoordinateDetailsPoint(null); setCatchmentId(""); setSelectedCatchment(null); setSelectedFloodHubFeature(null); if (mapRef.current) (rainfallHeatmapEnabled ? fitRainfallExtent : fitPakistanExtent)(mapRef.current, 350); }}><Crosshair size={15} /></button>
         <div className="map-legend">
           {monitoringCategories.filter((category) => enabledMonitoringCategories.includes(category.id) && visibleMonitoringSites.features.some((feature) => feature.properties.category === category.id)).map((category) =>
-            <span key={category.id}><i className={`monitoring-symbol monitoring-${category.shape}`} style={{ backgroundColor: category.color }} />{category.label}</span>)}
+            <span key={category.id}><MonitoringSymbol category={category.id} />{category.label}</span>)}
           {rainfallHeatmapEnabled ? <>
             <strong>Rainfall / {selectedRainfallWindow.label}</strong>
             <span className="rainfall-ramp" aria-label="Rainfall accumulation in millimeters"><span><i />0.1</span><span><i />10</span><span><i />25</span><span><i />50</span><span><i />100+ mm</span></span>

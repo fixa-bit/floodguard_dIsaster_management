@@ -10,12 +10,21 @@ const station = { current_source: "FFD observed", observed_at: new Date(now).toI
 const card = readStationCard(stationCardProperties(feature, station, 60).properties);
 assert.equal(card.kind, "barrage"); assert.equal(card.status, "Rising"); assert.ok(card.dangerMessage.includes("70 cumecs below"));
 assert.equal(stationIsStale(card, now), false); assert.equal(stationIsStale(card, now + 61 * 60000), true);
+assert.equal(card.readings.find((row) => row.label === "Current discharge").source, "FFD observed");
+assert.deepEqual(card.readings.find((row) => row.label === "Water level"), { label: "Water level", value: "Unavailable", source: "Not provided by current feeds" });
+const levelCard = readStationCard(stationCardProperties(feature, { ...station, observed_level_value: 0, observed_level_unit: "ft", level_source: "FFD Lahore observed", level_observed_at: station.observed_at }, 60).properties);
+assert.deepEqual(levelCard.readings.find((row) => row.label === "Water level"), { label: "Water level", value: "0 ft", source: "FFD Lahore observed" });
+const gisLevel = readStationCard(stationCardProperties({ ...feature, properties: { ...feature.properties, observed_level_m: 3.5, level_source: "Gauge telemetry" } }, station, 60).properties);
+assert.equal(gisLevel.readings.find((row) => row.label === "Water level").value, "3.5 m");
+assert.equal(gisLevel.readings.find((row) => row.label === "Water level").source, "Gauge telemetry");
 assert.match(pakistanTime("2026-10-11T10:00:00Z"), /11 Oct 2026.*3:00 pm PKT/i);
 assert.equal(pakistanTime("invalid"), undefined);
 const reference = readStationCard(stationCardProperties({ ...feature, properties: { ...feature.properties, category: "confluences" } }, station, 60).properties);
 assert.equal(reference.kind, "reference"); assert.deepEqual(reference.readings, []); assert.deepEqual(reference.thresholds, []); assert.deepEqual(reference.trend, []);
 const dam = readStationCard(stationCardProperties({ ...feature, properties: { name: "Dam", category: "dams", percent_full: 0, inflow_cumecs: NaN, outflow_cumecs: null } }, undefined, 60).properties);
-assert.deepEqual(dam.readings, [{ label: "Full", value: "0 %" }]);
+assert.deepEqual(dam.readings, [{ label: "Full", value: "0 %" },
+  { label: "Current discharge", value: "Unavailable", source: "Not provided by current feeds" },
+  { label: "Water level", value: "Unavailable", source: "Not provided by current feeds" }]);
 const history = { station_id: "TAUNSA", source: "FFD stored observations", samples: [
   { time: new Date(now - 24 * 3600000).toISOString(), value: 100 }, { time: new Date(now - 3 * 3600000).toISOString(), value: 125 }, { time: station.observed_at, value: 130 },
 ] };

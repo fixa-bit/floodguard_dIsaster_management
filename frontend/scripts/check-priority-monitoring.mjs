@@ -8,6 +8,8 @@ import { clipToCatchment } from "../src/components/studyLayers.ts";
 assert.equal(monitoringSites.features.length, 28);
 assert.equal(new Set(monitoringSites.features.map((feature) => feature.id)).size, 28);
 assert.equal(new Set(monitoringCategories.map((category) => category.shape)).size, 4);
+assert.equal(new Set(monitoringCategories.map((category) => category.color)).size, 1, "Category icons must not encode flood risk with color");
+assert.deepEqual(monitoringCategories.map((category) => category.shape), ["barrier", "tower", "dam", "merge"]);
 assert.deepEqual(monitoringCategories.map(({ id }) => monitoringSites.features.filter((feature) => feature.properties.category === id).length), [15, 6, 3, 4]);
 const stations = JSON.parse(execFileSync("python", ["-c", "import ast,json,sys; tree=ast.parse(open(sys.argv[1]).read()); print(json.dumps(next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='STATIONS' for t in n.targets))))",
   new URL("../../app/gis/river_stations.py", import.meta.url).pathname.replace(/^\/(\w:)/, "$1")], { encoding: "utf8" }));

@@ -2,7 +2,7 @@ import type { Feature } from "geojson";
 import type { RiverMonitoringStation } from "../types/api";
 
 export type StationKind = "gauge" | "barrage" | "dam" | "reference";
-export interface InfoRow { label: string; value: string }
+export interface InfoRow { label: string; value: string; source?: string }
 export interface StationCardData {
   id: string; stationId?: string; kind: StationKind; name: string; longitude: number; latitude: number;
   meta: InfoRow[]; readings: InfoRow[]; thresholds: InfoRow[]; trend: InfoRow[];
@@ -15,6 +15,18 @@ const numeric = (value: unknown): value is number => typeof value === "number" &
 const text = (value: unknown) => typeof value === "string" && value.trim() && !["undefined", "null", "NaN"].includes(value) ? value : undefined;
 const number = (value: unknown, unit: string) => numeric(value) ? `${value.toLocaleString("en-PK", { maximumFractionDigits: 2 })} ${unit}` : undefined;
 const row = (label: string, value?: string): InfoRow[] => value ? [{ label, value }] : [];
+export function stationWaterLevel(station?: RiverMonitoringStation, properties: Record<string, unknown> = {}) {
+  if (numeric(station?.observed_level_value) && text(station?.observed_level_unit)) return {
+    value: number(station.observed_level_value, station.observed_level_unit!)!,
+    source: text(station.level_source) ?? "Source unavailable",
+    recordedAt: text(station.level_observed_at),
+  };
+  if (numeric(properties.observed_level_m)) return {
+    value: number(properties.observed_level_m, "m")!, source: text(properties.level_source) ?? "Source unavailable",
+    recordedAt: text(properties.level_observed_at),
+  };
+  return { value: "Unavailable", source: "Not provided by current feeds", recordedAt: undefined };
+}
 export function pakistanTime(value?: string) {
   if (!value || !Number.isFinite(Date.parse(value))) return undefined;
   return `${new Intl.DateTimeFormat("en-PK", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Karachi" }).format(new Date(value))} PKT`;
@@ -36,6 +48,12 @@ export function stationCardProperties(feature: Feature, station: RiverMonitoring
   const observedAt = text(station?.observed_at) ?? text(p.observed_at);
   // Daily modeled hydrographs are not timestamped gauge observations.
   const recordedAt = observedAt;
+  const level = stationWaterLevel(station, p);
+  const dischargeSource = text(station?.current_source) ?? text(p.discharge_source) ?? "Source unavailable";
+  const dischargeRows: InfoRow[] = [{ label: station && !observed ? "Modeled discharge" : "Current discharge",
+    value: number(current, "cumecs") ?? "Unavailable", source: numeric(current) ? dischargeSource : "Not provided by current feeds" }];
+  const levelRows: InfoRow[] = [{ label: "Water level", value: level.value, source: level.source },
+    ...row("Level recorded at", level.recordedAt !== recordedAt ? pakistanTime(level.recordedAt) : undefined)];
   const change = station?.change_24h_cumecs;
   const category = station?.flood_category ?? p.flood_category;
   const status: StationCardData["status"] = /flood/i.test(category ?? "") ? "Flood-Danger"
@@ -52,8 +70,8 @@ export function stationCardProperties(feature: Feature, station: RiverMonitoring
     readings: kind === "reference" ? [] : kind === "dam" ? [
       ...row("Storage level", number(p.storage_level_m ?? p.observed_level_m, "m")), ...row("Inflow", number(p.inflow_cumecs, "cumecs")),
       ...row("Outflow", number(p.outflow_cumecs, "cumecs")), ...row("Full", number(p.percent_full, "%")),
-      ...row(observed ? "Station discharge" : "Modeled discharge", number(current, "cumecs")), ...row("Recorded at", pakistanTime(recordedAt)),
-    ] : [...row("Water level", number(p.observed_level_m, "m")), ...row(station && !observed ? "Modeled discharge" : "Current discharge", number(current, "cumecs")), ...row("Recorded at", pakistanTime(recordedAt))],
+      ...dischargeRows, ...levelRows, ...row("Recorded at", pakistanTime(recordedAt)),
+    ] : [...dischargeRows, ...levelRows, ...row("Recorded at", pakistanTime(recordedAt))],
     thresholds: kind === "reference" ? [] : [...row("Warning", number(p.warning_discharge_cumecs, "cumecs") ?? number(p.warning_level_m, "m")),
       ...row("Danger", number(p.danger_discharge_cumecs, "cumecs") ?? number(p.danger_level_m, "m")),
       ...row("Highest recorded flood", number(p.highest_recorded_discharge_cumecs, "cumecs") ?? number(p.highest_recorded_level_m, "m")), ...row("Flood record date", pakistanTime(text(p.highest_recorded_at)))],

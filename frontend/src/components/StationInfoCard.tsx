@@ -12,7 +12,7 @@ export const StationInfoCard = memo(function StationInfoCard({ data: original, p
   const stale = stationIsStale(data);
   const path = history ? sparklinePath(history.samples) : undefined;
   const Arrow = data.trendDirection === "up" ? ArrowUp : data.trendDirection === "down" ? ArrowDown : ArrowRight;
-  const table = (rows: InfoRow[], label: string) => rows.length > 0 && <table aria-label={label}><tbody>{rows.map((row) => <tr key={row.label}><th scope="row">{row.label}</th><td>{row.value}</td></tr>)}</tbody></table>;
+  const table = (rows: InfoRow[], label: string) => rows.length > 0 && <table aria-label={label}><tbody>{rows.map((row) => <tr key={row.label}><th scope="row">{row.label}</th><td>{row.value}{row.source && <small className="station-info-source">Source: {row.source}</small>}</td></tr>)}</tbody></table>;
   const metadata = <dl>{data.meta.map((row) => <div key={row.label}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>;
   return <article className="station-info-card" role="dialog" aria-label={`${data.name} station information`} data-station-id={data.stationId ?? data.id} data-pinned={pinned}>
     <header><div><h3>{data.name}</h3><small>{data.latitude.toFixed(5)} N / {data.longitude.toFixed(5)} E</small></div>
@@ -23,7 +23,6 @@ export const StationInfoCard = memo(function StationInfoCard({ data: original, p
         <div className="station-info-status"><span className={`station-status-chip status-${stale ? "unavailable" : data.status.toLowerCase()}`}>{stale ? "Unavailable" : data.status}</span>{stale && <span className="station-stale-badge">stale</span>}</div>
         {stale && <p className="station-no-data">No recent data</p>}
         {table(data.readings.map((row) => stale && /Current|Station discharge/.test(row.label) ? { ...row, label: "Last recorded discharge" } : row), "Station readings")}
-        {data.source && <small className="station-info-source">{data.source}</small>}
         {metadata}
         {table(data.thresholds, "Station thresholds")}
         {data.dangerMessage && <p>{data.dangerMessage}</p>}

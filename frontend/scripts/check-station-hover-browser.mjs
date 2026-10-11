@@ -13,6 +13,8 @@ const stations = monitoringSites.features.filter((feature) => feature.properties
   providers: [], facts: [], rainfall: [], flood_types: [], stats: {}, upstream_station_ids: [],
 }));
 const feed = { stations, chains: {}, refresh_interval_minutes: 60, generated_at: now.toISOString(), refreshing: false };
+Object.assign(stations.find((station) => station.id === "TAUNSA"), { observed_level_value: 12.5, observed_level_unit: "ft", level_source: "FFD Lahore observed", level_observed_at: now.toISOString() });
+stations.find((station) => station.id === "TAUNSA").providers = [{ provider: "GloFAS", source: "Open-Meteo GloFAS", status: "available", series: Array.from({ length: 12 }, (_, index) => ({ time: new Date(now.getTime() + (index - 5) * 86400000).toISOString().slice(0, 10), value: 100 + index * 5, phase: index <= 5 ? "past" : "forecast" })), retrospective: [] }];
 stations.find((station) => station.id === "TARBELA").observed_at = new Date(now.getTime() - 2 * 3600000).toISOString();
 const water = { type: "FeatureCollection", metadata: {}, features: Array.from({ length: 450 }, (_, i) => ({
   type: "Feature", id: `synthetic-${i}`, geometry: { type: "Point", coordinates: [70.88 + (i % 30) * 0.006, 30.55 + Math.floor(i / 30) * 0.006] },
@@ -80,6 +82,10 @@ try {
     if (id === "KABUL_INDUS") { assert.ok((await card.innerText()).includes("Planning reference, not an active monitoring station")); assert.equal(await card.locator("table").count(), 0); }
     if (id === "TARBELA") { assert.ok((await card.innerText()).includes("No recent data")); assert.equal(await card.locator(".station-stale-badge").count(), 1); }
     if (id === "TAUNSA") {
+      const readings = card.getByRole("table", { name: "Station readings", exact: true });
+      assert.ok((await readings.innerText()).includes("12.5 ft"));
+      assert.ok((await readings.innerText()).includes("Source: FFD Lahore observed"));
+      assert.ok((await readings.innerText()).includes("Source: FFD observed"));
       const box = await card.boundingBox(); await page.mouse.move(box.x + box.width / 2, box.y + 30);
       await page.waitForTimeout(300); assert.equal(await card.isVisible(), true, "Moving into card does not flicker");
       await card.getByRole("button", { name: "Pin station card", exact: true }).click();
@@ -92,11 +98,64 @@ try {
       await page.screenshot({ path: "screenshots/station-popup-desktop.png" });
       await card.getByRole("button", { name: "Open station details", exact: true }).click();
       await page.getByRole("complementary", { name: "River station details", exact: true }).waitFor();
+      const inspector = page.getByRole("complementary", { name: "River station details", exact: true });
+      assert.ok((await inspector.innerText()).includes("12.5 ft"));
+      assert.ok((await inspector.innerText()).includes("FFD Lahore observed"));
+      const originalDetails = await inspector.innerText();
+      await inspector.getByRole("tab", { name: "Discharge forecast", exact: true }).click();
+      const forecast = page.getByRole("dialog", { name: "Taunsa Barrage", exact: true });
+      await forecast.waitFor();
+      const compactBox = await forecast.boundingBox();
+      assert.ok(compactBox.width <= 860 && compactBox.height <= 740, "Forecast window stays compact");
+      await forecast.getByText("Loading stored observations...", { exact: true }).waitFor({ state: "hidden" });
+      assert.equal(await forecast.getByRole("tab", { name: "Discharge forecast", exact: true }).getAttribute("aria-selected"), "true");
+      assert.ok((await forecast.innerText()).includes("No verified station threshold"));
+      assert.equal(await forecast.locator(".station-forecast-table tbody tr").count(), 14, "Three observations, six modeled history points and five forecast days");
+      const chart = forecast.getByRole("img", { name: /observed and modeled discharge chart/ });
+      const plotted = await chart.locator('circle[fill="#6baeff"]').last().evaluate((element) => ({ x: Number(element.getAttribute("cx")), y: Number(element.getAttribute("cy")) }));
+      const modelStart = Date.parse(stations.find((station) => station.id === "TAUNSA").providers[0].series[0].time);
+      const modelEnd = modelStart + 10 * 86400000;
+      assert.ok(Math.abs(plotted.x - (now.getTime() - modelStart) / (modelEnd - modelStart) * 900) < .001, "Observed X coordinate matches timestamp");
+      assert.ok(Math.abs(plotted.y - 260 * (1 - 130 / 165)) < .001, "Observed Y coordinate matches discharge and axis scale");
+      const chartBox = await chart.boundingBox();
+      await page.mouse.move(chartBox.x + chartBox.width / 2, chartBox.y + chartBox.height / 2);
+      await forecast.locator(".station-chart-tooltip").waitFor();
+      const oldModelDot = await chart.locator('circle[fill="#a6c9c6"]').first().boundingBox();
+      await page.mouse.move(oldModelDot.x + oldModelDot.width / 2, oldModelDot.y + oldModelDot.height / 2);
+      assert.ok(!(await forecast.locator(".station-chart-tooltip").innerText()).includes("Observed discharge"), "Old model dates must not show unrelated recent observations");
+      const observedDot = await chart.locator('circle[fill="#6baeff"]').last().boundingBox();
+      await page.mouse.move(observedDot.x + observedDot.width / 2, observedDot.y + observedDot.height / 2);
+      assert.ok((await forecast.locator(".station-chart-tooltip").innerText()).includes("Observed discharge"));
+      await forecast.getByRole("checkbox", { name: "Observed discharge", exact: true }).uncheck();
+      await forecast.getByRole("tabpanel").evaluate((element) => { element.scrollTop = element.scrollHeight; });
+      const closeBox = await forecast.getByRole("button", { name: "Close station forecast", exact: true }).boundingBox();
+      assert.ok(closeBox.y >= compactBox.y && closeBox.y < compactBox.y + 100, "Header and close control remain visible while scrolling");
+      await forecast.getByRole("tabpanel").evaluate((element) => { element.scrollTop = 0; });
+      const download = page.waitForEvent("download");
+      await forecast.getByRole("button", { name: "Download discharge readings", exact: true }).click();
+      assert.equal((await download).suggestedFilename(), "TAUNSA-discharge.csv");
+      await page.screenshot({ path: "screenshots/station-forecast-desktop.png" });
+      await forecast.getByRole("tab", { name: "Station details", exact: true }).click();
+      await inspector.waitFor({ state: "visible" });
+      assert.equal(await inspector.innerText(), originalDetails, "Original station details remain intact");
+      await inspector.getByRole("tab", { name: "Discharge forecast", exact: true }).click();
+      await forecast.waitFor();
+      await page.setViewportSize({ width: 390, height: 844 });
+      const modalBox = await forecast.boundingBox();
+      assert.ok(modalBox.x >= 0 && modalBox.x + modalBox.width <= 390);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      await page.screenshot({ path: "screenshots/station-forecast-mobile.png" });
+      await forecast.getByRole("tab", { name: "Station details", exact: true }).click();
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      await inspector.waitFor({ state: "visible" });
       await page.getByRole("button", { name: "Close station details", exact: true }).click();
     } else { await page.mouse.move(1300, 600); await card.waitFor({ state: "hidden" }); }
   }
   await locate("TAUNSA"); await page.getByRole("checkbox", { name: "River monitoring", exact: true }).check();
   await page.waitForFunction(() => JSON.parse(document.querySelector(".national-map").dataset.monitoringStations ?? "[]").length > 400);
+  await page.mouse.move(50, 400);
+  await card.waitFor({ state: "hidden" });
+  await page.waitForTimeout(200);
   const beforeSweep = await page.locator(".national-map").evaluate((el) => ({ q: Number(el.dataset.stationHoverQueries ?? 0), r: Number(el.dataset.stationCardRenders ?? 0), updates: el.dataset.sourceUpdates }));
   const beforeRequests = historyCalls;
   await page.locator(".maplibregl-canvas").evaluate((canvas) => {

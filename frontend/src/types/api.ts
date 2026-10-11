@@ -355,6 +355,10 @@ export interface UpstreamForecastResponse {
 }
 
 export interface RiverMonitoringStation extends UpstreamStationForecast {
+  observed_level_value?: number | null;
+  observed_level_unit?: string | null;
+  level_source?: string | null;
+  level_observed_at?: string | null;
   current_discharge_cumecs: number | null;
   current_source: string;
   observed_at: string | null;

@@ -24,6 +24,17 @@ def test_complete_network_and_shared_panjnad():
     assert len({feature["properties"]["monitoring_station_id"] for feature in markers}) == 22
 
 
+def test_ffd_station_name_aliases():
+    mangla = {"name": "Mangla Dam", "level": "1201.650"}
+    rasul = {"name": "New Rasul", "discharge": "7,990"}
+    observations = {"Mangla Dam": mangla, "New Rasul": rasul}
+    assert RiverMonitoringService._observation_for("Mangla", observations) is mangla
+    assert RiverMonitoringService._observation_for("Rasul", observations) is rasul
+    assert RiverMonitoringService._observation_for("Taunsa", observations) is None
+    old_name = {"name": "Mangla", "level": "1200"}
+    assert RiverMonitoringService._observation_for("Mangla", {**observations, "Mangla": old_name}) is old_name
+
+
 @pytest.mark.asyncio
 async def test_batch_normalization_observed_fallback_and_peak():
     service = RiverMonitoringService()
@@ -40,10 +51,20 @@ async def test_batch_normalization_observed_fallback_and_peak():
         models = await service._models(client, [definition, definition])
     assert len(calls) == 1
     assert len(models) == 2
-    observed = {"discharge": "10,000", "status": "HIGH", "recording_time": datetime.now(timezone(timedelta(hours=5))).strftime("%d-%b %H PKT")}
+    observed = {"discharge": "10,000", "level": "12.5", "status": "HIGH", "recording_time": datetime.now(timezone(timedelta(hours=5))).strftime("%d-%b %H PKT")}
     station = service._station(definition, models[0], observed)
     assert station.current_discharge_cumecs == 283.17
     assert station.current_source == "FFD observed"
+    assert station.observed_level_value == 12.5
+    assert station.observed_level_unit == "ft"
+    assert station.level_source == "FFD Lahore observed"
+    assert station.level_observed_at == station.observed_at
+    level_only = service._station(definition, models[0], {**observed, "discharge": None, "level": "0"})
+    assert level_only.current_source == "GloFAS modeled"
+    assert level_only.observed_level_value == 0
+    assert level_only.level_source == "FFD Lahore observed"
+    for missing_level in [None, "N/A", "NaN", "inf"]:
+        assert service._station(definition, models[0], {**observed, "level": missing_level}).observed_level_value is None
     assert station.change_24h_cumecs == 10
     assert station.change_source == "GloFAS modeled 24h change"
     assert station.forecast_discharge_cumecs == 80
@@ -53,6 +74,8 @@ async def test_batch_normalization_observed_fallback_and_peak():
     assert fallback.current_discharge_cumecs == 60
     assert fallback.current_source == "GloFAS modeled"
     assert fallback.flood_category == "Unavailable"
+    assert fallback.observed_level_value is None
+    assert fallback.level_source is None
     recorded_at = datetime.fromisoformat(station.observed_at)
     with SessionLocal() as db:
         db.add(RiverGaugeObservation(station_id="TRIMMU", recorded_at=recorded_at - timedelta(hours=24), discharge_cumecs=200))

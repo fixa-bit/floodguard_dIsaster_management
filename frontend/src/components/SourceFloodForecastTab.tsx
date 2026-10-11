@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { api, ApiError } from "../services/api";
 import type { HydroSeriesPoint, ProviderForecast, UpstreamForecastResponse, UpstreamStationForecast } from "../types/api";
 import { StatusBadge } from "./StatusBadge";
+import { chartTime } from "./stationForecastData";
+export { chartTime } from "./stationForecastData";
 
 function formatNumber(value: number | null | undefined, digits = 1) {
   if (value === null || value === undefined || Number.isNaN(value)) return "-";
@@ -31,13 +33,7 @@ function errorMessage(error: unknown) {
   return "Upstream forecast providers are temporarily unavailable.";
 }
 
-function chartTime(value: string) {
-  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00Z`
-    : /(?:z|[+-]\d{2}:?\d{2})$/i.test(value) ? value : `${value}Z`;
-  return Date.parse(normalized);
-}
-
-function chartPath(points: HydroSeriesPoint[], startTime: number, endTime: number, maxValue: number, width: number, height: number) {
+export function chartPath(points: HydroSeriesPoint[], startTime: number, endTime: number, maxValue: number, width: number, height: number) {
   let connected = false;
   return points.map((point) => {
     const time = chartTime(point.time);

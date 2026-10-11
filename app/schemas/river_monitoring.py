@@ -5,6 +5,10 @@ class RiverMonitoringStation(UpstreamStationForecast):
     current_discharge_cumecs: float | None = None
     current_source: str
     observed_at: str | None = None
+    observed_level_value: float | None = None
+    observed_level_unit: str | None = None
+    level_source: str | None = None
+    level_observed_at: str | None = None
     forecast_discharge_cumecs: float | None = None
     forecast_valid_at: str | None = None
     change_24h_cumecs: float | None = None

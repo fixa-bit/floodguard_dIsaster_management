@@ -1,4 +1,5 @@
 import asyncio
+import math
 from datetime import datetime, timedelta, timezone
 
 import httpx
@@ -44,7 +45,7 @@ class RiverMonitoringService(UpstreamForecastService):
                 self._observations(), self._models(client, definitions),
             )
         ffd = {row["name"]: row for row in observations}
-        stations = [self._station(definition, model, ffd.get(definition["ffd_name"])) for definition, model in zip(definitions, models)]
+        stations = [self._station(definition, model, self._observation_for(definition["ffd_name"], ffd)) for definition, model in zip(definitions, models)]
         await asyncio.to_thread(self._store_observations, stations)
         return RiverMonitoringResponse(
             generated_at=datetime.now(timezone.utc).isoformat(), stations=stations, chains=RIVER_CHAINS,
@@ -53,10 +54,17 @@ class RiverMonitoringService(UpstreamForecastService):
                    "Peak time is the modeled maximum within the available forecast window, not a confirmed flood arrival time."],
         )
 
+    @staticmethod
+    def _observation_for(name, observations):
+        aliases = {"Mangla": "Mangla Dam", "Rasul": "New Rasul"}
+        return observations.get(name) or observations.get(aliases.get(name))
+
     def _station(self, definition, model, observed) -> RiverMonitoringStation:
         parser = LiveRiverProvider()
         observed_value = parser._parse_cusecs_to_cumecs(observed.get("discharge")) if observed else None
         observed_time = parser._parse_ffd_recording_time(observed.get("recording_time")) if observed and observed_value is not None else None
+        level = parser._parse_number(observed.get("level")) if observed else None
+        level_time = parser._parse_ffd_recording_time(observed.get("recording_time")) if observed and level is not None and math.isfinite(level) else None
         past = [point for point in model.series if point.phase == "past" and point.value is not None]
         future = [point for point in model.series if point.phase == "forecast" and point.value is not None]
         change = round(past[-1].value - past[-2].value, 2) if len(past) > 1 else None
@@ -67,6 +75,10 @@ class RiverMonitoringService(UpstreamForecastService):
             current_discharge_cumecs=observed_value if observed_time else model.current_cumecs,
             current_source="FFD observed" if observed_time else "GloFAS modeled",
             observed_at=observed_time.isoformat() if observed_time else None,
+            observed_level_value=level if level_time else None,
+            observed_level_unit="ft" if level_time else None,
+            level_source="FFD Lahore observed" if level_time else None,
+            level_observed_at=level_time.isoformat() if level_time else None,
             forecast_discharge_cumecs=future[0].value if future else None,
             forecast_valid_at=future[0].time if future else None,
             change_24h_cumecs=change, change_source="GloFAS modeled 24h change",

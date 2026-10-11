@@ -1,10 +1,10 @@
 import type { FeatureCollection, Point } from "geojson";
 
 export const monitoringCategories = [
-  { id: "barrages", label: "Major barrages & headworks", priority: "Critical", color: "#ff526d", shape: "square" },
-  { id: "upstream", label: "Upstream river stations", priority: "High", color: "#ffc857", shape: "triangle" },
-  { id: "dams", label: "Major dams & reservoirs", priority: "High", color: "#38cbea", shape: "dam" },
-  { id: "confluences", label: "Confluence watch locations", priority: "Medium", color: "#d4a2ff", shape: "diamond" },
+  { id: "barrages", label: "Major barrages & headworks", priority: "Critical", color: "#e5eeee", shape: "barrier" },
+  { id: "upstream", label: "Upstream river stations", priority: "High", color: "#e5eeee", shape: "tower" },
+  { id: "dams", label: "Major dams & reservoirs", priority: "High", color: "#e5eeee", shape: "dam" },
+  { id: "confluences", label: "Confluence watch locations", priority: "Medium", color: "#e5eeee", shape: "merge" },
 ] as const;
 export type MonitoringCategory = typeof monitoringCategories[number]["id"];
 export interface MonitoringSite {
