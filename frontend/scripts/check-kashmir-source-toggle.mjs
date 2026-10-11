@@ -1,0 +1,63 @@
+import assert from "node:assert/strict";
+import { mkdir } from "node:fs/promises";
+import { chromium } from "playwright";
+import { mapTestUrl } from "./map-test-url.mjs";
+
+const browser = await chromium.launch({ executablePath: process.env.EDGE_PATH ?? "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe", headless: true });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+const errors = [];
+let downloads = 0;
+page.on("pageerror", (error) => errors.push(error.message));
+page.on("request", (request) => { if (request.url().endsWith(".geojson.gz")) downloads++; });
+const data = () => page.locator(".national-map").evaluate((element) => ({ ...element.dataset }));
+const waitSource = (source, type) => page.waitForFunction(({ source, type }) => {
+  const data = document.querySelector(".national-map")?.dataset;
+  return data?.kashmirBoundarySource === source && JSON.parse(data.kashmirSourceTypes ?? "[]").includes(type);
+}, { source, type }, { timeout: 60000 });
+try {
+  await mkdir("screenshots", { recursive: true });
+  await page.route("**/api/v1/**", (route) => route.fulfill({ status: 503, json: { detail: "Feeds intentionally unavailable for local-boundary test" } }));
+  await page.goto(mapTestUrl(process.env.DASHBOARD_URL ?? "http://localhost:3000"), { waitUntil: "domcontentloaded" });
+  const selector = page.getByRole("combobox", { name: "Kashmir boundary source", exact: true });
+  await selector.waitFor({ timeout: 90000 });
+  assert.equal(await selector.inputValue(), "districts");
+  await waitSource("districts", "district_derived_display_outline");
+  await page.waitForFunction(() => {
+    const data = document.querySelector(".national-map")?.dataset;
+    return data?.districtSourceFeatures === "167" && Number(data.glacierFeatures) > 1000;
+  }, null, { timeout: 90000 });
+  const before = JSON.parse((await data()).sourceUpdates);
+  const downloaded = downloads;
+  await selector.selectOption("previous");
+  await waitSource("previous", "disputed_context");
+  await page.getByText("Previous outline: district edges may differ.", { exact: true }).waitFor();
+  const after = JSON.parse((await data()).sourceUpdates);
+  assert.equal(after["jammu-kashmir-context"], before["jammu-kashmir-context"] + 1);
+  for (const key of Object.keys(before).filter((key) => key !== "jammu-kashmir-context")) assert.equal(after[key], before[key], key);
+  assert.equal(downloads, downloaded, "Source switch must not download any geometry");
+  await page.screenshot({ path: "screenshots/kashmir-source-previous-desktop.png" });
+  const boundary = page.getByRole("checkbox", { name: "Pakistan boundary", exact: true });
+  await boundary.uncheck();
+  assert.equal(await selector.isDisabled(), true);
+  assert.equal(await selector.inputValue(), "previous");
+  await boundary.check();
+  await waitSource("previous", "disputed_context");
+  await selector.selectOption("districts");
+  await waitSource("districts", "district_derived_display_outline");
+  assert.equal(await page.getByText("Previous outline: district edges may differ.", { exact: true }).count(), 0);
+  await page.screenshot({ path: "screenshots/kashmir-source-aligned-desktop.png" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const controls = page.getByRole("button", { name: "Toggle map layers", exact: true });
+  if (await controls.getAttribute("aria-expanded") !== "true") await controls.click();
+  await selector.selectOption("previous");
+  await waitSource("previous", "disputed_context");
+  const bounds = await selector.boundingBox();
+  assert.ok(bounds.x >= 0 && bounds.x + bounds.width <= 390);
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await page.screenshot({ path: "screenshots/kashmir-source-mobile.png" });
+  await selector.selectOption("districts");
+  await waitSource("districts", "district_derived_display_outline");
+  assert.equal(downloads, downloaded);
+  assert.deepEqual(errors, []);
+  console.log("PASS: Kashmir source selector switches rendered geometry only; default, boundary-off retention, zero downloads and mobile controls work.");
+} finally { await browser.close(); }

@@ -129,6 +129,75 @@ Regenerate the context subset with
 `.venv/Scripts/python.exe scripts/fetch_kashmir_districts.py`. Display geography
 does not assign sovereignty or create district risk estimates.
 
+White region outlines are generated from the exact displayed district polygons
+using `.venv/Scripts/python.exe scripts/build_consistent_map_outlines.py`.
+The Kashmir fetch script also regenerates these outlines. Re-run the build script
+whenever the Pakistan district file changes. Source hashes and geometry tests
+detect stale outlines. These derived display boundaries replace the separately
+traced white ADM1/Kashmir outlines and duplicate white reference overlays;
+the cyan LoC remains a separately sourced reference. Rendering simplification
+is disabled for both district borders and white outlines to keep edges aligned
+at close zoom. This improves consistency, not official boundary certification.
+
+The Pakistan boundary option includes a **Kashmir boundary source** selector.
+**District-aligned (2021)** is the default; **Previous outline (Parallax)**
+restores the earlier wider Kashmir context geometry for comparison. Only that
+outline changes: district polygons, risk values and the cyan LoC reference stay
+unchanged. Both outline choices are local assets and require no new download.
+
+The map layer panel includes latitude/longitude inputs and a locate command.
+The adjacent pointer button enables map coordinate selection: click or tap a
+location to fill both inputs and inspect it. Escape or the cancel button exits
+selection without changing the current location.
+Picking a coordinate immediately restores the normal cursor. The deselect cross
+beside the coordinate fields removes the marker and exits selection mode while
+retaining the input values. Closing location details only hides that panel.
+Normal map clicks and the overview button retain the pinned coordinate; visible
+features remain selectable, and the coordinate marker does not intercept clicks.
+Selected coordinates also offer **Enable corresponding layers** in both the
+details panel and coordinate controls. It shows only the district containing the
+pin and its HydroBASINS catchment. Rivers are split at the catchment boundary;
+barrages, gauges and other point features outside it are excluded. Other polygon
+overlays and rainfall coverage are clipped to that same catchment, including its
+holes. The selected district's administrative outline remains intact, while its
+risk shading is clipped to the catchment. The national boundary remains optional
+context. There is no arbitrary nearby-radius fallback when no catchment covers
+the pin. Matching includes hidden source data and refreshes as data arrives or
+the pin moves; unchecking restores full source data and manual layer/filter
+choices without removing the pin. Removing the coordinate also exits study mode.
+This selects a hydrological sub-basin, not a full upstream/downstream network or
+an inferred flood-contribution relationship.
+District clicks use loaded polygon geography, not the visibility of risk shading
+or district labels. Existing screening details remain available with those layers
+off. Without screening coverage, named districts open local coordinate details
+at the current zoom rather than displaying an invented risk value.
+It zooms to a red marker and shows matching loaded district, regional,
+catchment, glacier and screening polygons, plus nearby visible operational
+features. Polygon lookup is independent of layer visibility and updates as
+datasets arrive. This is inspection of local map coverage, not worldwide
+reverse geocoding or a new site-specific risk estimate. Coordinates outside
+the Mercator latitude range (+/-85.051129) are rejected explicitly.
+
+## Priority monitoring sites
+
+The static layer panel includes 28 priority reference points: 15 major
+barrages/headworks, six upstream river stations, three dams/reservoirs and
+four confluence watch locations. Each category has a separate checkbox and
+shape/color, and starts off. Click a point for coordinates, provenance and
+an existing station-observations link where a station ID is available.
+FFD points exactly reuse `app/gis/river_stations.py` coordinates. Chakdara
+uses the published WAPDA gauge reference in the 2017 PWRI/ICHARM study;
+Warsak uses the existing approximate GIS reference. Confluence points are
+approximate reach references, not surveyed instruments or current flood
+alerts. The requested priorities are planning categories, not an official
+NDMA risk classification. References are bundled locally, with no extra
+polling or point-fetch requests. Catchment study mode includes only points
+inside the selected sub-basin, allows categories to be hidden individually,
+and restores normal category selections when study mode is disabled.
+
+Verification: `node scripts/check-priority-monitoring.mjs` and
+`node scripts/check-priority-monitoring-browser.mjs` in `frontend`.
+
 ## Development ML model
 
 The included training generator is synthetic and intended only for development. It is not historical flood data.

@@ -49,6 +49,8 @@ def main():
         "note": "District display clipped to the existing disputed-territory context. Does not assign sovereignty or extend risk-model coverage.",
     }, "features": features}
     (DATA / "kashmir_districts.geojson").write_text(json.dumps(output, separators=(",", ":")) + "\n")
+    from build_consistent_map_outlines import main as build_outlines
+    build_outlines()
     print(f"Saved {len(features)} district polygons: {', '.join(sorted(names))}")
 
 

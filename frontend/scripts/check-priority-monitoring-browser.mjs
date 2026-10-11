@@ -1,0 +1,71 @@
+import assert from "node:assert/strict";
+import { chromium } from "playwright";
+import { mapTestUrl } from "./map-test-url.mjs";
+import { monitoringCategories, monitoringSites } from "../src/components/monitoringSites.ts";
+import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
+import { readFile } from "node:fs/promises";
+
+const browser = await chromium.launch({ executablePath: process.env.EDGE_PATH ?? "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe", headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const errors = []; page.on("pageerror", (error) => errors.push(error.message));
+  await page.route("**/api/v1/**", (route) => route.fulfill({ status: 503, json: { detail: "Unavailable test feed" } }));
+  await page.goto(mapTestUrl(process.env.DASHBOARD_URL ?? "http://localhost:3000"), { waitUntil: "domcontentloaded" });
+  const visible = () => page.locator(".national-map").evaluate((element) => JSON.parse(element.dataset.priorityMonitoringSites ?? "null"));
+  await page.waitForFunction(() => Boolean(document.querySelector(".national-map")?.dataset.priorityMonitoringSites), null, { timeout: 90000 });
+  assert.equal((await visible()).features.length, 0, "Off by default");
+  for (const category of monitoringCategories) {
+    const checkbox = page.getByRole("checkbox", { name: category.label, exact: true });
+    await checkbox.check();
+    await page.waitForFunction((id) => JSON.parse(document.querySelector(".national-map").dataset.priorityMonitoringSites).features.some((feature) => feature.properties.category === id), category.id);
+    assert.ok((await visible()).features.every((feature) => feature.properties.category === category.id));
+    await checkbox.uncheck();
+    await page.waitForFunction(() => JSON.parse(document.querySelector(".national-map").dataset.priorityMonitoringSites).features.length === 0);
+  }
+  for (const category of monitoringCategories) await page.getByRole("checkbox", { name: category.label, exact: true }).check();
+  await page.waitForFunction(() => JSON.parse(document.querySelector(".national-map").dataset.priorityMonitoringSites).features.length === 28);
+  await page.waitForFunction(() => new Set(JSON.parse(document.querySelector(".national-map").dataset.priorityMonitoringTargets ?? "[]").map((point) => point.category)).size === 4);
+  await page.screenshot({ path: "screenshots/priority-monitoring-overview.png" });
+  console.log("Default-off and all four category filters passed.");
+  const locate = async (latitude, longitude) => {
+    await page.getByRole("textbox", { name: "Target latitude", exact: true }).fill(String(latitude));
+    await page.getByRole("textbox", { name: "Target longitude", exact: true }).fill(String(longitude));
+    await page.getByRole("button", { name: "Locate coordinates", exact: true }).click();
+  };
+  await locate(30.518528, 70.836721);
+  await page.getByRole("button", { name: "Close coordinate details", exact: true }).click();
+  await page.waitForFunction(() => Number(document.querySelector(".national-map").dataset.mapZoom) >= 9.9);
+  await page.waitForFunction(() => JSON.parse(document.querySelector(".national-map").dataset.priorityMonitoringTargets ?? "[]").some((point) => point.id === "TAUNSA"));
+  const target = await page.locator(".national-map").evaluate((element) => JSON.parse(element.dataset.priorityMonitoringTargets).find((point) => point.id === "TAUNSA"));
+  const mapBox = await page.locator(".national-map").boundingBox();
+  await page.screenshot({ path: "screenshots/priority-monitoring-marker.png" });
+  await page.mouse.click(mapBox.x + target.x, mapBox.y + target.y);
+  const inspector = page.getByRole("complementary", { name: "Monitoring point details", exact: true });
+  await inspector.waitFor(); assert.ok((await inspector.innerText()).includes("Taunsa Barrage"));
+  console.log("Monitoring marker click passed.");
+  await inspector.getByRole("button", { name: "Station observations" }).click();
+  await page.getByRole("complementary", { name: /River station/ }).waitFor();
+  await locate(33.6844, 73.0479);
+  const coordinates = page.getByRole("complementary", { name: "Coordinate details", exact: true });
+  await coordinates.getByRole("checkbox", { name: "Enable corresponding layers", exact: true }).check();
+  await page.waitForFunction(() => document.querySelector(".national-map").dataset.studyCatchment !== "off");
+  const catchments = JSON.parse(await readFile(new URL("../src/data/pakistan/catchment_areas.geojson", import.meta.url), "utf8"));
+  const catchment = catchments.features.find((feature) => booleanPointInPolygon([73.0479, 33.6844], feature));
+  const expected = monitoringSites.features.filter((feature) => booleanPointInPolygon(feature, catchment));
+  await page.waitForFunction((count) => JSON.parse(document.querySelector(".national-map").dataset.priorityMonitoringSites).features.length === count, expected.length);
+  for (const feature of (await visible()).features) assert.ok(booleanPointInPolygon(feature, catchment));
+  await page.screenshot({ path: "screenshots/priority-monitoring-desktop.png" });
+  await coordinates.getByRole("checkbox", { name: "Enable corresponding layers", exact: true }).uncheck();
+  await page.waitForFunction(() => JSON.parse(document.querySelector(".national-map").dataset.priorityMonitoringSites).features.length === 28);
+  await page.getByRole("button", { name: "Deselect location", exact: true }).click();
+  await page.getByRole("button", { name: "Show regional Pakistan overview", exact: true }).click();
+  await page.waitForFunction(() => Number(document.querySelector(".national-map").dataset.mapZoom) < 7);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForFunction(() => document.querySelector(".map-layer-toggle")?.getAttribute("aria-expanded") === "false");
+  await page.getByRole("button", { name: "Toggle map layers", exact: true }).click();
+  await page.getByRole("checkbox", { name: "Confluence watch locations", exact: true }).uncheck();
+  await page.waitForFunction(() => JSON.parse(document.querySelector(".national-map").dataset.priorityMonitoringSites).features.length === 24);
+  await page.screenshot({ path: "screenshots/priority-monitoring-mobile.png" });
+  assert.deepEqual(errors, []);
+  console.log("Category filters, marker clicks, observation handoff, catchment scoping, restoration and mobile controls passed.");
+} finally { await browser.close(); }

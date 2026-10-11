@@ -16,7 +16,7 @@ try {
   await page.goto(mapTestUrl(process.env.DASHBOARD_URL ?? "http://localhost:3000"), { waitUntil: "domcontentloaded" });
   await waitVisible();
   const paint = JSON.parse(await page.locator(".national-map").getAttribute("data-boundary-paint"));
-  assert.equal(paint.length, 5);
+  assert.equal(paint.length, 3);
   for (const layer of paint) {
     assert.equal(layer.dash, null, `${layer.id} must be solid`);
     assert.deepEqual(layer.width, ["interpolate", ["linear"], ["zoom"], 3, 3, 7, 4, 10, 5]);

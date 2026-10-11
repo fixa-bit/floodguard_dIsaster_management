@@ -20,6 +20,8 @@ const diagnostics = () => page.locator(".national-map").evaluate((element) => ({
 try {
   await mkdir("screenshots", { recursive: true });
   await page.goto(mapTestUrl(process.env.DASHBOARD_URL ?? "http://localhost:3000"), { waitUntil: "domcontentloaded" });
+  await page.getByRole("checkbox", { name: "Boundary alignment test", exact: true }).check({ timeout: 60000 });
+  await page.getByRole("checkbox", { name: "District names & boundaries", exact: true }).check();
   await page.waitForFunction(() => Number(document.querySelector(".national-map")?.dataset.renderedBorderCheckpoints) === 3, null, { timeout: 90000 });
   const checkpoints = JSON.parse((await diagnostics()).borderCheckpoints);
   assert.equal(checkpoints.length, 3);

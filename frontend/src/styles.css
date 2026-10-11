@@ -1044,7 +1044,7 @@ body { color: var(--ink); background: #071114; }
   background: rgba(8, 22, 25, .68);
 }
 .overview-command-canvas .map-home-button {
-  top: 18px;
+  top: 188px;
 }
 .overview-command-canvas .map-water-notice {
   top: 382px;
@@ -1983,6 +1983,35 @@ body { color: var(--ink); background: #071114; }
 .river-station-inspector footer button { display: flex; align-items: center; gap: 6px; min-height: 32px; padding: 5px 8px; color: #dffefa; background: #123330; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 11px; }
 .map-layer-control .river-network-select { display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 4px; margin-top: 7px; }
 .river-network-select select { min-width: 0; width: 100%; padding: 4px; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }
+.map-layer-control .kashmir-boundary-source { display: grid; gap: 4px; margin: 2px 0 8px; }
+.kashmir-boundary-source select { min-width: 0; width: 100%; min-height: 28px; padding: 4px; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }
+.kashmir-boundary-source select:disabled { opacity: .45; }
+.coordinate-search { display: grid; gap: 5px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(125, 232, 219, .18); }
+.coordinate-search-heading { display: flex; align-items: center; justify-content: space-between; min-height: 28px; }
+.coordinate-search-heading button { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; color: #50f5d0; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; }
+.coordinate-inputs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 28px 28px; gap: 4px; align-items: end; }
+.map-layer-control .coordinate-inputs label { display: grid; gap: 4px; min-width: 0; }
+.map-layer-control .coordinate-inputs input { width: 100%; min-width: 0; height: 28px; padding: 4px; margin: 0; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }
+.coordinate-inputs button { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; color: #50f5d0; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; }
+.coordinate-inputs button[aria-pressed="true"] { color: #082626; background: #50f5d0; }
+.coordinate-picking canvas { cursor: crosshair !important; }
+.coordinate-pick-status { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 10px; color: #50f5d0; }
+.coordinate-pick-status span { display: flex; align-items: center; gap: 4px; font-size: 10px; }
+.coordinate-pick-status button { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; padding: 0; color: #50f5d0; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; }
+.coordinate-error { color: #fda4af; font-size: 11px; overflow-wrap: anywhere; }
+.coordinate-study-toggle, .map-layer-control .coordinate-study-toggle { display: flex; align-items: center; gap: 6px; margin: 8px 0 0; font-size: 11px; color: #dffefa; }
+.coordinate-study-toggle input, .map-layer-control .coordinate-study-toggle input { flex-shrink: 0; width: 14px; height: 14px; margin: 0; accent-color: #00bfa5; }
+.coordinate-study-status { color: #a6c1c1; font-size: 10px; overflow-wrap: anywhere; }
+.coordinate-inspector { max-height: calc(100% - 300px); overflow-y: auto; }
+.coordinate-inspector h3 { padding-right: 12px; font-size: 14px; overflow-wrap: anywhere; }
+.coordinate-inspector small { color: #a6c1c1; }
+.coordinate-feature { padding-top: 10px; margin-top: 10px; border-top: 1px solid rgba(125, 232, 219, .2); }
+.coordinate-feature > span { color: #a6c1c1; font-size: 10px; }
+.coordinate-feature h4 { margin: 3px 0 5px; color: #ffffff; font-size: 13px; overflow-wrap: anywhere; }
+.coordinate-feature dd { overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .overview-command-canvas .coordinate-inspector, .coordinate-inspector { top: auto; right: 8px; bottom: 96px; left: 8px; width: auto; max-height: 250px; }
+}
 .water-quantity-control { display: grid; gap: 5px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(125, 232, 219, .18); }
 .map-layer-toggle { display: flex; width: 100%; min-height: 28px; align-items: center; gap: 6px; padding: 0; color: #dffefa; background: transparent; border: 0; font-size: 11px; font-weight: 700; }
 .map-layer-toggle > svg:last-child { margin-left: auto; }
@@ -2034,6 +2063,7 @@ body { color: var(--ink); background: #071114; }
   .overview-map-hud .command-stats-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .overview-map-hud .command-stats-snapshot { display: none; }
   .overview-command-canvas .map-layer-control { top: 220px; max-height: calc(100% - 390px); }
+  .overview-command-canvas .map-home-button { top: 220px; }
   .overview-command-canvas .map-legend { bottom: 96px; }
   .map-layer-control { max-height: calc(100% - 120px); }
   .flood-multiview {
@@ -2060,3 +2090,13 @@ body { color: var(--ink); background: #071114; }
     min-height: 42px;
   }
 }
+.priority-monitoring-controls { border: 0; border-top: 1px solid #3b5756; padding: 10px 0; margin: 8px 0; min-width: 0; }
+.priority-monitoring-controls legend { font-size: 12px; font-weight: 700; padding: 0 5px 0 0; }
+.priority-monitoring-controls label { align-items: center; gap: 8px; }
+.priority-monitoring-controls label span { min-width: 0; }
+.priority-monitoring-controls label small { display: block; color: #afc7c7; font-size: 10px; margin-top: 3px; }
+.monitoring-symbol { display: inline-block; width: 13px; height: 13px; flex: 0 0 13px; border: 1px solid white; border-radius: 0 !important; }
+.monitoring-triangle { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.monitoring-dam { clip-path: polygon(25% 0, 75% 0, 100% 100%, 0 100%); }
+.monitoring-diamond { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.district-inspector .priority-station-button { position: static; display: flex; align-items: center; gap: 6px; width: auto; margin-top: 12px; padding: 7px 10px; font-size: 12px; }
