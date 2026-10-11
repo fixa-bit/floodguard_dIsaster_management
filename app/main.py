@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.api.router import api_router
+from app.api.routes.station_hydrograph import router as station_hydrograph_router
 from app.core.config import get_settings
 from app.core.exceptions import AppError, app_error_handler
 from app.core.logging import configure_logging
@@ -29,6 +30,7 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_exception_handler(AppError, app_error_handler)
 app.include_router(api_router)
+app.include_router(station_hydrograph_router, prefix="/api")
 
 
 @app.on_event("startup")

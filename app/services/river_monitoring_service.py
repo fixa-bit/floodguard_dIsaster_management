@@ -8,7 +8,7 @@ from sqlalchemy import delete
 from app.core.config import get_settings
 from app.db.session import SessionLocal
 from app.gis.river_stations import RIVER_CHAINS, STATIONS, upstream_ids
-from app.models.river_gauge_observation import RiverGaugeObservation
+from app.models.river_gauge_observation import RiverGaugeObservation, TypedRiverGaugeObservation
 from app.providers.live.live_river_provider import LiveRiverProvider
 from app.schemas.river_monitoring import RiverMonitoringResponse, RiverMonitoringStation
 from app.services.upstream_forecast_cache_service import UpstreamForecastCacheService
@@ -68,7 +68,15 @@ class RiverMonitoringService(UpstreamForecastService):
         past = [point for point in model.series if point.phase == "past" and point.value is not None]
         future = [point for point in model.series if point.phase == "forecast" and point.value is not None]
         change = round(past[-1].value - past[-2].value, 2) if len(past) > 1 else None
+        gauge_time = parser._parse_ffd_recording_time(observed.get("recording_time")) if observed else None
+        readings = {}
+        for gauge in (observed or {}).get("gauges", []) or []:
+            kind = str(gauge.get("type", "")).upper()
+            value = parser._parse_cusecs_to_cumecs(gauge.get("discharge"))
+            if kind in {"INFLOW", "OUTFLOW"} and value is not None and math.isfinite(value) and value >= 0 and gauge_time:
+                readings[kind] = dict(gauge=kind, value=value, time=gauge_time.isoformat())
         return RiverMonitoringStation(
+            gauge_readings=list(readings.values()),
             **{key: value for key, value in definition.items() if key != "ffd_name"},
             basin=definition["river"], why_selected="River monitoring network", source_focus="FFD observations and GloFAS forecast context",
             facts=[], rainfall=[], flood_types=[], stats={}, providers=[model],
@@ -97,6 +105,15 @@ class RiverMonitoringService(UpstreamForecastService):
     def _store_observations(stations):
         with SessionLocal() as db:
             for station in stations:
+                for reading in station.gauge_readings:
+                    key = (station.id, reading.gauge, datetime.fromisoformat(reading.time).astimezone(timezone.utc))
+                    row = db.get(TypedRiverGaugeObservation, key)
+                    if row is None:
+                        db.add(TypedRiverGaugeObservation(station_id=key[0], gauge=key[1], recorded_at=key[2],
+                                                         discharge_cumecs=reading.value, source=reading.source))
+                    else:
+                        row.discharge_cumecs = reading.value
+                        row.source = reading.source
                 if not station.observed_at:
                     continue
                 recorded_at = datetime.fromisoformat(station.observed_at)
@@ -107,6 +124,7 @@ class RiverMonitoringService(UpstreamForecastService):
                 if db.get(RiverGaugeObservation, (station.id, recorded_at)) is None:
                     db.add(RiverGaugeObservation(station_id=station.id, recorded_at=recorded_at, discharge_cumecs=station.current_discharge_cumecs))
             db.execute(delete(RiverGaugeObservation).where(RiverGaugeObservation.recorded_at < datetime.now(timezone.utc) - timedelta(days=30)).execution_options(synchronize_session=False))
+            db.execute(delete(TypedRiverGaugeObservation).where(TypedRiverGaugeObservation.recorded_at < datetime.now(timezone.utc) - timedelta(days=30)).execution_options(synchronize_session=False))
             db.commit()
 
 

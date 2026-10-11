@@ -1,0 +1,13 @@
+{
+  "_todo": "TODO: verify GloFAS river cells and populate only official FFD/WAPDA thresholds and highest recorded flows. All flow config values are cusecs; dates must be ISO 8601.",
+  "stations": [
+    {"station_id":"TARBELA","name":"Tarbela","river":"Indus","lat":34.1059,"lon":72.7338,"glofas_lat":34.1059,"glofas_lon":72.7338,"thresholds":{"low":null,"medium":null,"high":null,"veryHigh":null,"exceptional":null},"highestRecorded":{"value":null,"date":null}},
+    {"station_id":"MANGLA","name":"Mangla","river":"Jhelum","lat":33.142,"lon":73.645,"glofas_lat":33.142,"glofas_lon":73.645,"thresholds":{"low":null,"medium":null,"high":null,"veryHigh":null,"exceptional":null},"highestRecorded":{"value":null,"date":null}},
+    {"station_id":"KALABAGH","name":"Kalabagh","river":"Indus","lat":32.9187,"lon":71.5219,"glofas_lat":32.9187,"glofas_lon":71.5219,"thresholds":{"low":null,"medium":null,"high":null,"veryHigh":null,"exceptional":null},"highestRecorded":{"value":null,"date":null}},
+    {"station_id":"TAUNSA","name":"Taunsa","river":"Indus","lat":30.518528,"lon":70.836721,"glofas_lat":30.518528,"glofas_lon":70.836721,"thresholds":{"low":null,"medium":null,"high":null,"veryHigh":null,"exceptional":null},"highestRecorded":{"value":null,"date":null}},
+    {"station_id":"GUDDU","name":"Guddu","river":"Indus","lat":28.4201,"lon":69.7114,"glofas_lat":28.4201,"glofas_lon":69.7114,"thresholds":{"low":null,"medium":null,"high":null,"veryHigh":null,"exceptional":null},"highestRecorded":{"value":null,"date":null}},
+    {"station_id":"SUKKUR","name":"Sukkur","river":"Indus","lat":27.679,"lon":68.8462,"glofas_lat":27.679,"glofas_lon":68.8462,"thresholds":{"low":null,"medium":null,"high":null,"veryHigh":null,"exceptional":null},"highestRecorded":{"value":null,"date":null}},
+    {"station_id":"NOWSHERA","name":"Nowshera","river":"Kabul","lat":34.015,"lon":71.975,"glofas_lat":34.015,"glofas_lon":71.975,"thresholds":{"low":null,"medium":null,"high":null,"veryHigh":null,"exceptional":null},"highestRecorded":{"value":null,"date":null}},
+    {"station_id":"MARALA","name":"Marala","river":"Chenab","lat":32.660583,"lon":74.41125,"glofas_lat":32.660583,"glofas_lon":74.41125,"thresholds":{"low":null,"medium":null,"high":null,"veryHigh":null,"exceptional":null},"highestRecorded":{"value":null,"date":null}}
+  ]
+}

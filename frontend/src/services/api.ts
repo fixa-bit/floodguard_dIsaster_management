@@ -1,5 +1,8 @@
 import { API_BASE_URL } from "../config";
 import type {
+  ExperimentalHydrograph,
+  GaugeKind,
+  OfficialStationHistory,
   GoogleFloodCollection,
   AutomationContext,
   CitizenReport,
@@ -36,7 +39,7 @@ export class ApiError extends Error {
   }
 }
 
-async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+async function apiFetch<T>(path: string, options?: RequestInit, baseUrl = API_BASE_URL): Promise<T> {
   let response: Response;
   const controller = new AbortController();
   const cancel = () => controller.abort();
@@ -44,7 +47,7 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   if (options?.signal?.aborted) controller.abort();
   const timeout = window.setTimeout(() => controller.abort(), 30000);
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetch(`${baseUrl}${path}`, {
       ...options,
       signal: controller.signal,
       headers: {
@@ -81,6 +84,7 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  experimentalHydrograph: (id: string, days: 5 | 30, signal: AbortSignal) => apiFetch<ExperimentalHydrograph>(`/stations/${encodeURIComponent(id)}/hydrograph?days=${days}`, { signal }, API_BASE_URL.replace(/\/v1\/?$/, "")),
   dashboard: () => apiFetch<DashboardSummary>("/dashboard/summary"),
   risk: (locationId: string) => apiFetch<RiskResponse>(`/flood/risk?location_id=${locationId}`),
   modelForecasts: () => apiFetch<ModelForecastPoint[]>("/flood/model-forecasts"),
@@ -90,6 +94,7 @@ export const api = {
   refreshUpstreamForecasts: () => apiFetch<UpstreamForecastResponse>("/river/upstream-forecasts/refresh", { method: "POST" }),
   riverMonitoring: () => apiFetch<RiverMonitoringResponse>("/river/monitoring"),
   stationHistory: (id: string, signal: AbortSignal) => apiFetch<{ station_id: string; source: string; samples: Array<{ time: string; value: number }> }>(`/river/monitoring/${encodeURIComponent(id)}/history`, { signal }),
+  officialStationHistory: (id: string, gauge: GaugeKind, signal: AbortSignal) => apiFetch<OfficialStationHistory>(`/river/monitoring/${encodeURIComponent(id)}/official-history?gauge=${gauge}`, { signal }),
   refreshRiverMonitoring: () => apiFetch<RiverMonitoringResponse>("/river/monitoring/refresh", { method: "POST" }),
   incidents: () => apiFetch<Incident[]>("/incidents"),
   citizenReports: () => apiFetch<CitizenReport[]>("/citizen-reports"),

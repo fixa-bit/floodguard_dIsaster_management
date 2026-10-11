@@ -1,0 +1,4 @@
+# Install on a cron host with the repository at /opt/floodguard.
+# Set DATABASE_URL in a protected job environment; do not put credentials here.
+CRON_TZ=Asia/Karachi
+0 13 * * * cd /opt/floodguard && .venv/bin/python -m scripts.ingest_station_observations >> /var/log/floodguard-ingestion.log 2>&1

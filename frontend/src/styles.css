@@ -2130,7 +2130,7 @@ body { color: var(--ink); background: #071114; }
 .station-details-tabs button { padding: 10px 12px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #afc7c7; font-size: 12px; }
 .station-details-tabs button[aria-selected="true"] { border-bottom-color: #50f5d0; color: #dffefa; font-weight: 700; }
 .station-forecast-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #0009; padding: 24px; }
-.station-forecast-window { display: flex; flex-direction: column; width: min(860px, 100%); max-height: min(740px, calc(100dvh - 64px)); overflow: hidden; padding: 16px; border: 1px solid #426665; border-radius: 7px; background: #0a2428; color: #dcf0ef; box-shadow: 0 14px 50px #0007; }
+.station-forecast-window { display: flex; flex-direction: column; width: min(860px, 75vw); max-height: min(740px, 75dvh); overflow: hidden; padding: 16px; border: 1px solid #426665; border-radius: 7px; background: #0a2428; color: #dcf0ef; box-shadow: 0 14px 50px #0007; }
 .station-forecast-window > header, .station-forecast-window > .station-details-tabs { flex-shrink: 0; }
 .station-forecast-window > section { overflow-y: auto; min-height: 0; padding-right: 4px; }
 .station-forecast-window > header, .station-forecast-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
@@ -2162,7 +2162,7 @@ body { color: var(--ink); background: #071114; }
 .station-forecast-window footer { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 12px; }
 @media (max-width: 700px) {
   .station-forecast-backdrop { padding: 8px; }
-  .station-forecast-window { max-height: calc(100dvh - 16px); padding: 14px; }
+  .station-forecast-window { padding: 14px; }
   .station-forecast-summary { grid-template-columns: 1fr; gap: 10px; }
   .station-forecast-summary > div { padding-bottom: 8px; border-bottom: 1px solid #355756; }
   .station-forecast-plot { overflow-x: auto; }

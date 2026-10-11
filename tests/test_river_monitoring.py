@@ -7,7 +7,7 @@ from app.core.enums import DataMode, Scenario
 from app.db.session import SessionLocal
 from app.gis.river_stations import RIVER_CHAINS, STATIONS, upstream_ids
 from app.gis.water_intelligence_service import WaterIntelligenceService
-from app.models.river_gauge_observation import RiverGaugeObservation
+from app.models.river_gauge_observation import RiverGaugeObservation, TypedRiverGaugeObservation
 from app.services.river_monitoring_service import RiverMonitoringService
 
 
@@ -52,9 +52,15 @@ async def test_batch_normalization_observed_fallback_and_peak():
     assert len(calls) == 1
     assert len(models) == 2
     observed = {"discharge": "10,000", "level": "12.5", "status": "HIGH", "recording_time": datetime.now(timezone(timedelta(hours=5))).strftime("%d-%b %H PKT")}
+    typed = service._station(definition, models[0], {**observed, "gauges": [
+        {"type": "INFLOW", "discharge": "15,359"}, {"type": "OUTFLOW", "discharge": "1,159"},
+        {"type": "OTHER", "discharge": "999"},
+    ]})
+    assert [(reading.gauge, reading.value) for reading in typed.gauge_readings] == [("INFLOW", 434.92), ("OUTFLOW", 32.82)]
     station = service._station(definition, models[0], observed)
     assert station.current_discharge_cumecs == 283.17
     assert station.current_source == "FFD observed"
+    assert station.gauge_readings == []
     assert station.observed_level_value == 12.5
     assert station.observed_level_unit == "ft"
     assert station.level_source == "FFD Lahore observed"
@@ -84,6 +90,12 @@ async def test_batch_normalization_observed_fallback_and_peak():
     service._store_observations([station])
     assert station.change_24h_cumecs == 83.17
     assert station.change_source == "FFD observed 24h change"
+    service._store_observations([typed])
+    service._store_observations([typed])
+    with SessionLocal() as db:
+        inflow = db.get(TypedRiverGaugeObservation, ("TRIMMU", "INFLOW", recorded_at))
+        outflow = db.get(TypedRiverGaugeObservation, ("TRIMMU", "OUTFLOW", recorded_at))
+        assert inflow.discharge_cumecs == 434.92 and outflow.discharge_cumecs == 32.82
 
 
 @pytest.mark.asyncio

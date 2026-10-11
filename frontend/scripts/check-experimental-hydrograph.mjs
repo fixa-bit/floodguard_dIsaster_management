@@ -1,0 +1,24 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { chartData, CUSECS_PER_CUMEC, hydrographCsv, pktTime } from "../src/components/experimentalHydrographData.ts";
+
+const fixture = JSON.parse(readFileSync(new URL("../../tests/fixtures/hydrograph_mock.json", import.meta.url), "utf8"));
+const raw = chartData(fixture, false);
+assert.equal(raw.offset, 0);
+assert.equal(raw.forecast[0].v, 90000);
+assert.equal(raw.observed.at(-1).v, 83500);
+const aligned = chartData(fixture, true);
+assert.equal(aligned.offset, -6500);
+assert.equal(aligned.forecast[0].v, 83500);
+assert.equal(aligned.forecast[0].p25, 75500);
+assert.equal(fixture.forecast[0].v, 90000, "Alignment never mutates source/cache");
+assert.ok(Math.abs(84200 / CUSECS_PER_CUMEC - 2384.28) < .01);
+assert.ok(pktTime("2026-10-11T01:00:00Z").includes("6:00"));
+assert.equal(chartData({ ...fixture, observed: [] }, true).offset, 0);
+const invalid = chartData({ ...fixture, forecast: [{ t: "bad", v: 10 }, { t: "2026-10-12T00:00:00Z", v: NaN }] }, false);
+assert.equal(invalid.forecast.length, 0);
+assert.ok(hydrographCsv(fixture, true).includes("Forecast (shifted, experimental)"));
+assert.ok(hydrographCsv(fixture, true).includes('"-6500"'));
+assert.ok(!/NaN|undefined|\bnull\b/.test(hydrographCsv(fixture)));
+assert.ok(hydrographCsv(fixture).includes("Highest recorded flow"));
+console.log("PASS: experimental raw/shifted series, uncertainty offsets, cusecs conversion, PKT timestamps and honest CSV export.");

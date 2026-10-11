@@ -1,7 +1,19 @@
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
 from app.schemas.upstream_forecast import UpstreamForecastResponse, UpstreamStationForecast
 
 
+class GaugeReading(BaseModel):
+    gauge: Literal["INFLOW", "OUTFLOW"]
+    value: float
+    time: str
+    source: str = "https://ffd.pmd.gov.pk/river-state?zoom=6"
+
+
 class RiverMonitoringStation(UpstreamStationForecast):
+    gauge_readings: list[GaugeReading] = Field(default_factory=list)
     current_discharge_cumecs: float | None = None
     current_source: str
     observed_at: str | None = None

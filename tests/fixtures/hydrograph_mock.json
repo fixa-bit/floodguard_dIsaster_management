@@ -1,0 +1,11 @@
+{
+  "_fixture": "SYNTHETIC TEST DATA ONLY. Do not ingest these values into production observations.",
+  "station": {"station_id":"TAUNSA","name":"Taunsa","river":"Indus","lat":30.518528,"lon":70.836721,"glofas_lat":30.518528,"glofas_lon":70.836721,"observationBasis":"inflow","modelCell":{"lat":30.525,"lon":70.825},"cellVerified":false},
+  "unit":"cusecs",
+  "observed":[{"t":"2026-10-09T01:00:00Z","v":82000,"source":"SYNTHETIC fixture"},{"t":"2026-10-10T01:00:00Z","v":84200,"source":"SYNTHETIC fixture"},{"t":"2026-10-11T01:00:00Z","v":83500,"source":"SYNTHETIC fixture"}],
+  "forecast":[{"t":"2026-10-12T00:00:00Z","v":90000,"p25":82000,"p75":96000},{"t":"2026-10-13T00:00:00Z","v":94000,"p25":85000,"p75":102000},{"t":"2026-10-14T00:00:00Z","v":97000,"p25":88000,"p75":106000},{"t":"2026-10-15T00:00:00Z","v":98000,"p25":88000,"p75":108000},{"t":"2026-10-16T00:00:00Z","v":96000,"p25":85000,"p75":108000}],
+  "thresholds":{"low":250000,"medium":375000,"high":500000,"veryHigh":650000,"exceptional":800000},
+  "highestRecorded":{"value":960000,"date":"2010-08-01"},
+  "generatedAt":"2026-10-11T07:00:00Z","stale":false,"forecastUnavailable":false,
+  "sources":{"observed":["SYNTHETIC fixture"],"forecast":"SYNTHETIC GloFAS-shaped fixture","forecastUrl":"https://open-meteo.com/en/docs/flood-api"}
+}

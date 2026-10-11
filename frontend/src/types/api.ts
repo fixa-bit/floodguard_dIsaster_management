@@ -354,7 +354,30 @@ export interface UpstreamForecastResponse {
   refresh_error: string | null;
 }
 
+export type GaugeKind = "INFLOW" | "OUTFLOW";
+export interface ExperimentalHydrograph {
+  station: { station_id: string; name: string; river: string; lat: number; lon: number; glofas_lat: number; glofas_lon: number;
+    observationBasis: string; modelCell: { lat: number; lon: number } | null; cellVerified: boolean };
+  unit: "cusecs";
+  observed: Array<{ t: string; v: number; source?: string }>;
+  forecast: Array<{ t: string; v: number; p25: number | null; p75: number | null; min?: number | null; max?: number | null }>;
+  thresholds: Record<"low" | "medium" | "high" | "veryHigh" | "exceptional", number | null>;
+  highestRecorded: { value: number | null; date: string | null };
+  generatedAt: string; stale: boolean; forecastUnavailable: boolean;
+  sources: { observed: string[]; forecast: string; forecastUrl: string };
+}
+export interface OfficialStationHistory {
+  station_id: string; gauge: GaugeKind; source: string; error: string | null;
+  samples: Array<{ time: string; value: number; source: string }>;
+  official_forecast: {
+    gauge: "INFLOW"; text: string; low: number | null; high: number | null;
+    issued_at: string; horizon_hours: number; source: string; bulletin: string;
+    valid_from: string | null; valid_until: string | null;
+  } | null;
+}
+
 export interface RiverMonitoringStation extends UpstreamStationForecast {
+  gauge_readings?: Array<{ gauge: GaugeKind; value: number; time: string; source: string }>;
   observed_level_value?: number | null;
   observed_level_unit?: string | null;
   level_source?: string | null;

@@ -1,0 +1,30 @@
+.experimental-hydrograph h2 { font-size: 17px; line-height: 1.4; overflow-wrap: anywhere; }
+.experimental-hydrograph h2 span { color: #ff7686; font-size: 13px; }
+.experimental-hydrograph .station-details-tabs { flex-wrap: wrap; }
+.experimental-hydrograph button[aria-pressed="true"] { color: #50f5d0; border-bottom: 2px solid #50f5d0; }
+.experimental-topline, .experimental-chart-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.experimental-topline .station-details-tabs, .experimental-chart-toolbar .station-details-tabs { margin: 4px 0; }
+.experimental-provenance { display: grid; gap: 5px; color: #abc6c1; font-size: 11px; overflow-wrap: anywhere; margin: 10px 0; }
+.experimental-provenance a { color: #66e5d2; }
+.experimental-notice { color: #ffc857; font-size: 12px; line-height: 1.5; }
+.experimental-notice button, .experimental-empty button { display: inline-flex; align-items: center; gap: 6px; background: #153c3c; border: 1px solid #426665; border-radius: 4px; color: #e2f1ef; padding: 6px 10px; }
+.experimental-chart-toolbar label, .experimental-align { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.experimental-align { margin: 8px 0; }
+.experimental-chart-surface .station-forecast-plot svg { min-width: 0; width: 100%; height: 230px; }
+.experimental-export { position: relative; }
+.experimental-export > button { display: grid; place-items: center; width: 32px; height: 32px; background: #123638; color: #dcf0ef; border: 1px solid #426665; border-radius: 4px; }
+.experimental-export > div { position: absolute; z-index: 8; right: 0; top: 36px; width: 110px; padding: 4px; border: 1px solid #426665; border-radius: 4px; background: #123638; }
+.experimental-export > div button { width: 100%; display: flex; gap: 8px; padding: 8px; border: 0; color: #e2f1ef; background: transparent; }
+.experimental-data-table table { width: max-content; min-width: 100%; }
+.experimental-data-table th, .experimental-data-table td { white-space: nowrap; }
+.experimental-data-table small { display: block; margin-top: 4px; }
+.experimental-forecast-cell, .experimental-disclaimer { color: #ff7686; }
+.experimental-disclaimer { font-size: 12px; line-height: 1.5; }
+.experimental-skeleton { min-height: 280px; display: grid; align-content: start; gap: 20px; padding: 20px 0; }
+.experimental-skeleton > div { height: 34px; background: #1c3b3b; border-radius: 4px; animation: hydrograph-pulse 1.2s ease-in-out infinite alternate; }
+.experimental-skeleton > div:last-child { height: 180px; }
+.experimental-empty { padding: 40px 0; text-align: center; }
+@keyframes hydrograph-pulse { to { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .experimental-skeleton > div { animation: none; } }
+@media (max-width: 700px) { .experimental-hydrograph { height: calc(100dvh - 16px); } .experimental-hydrograph .station-details-tabs button { padding: 8px; } .experimental-topline { align-items: flex-start; } }
+.experimental-hydrograph { height: min(740px, calc(100dvh - 64px)); }
