@@ -40,10 +40,10 @@ try {
   const mapBox = await page.locator(".national-map").boundingBox();
   await page.screenshot({ path: "screenshots/priority-monitoring-marker.png" });
   await page.mouse.click(mapBox.x + target.x, mapBox.y + target.y);
-  const inspector = page.getByRole("complementary", { name: "Monitoring point details", exact: true });
+  const inspector = page.getByRole("dialog", { name: "Taunsa Barrage station information", exact: true });
   await inspector.waitFor(); assert.ok((await inspector.innerText()).includes("Taunsa Barrage"));
   console.log("Monitoring marker click passed.");
-  await inspector.getByRole("button", { name: "Station observations" }).click();
+  await inspector.getByRole("button", { name: "Open station details" }).click();
   await page.getByRole("complementary", { name: /River station/ }).waitFor();
   await locate(33.6844, 73.0479);
   const coordinates = page.getByRole("complementary", { name: "Coordinate details", exact: true });

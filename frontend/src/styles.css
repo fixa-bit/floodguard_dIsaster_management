@@ -2100,3 +2100,42 @@ body { color: var(--ink); background: #071114; }
 .monitoring-dam { clip-path: polygon(25% 0, 75% 0, 100% 100%, 0 100%); }
 .monitoring-diamond { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
 .district-inspector .priority-station-button { position: static; display: flex; align-items: center; gap: 6px; width: auto; margin-top: 12px; padding: 7px 10px; font-size: 12px; }
+.station-info-popup { z-index: 8; pointer-events: auto; transition: opacity 150ms; }
+.station-info-popup .maplibregl-popup-tip { display: none; }
+.station-info-popup .maplibregl-popup-content { padding: 0; background: transparent; box-shadow: none; }
+.station-info-card { position: relative; display: flex; flex-direction: column; width: 326px; max-width: calc(100vw - 16px); max-height: 380px; border-radius: 7px; border: 1px solid #3b6968; background: #0a2428; color: #dcf0ef; box-shadow: 0 8px 24px #0007; font-size: 12px; line-height: 1.4; }
+.station-info-card header { display: flex; flex: 0 0 auto; align-items: flex-start; gap: 4px; padding: 12px 10px 10px 12px; border-bottom: 1px solid #315352; }
+.station-info-card header > div { flex: 1; min-width: 0; }
+.station-info-card h3 { margin: 0 0 3px; font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
+.station-info-card small { font-size: 10px; color: #acc8c6; }
+.station-info-card button { display: flex; justify-content: center; align-items: center; flex-shrink: 0; width: 28px; height: 28px; padding: 4px; border: 1px solid #3b6261; border-radius: 4px; background: #11383a; color: #dbf5f2; cursor: pointer; }
+.station-info-card button[aria-pressed="true"] { background: #206c61; }
+.station-info-scroll { overflow-y: auto; min-height: 0; padding: 10px 12px 12px; overscroll-behavior: contain; }
+.station-info-card dl { display: grid; gap: 3px; margin: 0 0 10px; }
+.station-info-card dl > div { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 8px; }
+.station-info-card dt { color: #95b9b7; }
+.station-info-card dd { margin: 0; overflow-wrap: anywhere; }
+.station-info-card table { width: 100%; table-layout: fixed; border-collapse: collapse; margin: 8px 0; font-size: 11px; }
+.station-info-card th, .station-info-card td { padding: 6px; border: 1px solid #355756; text-align: left; overflow-wrap: anywhere; }
+.station-info-card th { width: 45%; font-weight: 500; color: #b5d3cf; }
+.station-info-card td { font-weight: 600; }
+.station-info-card tr:nth-child(odd) { background: #123538; }
+.station-info-status { display: flex; gap: 6px; align-items: center; }
+.station-status-chip, .station-stale-badge { display: inline-flex; padding: 2px 7px; border-radius: 3px; border: 1px solid currentColor; font-size: 10px; font-weight: 600; }
+.station-status-chip.status-normal { color: #28d983; }
+.station-status-chip.status-rising { color: #ffc857; }
+.station-status-chip.status-flood-danger { color: #ff4d61; }
+.station-status-chip.status-unavailable, .station-stale-badge { color: #acc2c0; }
+.station-no-data, .station-reference-note { margin: 8px 0; color: #b6cac8; }
+.station-info-source { display: block; margin: 5px 0; }
+.station-trend { display: flex; align-items: center; gap: 5px; margin-top: 8px; }
+.station-sparkline { color: #66e5d2; margin: 10px 0; }
+.station-sparkline svg { display: block; width: 100%; height: 52px; }
+.station-sparkline figcaption { color: #9ebfbb; font-size: 9px; }
+.station-info-card a { display: inline-block; color: #7be8da; font-size: 11px; margin-top: 6px; }
+.station-info-card .station-info-inspect { width: 100%; gap: 6px; margin-top: 8px; font-size: 11px; }
+.station-info-pointer { position: absolute; width: 10px; height: 10px; background: #0a2428; border-right: 1px solid #3b6968; border-bottom: 1px solid #3b6968; transform: rotate(45deg); pointer-events: none; }
+.station-info-pointer[hidden] { display: none; }
+.station-point-focus { position: absolute; left: 8px; top: 8px; z-index: 9; width: 24px; height: 24px; opacity: 0; pointer-events: none; background: #123b3c; color: #fff; border: 2px solid #fff; border-radius: 4px; }
+.station-point-focus:focus-visible { opacity: 1; outline: 2px solid #52e6d0; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .station-info-popup { transition: none; } }

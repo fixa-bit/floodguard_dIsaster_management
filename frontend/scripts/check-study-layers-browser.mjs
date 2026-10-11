@@ -48,6 +48,21 @@ try {
   const controls = page.locator(".map-layer-control");
   const panel = page.getByRole("complementary", { name: "Coordinate details", exact: true });
   const layer = (name) => page.getByRole("checkbox", { name, exact: true });
+  const assertNormalStartup = async () => {
+    assert.equal(await page.getByRole("button", { name: "Select coordinates on map", exact: true }).getAttribute("aria-pressed"), "false");
+    assert.equal(await page.locator(".national-map.coordinate-picking").count(), 0);
+    assert.notEqual(await page.locator(".national-map canvas").evaluate((element) => getComputedStyle(element).cursor), "crosshair");
+    assert.equal(await page.getByRole("img", { name: "Located coordinate", exact: true }).count(), 0);
+    assert.equal(await panel.count(), 0);
+    assert.equal(await page.getByRole("textbox", { name: "Target latitude", exact: true }).inputValue(), "");
+    assert.equal(await page.getByRole("textbox", { name: "Target longitude", exact: true }).inputValue(), "");
+    assert.equal(await page.getByRole("checkbox", { name: "Enable corresponding layers", exact: true }).count(), 0);
+    assert.equal(await layer("Pakistan boundary").isChecked(), true);
+    const mapData = await page.locator(".national-map").evaluate((element) => ({ ...element.dataset }));
+    assert.equal(mapData.locatedCoordinate, undefined);
+    assert.equal(mapData.studyCatchment, "off");
+  };
+  await assertNormalStartup();
   const locate = async (latitude, longitude) => {
     await page.getByRole("textbox", { name: "Target latitude", exact: true }).fill(String(latitude));
     await page.getByRole("textbox", { name: "Target longitude", exact: true }).fill(String(longitude));
@@ -119,6 +134,10 @@ try {
   await page.screenshot({ path: "screenshots/study-layers-mobile.png" });
   await panel.getByRole("checkbox", { name: "Enable corresponding layers", exact: true }).uncheck();
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => document.querySelector(".national-map")?.dataset.districtSourceFeatures === "167", null, { timeout: 90000 });
+  await page.getByRole("button", { name: "Toggle map layers", exact: true }).click();
+  await assertNormalStartup();
   assert.deepEqual(errors, []);
-  console.log("PASS: one catchment/district, clipped crossing river, outside barrages/gauges excluded, catchment rainfall pixels, restored settings, point changes, pin retention and mobile study control.");
+  console.log("PASS: normal desktop/mobile startup and reload without selection or pin; one catchment/district, clipped rivers, scoped rainfall, excluded outside features, restored settings and pin retention.");
 } finally { await browser.close(); }

@@ -198,6 +198,40 @@ and restores normal category selections when study mode is disabled.
 Verification: `node scripts/check-priority-monitoring.mjs` and
 `node scripts/check-priority-monitoring-browser.mjs` in `frontend`.
 
+### Station hover cards
+
+The map uses one shared MapLibre popup and a memoized `StationInfoCard` in
+an isolated React root. `useStationHover` queries visible native point/reach
+layers with a seven-pixel hit tolerance, batches mouse movement with RAF,
+and applies 120 ms hover intent / 150 ms leave delay. Hovering never sets
+React state on the map or fetches details. A small halo source highlights
+the current point. Cards avoid the layer panel, dashboard HUD, legend and
+analytics bar, with fixed responsive width and internal scrolling.
+
+Click pins the card; map clicks and Esc dismiss it. Touch taps pin without
+hover behavior and collapse the layer panel. A single keyboard focus proxy
+cycles through visible points with arrow keys; Enter pins the card. Existing
+full station details remain available from the pinned card.
+
+Compact card fields are prepared in GeoJSON properties when datasets change.
+`/river/monitoring/{station_id}/history` reads at most 48 hours of stored FFD
+observations, without calling external providers. Only pinned cards request
+it; the hook caches results by station ID for the monitoring interval and
+aborts superseded requests. The inline SVG sparkline and exact 3h/24h
+observed changes use those records; modeled changes are labeled separately.
+Missing thresholds, flood records and reservoir metrics are omitted, not
+estimated. Readings older than the feed's monitoring interval are labeled
+stale. Confluences/reaches are planning references with no live-reading table.
+Networks over 300 points use zoom-based filtering (zoom 6+) instead of DOM
+markers. No map or chart dependency was added.
+
+Manual checks: enable priority categories, hover a barrage, upstream station,
+dam and confluence; move into the card; click to pin; sweep quickly across
+points; toggle categories and Basin; press Esc; repeat tap/close on touch.
+Automated checks in `frontend`: `node scripts/check-station-info.mjs` and
+`node scripts/check-station-hover-browser.mjs` (450 native gauge fixture).
+Backend: `.venv/Scripts/python.exe -m pytest tests/test_station_history.py -q`.
+
 ## Development ML model
 
 The included training generator is synthetic and intended only for development. It is not historical flood data.

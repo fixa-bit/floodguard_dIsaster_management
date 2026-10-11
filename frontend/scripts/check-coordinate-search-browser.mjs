@@ -34,6 +34,15 @@ try {
   await panel.getByRole("heading", { name: "Islamabad", exact: true }).waitFor();
   assert.equal(await page.getByRole("checkbox", { name: "District names & boundaries", exact: true }).isChecked(), false);
   assert.equal(await page.getByRole("img", { name: "Located coordinate", exact: true }).count(), 1);
+  const inspectionTarget = await page.getByRole("img", { name: "Located coordinate", exact: true }).boundingBox();
+  await page.getByRole("button", { name: "Deselect location", exact: true }).click();
+  await page.mouse.click(inspectionTarget.x + inspectionTarget.width / 2 + 18, inspectionTarget.y + inspectionTarget.height - 4);
+  await panel.getByRole("heading", { name: "Islamabad", exact: true }).waitFor();
+  assert.equal(await page.getByRole("img", { name: "Located coordinate", exact: true }).count(), 0, "Ordinary inspection must not select coordinates or create a pin");
+  assert.equal(await page.getByRole("button", { name: "Select coordinates on map", exact: true }).getAttribute("aria-pressed"), "false");
+  assert.equal(await page.getByRole("checkbox", { name: "Enable corresponding layers", exact: true }).count(), 0);
+  await submit("33.6844", "73.0479");
+  await ready(33.6844, 73.0479);
   await page.screenshot({ path: "screenshots/coordinate-search-desktop.png" });
   const pick = page.getByRole("button", { name: "Select coordinates on map", exact: true });
   await pick.click();

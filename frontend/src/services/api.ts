@@ -39,11 +39,14 @@ export class ApiError extends Error {
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   let response: Response;
   const controller = new AbortController();
+  const cancel = () => controller.abort();
+  options?.signal?.addEventListener("abort", cancel, { once: true });
+  if (options?.signal?.aborted) controller.abort();
   const timeout = window.setTimeout(() => controller.abort(), 30000);
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...options,
-      signal: options?.signal ?? controller.signal,
+      signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
         ...options?.headers,
@@ -56,6 +59,7 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
     throw new ApiError(0, "BACKEND_UNAVAILABLE", message);
   } finally {
     window.clearTimeout(timeout);
+    options?.signal?.removeEventListener("abort", cancel);
   }
 
   if (!response.ok) {
@@ -85,6 +89,7 @@ export const api = {
   upstreamForecasts: () => apiFetch<UpstreamForecastResponse>("/river/upstream-forecasts"),
   refreshUpstreamForecasts: () => apiFetch<UpstreamForecastResponse>("/river/upstream-forecasts/refresh", { method: "POST" }),
   riverMonitoring: () => apiFetch<RiverMonitoringResponse>("/river/monitoring"),
+  stationHistory: (id: string, signal: AbortSignal) => apiFetch<{ station_id: string; source: string; samples: Array<{ time: string; value: number }> }>(`/river/monitoring/${encodeURIComponent(id)}/history`, { signal }),
   refreshRiverMonitoring: () => apiFetch<RiverMonitoringResponse>("/river/monitoring/refresh", { method: "POST" }),
   incidents: () => apiFetch<Incident[]>("/incidents"),
   citizenReports: () => apiFetch<CitizenReport[]>("/citizen-reports"),

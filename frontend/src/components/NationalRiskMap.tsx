@@ -33,6 +33,8 @@ import { scheduleMapWarmup } from "./mapWarmup";
 import { coordinateMatch, indexCoordinatePolygons, lookupCoordinatePolygons, parseMapCoordinate, type CoordinateMatch, type MapCoordinate } from "./coordinateLookup";
 import { clipToCatchment, correspondingStudyLayers, districtAtCoordinate, type StudyLayer } from "./studyLayers";
 import { monitoringCategories, monitoringSites, type MonitoringCategory } from "./monitoringSites";
+import { stationCardProperties } from "./stationInfo";
+import { useStationHover, type StationInteraction } from "./useStationHover";
 import { CUSECS_PER_CUMEC, flowBands, flowColor, flowInUnit, formatFlow, stationQuantity, waterQuantityOptions, type FlowUnit, type WaterQuantity } from "./waterQuantities";
 
 maplibregl.setWorkerUrl(maplibreWorkerUrl);
@@ -380,6 +382,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const containerRef = useRef<HTMLDivElement>(null);
   const coordinateReadoutRef = useRef<HTMLOutputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const stationInteractionRef = useRef<StationInteraction | null>(null);
   const waterIntelligenceRef = useRef(waterIntelligence);
   const locationChangeRef = useRef(onLocationChange);
   const suppressDistrictFallbackRef = useRef(false);
@@ -407,7 +410,6 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const [requestedLayers, setLayers] = useState({ boundary: true, glaciers: false, borderTest: false, risk: false, districts: false, floodHub: false, catchments: false, water: false, waterForecasts: false, gauges: false, stations: false, incidents: false, reports: false, resources: false });
   const [monitoringCategoriesOn, setMonitoringCategoriesOn] = useState<MonitoringCategory[]>([]);
   const [studyMonitoringHidden, setStudyMonitoringHidden] = useState<MonitoringCategory[]>([]);
-  const [selectedMonitoringSite, setSelectedMonitoringSite] = useState<string | null>(null);
   const [studyEnabled, setStudyEnabled] = useState(false);
   const [studyLayerFlags, setStudyLayerFlags] = useState<Partial<Record<StudyLayer, boolean>>>({});
   const studyActive = studyEnabled && selectedCoordinate !== null;
@@ -584,7 +586,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }
   const selectCatchmentRef = useRef(selectCatchment);
   selectCatchmentRef.current = selectCatchment;
-  const activeCatchment = layers.catchments ? catchmentAreas.features.find((item) => item.properties.basin_id === catchmentId) : undefined;
+  const activeCatchment = catchmentAreas.features.find((item) => item.properties.basin_id === catchmentId);
   const activeCatchmentRef = useRef(activeCatchment);
   activeCatchmentRef.current = activeCatchment;
   const catchmentStations = useMemo(() => (monitoring?.stations ?? []).filter((station) =>
@@ -712,16 +714,42 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const studyScopeRef = useRef({ active: studyActive, catchment: studyCatchment });
   studyScopeRef.current = { active: studyActive, catchment: studyCatchment };
   const scopedMonitoringSites = useMemo(() => studyActive
-    ? clipToCatchment(monitoringSites, studyCatchment) as typeof monitoringSites : monitoringSites, [studyActive, studyCatchment]);
+    ? clipToCatchment(monitoringSites, studyCatchment) as typeof monitoringSites
+    : activeCatchment ? clipToCatchment(monitoringSites, activeCatchment) as typeof monitoringSites : monitoringSites, [studyActive, studyCatchment, activeCatchment]);
   const enabledMonitoringCategories = useMemo(() => studyActive
     ? monitoringCategories.map(({ id }) => id).filter((id) => !studyMonitoringHidden.includes(id))
     : monitoringCategoriesOn, [studyActive, studyMonitoringHidden, monitoringCategoriesOn]);
   const visibleMonitoringSites = useMemo(() => ({ ...scopedMonitoringSites,
     features: scopedMonitoringSites.features.filter((feature) => enabledMonitoringCategories.includes(feature.properties.category)),
   }), [scopedMonitoringSites, enabledMonitoringCategories]);
-  const monitoringSite = visibleMonitoringSites.features.find((feature) => feature.properties.id === selectedMonitoringSite);
   useEffect(() => { if (!studyActive) setStudyMonitoringHidden([]); }, [studyActive]);
-  useEffect(() => { if (!monitoringSite) setSelectedMonitoringSite(null); }, [monitoringSite]);
+  const stationGeographyIndex = useMemo(() => indexCoordinatePolygons([
+    { kind: "District", collection: districtDisplayData, nameKey: "district_name", fields: [["province", "Province"]] },
+    { kind: "Catchment", collection: catchmentAreas, nameKey: "name", fields: [] },
+  ]), [districtDisplayData]);
+  const stationPopupSources = useMemo(() => {
+    const stations = new Map((monitoring?.stations ?? []).map((station) => [station.id, station]));
+    const collections: Record<string, FeatureCollection> = {
+      "priority-monitoring": visibleMonitoringSites,
+      "observed-water-stations": studySources?.["observed-water-stations"] ?? waterData.observedStations,
+      "water-bodies": studySources?.["water-bodies"] ?? waterData.bodies,
+      "water-lines": studySources?.["water-lines"] ?? waterData.lines,
+      "river-status-lines": studySources?.["river-status-lines"] ?? riverStatusLines,
+    };
+    const geographyCache = new Map<string, { basin?: string; province?: string; district?: string }>();
+    return Object.fromEntries(Object.entries(collections).map(([id, collection]) => [id, { ...collection, features: collection.features.map((feature) => {
+      const p = feature.properties ?? {};
+      const point = feature.geometry.type === "Point" ? feature.geometry.coordinates : null;
+      let geography = point ? geographyCache.get(point.join(",")) : undefined;
+      if (point && !geography) {
+        const matches = lookupCoordinatePolygons({ longitude: point[0], latitude: point[1] }, stationGeographyIndex);
+        const district = matches.find((match) => match.kind === "District");
+        geography = { district: district?.name, province: district?.fields[0]?.[1], basin: matches.find((match) => match.kind === "Catchment")?.name };
+        geographyCache.set(point.join(","), geography);
+      }
+      return stationCardProperties(feature, stations.get(p.stationId ?? p.monitoring_station_id), monitoring?.refresh_interval_minutes ?? 60, geography);
+    }) }]));
+  }, [monitoring, visibleMonitoringSites, studySources, waterData, riverStatusLines, stationGeographyIndex]);
 
   useEffect(() => {
     if (!studySources) return;
@@ -746,6 +774,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }, [studySources, studyCatchment, regionalRainfall, locationWeather]);
 
   function setPickingMode(active: boolean) {
+    if (active) stationInteractionRef.current?.close();
     coordinatePickingRef.current = active;
     if (!active && mapRef.current) mapRef.current.getCanvas().style.cursor = "";
     setCoordinatePicking(active);
@@ -755,6 +784,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }
 
   function selectCoordinate(point: MapCoordinate, navigate = true) {
+    stationInteractionRef.current?.close();
     coordinateNavigationRef.current = navigate;
     setPickingMode(false);
     setSelectedDistrict(null); setSelectedGlacier(null); setSelectedCatchment(null);
@@ -811,7 +841,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     });
     // A picked click must not also open an overlapping layer's feature inspector.
     const isCoordinateClick = (event: MapMouseEvent) => coordinatePickingRef.current || pickedEventRef.current === event.originalEvent;
-    const isPriorityClick = (event: MapMouseEvent) => Boolean(map.getLayer("priority-monitoring-points")
+    const isPriorityClick = (event: MapMouseEvent) => stationInteractionRef.current?.hit(event) ?? Boolean(map.getLayer("priority-monitoring-points")
       && map.queryRenderedFeatures(event.point, { layers: ["priority-monitoring-points"] }).length);
     let pendingCoordinates: MapMouseEvent | null = null;
     let coordinateFrame: number | null = null;
@@ -1100,15 +1130,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           return;
         }
         if (isCoordinateClick(event)) return;
-        const priorityHit = map.queryRenderedFeatures(event.point, { layers: ["priority-monitoring-points"] })[0];
-        if (priorityHit) {
-          setSelectedMonitoringSite(String(priorityHit.properties.id));
-          setSelectedDistrict(null); setSelectedCatchment(null); setSelectedGlacier(null);
-          setSelectedWaterFeature(null); setSelectedFloodHubFeature(null); setSelectedStationId(null);
-          setCoordinateDetailsPoint(null); suppressDistrictFallbackRef.current = false;
-          return;
-        }
-        setSelectedMonitoringSite(null);
+        if (stationInteractionRef.current?.click(event)) { suppressDistrictFallbackRef.current = false; return; }
         setCoordinateDetailsPoint(null);
         if (!map.queryRenderedFeatures(event.point, { layers: ["glacier-fill"] }).length
           || map.queryRenderedFeatures(event.point, { layers: ["border-test-points", "google-flood-hub-points", "observed-water-stations", "water-bodies", "model-water-points"] }).length) setSelectedGlacier(null);
@@ -1126,10 +1148,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         // Static geography remains inspectable even without a live screening feed.
         if (districtDisplayRef.current.features.some((feature) => booleanPointInPolygon(point, feature as Feature<Polygon | MultiPolygon>))) {
           const inspection = { longitude, latitude: event.lngLat.lat };
-          if (selectedCoordinateRef.current) {
-            setVisibleCoordinateMatches([]);
-            setCoordinateDetailsPoint(inspection);
-          } else selectCoordinateRef.current(inspection, false);
+          setVisibleCoordinateMatches([]);
+          setCoordinateDetailsPoint(inspection);
         }
       });
       for (const layerId of ["water-lines", "river-status-lines", "water-bodies", "observed-water-stations", "water-quantity-labels", "model-water-points"] as const) {
@@ -1278,14 +1298,14 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !selectedCoordinate) return;
+    const inspected = coordinateDetailsPoint ?? selectedCoordinate;
+    if (!map || !inspected) return;
     const layerNames: Record<string, string> = { "water-lines": "Water feature", "river-status-lines": "River status",
       "priority-monitoring-points": "Priority monitoring",
       "water-bodies": "Water body", "observed-water-stations": "River monitoring", "model-water-points": "Model point",
       "google-flood-hub-points": "Google Flood Hub", stations: "Risk location", incidents: "Incident", reports: "Citizen report", resources: "Response resource" };
     const readFeatures = () => {
       if (!map.isStyleLoaded() || map.isMoving()) return;
-      const inspected = coordinateDetailsPoint ?? selectedCoordinate;
       const point = map.project([inspected.longitude, inspected.latitude]);
       const features = map.queryRenderedFeatures([[point.x - 8, point.y - 8], [point.x + 8, point.y + 8]],
         { layers: Object.keys(layerNames).filter((id) => map.getLayer(id)) });
@@ -1299,7 +1319,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       }
       const matches = [...unique.values()];
       setVisibleCoordinateMatches((previous) => JSON.stringify(previous) === JSON.stringify(matches) ? previous : matches);
-      if (containerRef.current) {
+      if (containerRef.current && selectedCoordinate) {
         containerRef.current.dataset.locatedCoordinate = JSON.stringify(selectedCoordinate);
         containerRef.current.dataset.coordinateZoom = String(map.getZoom());
       }
@@ -1314,20 +1334,17 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }, [selectedDistrict, selectedGlacier, selectedCatchment, selectedWaterFeature, selectedFloodHubFeature, selectedStationId]);
 
   useEffect(() => {
-    if (coordinateDetailsPoint || selectedDistrict || selectedGlacier || selectedCatchment || selectedWaterFeature || selectedFloodHubFeature || selectedStationId) setSelectedMonitoringSite(null);
-  }, [coordinateDetailsPoint, selectedDistrict, selectedGlacier, selectedCatchment, selectedWaterFeature, selectedFloodHubFeature, selectedStationId]);
-
-  useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     const update = () => {
       if (!map.getSource("priority-monitoring")) return;
-      updateMapSource(map.getSource("priority-monitoring") as GeoJSONSource, visibleMonitoringSites);
+      updateMapSource(map.getSource("priority-monitoring") as GeoJSONSource, stationPopupSources["priority-monitoring"]);
+      for (const id of ["priority-monitoring-points", "priority-monitoring-labels"]) map.setLayerZoomRange(id, visibleMonitoringSites.features.length > 300 ? 6 : id.endsWith("labels") ? 7 : 0, 24);
       if (mapDiagnosticsEnabled && containerRef.current) containerRef.current.dataset.priorityMonitoringSites = JSON.stringify(visibleMonitoringSites);
     };
     map.on("style.load", update); update();
     return () => { map.off("style.load", update); };
-  }, [visibleMonitoringSites, expanded]);
+  }, [visibleMonitoringSites, stationPopupSources, expanded]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1353,6 +1370,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       "resources": operationalData.resources,
     };
     if (studySources) Object.assign(sourceData, studySources);
+    Object.assign(sourceData, stationPopupSources);
+    for (const id of ["observed-water-stations", "water-quantity-labels"]) map.setLayerZoomRange(id, sourceData["observed-water-stations"].features.length > 300 ? 6 : 0, 24);
+    map.setLayerZoomRange("water-bodies", sourceData["water-bodies"].features.length > 300 ? 6 : 0, 24);
     for (const [id, data] of Object.entries(sourceData)) {
       updateMapSource(map.getSource(id) as GeoJSONSource | undefined, data);
     }
@@ -1382,7 +1402,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     };
     updateSources();
     return () => { map.off("style.load", updateSources); };
-  }, [screeningMapData, districtDisplayData, operationalData, rainfallHeatmapData, riverStatusLines, waterData, floodHub, glacierData, backgroundReady, layers.catchments, kashmirBoundaryData, kashmirBoundarySource, studySources, studyCatchment]);
+  }, [screeningMapData, districtDisplayData, operationalData, rainfallHeatmapData, riverStatusLines, waterData, floodHub, glacierData, backgroundReady, layers.catchments, kashmirBoundaryData, kashmirBoundarySource, studySources, studyCatchment, stationPopupSources]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1448,6 +1468,14 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     updateVisibility();
     return () => { map.off("style.load", updateVisibility); };
   }, [layers, rainfallHeatmapEnabled, catchmentId, waterQuantity, showNormalFloodHub, glacierView, studyActive]);
+
+  useStationHover({ mapRef, interactionRef: stationInteractionRef, pickingRef: coordinatePickingRef,
+    catchment: studyActive ? studyCatchment : activeCatchment, expanded, revision: stationPopupSources,
+    onPin: (touch) => {
+      setSelectedDistrict(null); setSelectedCatchment(null); setSelectedGlacier(null);
+      setSelectedWaterFeature(null); setSelectedFloodHubFeature(null); setSelectedStationId(null); setCoordinateDetailsPoint(null);
+      if (touch) setMapControlsOpen(false);
+    }, onInspect: selectStation });
 
   useEffect(() => {
     if (selectedDistrict || selectedCatchment || selectedWaterFeature || selectedFloodHubFeature || selectedStationId) setSelectedGlacier(null);
@@ -1610,17 +1638,6 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
             <span><i style={{ background: "#94a3b8" }} /> Unavailable</span>
           </div>}
         </div>
-        {monitoringSite && <aside className="district-inspector" aria-label="Monitoring point details">
-          <button type="button" title="Close monitoring point details" aria-label="Close monitoring point details" onClick={() => setSelectedMonitoringSite(null)}><X size={17} /></button>
-          <span className="inspector-eyebrow">Priority monitoring / {monitoringCategories.find((category) => category.id === monitoringSite.properties.category)?.priority}</span>
-          <h3>{monitoringSite.properties.name}</h3>
-          <p>{monitoringSite.properties.river}</p>
-          <p>Lat: {monitoringSite.geometry.coordinates[1].toFixed(6)} / Lon: {monitoringSite.geometry.coordinates[0].toFixed(6)}</p>
-          <p>{monitoringSite.properties.coordinateQuality}</p>
-          <small>Planning priority, not current flood severity. {monitoringSite.properties.category === "confluences" ? "Confluence watch reference; not an active monitoring station." : "Static monitoring-site inventory."}</small>
-          <p><a href={monitoringSite.properties.source} target="_blank" rel="noreferrer">Location reference</a></p>
-          {monitoringSite.properties.stationId && <button type="button" className="priority-station-button" onClick={() => { setSelectedStationId(monitoringSite.properties.stationId); setSelectedMonitoringSite(null); }}><Gauge size={14} /> Station observations</button>}
-        </aside>}
         {coordinateDetailsPoint && <aside className="district-inspector coordinate-inspector" aria-label="Coordinate details">
           <button type="button" title="Close coordinate details" aria-label="Close coordinate details" onClick={() => setCoordinateDetailsPoint(null)}><X size={17} /></button>
           <span className="inspector-eyebrow">Located coordinate</span>
