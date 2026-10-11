@@ -1,13 +1,14 @@
-import { Activity, AlertTriangle, CloudRain, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves } from "lucide-react";
+import { Activity, AlertTriangle, CloudRain, ExternalLink, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves, Droplets } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "upstream" | "incidents" | "reports" | "activity" | "simulation";
+export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "upstream" | "monitoring" | "incidents" | "reports" | "activity" | "simulation";
 
 const navItems = [
   { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
   { id: "gis" as const, label: "GIS Operations", icon: Map },
   { id: "predictive" as const, label: "Predictive Risk Views", icon: ChartNoAxesCombined },
   { id: "upstream" as const, label: "Upstream Source Flood Watch", icon: Waves },
+  { id: "monitoring" as const, label: "River Monitoring", icon: Droplets },
   { id: "incidents" as const, label: "Incidents", icon: AlertTriangle },
   { id: "reports" as const, label: "Citizen Reports", icon: MessageSquareText },
   { id: "activity" as const, label: "System Activity", icon: Activity },
@@ -24,6 +25,8 @@ export function AppShell({ activeView, onViewChange, children }: { activeView: V
           {navItems.map(({ id, label, icon: Icon }) => <button className={activeView === id ? "active" : ""} aria-current={activeView === id ? "page" : undefined} key={id} onClick={() => { onViewChange(id); setOpen(false); }}><Icon size={18} /><span>{label}</span></button>)}
           <p className="sidebar-section-label">Feature visualization</p>
           <button className={activeView === "rainfall" ? "active" : ""} aria-current={activeView === "rainfall" ? "page" : undefined} onClick={() => { onViewChange("rainfall"); setOpen(false); }}><CloudRain size={18} /><span>Rainfall heatmap</span></button>
+          <p className="sidebar-section-label">External maps</p>
+          <a className="sidebar-external-map" href="https://sites.research.google/floods/l/30.36468142775536/76.22165549983335/6.182499999999997" target="_blank" rel="noopener noreferrer" title="Open the full Google Flood Hub map in a new tab" onClick={() => setOpen(false)}><Waves size={18} /><span>Google Flood Hub</span><ExternalLink size={14} /></a>
         </nav>
         <div className="sidebar-foot"><span>National display mode</span><strong>Pakistan Region</strong></div>
       </aside>

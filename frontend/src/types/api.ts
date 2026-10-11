@@ -186,6 +186,8 @@ export interface ResourceGroups {
 }
 
 export interface DistrictRiskProperties {
+  display_boundary_source?: string;
+  display_geometry_match?: boolean;
   district_id: string;
   district_name: string;
   admin_level: string;
@@ -370,4 +372,50 @@ export interface RiverMonitoringStation extends UpstreamStationForecast {
 export interface RiverMonitoringResponse extends Omit<UpstreamForecastResponse, "stations"> {
   stations: RiverMonitoringStation[];
   chains: Record<string, string[]>;
+}
+
+export interface RegionalRainfallCollection {
+  type: "FeatureCollection";
+  features: Array<{
+    type: "Feature";
+    geometry: { type: "Point"; coordinates: [number, number] };
+    properties: { accumulations_mm: Record<string, number | null> };
+  }>;
+  coverage: import("geojson").FeatureCollection;
+  metadata: { source: string; generated_at: string; cache_status: string; missing_samples: number; warning: string | null };
+}
+export type GoogleFloodSeverity = "EXTREME" | "SEVERE" | "ABOVE_NORMAL" | "NO_FLOODING" | "UNKNOWN";
+
+export interface GoogleFloodFeature {
+  type: "Feature";
+  id: string;
+  geometry: { type: "Point"; coordinates: [number, number] };
+  properties: {
+    id: string;
+    name: string;
+    river: string;
+    country_code: string;
+    severity: GoogleFloodSeverity;
+    severity_label: string;
+    issued_at: string | null;
+    forecast_start: string | null;
+    forecast_end: string | null;
+    trend: string;
+    source: string;
+    quality_verified: boolean;
+    source_url: string;
+  };
+}
+
+export interface GoogleFloodCollection {
+  type: "FeatureCollection";
+  features: GoogleFloodFeature[];
+  metadata: {
+    status: "live" | "stale" | "not_configured" | "unavailable";
+    message: string | null;
+    fetched_at: string | null;
+    source: string;
+    license: string;
+    source_url: string;
+  };
 }

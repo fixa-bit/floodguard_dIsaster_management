@@ -21,7 +21,33 @@ def geometry_bounds(geometry: dict) -> tuple[float, float, float, float]:
 
 def representative_point(geometry: dict) -> Coordinate:
     west, south, east, north = geometry_bounds(geometry)
-    return round((west + east) / 2, 5), round((south + north) / 2, 5)
+    midpoint = (west + east) / 2, (south + north) / 2
+    if point_in_geometry(*midpoint, geometry):
+        return midpoint
+
+    polygons = geometry["coordinates"] if geometry["type"] == "MultiPolygon" else [geometry["coordinates"]]
+    candidates = []
+    for polygon in polygons:
+        latitudes = sorted({point[1] for point in polygon[0]})
+        scanlines = [(south + north) / 2]
+        scanlines.extend((lower + upper) / 2 for lower, upper in zip(latitudes, latitudes[1:]) if upper > lower)
+        for latitude in scanlines:
+            intersections = []
+            ring = polygon[0]
+            for index, start in enumerate(ring):
+                end = ring[(index + 1) % len(ring)]
+                if (start[1] <= latitude < end[1]) or (end[1] <= latitude < start[1]):
+                    ratio = (latitude - start[1]) / (end[1] - start[1])
+                    intersections.append(start[0] + ratio * (end[0] - start[0]))
+            intersections.sort()
+            for west_edge, east_edge in zip(intersections[::2], intersections[1::2]):
+                candidate = ((west_edge + east_edge) / 2, latitude)
+                if point_in_geometry(*candidate, geometry):
+                    candidates.append((east_edge - west_edge, candidate))
+
+    if not candidates:
+        raise ValueError("Cannot find an interior point for the supplied district geometry")
+    return max(candidates, key=lambda item: item[0])[1]
 
 
 def bounds_intersect(

@@ -1,11 +1,13 @@
 import { API_BASE_URL } from "../config";
 import type {
+  GoogleFloodCollection,
   AutomationContext,
   CitizenReport,
   DashboardSummary,
   Incident,
   ModelForecastPoint,
   NationalRiskCollection,
+  RegionalRainfallCollection,
   Resource,
   RiskResponse,
   RiverResponse,
@@ -112,6 +114,8 @@ export const api = {
   hospitals: () => apiFetch<Resource[]>("/resources/hospitals"),
   contacts: () => apiFetch<Resource[]>("/resources/emergency-contacts"),
   nationalRisk: () => apiFetch<NationalRiskCollection>("/gis/national-risk"),
+  rainfall: () => apiFetch<RegionalRainfallCollection>("/gis/rainfall"),
+  googleFloodHub: () => apiFetch<GoogleFloodCollection>("/gis/google-flood-hub"),
   waterIntelligence: () => apiFetch<WaterIntelligenceCollection>("/gis/water-intelligence"),
   startSimulation: (scenario: string, locationId: string) =>
     apiFetch<SimulationStatus>("/simulation/start", {

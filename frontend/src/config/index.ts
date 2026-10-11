@@ -12,7 +12,7 @@ export const LOCATIONS = [
   { id: "JHG_001", name: "Jhang", region: "Punjab", river: "Chenab", latitude: 31.2681, longitude: 72.3187 },
   { id: "RWP_001", name: "Rawalpindi", region: "Punjab", river: "Soan", latitude: 33.5651, longitude: 73.0169 },
   { id: "MUL_001", name: "Multan", region: "Punjab", river: "Chenab", latitude: 30.1575, longitude: 71.5249 },
-  { id: "ISB_001", name: "Islamabad", region: "ICT", river: "Korang", latitude: 33.6844, longitude: 73.0479 },
+  { id: "ISB_001", name: "Islamabad", region: "Islamabad Capital Territory", river: "Korang", latitude: 33.6844, longitude: 73.0479 },
 ] as const;
 
 export const SCENARIOS = [

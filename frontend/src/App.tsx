@@ -8,6 +8,7 @@ import { IncidentTable } from "./components/IncidentTable";
 import { SimulationPanel } from "./components/SimulationPanel";
 import { FloodRiskMultiView } from "./components/FloodRiskMultiView";
 import { SourceFloodForecastTab } from "./components/SourceFloodForecastTab";
+import { RiverMonitoringView } from "./components/RiverMonitoringView";
 import { LOCATIONS, type LocationId } from "./config";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { OverviewPage } from "./pages/OverviewPage";
@@ -20,6 +21,7 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   rainfall: { title: "Rainfall Heatmap", subtitle: "Observed and forecast rainfall across Pakistan" },
   predictive: { title: "Predictive Risk Views", subtitle: "Flood forecasts by hazard type and horizon" },
   upstream: { title: "Upstream Source Flood Watch", subtitle: "Upper-basin stations, discharge forecasts, and past trends" },
+  monitoring: { title: "River Monitoring", subtitle: "Barrages, headworks and river station readings" },
   incidents: { title: "Incident Management", subtitle: "Review active and historical emergency incidents" },
   reports: { title: "Citizen Reports", subtitle: "Field observations awaiting authority verification" },
   activity: { title: "System Activity", subtitle: "Automated decisions, monitoring changes, and response events" },
@@ -46,13 +48,14 @@ export default function App() {
 
       {errors.length > 0 && <div className="error-banner"><AlertCircle size={19} /><div><strong>{errors.some((error) => error.includes("BACKEND_UNAVAILABLE")) ? "Backend unavailable" : "Some live data could not be refreshed"}</strong><span>{errors.join(" · ")}</span></div><button onClick={() => void refresh(false)}>Retry</button></div>}
 
-      {loading ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
+      {loading && !["overview", "gis", "rainfall"].includes(view) ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
         <div className="page-content">
           {view === "overview" && <OverviewPage data={data} locationId={locationId} onLocationChange={setLocationId} onRefresh={() => refresh(false)} />}
           {view === "gis" && <GISPage data={data} locationId={locationId} onLocationChange={setLocationId} />}
           {view === "rainfall" && <GISPage key="rainfall" data={data} locationId={locationId} onLocationChange={setLocationId} rainfall />}
           {view === "predictive" && <FloodRiskMultiView data={data} />}
           {view === "upstream" && <SourceFloodForecastTab />}
+          {view === "monitoring" && <RiverMonitoringView />}
           {view === "incidents" && <IncidentTable incidents={data.incidents} full />}
           {view === "reports" && (
             <CitizenReportsPanel

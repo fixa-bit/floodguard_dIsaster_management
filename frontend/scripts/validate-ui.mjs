@@ -1,6 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
+import { mapTestUrl } from "./map-test-url.mjs";
 
 const appUrl = process.env.DASHBOARD_URL ?? "http://localhost:3000";
 const edgePath = process.env.EDGE_PATH ?? "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
@@ -16,7 +17,7 @@ try {
     if (message.type() === "error") errors.push(message.text());
   });
 
-  await page.goto(appUrl, { waitUntil: "networkidle", timeout: 120_000 });
+  await page.goto(mapTestUrl(appUrl), { waitUntil: "networkidle", timeout: 120_000 });
   await page.getByRole("heading", { name: "Operational Overview" }).waitFor();
   await page.getByLabel("Operational location").selectOption("MUL_001");
   await page.locator(".location-select strong").getByText("Multan", { exact: true }).waitFor();

@@ -12,14 +12,16 @@ from app.services.river_monitoring_service import RiverMonitoringService
 
 
 def test_complete_network_and_shared_panjnad():
-    assert len(STATIONS) == 19
+    assert len(STATIONS) == 22
     assert RIVER_CHAINS["Indus"] == ["TARBELA", "KALABAGH", "CHASHMA", "TAUNSA", "GUDDU", "SUKKUR", "KOTRI"]
+    assert RIVER_CHAINS["Kabul"] == ["NOWSHERA"]
+    assert RIVER_CHAINS["Jhelum"] == ["MANGLA", "RASUL"]
     assert RIVER_CHAINS["Ravi"] == ["JASSAR", "SHAHDARA", "BALLOKI", "SIDHNAI"]
     assert upstream_ids("PANJNAD") == ["MARALA", "KHANKI", "QADIRABAD", "TRIMMU", "GANDA_SINGH_WALA", "SULEMANKI", "ISLAM"]
     collection = WaterIntelligenceService().feature_collection(DataMode.LIVE, Scenario.NORMAL)
     markers = [feature for feature in collection["features"] if feature["properties"].get("monitoring_station_id")]
-    assert len(markers) == 19
-    assert len({feature["properties"]["monitoring_station_id"] for feature in markers}) == 19
+    assert len(markers) == 22
+    assert len({feature["properties"]["monitoring_station_id"] for feature in markers}) == 22
 
 
 @pytest.mark.asyncio

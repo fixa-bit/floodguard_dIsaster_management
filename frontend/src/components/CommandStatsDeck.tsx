@@ -5,8 +5,9 @@ import { LOCATIONS } from "../config";
 import type { DashboardData } from "../hooks/useDashboardData";
 import type { DistrictRiskFeature, RiverResponse, Severity, WaterIntelligenceFeature, WeatherResponse } from "../types/api";
 import { StatusBadge } from "./StatusBadge";
+import { RiverMonitoringView } from "./RiverMonitoringView";
 
-type DeckPanel = "risk" | "rivers" | "weather" | "operations" | "system";
+type DeckPanel = "risk" | "rivers" | "monitoring" | "weather" | "operations" | "system";
 
 interface Metric {
   label: string;
@@ -17,6 +18,7 @@ interface Metric {
 const panelConfig: Array<{ id: DeckPanel; label: string; Icon: typeof BarChart3 }> = [
   { id: "risk", label: "National Risk", Icon: BarChart3 },
   { id: "rivers", label: "Rivers", Icon: Droplets },
+  { id: "monitoring", label: "Monitoring", Icon: RadioTower },
   { id: "weather", label: "Rainfall", Icon: CloudRain },
   { id: "operations", label: "Operations", Icon: RadioTower },
   { id: "system", label: "System", Icon: DatabaseZap },
@@ -172,6 +174,8 @@ export function CommandStatsDeck({ data, onRefresh }: { data: DashboardData; onR
         <div><span>Active incidents</span><strong>{formatNumber(data.summary?.active_incidents ?? data.incidents.length, 0)}</strong></div>
         <div><span>Mode</span><strong>{data.system?.data_mode ?? "-"}</strong></div>
       </div>
+
+      {activePanel === "monitoring" && <div className="command-stats-panel"><RiverMonitoringView compact onClose={() => setActivePanel(null)} /></div>}
 
       {activePanel === "risk" && (
         <div className="command-stats-panel">

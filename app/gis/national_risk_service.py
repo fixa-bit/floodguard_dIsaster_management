@@ -13,7 +13,7 @@ from app.core.exceptions import AppError
 from app.gis.geometry import bounds_intersect, geometry_bounds, representative_point
 
 
-DISTRICT_DATA_PATH = Path(__file__).parent / "data" / "pakistan_districts.geojson"
+DISTRICT_DATA_PATH = Path(__file__).parents[2] / "frontend" / "src" / "data" / "pakistan" / "pakistan_districts.geojson"
 WEATHER_FIELDS = "precipitation,temperature_2m,relative_humidity_2m,soil_moisture_0_to_7cm"
 
 
@@ -69,14 +69,17 @@ class NationalRiskService:
             with DISTRICT_DATA_PATH.open(encoding="utf-8") as source:
                 raw = json.load(source)
             districts = []
-            for index, feature in enumerate(raw["features"]):
+            for feature in raw["features"]:
+                district_name = feature["properties"].get("district")
+                if not district_name:
+                    continue
                 feature = copy.deepcopy(feature)
-                district_id = feature["properties"].get("shapeID") or f"PAK_ADM2_{index:03d}"
+                district_id = feature["properties"].get("id") or f"PAK_ADM2_{len(districts):03d}"
                 longitude, latitude = representative_point(feature["geometry"])
                 feature["id"] = district_id
                 feature["properties"] = {
                     "district_id": district_id,
-                    "district_name": feature["properties"]["shapeName"],
+                    "district_name": district_name,
                     "admin_level": "ADM2",
                     "longitude": longitude,
                     "latitude": latitude,
@@ -239,7 +242,7 @@ class NationalRiskService:
                 "scenario": scenario,
                 "risk_basis": "district_weather_screening",
                 "methodology": "Batched weather screening; detailed river-aware predictions remain station based.",
-                "boundary_source": "geoBoundaries PAK ADM2 (2019), public domain",
+                "boundary_source": "Parallax Geo Pakistan Official Boundary Shapefile; WGS84/EPSG:4326",
             },
             "features": features,
         }

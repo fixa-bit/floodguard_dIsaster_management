@@ -12,7 +12,7 @@ export function OverviewPage({ data, locationId, onLocationChange, onRefresh }: 
   return (
     <div className="overview-command-canvas">
       {data.system?.data_mode === "simulation" && <div className="mode-banner mode-banner-danger"><AlertCircle size={18} /><div><strong>SIMULATION MODE</strong><span>Environmental readings and risk calculations are simulated. Do not use for live decisions.</span></div></div>}
-      {data.system?.data_mode !== "simulation" && data.system?.active_scenario !== "NORMAL" && <div className="mode-banner mode-banner-warning"><AlertCircle size={18} /><div><strong>Simulation scenario configured</strong><span>Operational feeds remain live; the configured scenario is isolated from live risk calculations.</span></div></div>}
+      {data.system && data.system.data_mode !== "simulation" && data.system.active_scenario !== "NORMAL" && <div className="mode-banner mode-banner-warning"><AlertCircle size={18} /><div><strong>Simulation scenario configured</strong><span>Operational feeds remain live; the configured scenario is isolated from live risk calculations.</span></div></div>}
       <NationalRiskMapLoader
         nationalRisk={data.nationalRisk}
         waterIntelligence={data.waterIntelligence}

@@ -90,6 +90,8 @@ svg { flex: 0 0 auto; }
 .map-workspace { position: relative; min-height: 640px; background: #dce4e2; }
 .national-map-expanded .map-workspace { min-height: calc(100vh - 260px); }
 .national-map { position: absolute; inset: 0; }
+.map-loading-indicator { position: absolute; inset: 0; z-index: 3; display: grid; place-content: center; justify-items: center; gap: 10px; background: rgba(7, 23, 27, .48); color: #fff; font-size: 12px; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .map-loading-indicator .spinning { animation: none; } }
 .map-command-overlay { position: absolute; z-index: 5; top: 16px; right: 64px; left: 214px; pointer-events: none; }
 .map-command-overlay > * { pointer-events: auto; }
 .maplibregl-canvas { outline: none; }
@@ -105,7 +107,8 @@ svg { flex: 0 0 auto; }
 .map-legend strong { margin-right: 2px; color: #31494f; font-size: 9px; }
 .map-legend span { display: flex; align-items: center; gap: 4px; color: #53666b; font-size: 8px; }
 .map-legend i { width: 9px; height: 9px; border: 1px solid rgba(0,0,0,.12); border-radius: 2px; }
-.legend-low { background: #2fd07e; }.legend-medium { background: #ffd02f; }.legend-high { background: #ff7a1a; }.legend-critical { background: #ff244f; }.legend-operational { background: #86efac; border-color: #b8fff0 !important; }.legend-district { height: 0 !important; background: transparent; border-top: 2px solid #e8fff8 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-loc { height: 0 !important; background: transparent; border-top: 2px dashed #f8fafc !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-special-boundary { height: 0 !important; background: transparent; border-top: 2px dashed #e1ece8 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-gauge { background: #e0f7ff; border: 2px solid #38d5ff !important; border-radius: 50% !important; }.legend-model { background: #8b5cf6; transform: rotate(45deg); }.legend-water { background: #4de7ff; border-radius: 50% !important; }.legend-river-normal { background: #2fd07e; }.legend-river-rising { background: #ffd02f; }.legend-river-danger { background: #ff244f; }
+.map-legend .legend-district-names { height: 0; background: transparent; border: 0; border-top: 2px solid #c084fc; border-radius: 0; }
+.legend-low { background: #2fd07e; }.legend-medium { background: #ffd02f; }.legend-high { background: #ff7a1a; }.legend-critical { background: #ff244f; }.legend-operational { height: 0 !important; background: transparent; border: 0 !important; border-top: 3px solid #ffffff !important; }.legend-district { height: 0 !important; background: transparent; border-top: 2px solid #e8fff8 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-loc { height: 0 !important; background: transparent; border-top: 3px solid #67e8f9 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-special-boundary { height: 0 !important; background: transparent; border-top: 3px solid #ffffff !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-catchment { background: #38bdf8; border: 1px dashed #f8fafc !important; }.legend-floodhub-watch { background: #22d3ee; border-color: #cffafe !important; }.legend-floodhub-warning { background: #f97316; border-color: #fed7aa !important; }.legend-floodhub-severe { background: #d946ef; border-color: #f5d0fe !important; }.legend-gauge { background: #e0f7ff; border: 2px solid #38d5ff !important; border-radius: 50% !important; }.legend-model { background: #8b5cf6; transform: rotate(45deg); }.legend-water { background: #4de7ff; border-radius: 50% !important; }.legend-river-normal { background: #2fd07e; }.legend-river-rising { background: #ffd02f; }.legend-river-danger { background: #ff244f; }
 .feature-visualization-control { display: grid; gap: 6px; margin: 0 0 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(67, 87, 92, .22); }
 .feature-visualization-control strong { margin-bottom: 0; }
 .rainfall-window-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
@@ -125,6 +128,19 @@ svg { flex: 0 0 auto; }
 .map-layer-control .map-control-notices strong { margin: 0; }
 .operational-layer-options summary, .map-boundary-details summary { padding: 5px 0; color: #c0d4d5; font-size: 10px; cursor: pointer; }
 .map-layer-control .operational-layer-options summary strong { display: inline-flex; margin: 0; }
+.map-layer-control .operational-layer-options { padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid rgba(125, 232, 219, .18); }
+.border-checkpoint-controls { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 0; }
+.map-coordinate-readout { position: absolute; z-index: 8; max-width: calc(100% - 16px); padding: 5px 8px; border: 1px solid #426063; border-radius: 4px; background: #10272b; color: #ffffff; font: 12px/1.4 monospace; white-space: nowrap; pointer-events: none; }
+.map-coordinate-readout[hidden] { display: none; }
+.border-checkpoint-controls button { display: inline-flex; align-items: center; gap: 4px; padding: 5px 6px; border: 1px solid #426063; border-radius: 4px; background: #10272b; color: #ffffff; font-size: 10px; cursor: pointer; }
+.border-checkpoint-controls button:hover { border-color: #ff6060; }
+.glacier-layer-options { padding: 6px 0; border-top: 1px solid #426063; }
+.glacier-layer-options .rainfall-source-note { display: block; margin-top: 5px; }
+.glacier-headwaters-button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid #426063; border-radius: 4px; background: #10272b; color: #ffffff; font-size: 11px; cursor: pointer; }
+.glacier-inspector h3, .glacier-inspector dd { overflow-wrap: anywhere; }
+.border-checkpoint-popup .maplibregl-popup-content { background: #10272b; color: #ffffff; padding: 14px 22px 14px 12px; font-size: 12px; }
+.border-checkpoint-popup .maplibregl-popup-close-button { color: #ffffff; }
+.border-checkpoint-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: #10272b; }
 .map-simulation-label { top: 12px; left: 198px; display: flex; align-items: center; gap: 6px; padding: 8px 10px; color: #982e37; background: #fbe9ea; border-color: #e1aeb3; border-radius: 4px; font-size: 9px; }
 .map-water-notice { top: 56px; left: 198px; display: flex; max-width: 340px; align-items: center; gap: 6px; padding: 8px 10px; color: #7a5414; background: #fff8e8; border-color: #e8ce94; border-radius: 4px; font-size: 9px; line-height: 1.35; }
 .map-boundary-notice { top: 103px; left: 198px; display: flex; max-width: 360px; align-items: center; gap: 6px; padding: 8px 10px; color: #244b52; background: #edf7f5; border-color: #b8d7d2; border-radius: 4px; font-size: 9px; line-height: 1.35; }
@@ -139,6 +155,12 @@ svg { flex: 0 0 auto; }
 .district-score > strong { display: flex; align-items: center; gap: 6px; font-size: 25px; }
 .water-inspector .district-score > strong { max-width: 128px; color: #214f67; font-size: 12px; line-height: 1.2; }
 .water-inspector .status-badge { max-width: 96px; white-space: normal; }
+.floodhub-inspector .district-score > strong { max-width: 140px; color: inherit; font-size: 12px; line-height: 1.2; overflow-wrap: anywhere; }
+.floodhub-inspector .river-data-source a { color: var(--teal-dark); }
+.floodhub-controls { display: grid; gap: 6px; font-size: 11px; }
+.floodhub-controls a { color: #7dd3fc; }
+.floodhub-severity { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; white-space: nowrap; }
+.floodhub-severity i, .map-legend .legend-floodhub-point { width: 12px; height: 12px; flex: 0 0 12px; border: 2px solid white; border-radius: 50%; }
 .district-inspector dl { display: grid; gap: 0; margin: 9px 0; }
 .district-inspector dl div { display: flex; min-height: 27px; align-items: center; justify-content: space-between; border-bottom: 1px solid #edf0ef; font-size: 9px; }
 .district-inspector dt { color: var(--muted); }.district-inspector dd { margin: 0; color: var(--ink); font-weight: 700; }
@@ -333,6 +355,9 @@ body { color: var(--ink); background: #071114; }
 .sidebar nav { min-height: 0; overflow-y: auto; }
 .sidebar nav button { padding-top: 8px; padding-bottom: 8px; }
 .sidebar nav button span { min-width: 0; font-size: 13px; line-height: 1.35; }
+.sidebar nav .sidebar-external-map { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 42px; padding: 8px 12px; color: #aebdc0; background: transparent; border: 1px solid transparent; border-radius: 5px; text-align: left; }
+.sidebar nav .sidebar-external-map span { min-width: 0; flex: 1; font-size: 13px; line-height: 1.35; }
+.sidebar nav .sidebar-external-map:hover, .sidebar nav .sidebar-external-map:focus-visible { color: #fff; background: #173c35; border-color: #2e9d87; }
 .brand-lockup, .sidebar-foot { flex-shrink: 0; }
 .sidebar-foot {
   color: #80a7aa;
@@ -584,7 +609,7 @@ body { color: var(--ink); background: #071114; }
 }
 .command-stats-tabs {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 1px;
   background: rgba(125, 232, 219, .12);
 }
@@ -1853,6 +1878,84 @@ body { color: var(--ink); background: #071114; }
 .source-cache-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 0 16px; }
 .river-monitoring-layout { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; }
 .river-monitoring-layout.has-station { grid-template-columns: minmax(0, 1fr) 360px; }
+.river-monitoring-panel { display: flex; flex-direction: column; min-width: 0; max-height: calc(100vh - 180px); padding: 16px 14px; background: #f8fafb; color: #243438; border-right: 1px solid #d6dfe2; }
+.overview-command-canvas .river-monitoring-panel { height: 100vh; max-height: 100vh; padding-top: 82px; padding-bottom: 80px; }
+.river-monitoring-panel header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.river-panel-eyebrow { display: flex; align-items: center; gap: 6px; color: #52686e; font-size: 11px; }
+.river-monitoring-panel h3 { margin: 5px 0 8px; font-size: 18px; }
+.river-monitoring-panel header button { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #cbd7dc; background: #fff; color: #256f76; border-radius: 4px; cursor: pointer; }
+.river-monitoring-panel button:disabled { opacity: .5; cursor: wait; }
+.river-panel-updated { font-size: 11px; color: #52686e; line-height: 1.5; }
+.river-panel-updated span { display: block; }
+.river-panel-filters { display: grid; grid-template-columns: minmax(0, 1fr) 85px; gap: 8px; margin: 14px 0 10px; }
+.river-panel-filters label { display: grid; gap: 5px; font-size: 11px; }
+.river-panel-filters select { width: 100%; min-width: 0; height: 32px; padding: 5px; border: 1px solid #cbd7dc; border-radius: 4px; background: #fff; color: #243438; font-size: 12px; }
+.river-panel-search { display: flex; align-items: center; gap: 7px; border: 1px solid #cbd7dc; border-radius: 4px; background: #fff; padding: 7px 9px; }
+.river-panel-search input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: #243438; font-size: 12px; }
+.river-panel-search:focus-within { outline: 2px solid #238e91; }
+.river-panel-count { display: flex; justify-content: space-between; gap: 6px; padding: 10px 0; font-size: 10px; color: #52686e; }
+.river-panel-list { min-height: 100px; overflow-y: auto; flex: 1; scrollbar-width: thin; }
+.river-panel-group h4 { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; margin: 0; padding: 9px 5px; background: #e9eff2; color: #344e58; font-size: 12px; }
+.river-panel-group h4 span { color: #617880; font-weight: 400; }
+.river-panel-station { padding: 12px 5px; border-bottom: 1px solid #d9e3e6; }
+.river-panel-station.is-selected { background: #e4f4f1; box-shadow: inset 3px 0 #238e91; padding-left: 9px; }
+.river-panel-station-head { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.river-panel-station-head button { border: 0; padding: 0; background: transparent; color: #1a5665; font-size: 13px; font-weight: 700; text-align: left; cursor: pointer; }
+.river-panel-station-head button:hover { text-decoration: underline; }
+.river-status { max-width: 135px; padding: 3px 5px; border-radius: 3px; font-size: 10px; line-height: 1.35; }
+.river-status-normal { color: #196342; background: #dff0e6; }
+.river-status-warning { color: #845600; background: #fff0c2; }
+.river-status-danger { color: #a51f32; background: #fce2e6; }
+.river-status-unknown { color: #596970; background: #e7ecef; }
+.river-panel-station dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 10px 0; }
+.river-panel-station dt { font-size: 10px; color: #52686e; }
+.river-panel-station dd { margin: 4px 0; font-size: 13px; font-weight: 700; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.river-panel-station small { display: block; font-size: 10px; color: #52686e; line-height: 1.5; overflow-wrap: anywhere; }
+.river-data-source { display: block; font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
+.river-data-source a { display: inline; color: #238c9b; text-decoration: underline; text-underline-offset: 2px; }
+.river-data-source svg { display: inline; vertical-align: middle; margin-left: 3px; }
+.river-monitoring-view { min-width: 0; color: #dffefa; }
+.monitoring-view-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(125, 232, 219, .2); }
+.monitoring-view-head > div:first-child { display: grid; gap: 5px; }
+.monitoring-view-head strong { font-size: 14px; color: #fff; }
+.monitoring-view-head small, .monitoring-view-filters > small { color: #9fbfc0; font-size: 11px; }
+.monitoring-view-head > div:last-child { display: flex; gap: 6px; }
+.monitoring-view-head button { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; background: #123330; color: #50f5d0; cursor: pointer; }
+.monitoring-view-head button:disabled { opacity: .5; cursor: wait; }
+.monitoring-view-filters { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; padding: 12px 0; }
+.monitoring-view-filters label { display: grid; gap: 5px; color: #9fbfc0; font-size: 11px; }
+.monitoring-view-filters select, .monitoring-view-search { height: 32px; padding: 5px 8px; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; color: #dffefa; font-size: 12px; }
+.monitoring-view-filters .monitoring-view-search { display: flex; align-items: center; gap: 6px; width: 220px; max-width: 100%; }
+.monitoring-view-search input { width: 100%; min-width: 0; background: transparent; border: 0; outline: 0; color: #dffefa; font-size: 12px; }
+.monitoring-view-search:focus-within { outline: 2px solid #50f5d0; }
+.monitoring-view-table { overflow: auto; min-width: 0; scrollbar-width: thin; scrollbar-color: #426b68 #081c20; }
+.river-monitoring-view .data-table { width: 100%; min-width: 690px; }
+.river-monitoring-view .data-table td { vertical-align: top; padding: 10px 12px; color: #dffefa; font-size: 12px; border-bottom: 1px solid rgba(125, 232, 219, .14); }
+.river-monitoring-view .data-table th { background: #123330; color: #9fbfc0; padding: 10px 12px; font-size: 10px; }
+.river-monitoring-view .data-table td > small { display: block; font-size: 10px; color: #9fbfc0; margin-top: 3px; }
+.river-monitoring-view .river-data-source { font-size: 10px; color: #9fbfc0; margin-top: 4px; }
+.river-monitoring-view .river-data-source a { color: #50f5d0; }
+.river-monitoring-view tr.is-selected { background: #123330; }
+.monitoring-station-toggle { display: flex; align-items: center; gap: 7px; padding: 0; border: 0; background: transparent; color: #50f5d0; font-size: 12px; font-weight: 700; cursor: pointer; }
+.monitoring-station-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.monitoring-flood-status { font-size: 11px; color: #ffc857; }
+.monitoring-flood-status.is-normal { color: #50f5d0; }
+.monitoring-flood-status.is-unknown { color: #9fbfc0; }
+.river-monitoring-view > footer { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; padding: 12px 0; font-size: 10px; color: #9fbfc0; }
+.river-monitoring-view.is-compact .monitoring-view-table { max-height: 280px; }
+.overview-command-canvas .command-stats-panel:has(.river-monitoring-view) { background: #081c20; backdrop-filter: none; }
+.river-monitoring-view.is-compact th { position: sticky; top: 0; z-index: 1; }
+.river-monitoring-view.is-detailed .data-table { min-width: 1000px; }
+.monitoring-detail-row .river-station-inspector { max-height: none; border: 0; padding: 16px; }
+.river-monitoring-view.is-detailed .source-chart-wrap { max-width: 900px; }
+@media (max-width: 700px) {
+  .monitoring-view-filters { gap: 8px; }
+  .river-monitoring-view.is-compact .monitoring-view-table { max-height: 210px; }
+  .monitoring-view-head small { font-size: 10px; }
+}
+.river-panel-trend { display: flex; gap: 5px; align-items: center; color: #52686e; font-size: 11px; }
+.river-monitoring-panel footer { padding-top: 12px; font-size: 10px; line-height: 1.5; color: #52686e; }
+.river-panel-error { color: #a51f32; font-size: 11px; }
 .river-monitoring-layout .map-workspace { min-width: 0; }
 .river-station-inspector { min-width: 0; padding: 16px; color: #dffefa; background: #081c20; border-left: 1px solid rgba(125, 232, 219, .25); max-height: calc(100vh - 180px); overflow-y: auto; }
 .overview-command-canvas .river-station-inspector { max-height: 100vh; padding-top: 82px; padding-bottom: 76px; }
@@ -1880,9 +1983,27 @@ body { color: var(--ink); background: #071114; }
 .river-station-inspector footer button { display: flex; align-items: center; gap: 6px; min-height: 32px; padding: 5px 8px; color: #dffefa; background: #123330; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 11px; }
 .map-layer-control .river-network-select { display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 4px; margin-top: 7px; }
 .river-network-select select { min-width: 0; width: 100%; padding: 4px; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }
+.water-quantity-control { display: grid; gap: 5px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(125, 232, 219, .18); }
+.map-layer-toggle { display: flex; width: 100%; min-height: 28px; align-items: center; gap: 6px; padding: 0; color: #dffefa; background: transparent; border: 0; font-size: 11px; font-weight: 700; }
+.map-layer-toggle > svg:last-child { margin-left: auto; }
+.map-layer-toggle[aria-expanded="true"] { margin-bottom: 10px; }
+.map-layer-control > [hidden] { display: none; }
+.water-quantity-control label { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 6px; }
+.water-quantity-control select, .map-layer-control .water-quantity-control input { width: 100%; min-width: 0; height: 28px; padding: 4px; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }
+.water-quantity-control input:disabled { opacity: .45; }
+.water-quantity-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; flex-basis: 100%; }
+.catchment-station-reading { display: grid; gap: 4px; padding: 10px 0; border-bottom: 1px solid rgba(125, 232, 219, .2); }
+.catchment-station-reading button { width: fit-content; max-width: 100%; padding: 0; border: 0; color: #50f5d0; background: transparent; font-size: 12px; text-align: left; text-decoration: underline; }
+.catchment-station-reading strong { font-size: 14px; overflow-wrap: anywhere; }
+.catchment-inspector footer a { color: #50f5d0; font-size: 11px; }
 @media (max-width: 1100px) {
   .river-monitoring-layout.has-station { grid-template-columns: minmax(0, 1fr); }
+  .river-monitoring-layout > .river-station-inspector { grid-column: 1 / -1; }
   .river-station-inspector, .overview-command-canvas .river-station-inspector { max-height: none; padding: 16px; border-left: 0; border-top: 1px solid rgba(125, 232, 219, .25); }
+}
+@media (max-width: 700px) {
+  .river-monitoring-layout, .river-monitoring-layout.has-station { grid-template-columns: minmax(0, 1fr); }
+  .river-monitoring-panel, .overview-command-canvas .river-monitoring-panel { height: auto; max-height: 570px; padding: 70px 14px 16px; border-right: 0; border-bottom: 1px solid #d6dfe2; }
 }
 .source-cache-toolbar > div { display: grid; gap: 4px; min-width: 0; }
 .source-cache-toolbar strong { color: #ffffff; font-size: 12px; }

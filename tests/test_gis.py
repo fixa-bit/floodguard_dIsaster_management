@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from app.gis.geometry import point_in_geometry
 from app.gis.national_risk_service import NationalRiskService
 
 
@@ -12,8 +13,8 @@ def test_national_gis_covers_pakistan_districts_in_simulation(client):
     assert data["type"] == "FeatureCollection"
     assert data["metadata"]["coverage"] == "Pakistan ADM2 districts"
     assert data["metadata"]["data_mode"] == "simulation"
-    assert data["metadata"]["feature_count"] == 126
-    assert len(data["features"]) == 126
+    assert data["metadata"]["feature_count"] == 145
+    assert len(data["features"]) == 145
     assert all(feature["properties"]["risk_basis"] == "district_weather_screening" for feature in data["features"])
     assert response.headers["content-encoding"] == "gzip"
 
@@ -70,8 +71,15 @@ def test_national_gis_simulation_is_deterministic_and_scenario_aware(client):
 
 def test_district_dataset_has_unique_ids_and_geometries():
     districts = NationalRiskService.districts()
+    assert len(districts) == 145
     assert len({district["id"] for district in districts}) == len(districts)
     assert all(district["geometry"]["type"] in {"Polygon", "MultiPolygon"} for district in districts)
+    assert all(
+        point_in_geometry(district["properties"]["longitude"], district["properties"]["latitude"], district["geometry"])
+        for district in districts
+    )
+    names = {district["properties"]["district_name"] for district in districts}
+    assert {"Killa Saifullah", "Zhob"} <= names
 
 
 @pytest.mark.asyncio
@@ -95,8 +103,8 @@ async def test_live_national_gis_batches_all_districts(monkeypatch):
 
     monkeypatch.setattr(service, "_weather_batch", fake_batch)
     collection = await service._live_collection()
-    assert calls == [40, 40, 40, 6]
-    assert len(collection["features"]) == 126
+    assert calls == [40, 40, 40, 25]
+    assert len(collection["features"]) == 145
     assert collection["features"][0]["properties"]["source"] == "live"
     assert collection["features"][0]["properties"]["rainfall_24h_mm"] == 24.0
 

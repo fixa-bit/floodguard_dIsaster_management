@@ -8,7 +8,7 @@ export interface RainfallAnchor {
   weight: number;
 }
 
-const grid = { width: 169, height: 143, west: 60.55, east: 77.45, south: 23.15, north: 37.45 };
+const grid = { width: 280, height: 170, west: 55.5, east: 83.5, south: 22, north: 39 };
 export const rainfallImageCoordinates: [[number, number], [number, number], [number, number], [number, number]] = [
   [grid.west, grid.north], [grid.east, grid.north], [grid.east, grid.south], [grid.west, grid.south],
 ];

@@ -7,6 +7,9 @@ STATIONS = [
     ("GUDDU", "Guddu", "Indus", 28.4201, 69.7114, "Guddu"),
     ("SUKKUR", "Sukkur", "Indus", 27.679, 68.8462, "Sukkur"),
     ("KOTRI", "Kotri", "Indus", 25.4428, 68.3151, "Kotri"),
+    ("NOWSHERA", "Nowshera", "Kabul", 34.015, 71.975, "Nowshera"),
+    ("MANGLA", "Mangla", "Jhelum", 33.142, 73.645, "Mangla"),
+    ("RASUL", "Rasul", "Jhelum", 32.683, 73.517, "Rasul"),
     ("JASSAR", "Jassar", "Ravi", 32.049654, 74.992018, "Jassar"),
     ("SHAHDARA", "Shahdara", "Ravi", 31.6085, 74.2956, "Shahdara"),
     ("BALLOKI", "Balloki", "Ravi", 31.2222, 73.8596, "Balloki"),
@@ -23,6 +26,8 @@ STATIONS = [
 
 RIVER_CHAINS = {
     "Indus": ["TARBELA", "KALABAGH", "CHASHMA", "TAUNSA", "GUDDU", "SUKKUR", "KOTRI"],
+    "Kabul": ["NOWSHERA"],
+    "Jhelum": ["MANGLA", "RASUL"],
     "Ravi": ["JASSAR", "SHAHDARA", "BALLOKI", "SIDHNAI"],
     "Chenab": ["MARALA", "KHANKI", "QADIRABAD", "TRIMMU", "PANJNAD"],
     "Sutlej": ["GANDA_SINGH_WALA", "SULEMANKI", "ISLAM", "PANJNAD"],

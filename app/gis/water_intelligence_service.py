@@ -127,7 +127,7 @@ class WaterIntelligenceService:
                 "scenario": scenario.value,
                 "methodology": "GIS reference features are separated from observed stations and model forecast points; observed station features do not include fabricated readings.",
                 "source_summary": "WaterwayMap/OpenStreetMap river geometry; FFD Lahore public river-state pages; WAPDA/provincial irrigation station network summaries; Open-Meteo GloFAS for modeled discharge hooks.",
-                "map_notice": "",
+                "map_notice": "River alignments are schematic unless source geometry is marked official.",
                 "public_live_reading_note": "FFD observations and GloFAS forecasts for the river monitoring network are available through the cached river monitoring endpoint.",
                 "forecast_provider": get_settings().flood_api_base_url,
             },

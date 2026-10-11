@@ -1,3 +1,37 @@
+Terminal 1 
+cd D:\Projects\disaster_management
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
+terminal 2
+
+cd D:\Projects\disaster_management\frontend
+npm run dev -- --host 127.0.0.1 --port 3000
+
+
+-------------------------------------------------
+
+.venv\Scripts\activate
+uvicorn app.main:app --reload
+
+Access backend/API docs here:
+http://127.0.0.1:8000/docs
+
+Terminal 2:
+cd frontend
+npm run dev
+
+http://localhost:3000
+
+The frontend is configured to call the backend at:
+http://127.0.0.1:8000/api/v1
+
+Static glacier and district map assets are built as content-hashed `.geojson.gz`
+files. The browser decompresses them without changing coordinates and stores them
+in Cache Storage for reuse across reloads. Changed content gets a new URL.
+Vite dev/preview serves these files with `Cache-Control: public, max-age=31536000,
+immutable`; use the same header for `/assets/*.geojson.gz` on a production static
+host. The loader also accepts files already decoded by HTTP `Content-Encoding`.
+
 # FloodGuard AI Backend
 
 FastAPI backend foundation for flood monitoring, national GIS screening, risk scoring, incidents, citizen reports, automation context, dashboard summaries, and authority-supplied emergency resources.
@@ -73,6 +107,28 @@ This layer is explicitly a weather-based prioritization screen. Detailed
 river-aware XGBoost predictions remain available through `/flood/risk` for
 configured monitoring locations.
 
+The overview and GIS maps start with only the Pakistan boundary enabled and do
+not wait for dashboard feeds. After the boundary's first paint, hidden layers
+warm in the background, including the rainfall raster. Enabling a prepared layer
+reuses its sources instead of downloading its geometry again. The dedicated
+rainfall view still opens with rainfall enabled.
+
+District and glacier geometry use content-hashed gzip files and browser Cache
+Storage, with immutable HTTP caching. Deployments should preserve the asset
+filenames and serve `.geojson.gz` as `application/gzip` with
+`Cache-Control: public, max-age=31536000, immutable`. The loading wheel appears
+when an enabled district or glacier layer is still loading, not while hidden
+geometry warms. Live feeds keep their refresh intervals and depend on provider
+availability; an early toggle may still need to wait for its initial data.
+
+District names and borders use their own static source, independent of risk
+coverage. The display includes 10 AJ&K districts from the existing Pakistan
+adapter and 22 wider Kashmir context districts from geoBoundaries
+`IND-ADM2-76128533` (2021, ODbL 1.0), clipped to the displayed Kashmir outline.
+Regenerate the context subset with
+`.venv/Scripts/python.exe scripts/fetch_kashmir_districts.py`. Display geography
+does not assign sovereignty or create district risk estimates.
+
 ## Development ML model
 
 The included training generator is synthetic and intended only for development. It is not historical flood data.
@@ -97,39 +153,3 @@ event ROC-AUC is 0.5936 and spatially blocked ROC-AUC is 0.3836, below the
 0.75 gate. Full metrics and split membership are recorded in
 `app/ml/artifacts/flood_risk_xgboost_real.model-card.json`; production remains
 on `rule_based_v1` with real inputs.
-
-### DesInventar district-date research model
-
-The second real-data experiment cleans UNDRR DesInventar Pakistan FLOOD and
-FLASH FLOOD records and joins them to historical Open-Meteo rainfall/soil
-moisture and GloFAS modeled discharge. It adds 3/7/14/30-day rainfall,
-discharge ratios and z-score, elevation, and seasonality, then evaluates
-unseen districts, unseen 2-degree geographic blocks, and later years.
-
-```bash
-python -m app.ml.train_desinventar_model --rebuild
-```
-
-The resulting 10,097-row dataset contains 1,584 positive district-dates across
-67 districts. The model is **not deployed**: ROC-AUC was 0.6815 on district
-holdout, 0.5704 on geographic holdout, and 0.7029 on temporal holdout. It did
-not meet the required 0.75 ROC-AUC plus 0.60 precision and recall on every
-holdout. Full provenance is in
-`app/ml/artifacts/flood_risk_xgboost_desinventar_v2.model-card.json`.
-
-### Partial-coverage experiment
-
-A separate Lower Indus pilot tests whether a smaller, contiguous coverage area
-solves the geographic-transfer problem:
-
-```bash
-python -m app.ml.train_pilot_model
-```
-
-The declared pilot contains 18 districts in six neighboring 2-degree blocks,
-4,597 rows, and 652 positive district-dates. It uses leave-one-block-out
-validation so every pilot block is tested while absent from training. The
-result is also **not deployed**: block ROC-AUC was 0.5567, district ROC-AUC was
-0.5295, and temporal ROC-AUC was 0.4962. This demonstrates that reducing the
-coverage area alone does not resolve the mismatch between district impact
-reports and point-based hydrometeorological inputs.
