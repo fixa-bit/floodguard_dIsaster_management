@@ -15,6 +15,9 @@ import type {
   RiskResponse,
   RiverResponse,
   SimulationStatus,
+  SimulationStation,
+  MonitoringSimulationRequest,
+  MonitoringSimulationResult,
   SystemEvent,
   SystemStatus,
   UpstreamForecastResponse,
@@ -25,7 +28,7 @@ import type {
 
 interface ErrorPayload {
   error?: { code?: string; message?: string };
-  detail?: string;
+  detail?: string | { loc?: (string | number)[]; msg?: string }[];
 }
 
 export class ApiError extends Error {
@@ -39,7 +42,7 @@ export class ApiError extends Error {
   }
 }
 
-async function apiFetch<T>(path: string, options?: RequestInit, baseUrl = API_BASE_URL): Promise<T> {
+export async function apiFetch<T>(path: string, options?: RequestInit, baseUrl = API_BASE_URL): Promise<T> {
   let response: Response;
   const controller = new AbortController();
   const cancel = () => controller.abort();
@@ -73,10 +76,12 @@ async function apiFetch<T>(path: string, options?: RequestInit, baseUrl = API_BA
       // Keep the status-based message below.
     }
     const providerMessage = response.status === 502 ? "Live data provider is temporarily unavailable" : undefined;
+    const detail = typeof payload.detail === "string" ? payload.detail : payload.detail
+      ?.map((issue) => `${issue.loc?.filter((part) => part !== "body").join(".") || "Testing data"}: ${issue.msg ?? "Invalid value"}`).join("; ");
     throw new ApiError(
       response.status,
       payload.error?.code ?? `HTTP_${response.status}`,
-      payload.error?.message ?? payload.detail ?? providerMessage ?? "Request failed",
+      payload.error?.message ?? detail ?? providerMessage ?? "Request failed",
     );
   }
 
@@ -119,6 +124,9 @@ export const api = {
   events: () => apiFetch<SystemEvent[]>("/events?limit=40"),
   systemStatus: () => apiFetch<SystemStatus>("/system/status"),
   simulationStatus: () => apiFetch<SimulationStatus>("/simulation/status"),
+  simulationStations: () => apiFetch<SimulationStation[]>("/simulation/monitoring/stations"),
+  playMonitoringSimulation: (payload: MonitoringSimulationRequest) => apiFetch<MonitoringSimulationResult>("/simulation/monitoring/play", { method: "POST", body: JSON.stringify(payload) }),
+  alerts: () => apiFetch<SystemEvent[]>("/alerts"),
   automation: (locationId: string) => apiFetch<AutomationContext>(`/automation/context?location_id=${locationId}`),
   shelters: () => apiFetch<Resource[]>("/resources/shelters"),
   hospitals: () => apiFetch<Resource[]>("/resources/hospitals"),

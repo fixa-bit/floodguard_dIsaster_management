@@ -45,12 +45,14 @@ try {
   await page.screenshot({ path: screenshotPath("gis-operations-desktop.png"), fullPage: true });
 
   await page.getByRole("button", { name: "Simulation" }).click();
-  await page.getByLabel("Scenario").selectOption("HEAVY_RAIN");
-  await page.getByRole("button", { name: /Start/ }).click();
-  await page.locator(".simulation-current strong").getByText("HEAVY RAIN", { exact: true }).waitFor({ timeout: 120_000 });
-  await page.getByRole("button", { name: /Advance/ }).click();
-  await page.getByRole("button", { name: /Reset/ }).click();
-  await page.locator(".simulation-current strong").getByText("NORMAL", { exact: true }).waitFor({ timeout: 120_000 });
+  await page.getByLabel("Station", { exact: true }).selectOption("TAUNSA");
+  await page.getByRole("button", { name: "Custom test thresholds", exact: true }).click();
+  await page.getByLabel("Warning (cusecs)", { exact: true }).fill("300000");
+  await page.getByLabel("Danger (cusecs)", { exact: true }).fill("600000");
+  await page.getByLabel("Reading 1 value", { exact: true }).fill("120000");
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await page.getByRole("heading", { name: "Readings saved", exact: true }).waitFor({ timeout: 120_000 });
+  await page.getByRole("button", { name: "New run", exact: true }).click();
 
   await page.getByRole("button", { name: "Overview" }).click();
   await page.setViewportSize({ width: 390, height: 844 });

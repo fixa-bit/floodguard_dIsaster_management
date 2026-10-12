@@ -1,9 +1,11 @@
 from fastapi import APIRouter
+from app.api.routes import alerts
 
-from app.api.routes import automation, citizen_reports, dashboard, events, flood, gis, health, incidents, resources, river, simulation, system, weather
+from app.api.routes import automation, citizen_reports, dashboard, events, exposure, flood, gis, health, incidents, population, resources, river, simulation, system, weather
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(health.router)
+api_router.include_router(alerts.router)
 api_router.include_router(system.router)
 api_router.include_router(weather.router)
 api_router.include_router(river.router)
@@ -16,3 +18,5 @@ api_router.include_router(resources.router)
 api_router.include_router(automation.router)
 api_router.include_router(dashboard.router)
 api_router.include_router(gis.router)
+api_router.include_router(exposure.router)
+api_router.include_router(population.router)

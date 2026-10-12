@@ -2,13 +2,27 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.db.monitoring import get_monitoring_db
 from app.core.config import get_settings
 from app.core.exceptions import AppError
 from app.schemas.simulation import SimulationStartRequest, SimulationStatus
 from app.services.simulation_service import SimulationService
 from app.services.state_service import StateService
+from app.schemas.monitoring_simulation import MonitoringSimulationRequest, MonitoringSimulationResponse, SimulationStation
+from app.services.monitoring_simulation_service import MonitoringSimulationService, simulation_stations
 
 router = APIRouter(prefix="/simulation", tags=["Simulation"])
+
+
+@router.get("/monitoring/stations", response_model=list[SimulationStation])
+def monitoring_stations(db: Session = Depends(get_monitoring_db)):
+    return simulation_stations(db)
+
+
+@router.post("/monitoring/play", response_model=MonitoringSimulationResponse)
+def play_monitoring(payload: MonitoringSimulationRequest, db: Session = Depends(get_db),
+                    monitoring_db: Session = Depends(get_monitoring_db)):
+    return MonitoringSimulationService(db, monitoring_db).play(payload)
 
 
 def require_simulation_enabled() -> None:

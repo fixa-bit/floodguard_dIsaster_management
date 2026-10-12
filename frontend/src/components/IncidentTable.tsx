@@ -1,13 +1,16 @@
 import { Eye, Siren } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Incident } from "../types/api";
 import { formatDateTime, locationName } from "../utils/format";
 import { Panel } from "./Panel";
 import { StatusBadge } from "./StatusBadge";
 
-export function IncidentTable({ incidents, full = false }: { incidents: Incident[]; full?: boolean }) {
+export function IncidentTable({ incidents, full = false, initialIncidentId }: { incidents: Incident[]; full?: boolean; initialIncidentId?: number | null }) {
   const [selected, setSelected] = useState<Incident | null>(null);
+  useEffect(() => {
+    if (initialIncidentId) setSelected(incidents.find((incident) => incident.id === initialIncidentId) ?? null);
+  }, [initialIncidentId, incidents]);
   const visible = full ? incidents : incidents.slice(0, 6);
   return (
     <Panel title="Incident Operations" icon={Siren} action={<span className="count-label">{incidents.length} records</span>}>
@@ -21,7 +24,7 @@ export function IncidentTable({ incidents, full = false }: { incidents: Incident
                 <td><StatusBadge value={incident.severity} /></td>
                 <td><StatusBadge value={incident.status} subtle /></td>
                 <td>{Math.round(incident.confidence * 100)}%</td>
-                <td>{incident.source}</td>
+                <td>{incident.source === "SIMULATED_FLOW" ? <span className="simulated-flow-stamp">Simulated flow</span> : incident.source}</td>
                 <td>{formatDateTime(incident.created_at)}</td>
                 <td><button className="icon-button" title="View incident" onClick={() => setSelected(incident)}><Eye size={17} /></button></td>
               </tr>

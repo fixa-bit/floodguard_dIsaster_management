@@ -157,6 +157,49 @@ export interface SimulationStatus {
   monitoring_interval_minutes: number;
 }
 
+export interface SimulationThreshold {
+  measurement: string;
+  unit: string;
+  level: string;
+  value: number | null;
+  level_reference: string | null;
+  source_reference: string | null;
+}
+
+export interface SimulationStation {
+  code: string;
+  name: string;
+  river: string | null;
+  thresholds: SimulationThreshold[];
+}
+
+export interface MonitoringSimulationRequest {
+  run_id: string;
+  name: string;
+  station: string;
+  measurement: "discharge_inflow" | "discharge_outflow" | "water_level";
+  unit: "cusecs" | "m3/s" | "m" | "ft";
+  start_at: string;
+  level_reference: string | null;
+  threshold_mode: "saved" | "custom";
+  warning_threshold: number | null;
+  danger_threshold: number | null;
+  readings: { offset_minutes: number; value: number; p25: number | null; p75: number | null }[];
+}
+
+export interface MonitoringSimulationResult {
+  run_id: string;
+  name: string;
+  station: string;
+  station_name: string;
+  provider: string;
+  value_type: "simulated";
+  inserted: number;
+  readings: { id: number; value_at: string; value: number; level: string }[];
+  alerts: SystemEvent[];
+  incidents: Incident[];
+}
+
 export interface Resource {
   id: string;
   name: string;

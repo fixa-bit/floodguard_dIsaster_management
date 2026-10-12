@@ -11,6 +11,7 @@ from app.gis.river_stations import RIVER_CHAINS, STATIONS, upstream_ids
 from app.models.river_gauge_observation import RiverGaugeObservation, TypedRiverGaugeObservation
 from app.providers.live.live_river_provider import LiveRiverProvider
 from app.schemas.river_monitoring import RiverMonitoringResponse, RiverMonitoringStation
+from app.schemas.upstream_forecast import RainfallPoint
 from app.services.upstream_forecast_cache_service import UpstreamForecastCacheService
 from app.services.upstream_forecast_service import UpstreamForecastService
 
@@ -37,20 +38,58 @@ class RiverMonitoringService(UpstreamForecastService):
         except (httpx.HTTPError, ValueError, KeyError):
             return []
 
+    async def _rainfall_contexts(self, client, definitions) -> list[list[RainfallPoint]]:
+        try:
+            response = await client.get(self.weather_api_base_url, params={
+                "latitude": ",".join(str(station["latitude"]) for station in definitions),
+                "longitude": ",".join(str(station["longitude"]) for station in definitions),
+                "daily": "precipitation_sum,precipitation_probability_max",
+                "past_days": 3, "forecast_days": 7, "timezone": "UTC",
+            })
+            response.raise_for_status()
+            payloads = response.json()
+            if isinstance(payloads, dict):
+                payloads = [payloads]
+            if not isinstance(payloads, list) or len(payloads) != len(definitions):
+                raise ValueError("Weather API returned an incomplete station rainfall batch")
+            return [self._rainfall_points(payload) for payload in payloads]
+        except (httpx.HTTPError, ValueError, KeyError, TypeError):
+            return [[] for _ in definitions]
+
+    @staticmethod
+    def _rainfall_points(payload: dict) -> list[RainfallPoint]:
+        daily = payload["daily"]
+        today = datetime.now(timezone.utc).date()
+        probabilities = UpstreamForecastService._number_list(daily.get("precipitation_probability_max", []))
+        return [
+            RainfallPoint(
+                date=str(item_date),
+                precipitation_mm=value,
+                probability_percent=probabilities[index] if index < len(probabilities) else None,
+                phase="past" if item_date <= today else "forecast",
+            )
+            for index, (item_date, value) in enumerate(
+                zip((datetime.fromisoformat(item).date() for item in daily.get("time", [])),
+                    UpstreamForecastService._number_list(daily.get("precipitation_sum", [])))
+            )
+        ]
+
     async def forecasts(self) -> RiverMonitoringResponse:
         definitions = [dict(id=station_id, name=name, river=river, latitude=lat, longitude=lon, ffd_name=ffd)
                        for station_id, name, river, lat, lon, ffd in STATIONS]
         async with httpx.AsyncClient(timeout=self.timeout, follow_redirects=True) as client:
-            observations, models = await asyncio.gather(
-                self._observations(), self._models(client, definitions),
+            observations, models, rainfall_contexts = await asyncio.gather(
+                self._observations(), self._models(client, definitions), self._rainfall_contexts(client, definitions),
             )
         ffd = {row["name"]: row for row in observations}
-        stations = [self._station(definition, model, self._observation_for(definition["ffd_name"], ffd)) for definition, model in zip(definitions, models)]
+        stations = [self._station(definition, model, self._observation_for(definition["ffd_name"], ffd), rainfall)
+                    for definition, model, rainfall in zip(definitions, models, rainfall_contexts)]
         await asyncio.to_thread(self._store_observations, stations)
         return RiverMonitoringResponse(
             generated_at=datetime.now(timezone.utc).isoformat(), stations=stations, chains=RIVER_CHAINS,
             notes=["Current readings and flood categories: FFD Lahore. Hydrographs and expected peaks: GloFAS modeled discharge.",
                    "24h change uses matching FFD observations where stored; otherwise the modeled day-over-day change is labeled separately.",
+                   "Rainfall context: Open-Meteo daily precipitation near each monitoring station.",
                    "Peak time is the modeled maximum within the available forecast window, not a confirmed flood arrival time."],
         )
 
@@ -59,8 +98,10 @@ class RiverMonitoringService(UpstreamForecastService):
         aliases = {"Mangla": "Mangla Dam", "Rasul": "New Rasul"}
         return observations.get(name) or observations.get(aliases.get(name))
 
-    def _station(self, definition, model, observed) -> RiverMonitoringStation:
+    def _station(self, definition, model, observed, rainfall: list[RainfallPoint] | None = None) -> RiverMonitoringStation:
         parser = LiveRiverProvider()
+        rainfall = rainfall or []
+        flood_types, stats = self._signals(model, self._failed_provider("GEOGloWS", "Not used for river monitoring", ""), rainfall)
         observed_value = parser._parse_cusecs_to_cumecs(observed.get("discharge")) if observed else None
         observed_time = parser._parse_ffd_recording_time(observed.get("recording_time")) if observed and observed_value is not None else None
         level = parser._parse_number(observed.get("level")) if observed else None
@@ -79,7 +120,7 @@ class RiverMonitoringService(UpstreamForecastService):
             gauge_readings=list(readings.values()),
             **{key: value for key, value in definition.items() if key != "ffd_name"},
             basin=definition["river"], why_selected="River monitoring network", source_focus="FFD observations and GloFAS forecast context",
-            facts=[], rainfall=[], flood_types=[], stats={}, providers=[model],
+            facts=[], rainfall=rainfall, flood_types=flood_types, stats=stats, providers=[model],
             current_discharge_cumecs=observed_value if observed_time else model.current_cumecs,
             current_source="FFD observed" if observed_time else "GloFAS modeled",
             observed_at=observed_time.isoformat() if observed_time else None,
@@ -129,6 +170,6 @@ class RiverMonitoringService(UpstreamForecastService):
 
 
 river_monitoring_cache = UpstreamForecastCacheService(
-    forecast_factory=RiverMonitoringService, snapshot_id=2, response_model=RiverMonitoringResponse,
+    forecast_factory=RiverMonitoringService, snapshot_id=3, response_model=RiverMonitoringResponse,
     refresh_minutes=get_settings().river_monitoring_refresh_minutes,
 )

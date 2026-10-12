@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import type { ReactNode } from "react";
+import type { PopulationOverlay } from '../services/population';
 
 import type { LocationId } from "../config";
 import type { CitizenReport, Incident, NationalRiskCollection, ResourceGroups, RiverResponse, WaterIntelligenceCollection, WeatherResponse } from "../types/api";
@@ -20,6 +21,7 @@ interface NationalRiskMapLoaderProps {
   expanded?: boolean;
   initialRainfallEnabled?: boolean;
   mapOverlay?: ReactNode;
+  populationOverlay?: PopulationOverlay | null;
 }
 
 export function NationalRiskMapLoader(props: NationalRiskMapLoaderProps) {

@@ -88,22 +88,30 @@ class LiveRiverProvider(RiverProvider):
         return self._nearest_station(location_id, stations)
 
     async def _get_ffd_stations(self) -> list[dict]:
+        if self.client is not None:
+            return await self._fetch_ffd_stations(self.client)
         now = time.monotonic()
         cache = type(self)._ffd_cache
         if cache is not None and now - type(self)._ffd_cache_timestamp <= self.FFD_CACHE_TTL_SECONDS:
             return cache
         async with httpx.AsyncClient(timeout=self.timeout, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"}) as client:
-            page = await client.get(self.FFD_PAGE_URL)
-            page.raise_for_status()
-            token = self._extract_ffd_token(page.text)
-            headers = {**self.FFD_HEADERS, "X-FW-Token": token}
-            response = await client.get(self.FFD_DATA_URL, headers=headers)
-            response.raise_for_status()
-            stations = response.json().get("stations", [])
+            stations = await self._fetch_ffd_stations(client)
         if not isinstance(stations, list):
             raise ValueError("FFD station feed has invalid format")
         type(self)._ffd_cache = stations
         type(self)._ffd_cache_timestamp = now
+        return stations
+
+    async def _fetch_ffd_stations(self, client: httpx.AsyncClient) -> list[dict]:
+        page = await client.get(self.FFD_PAGE_URL, headers={"User-Agent": "Mozilla/5.0"})
+        page.raise_for_status()
+        token = self._extract_ffd_token(page.text)
+        headers = {**self.FFD_HEADERS, "X-FW-Token": token}
+        response = await client.get(self.FFD_DATA_URL, headers=headers)
+        response.raise_for_status()
+        stations = response.json().get("stations", [])
+        if not isinstance(stations, list):
+            raise ValueError("FFD station feed has invalid format")
         return stations
 
     def _normalize(self, location_id: str, scenario: Scenario, payload: dict) -> RiverResponse:

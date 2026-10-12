@@ -8,6 +8,7 @@ from app.db.session import SessionLocal
 from app.gis.river_stations import RIVER_CHAINS, STATIONS, upstream_ids
 from app.gis.water_intelligence_service import WaterIntelligenceService
 from app.models.river_gauge_observation import RiverGaugeObservation, TypedRiverGaugeObservation
+from app.schemas.upstream_forecast import RainfallPoint
 from app.services.river_monitoring_service import RiverMonitoringService
 
 
@@ -51,13 +52,20 @@ async def test_batch_normalization_observed_fallback_and_peak():
         models = await service._models(client, [definition, definition])
     assert len(calls) == 1
     assert len(models) == 2
+    rainfall = [
+        RainfallPoint(date=(today - timedelta(days=1)).isoformat(), precipitation_mm=2, probability_percent=20, phase="past"),
+        RainfallPoint(date=(today + timedelta(days=1)).isoformat(), precipitation_mm=14, probability_percent=75, phase="forecast"),
+    ]
     observed = {"discharge": "10,000", "level": "12.5", "status": "HIGH", "recording_time": datetime.now(timezone(timedelta(hours=5))).strftime("%d-%b %H PKT")}
     typed = service._station(definition, models[0], {**observed, "gauges": [
         {"type": "INFLOW", "discharge": "15,359"}, {"type": "OUTFLOW", "discharge": "1,159"},
         {"type": "OTHER", "discharge": "999"},
     ]})
     assert [(reading.gauge, reading.value) for reading in typed.gauge_readings] == [("INFLOW", 434.92), ("OUTFLOW", 32.82)]
-    station = service._station(definition, models[0], observed)
+    station = service._station(definition, models[0], observed, rainfall)
+    assert station.rainfall == rainfall
+    assert station.stats["max_forecast_rain_mm"] == 14
+    assert station.stats["max_rain_probability_percent"] == 75
     assert station.current_discharge_cumecs == 283.17
     assert station.current_source == "FFD observed"
     assert station.gauge_readings == []
@@ -105,3 +113,34 @@ async def test_wrong_batch_length_cannot_misassign_forecasts():
         models = await service._models(client, [{"latitude": 1, "longitude": 2}])
     assert len(models) == 1
     assert models[0].status == "unavailable"
+
+
+@pytest.mark.asyncio
+async def test_monitoring_rainfall_is_batched_and_normalized():
+    service = RiverMonitoringService()
+    today = datetime.now(timezone.utc).date()
+    definition = dict(id="TRIMMU", name="Trimmu", river="Chenab", latitude=31.1448, longitude=72.146, ffd_name="Trimmu")
+    payload = {"daily": {
+        "time": [(today + timedelta(days=offset)).isoformat() for offset in [-1, 0, 1]],
+        "precipitation_sum": [3, 0, 22.5],
+        "precipitation_probability_max": [20, 30, 80],
+    }}
+    calls = []
+
+    def handler(request):
+        calls.append(request)
+        assert request.url.params["daily"] == "precipitation_sum,precipitation_probability_max"
+        assert request.url.params["forecast_days"] == "7"
+        return httpx.Response(200, json=[payload, payload])
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        rainfall = await service._rainfall_contexts(client, [definition, definition])
+
+    assert len(calls) == 1
+    assert len(rainfall) == 2
+    assert [point.phase for point in rainfall[0]] == ["past", "past", "forecast"]
+    assert rainfall[0][-1].precipitation_mm == 22.5
+    assert rainfall[0][-1].probability_percent == 80
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(lambda request: httpx.Response(200, json=[]))) as client:
+        assert await service._rainfall_contexts(client, [definition]) == [[]]

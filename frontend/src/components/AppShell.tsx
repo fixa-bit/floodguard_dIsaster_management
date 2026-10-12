@@ -1,7 +1,7 @@
-import { Activity, AlertTriangle, CloudRain, ExternalLink, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves, Droplets } from "lucide-react";
+import { Activity, AlertTriangle, BellRing, CloudRain, ExternalLink, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves, Droplets } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "upstream" | "monitoring" | "incidents" | "reports" | "activity" | "simulation";
+export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "upstream" | "monitoring" | "alerts" | "incidents" | "reports" | "activity" | "simulation";
 
 const navItems = [
   { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
@@ -9,6 +9,7 @@ const navItems = [
   { id: "predictive" as const, label: "Predictive Risk Views", icon: ChartNoAxesCombined },
   { id: "upstream" as const, label: "Upstream Source Flood Watch", icon: Waves },
   { id: "monitoring" as const, label: "River Monitoring", icon: Droplets },
+  { id: "alerts" as const, label: "Alerts", icon: BellRing },
   { id: "incidents" as const, label: "Incidents", icon: AlertTriangle },
   { id: "reports" as const, label: "Citizen Reports", icon: MessageSquareText },
   { id: "activity" as const, label: "System Activity", icon: Activity },

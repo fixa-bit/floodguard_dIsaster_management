@@ -1,4 +1,4 @@
-import { RefreshCw, X } from "lucide-react";
+import { CloudRain, RefreshCw, X } from "lucide-react";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import type { RiverMonitoringResponse } from "../types/api";
@@ -12,6 +12,19 @@ function timestamp(value: string | null | undefined) {
   if (!value) return "Unavailable";
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${new Intl.DateTimeFormat("en-PK", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(value))} (daily forecast)`;
   return `${new Intl.DateTimeFormat("en-PK", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "Asia/Karachi" }).format(new Date(value))} PKT`;
+}
+
+function compactDate(value: string | null | undefined) {
+  if (!value) return "Unavailable";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-PK", { month: "short", day: "numeric", timeZone: "UTC" }).format(date);
+}
+
+function numberLabel(value: number | null | undefined, digits = 1) {
+  return typeof value === "number" && Number.isFinite(value)
+    ? value.toLocaleString("en-PK", { maximumFractionDigits: digits })
+    : "Unavailable";
 }
 
 export function RiverStationInspector({ stationId, data, error, refreshing, onRefresh, onClose, onSelect, flowUnit = "cumecs" }: {
@@ -30,6 +43,9 @@ export function RiverStationInspector({ stationId, data, error, refreshing, onRe
   const station = data?.stations.find((item) => item.id === stationId);
   const level = stationWaterLevel(station);
   const chains = Object.entries(data?.chains ?? {}).filter(([, ids]) => ids.includes(stationId));
+  const rainfallForecast = (station?.rainfall ?? []).filter((point) => point.phase === "forecast");
+  const maxRain = typeof station?.stats.max_forecast_rain_mm === "number" ? station.stats.max_forecast_rain_mm : null;
+  const rainProbability = typeof station?.stats.max_rain_probability_percent === "number" ? station.stats.max_rain_probability_percent : null;
   return <><aside className="river-station-inspector" aria-label="River station details" hidden={forecastOpen}>
     <header><div><span>River monitoring</span><h3>{station?.name ?? stationId.replaceAll("_", " ")}</h3></div><button type="button" title="Close station details" aria-label="Close station details" onClick={onClose}><X size={18} /></button></header>
     <div className="station-details-tabs" role="tablist" aria-label="Station views">
@@ -52,6 +68,20 @@ export function RiverStationInspector({ stationId, data, error, refreshing, onRe
       <h4>Hydrograph</h4>
       <ForecastChart providers={station.providers} />
       <RiverDataSource source="GloFAS via Open-Meteo" station={station} />
+      <h4 className="river-rainfall-heading"><CloudRain size={15} />Rainfall context</h4>
+      <dl className="river-station-stats river-rainfall-summary">
+        <div><dt>Max forecast rain</dt><dd>{numberLabel(maxRain)} mm</dd><RiverDataSource source="Open-Meteo model precipitation" station={station} /></div>
+        <div><dt>Max rain probability</dt><dd>{numberLabel(rainProbability, 0)}%</dd><RiverDataSource source="Open-Meteo model precipitation" station={station} /></div>
+      </dl>
+      {rainfallForecast.length ? <div className="source-rain-strip river-rain-strip">
+        {rainfallForecast.map((point) => (
+          <div key={point.date}>
+            <span>{compactDate(point.date)}</span>
+            <strong>{numberLabel(point.precipitation_mm)} mm</strong>
+            <small>{numberLabel(point.probability_percent, 0)}%</small>
+          </div>
+        ))}
+      </div> : <p>Rainfall context unavailable from the current weather feed.</p>}
       <h4>Upstream stations</h4>
       {station.upstream_station_ids.length ? <div className="river-upstream-stations">{station.upstream_station_ids.map((id) => <button type="button" key={id} onClick={() => onSelect(id)}>{data?.stations.find((item) => item.id === id)?.name ?? id}</button>)}</div> : <p>First monitored station in this corridor</p>}
       {chains.map(([river, ids]) => <div className="river-station-chain" key={river}><strong>{river}</strong><ol>{ids.map((id) => <li key={id}><button type="button" aria-current={id === stationId ? "true" : undefined} onClick={() => onSelect(id)}>{data?.stations.find((item) => item.id === id)?.name ?? id}</button></li>)}</ol></div>)}

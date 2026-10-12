@@ -1,10 +1,11 @@
-import { AlertCircle, ChevronDown, Clock3, RefreshCw } from "lucide-react";
+import { AlertCircle, BellRing, ChevronDown, Clock3, RefreshCw, X } from "lucide-react";
 import { useState } from "react";
 
 import { ActivityTimeline } from "./components/ActivityTimeline";
 import { AppShell, type ViewId } from "./components/AppShell";
 import { CitizenReportsPanel } from "./components/CitizenReportsPanel";
 import { IncidentTable } from "./components/IncidentTable";
+import { AlertTable } from "./components/AlertTable";
 import { SimulationPanel } from "./components/SimulationPanel";
 import { FloodRiskMultiView } from "./components/FloodRiskMultiView";
 import { SourceFloodForecastTab } from "./components/SourceFloodForecastTab";
@@ -14,6 +15,7 @@ import { useDashboardData } from "./hooks/useDashboardData";
 import { OverviewPage } from "./pages/OverviewPage";
 import { GISPage } from "./pages/GISPage";
 import { api } from "./services/api";
+import type { MonitoringSimulationResult } from "./types/api";
 
 const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   overview: { title: "Operational Overview", subtitle: "Live flood intelligence and emergency coordination" },
@@ -22,21 +24,24 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   predictive: { title: "Predictive Risk Views", subtitle: "Flood forecasts by hazard type and horizon" },
   upstream: { title: "Upstream Source Flood Watch", subtitle: "Upper-basin stations, discharge forecasts, and past trends" },
   monitoring: { title: "River Monitoring", subtitle: "Barrages, headworks and river station readings" },
+  alerts: { title: "Alerts", subtitle: "Monitoring alerts and recorded threshold crossings" },
   incidents: { title: "Incident Management", subtitle: "Review active and historical emergency incidents" },
   reports: { title: "Citizen Reports", subtitle: "Field observations awaiting authority verification" },
   activity: { title: "System Activity", subtitle: "Automated decisions, monitoring changes, and response events" },
-  simulation: { title: "Simulation", subtitle: "Controlled scenario testing isolated from operational feeds" },
+  simulation: { title: "Simulation", subtitle: "Monitoring test scenarios" },
 };
 
 export default function App() {
   const [view, setView] = useState<ViewId>("overview");
   const [locationId, setLocationId] = useState<LocationId>("JHG_001");
-  const { data, loading, errors, lastUpdated, autoRefreshMs, refresh } = useDashboardData(locationId);
+  const { data, loading, errors, lastUpdated, autoRefreshMs, refresh, refreshOperations } = useDashboardData(locationId);
+  const [simulationNotice, setSimulationNotice] = useState<MonitoringSimulationResult | null>(null);
+  const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(null);
   const location = LOCATIONS.find((item) => item.id === locationId)!;
   const heading = viewTitles[view];
 
   return (
-    <AppShell activeView={view} onViewChange={setView}>
+    <AppShell activeView={view} onViewChange={(next) => { setSelectedIncidentId(null); setView(next); if (["alerts", "incidents"].includes(next)) void refreshOperations(); }}>
       <header className="topbar">
         <div><p className="eyebrow">Emergency Command Dashboard</p><h1>{heading.title}</h1><span>{heading.subtitle}</span></div>
         <div className="topbar-actions">
@@ -48,7 +53,9 @@ export default function App() {
 
       {errors.length > 0 && <div className="error-banner"><AlertCircle size={19} /><div><strong>{errors.some((error) => error.includes("BACKEND_UNAVAILABLE")) ? "Backend unavailable" : "Some live data could not be refreshed"}</strong><span>{errors.join(" · ")}</span></div><button onClick={() => void refresh(false)}>Retry</button></div>}
 
-      {loading && !["overview", "gis", "rainfall"].includes(view) ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
+      {simulationNotice && <div className="simulation-alert-banner" role="alert"><BellRing size={20} /><div><strong>SIMULATED FLOW: {simulationNotice.station_name}</strong><span>{simulationNotice.alerts.length} threshold alerts / {simulationNotice.incidents.length} incidents recorded</span></div><button type="button" className="secondary-button" onClick={() => setView("alerts")}>View alerts</button><button type="button" className="icon-button" title="Dismiss simulation alert" aria-label="Dismiss simulation alert" onClick={() => setSimulationNotice(null)}><X size={17} /></button></div>}
+
+      {loading && !["overview", "gis", "rainfall", "simulation", "alerts", "incidents"].includes(view) ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
         <div className="page-content">
           {view === "overview" && <OverviewPage data={data} locationId={locationId} onLocationChange={setLocationId} onRefresh={() => refresh(false)} />}
           {view === "gis" && <GISPage data={data} locationId={locationId} onLocationChange={setLocationId} />}
@@ -56,7 +63,8 @@ export default function App() {
           {view === "predictive" && <FloodRiskMultiView data={data} />}
           {view === "upstream" && <SourceFloodForecastTab />}
           {view === "monitoring" && <RiverMonitoringView />}
-          {view === "incidents" && <IncidentTable incidents={data.incidents} full />}
+          {view === "alerts" && <AlertTable alerts={data.alerts} onOpenIncident={(id) => { setSelectedIncidentId(id); setView("incidents"); }} />}
+          {view === "incidents" && <IncidentTable incidents={data.incidents} initialIncidentId={selectedIncidentId} full />}
           {view === "reports" && (
             <CitizenReportsPanel
               reports={data.reports}
@@ -67,7 +75,7 @@ export default function App() {
             />
           )}
           {view === "activity" && <ActivityTimeline events={data.events} full />}
-          {view === "simulation" && <div className="single-page-grid"><SimulationPanel status={data.simulation} system={data.system} selectedLocation={locationId} onChanged={() => refresh(false)} /></div>}
+          {view === "simulation" && <SimulationPanel onCompleted={(result) => { setSimulationNotice(result.alerts.length ? result : null); void refreshOperations(result); }} onOpenAlerts={() => setView("alerts")} onOpenIncidents={() => { setSelectedIncidentId(null); setView("incidents"); }} />}
         </div>
       )}
     </AppShell>

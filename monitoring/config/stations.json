@@ -1,0 +1,189 @@
+{
+  "_note": "Station/dam/headworks metadata from FloodGuard's priority points. Metadata does not imply a connected API. Confluence planning references are excluded.",
+  "stations": [
+    {
+      "station_id": "CHASHMA",
+      "name": "Chashma Barrage",
+      "river": "Indus",
+      "lat": 32.4359,
+      "lon": 71.3794
+    },
+    {
+      "station_id": "TAUNSA",
+      "name": "Taunsa Barrage",
+      "river": "Indus",
+      "lat": 30.518528,
+      "lon": 70.836721,
+      "glofas_lat": 30.518528,
+      "glofas_lon": 70.836721
+    },
+    {
+      "station_id": "GUDDU",
+      "name": "Guddu Barrage",
+      "river": "Indus",
+      "lat": 28.4201,
+      "lon": 69.7114,
+      "glofas_lat": 28.4201,
+      "glofas_lon": 69.7114
+    },
+    {
+      "station_id": "SUKKUR",
+      "name": "Sukkur Barrage",
+      "river": "Indus",
+      "lat": 27.679,
+      "lon": 68.8462,
+      "glofas_lat": 27.679,
+      "glofas_lon": 68.8462
+    },
+    {
+      "station_id": "KOTRI",
+      "name": "Kotri Barrage",
+      "river": "Indus",
+      "lat": 25.4428,
+      "lon": 68.3151
+    },
+    {
+      "station_id": "RASUL",
+      "name": "Rasul Barrage",
+      "river": "Jhelum",
+      "lat": 32.683,
+      "lon": 73.517
+    },
+    {
+      "station_id": "BALLOKI",
+      "name": "Balloki Headworks",
+      "river": "Ravi",
+      "lat": 31.2222,
+      "lon": 73.8596
+    },
+    {
+      "station_id": "SIDHNAI",
+      "name": "Sidhnai Barrage",
+      "river": "Ravi",
+      "lat": 30.5723,
+      "lon": 72.1582
+    },
+    {
+      "station_id": "MARALA",
+      "name": "Marala Headworks",
+      "river": "Chenab",
+      "lat": 32.660583,
+      "lon": 74.41125,
+      "glofas_lat": 32.660583,
+      "glofas_lon": 74.41125
+    },
+    {
+      "station_id": "KHANKI",
+      "name": "Khanki Headworks",
+      "river": "Chenab",
+      "lat": 32.4088,
+      "lon": 73.9685
+    },
+    {
+      "station_id": "QADIRABAD",
+      "name": "Qadirabad Barrage",
+      "river": "Chenab",
+      "lat": 32.3209,
+      "lon": 73.6851
+    },
+    {
+      "station_id": "TRIMMU",
+      "name": "Trimmu Barrage",
+      "river": "Chenab",
+      "lat": 31.1448,
+      "lon": 72.146
+    },
+    {
+      "station_id": "PANJNAD",
+      "name": "Panjnad Headworks",
+      "river": "Panjnad",
+      "lat": 29.3464,
+      "lon": 71.0202
+    },
+    {
+      "station_id": "SULEMANKI",
+      "name": "Sulemanki Headworks",
+      "river": "Sutlej",
+      "lat": 30.3777,
+      "lon": 73.8663
+    },
+    {
+      "station_id": "ISLAM",
+      "name": "Islam Headworks",
+      "river": "Sutlej",
+      "lat": 29.8263,
+      "lon": 72.5485
+    },
+    {
+      "station_id": "KALABAGH",
+      "name": "Kalabagh River Station",
+      "river": "Indus",
+      "lat": 32.9187,
+      "lon": 71.5219,
+      "glofas_lat": 32.9187,
+      "glofas_lon": 71.5219
+    },
+    {
+      "station_id": "NOWSHERA",
+      "name": "Nowshera River Station",
+      "river": "Kabul",
+      "lat": 34.015,
+      "lon": 71.975,
+      "glofas_lat": 34.015,
+      "glofas_lon": 71.975
+    },
+    {
+      "station_id": "JASSAR",
+      "name": "Jassar River Station",
+      "river": "Ravi",
+      "lat": 32.049654,
+      "lon": 74.992018
+    },
+    {
+      "station_id": "SHAHDARA",
+      "name": "Shahdara River Station",
+      "river": "Ravi",
+      "lat": 31.6085,
+      "lon": 74.2956
+    },
+    {
+      "station_id": "GANDA_SINGH_WALA",
+      "name": "Ganda Singh Wala River Station",
+      "river": "Sutlej",
+      "lat": 30.993429,
+      "lon": 74.545256
+    },
+    {
+      "station_id": "CHAKDARA",
+      "name": "Chakdara Stream Gauge",
+      "river": "Swat",
+      "lat": 34.644444,
+      "lon": 72.025
+    },
+    {
+      "station_id": "TARBELA",
+      "name": "Tarbela Dam / Reservoir",
+      "river": "Indus",
+      "lat": 34.1059,
+      "lon": 72.7338,
+      "glofas_lat": 34.1059,
+      "glofas_lon": 72.7338
+    },
+    {
+      "station_id": "MANGLA",
+      "name": "Mangla Dam / Reservoir",
+      "river": "Jhelum",
+      "lat": 33.142,
+      "lon": 73.645,
+      "glofas_lat": 33.142,
+      "glofas_lon": 73.645
+    },
+    {
+      "station_id": "WARSAK",
+      "name": "Warsak Dam / Reservoir",
+      "river": "Kabul",
+      "lat": 34.16,
+      "lon": 71.37
+    }
+  ]
+}

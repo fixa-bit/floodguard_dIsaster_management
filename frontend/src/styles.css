@@ -1972,6 +1972,9 @@ body { color: var(--ink); background: #071114; }
 .river-station-stats dt { color: #9fbfc0; font-size: 11px; }
 .river-station-stats dd { margin: 5px 0; color: #ffffff; font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
 .river-station-inspector p { font-size: 10px; line-height: 1.5; color: #b5cecb; }
+.river-rainfall-heading { display: flex; align-items: center; gap: 7px; color: #50f5d0; }
+.river-rainfall-summary { margin-bottom: 10px; }
+.river-rain-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .river-upstream-stations { display: flex; gap: 6px; flex-wrap: wrap; }
 .river-upstream-stations button, .river-station-chain button { color: #50f5d0; background: transparent; border: 0; padding: 5px 0; font-size: 11px; text-align: left; }
 .river-upstream-stations button { margin-right: 8px; text-decoration: underline; }

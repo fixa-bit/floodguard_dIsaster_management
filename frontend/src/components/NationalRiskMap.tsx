@@ -3,6 +3,8 @@ import * as maplibregl from "maplibre-gl";
 import type { GeoJSONSource, ImageSource, Map as MapLibreMap, MapLayerMouseEvent, MapMouseEvent, StyleSpecification } from "maplibre-gl";
 import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePopulationLayers } from './usePopulationLayers';
+import type { PopulationOverlay } from '../services/population';
 import { bbox } from "@turf/bbox";
 import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
 import type { ReactNode } from "react";
@@ -52,6 +54,7 @@ interface NationalRiskMapProps {
   expanded?: boolean;
   initialRainfallEnabled?: boolean;
   mapOverlay?: ReactNode;
+  populationOverlay?: PopulationOverlay | null;
 }
 
 const baseStyle: StyleSpecification = {
@@ -391,10 +394,12 @@ function matchRiverTelemetry(feature: WaterIntelligenceFeature, rivers: RiverRes
   });
 }
 
-export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeather, locationRivers, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false, initialRainfallEnabled = false, mapOverlay }: NationalRiskMapProps) {
+export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeather, locationRivers, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false, initialRainfallEnabled = false, mapOverlay, populationOverlay }: NationalRiskMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const coordinateReadoutRef = useRef<HTMLOutputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const populationOverlayRef = useRef(populationOverlay);
+  populationOverlayRef.current = populationOverlay;
   const stationInteractionRef = useRef<StationInteraction | null>(null);
   const waterIntelligenceRef = useRef(waterIntelligence);
   const locationChangeRef = useRef(onLocationChange);
@@ -1144,6 +1149,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         }
         if (isCoordinateClick(event)) return;
         if (stationInteractionRef.current?.click(event)) { suppressDistrictFallbackRef.current = false; return; }
+        const populationLayers = ['population-settlements','population-administrative_exposure','population-population_grid'].filter(id => map.getLayer(id));
+        if (populationLayers.length && map.queryRenderedFeatures(event.point, { layers: populationLayers }).length) return;
         setCoordinateDetailsPoint(null);
         if (!map.queryRenderedFeatures(event.point, { layers: ["glacier-fill"] }).length
           || map.queryRenderedFeatures(event.point, { layers: ["border-test-points", "google-flood-hub-points", "observed-water-stations", "water-bodies", "model-water-points"] }).length) setSelectedGlacier(null);
@@ -1285,6 +1292,11 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     map.once("style.load", () => map.once("render", warmAfterFirstPaint));
     const resizeObserver = new ResizeObserver(() => {
       if (selectedCoordinateRef.current) fitCoordinate(map, selectedCoordinateRef.current, 0);
+      else if (populationOverlayRef.current) {
+        const [w,s,e,n] = populationOverlayRef.current.summary.bounds;
+        map.resize();
+        map.fitBounds([[w,s],[e,n]], { padding: 35, duration: 0, maxZoom: 11 });
+      }
       else if (activeCatchmentRef.current && map.getSource("catchment-areas")) fitCatchmentExtent(map, activeCatchmentRef.current);
       else if (rainfallEnabledRef.current) fitRainfallExtent(map);
       else if (glacierEnabledRef.current) fitGlacierExtent(map, 0);
@@ -1482,6 +1494,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     return () => { map.off("style.load", updateVisibility); };
   }, [layers, rainfallHeatmapEnabled, catchmentId, waterQuantity, showNormalFloodHub, glacierView, studyActive]);
 
+  usePopulationLayers(mapRef, populationOverlay);
   useStationHover({ mapRef, interactionRef: stationInteractionRef, pickingRef: coordinatePickingRef,
     catchment: studyActive ? studyCatchment : activeCatchment, expanded, revision: stationPopupSources,
     onPin: (touch) => {

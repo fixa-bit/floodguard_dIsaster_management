@@ -14,6 +14,7 @@ import type {
   SimulationStatus,
   SystemEvent,
   SystemStatus,
+  MonitoringSimulationResult,
   WaterIntelligenceCollection,
   WeatherResponse,
 } from "../types/api";
@@ -29,6 +30,7 @@ export interface DashboardData {
   incidents: Incident[];
   reports: CitizenReport[];
   events: SystemEvent[];
+  alerts: SystemEvent[];
   system: SystemStatus | null;
   simulation: SimulationStatus | null;
   nationalRisk: NationalRiskCollection | null;
@@ -47,6 +49,7 @@ const initialData: DashboardData = {
   incidents: [],
   reports: [],
   events: [],
+  alerts: [],
   system: null,
   simulation: null,
   nationalRisk: null,
@@ -73,9 +76,11 @@ export function useDashboardData(locationId: string) {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [autoRefreshMs, setAutoRefreshMs] = useState(NORMAL_RIVER_REFRESH_MS);
   const requestId = useRef(0);
+  const operationsVersion = useRef(0);
 
   const refresh = useCallback(async (initial = false) => {
     const currentRequest = ++requestId.current;
+    const currentOperationsVersion = operationsVersion.current;
     if (initial) setLoading(true);
     else setRefreshing(true);
 
@@ -96,6 +101,7 @@ export function useDashboardData(locationId: string) {
         api.contacts(),
         api.nationalRisk(),
         api.waterIntelligence(),
+        api.alerts(),
       ] as const),
       Promise.allSettled(LOCATIONS.map((location) => api.weather(location.id))),
       Promise.allSettled(LOCATIONS.map((location) => api.river(location.id))),
@@ -114,16 +120,17 @@ export function useDashboardData(locationId: string) {
       .map((result) => result.value);
 
     setData((previous) => ({
-      summary: requests[0].status === "fulfilled" ? requests[0].value : previous.summary,
+      summary: currentOperationsVersion === operationsVersion.current && requests[0].status === "fulfilled" ? requests[0].value : previous.summary,
       risk: requests[1].status === "fulfilled" ? requests[1].value : previous.risk,
       modelForecasts: requests[2].status === "fulfilled" ? requests[2].value : previous.modelForecasts,
       weather: requests[3].status === "fulfilled" ? requests[3].value : previous.weather,
       river: requests[4].status === "fulfilled" ? requests[4].value : previous.river,
       locationWeather: locationWeather.length > 0 ? locationWeather : previous.locationWeather.length > 0 ? previous.locationWeather : requests[3].status === "fulfilled" ? [requests[3].value] : previous.locationWeather,
       locationRivers: locationRivers.length > 0 ? locationRivers : previous.locationRivers,
-      incidents: requests[5].status === "fulfilled" ? requests[5].value : previous.incidents,
+      incidents: currentOperationsVersion === operationsVersion.current && requests[5].status === "fulfilled" ? requests[5].value : previous.incidents,
       reports: requests[6].status === "fulfilled" ? requests[6].value : previous.reports,
-      events: requests[7].status === "fulfilled" ? requests[7].value : previous.events,
+      events: currentOperationsVersion === operationsVersion.current && requests[7].status === "fulfilled" ? requests[7].value : previous.events,
+      alerts: currentOperationsVersion === operationsVersion.current && requests[15].status === "fulfilled" ? requests[15].value : previous.alerts,
       system: requests[8].status === "fulfilled" ? requests[8].value : previous.system,
       simulation: requests[9].status === "fulfilled" ? requests[9].value : previous.simulation,
       nationalRisk: requests[13].status === "fulfilled" ? requests[13].value : previous.nationalRisk,
@@ -140,6 +147,26 @@ export function useDashboardData(locationId: string) {
     setRefreshing(false);
   }, [locationId]);
 
+  const refreshOperations = useCallback(async (simulation?: MonitoringSimulationResult) => {
+    const version = ++operationsVersion.current;
+    if (simulation) setData((previous) => ({
+      ...previous,
+      alerts: [...simulation.alerts, ...previous.alerts.filter((alert) => !simulation.alerts.some((added) => added.id === alert.id))],
+      incidents: [...simulation.incidents, ...previous.incidents.filter((incident) => !simulation.incidents.some((added) => added.id === incident.id))],
+    }));
+    const [alerts, incidents, events, summary] = await Promise.allSettled([
+      api.alerts(), api.incidents(), api.events(), api.dashboard(),
+    ] as const);
+    if (version !== operationsVersion.current) return;
+    setData((previous) => ({
+      ...previous,
+      alerts: alerts.status === "fulfilled" ? alerts.value : previous.alerts,
+      incidents: incidents.status === "fulfilled" ? incidents.value : previous.incidents,
+      events: events.status === "fulfilled" ? events.value : previous.events,
+      summary: summary.status === "fulfilled" ? summary.value : previous.summary,
+    }));
+  }, []);
+
   useEffect(() => {
     void refresh(true);
   }, [refresh]);
@@ -153,5 +180,5 @@ export function useDashboardData(locationId: string) {
     return () => window.clearInterval(timer);
   }, [data.locationRivers, refresh]);
 
-  return { data, loading, refreshing, errors, lastUpdated, autoRefreshMs, refresh };
+  return { data, loading, refreshing, errors, lastUpdated, autoRefreshMs, refresh, refreshOperations };
 }

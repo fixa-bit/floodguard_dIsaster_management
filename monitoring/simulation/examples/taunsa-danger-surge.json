@@ -1,0 +1,31 @@
+{
+  "name": "taunsa-danger-surge",
+  "start_at": "2026-10-12T00:00:00Z",
+  "interval_minutes": 60,
+  "uncertainty_ratio": 0.08,
+  "series": [
+    {
+      "station": "TAUNSA",
+      "measurement": "discharge_inflow",
+      "unit": "cusecs",
+      "baseline_value": 120000,
+      "peak_value": 650000,
+      "recovery_value": 180000,
+      "rise_steps": 5,
+      "hold_steps": 2,
+      "recession_steps": 5
+    },
+    {
+      "station": "TAUNSA",
+      "measurement": "water_level",
+      "unit": "m",
+      "level_reference": "synthetic gauge datum",
+      "baseline_value": 3.2,
+      "peak_value": 8.1,
+      "recovery_value": 4.0,
+      "rise_steps": 5,
+      "hold_steps": 2,
+      "recession_steps": 5
+    }
+  ]
+}

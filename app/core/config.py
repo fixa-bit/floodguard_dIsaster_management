@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     gis_weather_batch_size: int = 40
     gis_river_batch_size: int = 40
     gis_history_retention_days: int = 30
+    exposure_dataset_root: str = ""
+    exposure_output_root: str = ""
     ml_model_enabled: bool = False
     ml_model_path: str = "app/ml/artifacts/flood_risk_xgboost.json"
     allow_rule_based_fallback: bool = False
