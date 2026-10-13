@@ -1,4 +1,19 @@
 export type Severity = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+export type SarInputRole = "during_sar" | "pre_sar" | "elevation" | "slope" | "permanent_water";
+
+export interface SarWaterOverlay {
+  model: string;
+  label: string;
+  threshold: number;
+  water_pixels: number;
+  valid_pixels: number;
+  water_percent: number;
+  coordinates: [[number, number], [number, number], [number, number], [number, number]];
+  image_data_url: string;
+  during_date?: string;
+  pre_date?: string;
+  source?: string;
+}
 export type Trend = "FALLING" | "STABLE" | "RISING" | "RAPIDLY_RISING";
 
 export interface DashboardSummary {

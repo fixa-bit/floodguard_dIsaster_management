@@ -10,3 +10,19 @@ frontend/node_modules/
 frontend/dist/
 frontend/screenshots/
 frontend/.npm-cache/
+
+# Portal walkthrough capture intermediates (keep the finished MP4 and source files).
+docs/portal-video/raw/
+docs/portal-video/clips/
+docs/portal-video/frames/
+docs/portal-video/frames-rest/
+docs/portal-video/preflight/
+docs/portal-video/*.png
+docs/portal-video/glacier-clip.mp4
+docs/portal-video/clips.txt
+docs/portal-video/failure.json
+docs/portal-video/first-frame-matches.json
+docs/portal-video/glacier-recording.json
+docs/portal-video/inspection.json
+docs/portal-video/preflight-manifest.json
+docs/portal-video/recording-rest-manifest.json

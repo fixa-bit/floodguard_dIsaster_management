@@ -24,6 +24,8 @@ import type {
   RiverMonitoringResponse,
   WaterIntelligenceCollection,
   WeatherResponse,
+  SarInputRole,
+  SarWaterOverlay,
 } from "../types/api";
 
 interface ErrorPayload {
@@ -42,19 +44,19 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(path: string, options?: RequestInit, baseUrl = API_BASE_URL): Promise<T> {
+export async function apiFetch<T>(path: string, options?: RequestInit, baseUrl = API_BASE_URL, timeoutMs?: number): Promise<T> {
   let response: Response;
   const controller = new AbortController();
   const cancel = () => controller.abort();
   options?.signal?.addEventListener("abort", cancel, { once: true });
   if (options?.signal?.aborted) controller.abort();
-  const timeout = window.setTimeout(() => controller.abort(), 30000);
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs ?? (options?.body instanceof FormData ? 120000 : 30000));
   try {
     response = await fetch(`${baseUrl}${path}`, {
       ...options,
       signal: controller.signal,
       headers: {
-        "Content-Type": "application/json",
+        ...(options?.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
         ...options?.headers,
       },
     });
@@ -89,6 +91,13 @@ export async function apiFetch<T>(path: string, options?: RequestInit, baseUrl =
 }
 
 export const api = {
+  sarWaterExtentAtLocation: (latitude: number, longitude: number) =>
+    apiFetch<SarWaterOverlay>(`/flood/water-extent/location?latitude=${latitude}&longitude=${longitude}`, undefined, undefined, 120000),
+  sarWaterExtent: (files: Record<SarInputRole, File>) => {
+    const form = new FormData();
+    for (const [role, file] of Object.entries(files)) form.append(role, file);
+    return apiFetch<SarWaterOverlay>("/flood/water-extent", { method: "POST", body: form });
+  },
   experimentalHydrograph: (id: string, days: 5 | 30, signal: AbortSignal) => apiFetch<ExperimentalHydrograph>(`/stations/${encodeURIComponent(id)}/hydrograph?days=${days}`, { signal }, API_BASE_URL.replace(/\/v1\/?$/, "")),
   dashboard: () => apiFetch<DashboardSummary>("/dashboard/summary"),
   risk: (locationId: string) => apiFetch<RiskResponse>(`/flood/risk?location_id=${locationId}`),
@@ -127,6 +136,7 @@ export const api = {
   simulationStations: () => apiFetch<SimulationStation[]>("/simulation/monitoring/stations"),
   playMonitoringSimulation: (payload: MonitoringSimulationRequest) => apiFetch<MonitoringSimulationResult>("/simulation/monitoring/play", { method: "POST", body: JSON.stringify(payload) }),
   alerts: () => apiFetch<SystemEvent[]>("/alerts"),
+  approveSimulatedAlert: (alertId: number) => apiFetch<SystemEvent>(`/alerts/${alertId}/approve`, { method: "POST" }),
   automation: (locationId: string) => apiFetch<AutomationContext>(`/automation/context?location_id=${locationId}`),
   shelters: () => apiFetch<Resource[]>("/resources/shelters"),
   hospitals: () => apiFetch<Resource[]>("/resources/hospitals"),

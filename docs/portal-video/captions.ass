@@ -1,0 +1,86 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1600
+PlayResY: 900
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Chapter,Segoe UI,17,&H00E9FFFF,&H00FFFFFF,&H00221D07,&H00221D07,-1,0,0,0,100,100,0,0,1,0,0,7,18,18,9,1
+Style: Demo,Segoe UI,13,&H009EDDFF,&H00FFFFFF,&H00221D07,&H00221D07,0,0,0,0,100,100,0,0,1,0,0,9,18,18,12,1
+Style: Caption,Segoe UI,20,&H00F4FFF6,&H00FFFFFF,&H00221D07,&H00221D07,0,0,0,0,100,100,0,0,1,0,0,2,28,28,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:05:45.00,Demo,,0,0,0,,ILLUSTRATIVE DEMO  |  Small-dataset model assumption
+Dialogue: 1,0:00:00.00,0:00:07.40,Chapter,,0,0,0,,FLOODGUARD AI  /  Operational overview
+Dialogue: 1,0:00:00.00,0:00:07.40,Caption,,0,0,0,,FloodGuard AI: an actual browser walkthrough. Models are assumed trained on small datasets; all demonstrated readings are illustrative.
+Dialogue: 1,0:00:07.40,0:00:15.72,Chapter,,0,0,0,,FLOODGUARD AI  /  Command statistics
+Dialogue: 1,0:00:07.40,0:00:15.72,Caption,,0,0,0,,National screening summarizes district risk, priorities, and monitoring intervals in one command view.
+Dialogue: 1,0:00:15.72,0:00:26.82,Chapter,,0,0,0,,FLOODGUARD AI  /  Command statistics
+Dialogue: 1,0:00:15.72,0:00:26.82,Caption,,0,0,0,,The river summary compares city discharge and forecast values, with timestamps and a manual refresh control.
+Dialogue: 1,0:00:26.82,0:00:37.92,Chapter,,0,0,0,,FLOODGUARD AI  /  Command statistics
+Dialogue: 1,0:00:26.82,0:00:37.92,Caption,,0,0,0,,The rainfall table compares current, recent, and forecast rainfall across the four operational cities.
+Dialogue: 1,0:00:37.92,0:00:49.02,Chapter,,0,0,0,,FLOODGUARD AI  /  Command statistics
+Dialogue: 1,0:00:37.92,0:00:49.02,Caption,,0,0,0,,System information shows the configured data mode, monitoring interval, and active risk engine.
+Dialogue: 1,0:00:49.02,0:01:00.12,Chapter,,0,0,0,,FLOODGUARD AI  /  National GIS layers
+Dialogue: 1,0:00:49.02,0:01:00.12,Caption,,0,0,0,,Toggle district boundaries, screening, waterways, catchments, and monitoring categories on the interactive map.
+Dialogue: 1,0:01:00.12,0:01:11.22,Chapter,,0,0,0,,FLOODGUARD AI  /  Reference outlines and Flood Hub integration
+Dialogue: 1,0:01:00.12,0:01:11.22,Caption,,0,0,0,,Compare the available Kashmir outlines and enable Flood Hub markers. The gauges shown here are illustrative integration examples.
+Dialogue: 1,0:01:11.22,0:01:22.32,Chapter,,0,0,0,,FLOODGUARD AI  /  Coordinate lookup
+Dialogue: 1,0:01:11.22,0:01:22.32,Caption,,0,0,0,,Enter latitude and longitude to inspect local coverage. The selected coordinate is pinned on the map.
+Dialogue: 1,0:01:22.32,0:01:33.42,Chapter,,0,0,0,,FLOODGUARD AI  /  Catchment study mode
+Dialogue: 1,0:01:22.32,0:01:33.42,Caption,,0,0,0,,Enable corresponding layers to focus on the selected district and hydrological sub-basin, including matching river features.
+Dialogue: 1,0:01:33.42,0:01:44.52,Chapter,,0,0,0,,FLOODGUARD AI  /  Station hover cards
+Dialogue: 1,0:01:33.42,0:01:44.52,Caption,,0,0,0,,Hover and pin a priority monitoring station to inspect readings, provenance, and stored trends.
+Dialogue: 1,0:01:44.52,0:01:55.62,Chapter,,0,0,0,,FLOODGUARD AI  /  Station discharge forecast
+Dialogue: 1,0:01:44.52,0:01:55.62,Caption,,0,0,0,,Station details link to an interactive forecast, separate historical series, date inspection, a readings table, and CSV download.
+Dialogue: 1,0:01:55.62,0:02:06.72,Chapter,,0,0,0,,FLOODGUARD AI  /  Glaciers and headwaters
+Dialogue: 1,0:01:55.62,0:02:06.72,Caption,,0,0,0,,Inspect glacier coverage and upstream drainage, including glaciers that contribute to Pakistan's river basins.
+Dialogue: 1,0:02:06.72,0:02:17.82,Chapter,,0,0,0,,FLOODGUARD AI  /  Satellite water extent
+Dialogue: 1,0:02:06.72,0:02:17.82,Caption,,0,0,0,,Select a place to display a dated satellite water-mask overlay. This recording uses an illustrative U-Net output.
+Dialogue: 1,0:02:17.82,0:02:28.91,Chapter,,0,0,0,,FLOODGUARD AI  /  Rainfall heatmap
+Dialogue: 1,0:02:17.82,0:02:28.91,Caption,,0,0,0,,Switch between observed accumulation windows and 24-hour or 72-hour forecasts. Colors follow the rainfall scale.
+Dialogue: 1,0:02:28.91,0:02:40.01,Chapter,,0,0,0,,FLOODGUARD AI  /  Population exposure analysis
+Dialogue: 1,0:02:28.91,0:02:40.01,Caption,,0,0,0,,GIS Operations estimates exposed people and mapped settlements, with district or tehsil breakdowns and coverage information.
+Dialogue: 1,0:02:40.01,0:02:51.11,Chapter,,0,0,0,,FLOODGUARD AI  /  Exposure controls and map overlays
+Dialogue: 1,0:02:40.01,0:02:51.11,Caption,,0,0,0,,The analysis supports historical water, configured segmentation, uploaded polygons, and synthetic scenarios; inspect the existing result and its\Nlayers.
+Dialogue: 1,0:02:51.11,0:03:02.21,Chapter,,0,0,0,,FLOODGUARD AI  /  Predictive model views
+Dialogue: 1,0:02:51.11,0:03:02.21,Caption,,0,0,0,,Five predictive views cover riverine, flash, urban, seasonal basin, and upstream or transboundary risk, with forecast times and target selectors.
+Dialogue: 1,0:03:02.21,0:03:09.61,Chapter,,0,0,0,,FLOODGUARD AI  /  Riverine short-term model
+Dialogue: 1,0:03:02.21,0:03:09.61,Caption,,0,0,0,,Riverine forecasts: XGBoost baseline inputs, Trimmu and Balloki targets, discharge forecasts, and flood classes over 24–48 hours.
+Dialogue: 1,0:03:09.61,0:03:17.01,Chapter,,0,0,0,,FLOODGUARD AI  /  Flash-flood model
+Dialogue: 1,0:03:09.61,0:03:17.01,Caption,,0,0,0,,Flash-flood guidance combines rainfall, soil moisture, and GIS features for catchment risk within six hours.
+Dialogue: 1,0:03:17.01,0:03:28.11,Chapter,,0,0,0,,FLOODGUARD AI  /  Urban flooding model
+Dialogue: 1,0:03:17.01,0:03:28.11,Caption,,0,0,0,,Urban susceptibility uses city-scale targets, rainfall, drainage context, and selectable forecast intervals.
+Dialogue: 1,0:03:28.11,0:03:35.51,Chapter,,0,0,0,,FLOODGUARD AI  /  Seasonal basin model
+Dialogue: 1,0:03:28.11,0:03:35.51,Caption,,0,0,0,,Seasonal basin risk shows forecasts over weeks to months, with target-specific risk series.
+Dialogue: 1,0:03:35.51,0:03:42.91,Chapter,,0,0,0,,FLOODGUARD AI  /  Upstream anomaly model
+Dialogue: 1,0:03:35.51,0:03:42.91,Caption,,0,0,0,,Upstream and transboundary risk highlights anomalous flow changes over hours to days. Model outputs are illustrative in this demo.
+Dialogue: 1,0:03:42.91,0:03:54.01,Chapter,,0,0,0,,FLOODGUARD AI  /  Upstream source flood watch
+Dialogue: 1,0:03:42.91,0:03:54.01,Caption,,0,0,0,,Select upper-basin stations, compare GloFAS and GEOGloWS series, and inspect historical trends, rainfall, and forecast risk signals.
+Dialogue: 1,0:03:54.01,0:04:01.41,Chapter,,0,0,0,,FLOODGUARD AI  /  Source forecast context
+Dialogue: 1,0:03:54.01,0:04:01.41,Caption,,0,0,0,,Each station includes provider summaries, expected peaks, rainfall context, location details, and scheduled or manual refresh.
+Dialogue: 1,0:04:01.41,0:04:12.51,Chapter,,0,0,0,,FLOODGUARD AI  /  River monitoring table
+Dialogue: 1,0:04:01.41,0:04:12.51,Caption,,0,0,0,,Filter monitoring stations by river or name, switch units, and compare current flow, forecasts, flood categories, and expected peaks.
+Dialogue: 1,0:04:12.51,0:04:19.91,Chapter,,0,0,0,,FLOODGUARD AI  /  Station network and chart
+Dialogue: 1,0:04:12.51,0:04:19.91,Caption,,0,0,0,,Open a station to inspect its upstream network and forecast. Chart legends and date inspection help distinguish the displayed series.
+Dialogue: 1,0:04:19.91,0:04:31.01,Chapter,,0,0,0,,FLOODGUARD AI  /  Citizen reports
+Dialogue: 1,0:04:19.91,0:04:31.01,Caption,,0,0,0,,Citizen reports provide a scrollable database-backed feed, coordinates, optional image or video links, priority flags, and closure status.
+Dialogue: 1,0:04:31.01,0:04:42.10,Chapter,,0,0,0,,FLOODGUARD AI  /  Submit a geolocated report
+Dialogue: 1,0:04:31.01,0:04:42.10,Caption,,0,0,0,,Create a report using coordinates, browser location, or a Google Maps link. Image GPS fields remain visible when no geotag is available.
+Dialogue: 1,0:04:42.10,0:04:52.28,Chapter,,0,0,0,,FLOODGUARD AI  /  Prioritize and close reports
+Dialogue: 1,0:04:42.10,0:04:52.28,Caption,,0,0,0,,Flag a report for attention, then close it in the database. New reports appear in the active window before remaining in the saved feed.
+Dialogue: 1,0:04:52.28,0:05:03.38,Chapter,,0,0,0,,FLOODGUARD AI  /  Monitoring simulation
+Dialogue: 1,0:04:52.28,0:05:03.38,Caption,,0,0,0,,Configure a station, measurement, units, test thresholds, and a reading profile to exercise the monitoring workflow.
+Dialogue: 1,0:05:03.38,0:05:10.78,Chapter,,0,0,0,,FLOODGUARD AI  /  Threshold crossing and saved results
+Dialogue: 1,0:05:03.38,0:05:10.78,Caption,,0,0,0,,Play the test scenario. Threshold crossings save simulated readings and create linked alerts and incidents.
+Dialogue: 1,0:05:10.78,0:05:18.18,Chapter,,0,0,0,,FLOODGUARD AI  /  Alert review
+Dialogue: 1,0:05:10.78,0:05:18.18,Caption,,0,0,0,,Review threshold alerts, distinguish operational and simulated flows, and open the linked incident.
+Dialogue: 1,0:05:18.18,0:05:26.50,Chapter,,0,0,0,,FLOODGUARD AI  /  Incident management
+Dialogue: 1,0:05:18.18,0:05:26.50,Caption,,0,0,0,,The incident view records severity, status, location, and timestamps. Linked details preserve the simulated-flow context.
+Dialogue: 1,0:05:26.50,0:05:33.90,Chapter,,0,0,0,,FLOODGUARD AI  /  System activity
+Dialogue: 1,0:05:26.50,0:05:33.90,Caption,,0,0,0,,The activity timeline records model decisions, monitoring changes, report actions, and simulated response events.
+Dialogue: 1,0:05:33.90,0:05:45.00,Chapter,,0,0,0,,FLOODGUARD AI  /  Command overview
+Dialogue: 1,0:05:33.90,0:05:45.00,Caption,,0,0,0,,The walkthrough covers the portal as it runs in a web browser. Small-dataset training is an assumption; this video does not validate model\Naccuracy.

@@ -1,0 +1,32 @@
+.predictive-inputs-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 20px; background: rgba(0, 10, 13, .78); }
+.predictive-risk-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.predictive-risk-toolbar p { margin: 0; color: #accbc7; font-size: 12px; }
+.predictive-risk-toolbar button { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; color: #dcf9f2; background: #123a39; border: 1px solid #4c9e90; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.predictive-risk-toolbar button:hover { background: #1d4a45; }
+.predictive-risk-toolbar button:focus-visible { outline: 2px solid #50f5d0; outline-offset: 2px; }
+.forecast-example-label { display: inline-block; margin-bottom: 5px; color: #9ac7bf; font-size: 10px; }
+.predictive-inputs-dialog { display: flex; flex-direction: column; width: min(900px, 100%); max-height: min(760px, calc(100vh - 40px)); overflow: hidden; color: #e4f6f3; background: #0a2024; border: 1px solid #39615f; border-radius: 8px; box-shadow: 0 24px 70px rgba(0, 0, 0, .48); }
+.predictive-inputs-dialog > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 19px 22px; border-bottom: 1px solid #315454; }
+.predictive-inputs-eyebrow { color: #75d8c8; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.predictive-inputs-dialog h2 { margin: 5px 0 0; font-size: 20px; }
+.predictive-inputs-dialog > header button { display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 32px; color: #e4f6f3; background: transparent; border: 1px solid #476968; border-radius: 5px; cursor: pointer; }
+.predictive-inputs-dialog button:focus-visible { outline: 2px solid #50f5d0; outline-offset: 2px; }
+.predictive-inputs-body { min-height: 0; overflow-y: auto; padding: 20px 22px 24px; }
+.predictive-inputs-notice { margin: 0 0 17px; padding: 11px 13px; color: #d7e7e1; background: #163436; border-left: 3px solid #6fd2bf; border-radius: 3px; font-size: 12px; line-height: 1.55; }
+.predictive-inputs-tabs { display: flex; gap: 7px; overflow-x: auto; padding: 0 0 13px; border-bottom: 1px solid #315454; }
+.predictive-inputs-tabs button { flex: 0 0 auto; padding: 9px 11px; color: #b1cdcb; background: transparent; border: 1px solid #365554; border-radius: 5px; font-size: 11px; cursor: pointer; }
+.predictive-inputs-tabs button[aria-selected="true"] { color: #07201e; background: #75ddc9; border-color: #75ddc9; font-weight: 700; }
+.predictive-inputs-content { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(240px, .9fr); gap: 24px; padding-top: 19px; }
+.predictive-inputs-dialog h3 { margin: 0 0 15px; font-size: 15px; }
+.predictive-inputs-current h3 span { margin-left: 6px; padding: 3px 6px; color: #83e2cf; background: #183b3a; border-radius: 3px; font-size: 10px; font-weight: 500; }
+.predictive-inputs-dialog h4 { margin: 19px 0 7px; color: #7ed8c8; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+.predictive-inputs-dialog p, .predictive-inputs-dialog li { font-size: 12px; line-height: 1.6; }
+.predictive-inputs-dialog ul { margin: 0; padding-left: 18px; }
+.predictive-inputs-dialog li { margin-bottom: 7px; }
+.predictive-inputs-current li strong { display: block; color: #f0fcf9; font-weight: 600; }
+.predictive-inputs-current li span { display: block; color: #b5cecc; overflow-wrap: anywhere; }
+.predictive-inputs-source { margin: 13px 0; color: #93aaa9; overflow-wrap: anywhere; }
+.predictive-inputs-future { padding: 18px; background: #112d30; border: 1px solid #315454; border-radius: 6px; align-self: start; }
+.predictive-inputs-future h3 { color: #ffd080; }
+.predictive-inputs-future li { color: #ccdcda; }
+@media (max-width: 700px) { .predictive-inputs-backdrop { padding: 10px; } .predictive-inputs-dialog { max-height: calc(100vh - 20px); } .predictive-inputs-dialog > header, .predictive-inputs-body { padding: 15px; } .predictive-inputs-content { grid-template-columns: 1fr; gap: 17px; } }

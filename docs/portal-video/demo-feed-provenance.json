@@ -1,0 +1,30 @@
+{
+  "createdAt": "2026-10-13T05:21:53.554Z",
+  "purpose": "Browser recording only. Models assumed trained on small datasets; no additional model training was performed.",
+  "database": "Separate demo.db, never floodguard.db",
+  "feeds": {
+    "/system/status": "Isolated backend simulation response",
+    "/simulation/status": "Isolated backend simulation response",
+    "/flood/model-forecasts": "Existing bundled dummy forecast series",
+    "/weather/current?location_id=JHG_001": "Isolated backend simulation response",
+    "/river/current?location_id=JHG_001": "Isolated backend simulation response",
+    "/flood/risk?location_id=JHG_001": "Isolated backend simulation response",
+    "/weather/current?location_id=RWP_001": "Isolated backend simulation response",
+    "/river/current?location_id=RWP_001": "Isolated backend simulation response",
+    "/flood/risk?location_id=RWP_001": "Isolated backend simulation response",
+    "/weather/current?location_id=MUL_001": "Isolated backend simulation response",
+    "/river/current?location_id=MUL_001": "Isolated backend simulation response",
+    "/flood/risk?location_id=MUL_001": "Isolated backend simulation response",
+    "/weather/current?location_id=ISB_001": "Isolated backend simulation response",
+    "/river/current?location_id=ISB_001": "Isolated backend simulation response",
+    "/flood/risk?location_id=ISB_001": "Isolated backend simulation response",
+    "/gis/national-risk": "Isolated backend simulation response",
+    "/gis/water-intelligence": "Isolated backend simulation response",
+    "/gis/rainfall": "Browser-only illustrative fixture",
+    "/river/monitoring": "Browser-only illustrative fixture",
+    "/river/monitoring/refresh": "Browser-only illustrative fixture",
+    "/river/upstream-forecasts": "Browser-only illustrative fixture",
+    "/river/upstream-forecasts/refresh": "Browser-only illustrative fixture",
+    "/gis/google-flood-hub": "Browser-only illustrative fixture"
+  }
+}

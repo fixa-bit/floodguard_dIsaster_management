@@ -1,0 +1,174 @@
+1
+00:00:00,000 --> 00:00:07,399
+FloodGuard AI: an actual browser walkthrough. Models are assumed trained on small
+datasets; all demonstrated readings are illustrative.
+
+2
+00:00:07,399 --> 00:00:15,724
+National screening summarizes district risk, priorities, and monitoring intervals in
+one command view.
+
+3
+00:00:15,724 --> 00:00:26,823
+The river summary compares city discharge and forecast values, with timestamps and a
+manual refresh control.
+
+4
+00:00:26,823 --> 00:00:37,922
+The rainfall table compares current, recent, and forecast rainfall across the four
+operational cities.
+
+5
+00:00:37,922 --> 00:00:49,021
+System information shows the configured data mode, monitoring interval, and active
+risk engine.
+
+6
+00:00:49,021 --> 00:01:00,121
+Toggle district boundaries, screening, waterways, catchments, and monitoring
+categories on the interactive map.
+
+7
+00:01:00,121 --> 00:01:11,220
+Compare the available Kashmir outlines and enable Flood Hub markers. The gauges shown
+here are illustrative integration examples.
+
+8
+00:01:11,220 --> 00:01:22,319
+Enter latitude and longitude to inspect local coverage. The selected coordinate is
+pinned on the map.
+
+9
+00:01:22,319 --> 00:01:33,418
+Enable corresponding layers to focus on the selected district and hydrological sub-
+basin, including matching river features.
+
+10
+00:01:33,418 --> 00:01:44,517
+Hover and pin a priority monitoring station to inspect readings, provenance, and
+stored trends.
+
+11
+00:01:44,517 --> 00:01:55,617
+Station details link to an interactive forecast, separate historical series, date
+inspection, a readings table, and CSV download.
+
+12
+00:01:55,617 --> 00:02:06,716
+Inspect glacier coverage and upstream drainage, including glaciers that contribute to
+Pakistan's river basins.
+
+13
+00:02:06,716 --> 00:02:17,815
+Select a place to display a dated satellite water-mask overlay. This recording uses
+an illustrative U-Net output.
+
+14
+00:02:17,815 --> 00:02:28,914
+Switch between observed accumulation windows and 24-hour or 72-hour forecasts. Colors
+follow the rainfall scale.
+
+15
+00:02:28,914 --> 00:02:40,013
+GIS Operations estimates exposed people and mapped settlements, with district or
+tehsil breakdowns and coverage information.
+
+16
+00:02:40,013 --> 00:02:51,113
+The analysis supports historical water, configured segmentation, uploaded polygons,
+and synthetic scenarios; inspect the existing result and its layers.
+
+17
+00:02:51,113 --> 00:03:02,212
+Five predictive views cover riverine, flash, urban, seasonal basin, and upstream or
+transboundary risk, with forecast times and target selectors.
+
+18
+00:03:02,212 --> 00:03:09,611
+Riverine forecasts: XGBoost baseline inputs, Trimmu and Balloki targets, discharge
+forecasts, and flood classes over 24–48 hours.
+
+19
+00:03:09,611 --> 00:03:17,011
+Flash-flood guidance combines rainfall, soil moisture, and GIS features for catchment
+risk within six hours.
+
+20
+00:03:17,011 --> 00:03:28,110
+Urban susceptibility uses city-scale targets, rainfall, drainage context, and
+selectable forecast intervals.
+
+21
+00:03:28,110 --> 00:03:35,509
+Seasonal basin risk shows forecasts over weeks to months, with target-specific risk
+series.
+
+22
+00:03:35,509 --> 00:03:42,909
+Upstream and transboundary risk highlights anomalous flow changes over hours to days.
+Model outputs are illustrative in this demo.
+
+23
+00:03:42,909 --> 00:03:54,008
+Select upper-basin stations, compare GloFAS and GEOGloWS series, and inspect
+historical trends, rainfall, and forecast risk signals.
+
+24
+00:03:54,008 --> 00:04:01,408
+Each station includes provider summaries, expected peaks, rainfall context, location
+details, and scheduled or manual refresh.
+
+25
+00:04:01,408 --> 00:04:12,507
+Filter monitoring stations by river or name, switch units, and compare current flow,
+forecasts, flood categories, and expected peaks.
+
+26
+00:04:12,507 --> 00:04:19,906
+Open a station to inspect its upstream network and forecast. Chart legends and date
+inspection help distinguish the displayed series.
+
+27
+00:04:19,906 --> 00:04:31,005
+Citizen reports provide a scrollable database-backed feed, coordinates, optional
+image or video links, priority flags, and closure status.
+
+28
+00:04:31,005 --> 00:04:42,105
+Create a report using coordinates, browser location, or a Google Maps link. Image GPS
+fields remain visible when no geotag is available.
+
+29
+00:04:42,105 --> 00:04:52,279
+Flag a report for attention, then close it in the database. New reports appear in the
+active window before remaining in the saved feed.
+
+30
+00:04:52,279 --> 00:05:03,378
+Configure a station, measurement, units, test thresholds, and a reading profile to
+exercise the monitoring workflow.
+
+31
+00:05:03,378 --> 00:05:10,777
+Play the test scenario. Threshold crossings save simulated readings and create linked
+alerts and incidents.
+
+32
+00:05:10,777 --> 00:05:18,177
+Review threshold alerts, distinguish operational and simulated flows, and open the
+linked incident.
+
+33
+00:05:18,177 --> 00:05:26,501
+The incident view records severity, status, location, and timestamps. Linked details
+preserve the simulated-flow context.
+
+34
+00:05:26,501 --> 00:05:33,901
+The activity timeline records model decisions, monitoring changes, report actions,
+and simulated response events.
+
+35
+00:05:33,901 --> 00:05:45,000
+The walkthrough covers the portal as it runs in a web browser. Small-dataset training
+is an assumption; this video does not validate model accuracy.

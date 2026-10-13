@@ -248,6 +248,38 @@ Automated checks in `frontend`: `node scripts/check-station-info.mjs` and
 `node scripts/check-station-hover-browser.mjs` (450 native gauge fixture).
 Backend: `.venv/Scripts/python.exe -m pytest tests/test_station_history.py -q`.
 
+## Satellite Water Extent Prototype
+
+The map's **Satellite water extent** control lets you select a place on the map.
+`GET /api/v1/flood/water-extent/location?latitude=...&longitude=...` searches
+Microsoft Planetary Computer for two recent Sentinel-1 RTC VV/VH passes on the
+same orbit, Copernicus DEM GLO-30 elevation, and JRC Global Surface Water
+seasonality. It reads a 256 x 256 pixel window at 30 m resolution around the
+point, converts radar intensity to dB, derives slope in degrees and a binary
+permanent-water mask, aligns seven model channels, and returns a dated PNG map
+overlay. Internet access and matching dual-polarization scenes are required.
+
+The manual `POST /api/v1/flood/water-extent` API remains available for supplied
+GeoTIFFs: during-event and pre-event SAR (VV then VH), elevation, slope, and
+binary permanent water. It accepts multipart fields `during_sar`, `pre_sar`,
+`elevation`, `slope`, and `permanent_water`.
+
+Install backend dependencies with `pip install -r requirements.txt`. For a
+CPU-only PyTorch install on Windows, use
+`pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu`.
+The default model directory is the sibling
+`D:/Projects/NDMA_tasks/NDMA_tasks/model/unet` in this workspace. Set
+`SAR_UNET_MODEL_DIR` to the `model/unet` directory elsewhere; it must contain
+`network.py` and a `runs/<run>/best.pt` with `dataset_scalers.json`. The newest
+available run is loaded when the first request arrives. Restart the backend
+after changing checkpoints.
+
+This is an experimental water mask, including permanent water, and is separate
+from the district risk and alert models. Automatic Sentinel-1 RTC and JRC GSW
+inputs are not identical to the training products, so validate results before
+operational use. Manual uploads require georeferenced rasters; each file must
+be under 32 MB and the during-event chip at most 1024 by 1024 pixels.
+
 ## Development ML model
 
 The included training generator is synthetic and intended only for development. It is not historical flood data.

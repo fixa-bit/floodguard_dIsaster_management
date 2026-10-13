@@ -46,15 +46,15 @@ def play(client, payload):
     return client.post("/api/v1/simulation/monitoring/play", json=payload)
 
 
-def test_play_saves_monitoring_values_alerts_and_linked_incidents(client, monitoring_db):
+def test_play_saves_simulated_alerts_and_approval_creates_persistent_incidents(client, monitoring_db):
     payload = scenario()
     response = play(client, payload)
     assert response.status_code == 200, response.text
     result = response.json()
     assert result["inserted"] == 3
     assert [row["level"] for row in result["readings"]] == ["normal", "warning", "danger"]
-    assert len(result["alerts"]) == len(result["incidents"]) == 2
-    assert [incident["severity"] for incident in result["incidents"]] == ["HIGH", "CRITICAL"]
+    assert len(result["alerts"]) == 2
+    assert result["incidents"] == []
     values = list(monitoring_db.scalars(select(StationValue).order_by(StationValue.id)))
     assert len(values) == 3
     assert all(row.value_type == "simulated" and row.forecast_issued_at is None for row in values)
@@ -64,12 +64,23 @@ def test_play_saves_monitoring_values_alerts_and_linked_incidents(client, monito
     assert provider.kind == "import"
     alerts = client.get("/api/v1/alerts").json()
     incidents = client.get("/api/v1/incidents").json()
-    assert len(alerts) == len(incidents) == 2
+    assert len(alerts) == 2
+    assert incidents == []
     for alert in alerts:
         metadata = alert["event_metadata"]
         assert metadata["source"] == "SIMULATED_FLOW"
         assert metadata["threshold_mode"] == "custom"
         assert metadata["run_id"] == payload["run_id"]
+        assert metadata["approval_status"] == "pending"
+        assert "incident_id" not in metadata
+    for alert in alerts:
+        approved = client.post(f"/api/v1/alerts/{alert['id']}/approve")
+        assert approved.status_code == 200, approved.text
+        assert approved.json()["event_metadata"]["approval_status"] == "approved"
+    incidents = client.get("/api/v1/incidents").json()
+    assert {incident["severity"] for incident in incidents} == {"HIGH", "CRITICAL"}
+    for alert in client.get("/api/v1/alerts").json():
+        metadata = alert["event_metadata"]
         incident = next(row for row in incidents if row["id"] == metadata["incident_id"])
         assert incident["source"] == "SIMULATED_FLOW" and incident["location_id"] == "TAUNSA"
         assert "SIMULATED FLOW" in incident["description"]
@@ -95,8 +106,35 @@ def test_retry_is_idempotent_and_changed_payload_conflicts(client, monitoring_db
     assert first.json() == second.json()
     assert monitoring_db.scalar(select(func.count()).select_from(StationValue)) == 3
     assert len(client.get("/api/v1/alerts").json()) == 2
-    assert len(client.get("/api/v1/incidents").json()) == 2
+    assert client.get("/api/v1/incidents").json() == []
     assert play(client, {**payload, "name": "Changed run"}).status_code == 409
+
+
+def test_alert_approval_is_idempotent_and_survives_reload(client):
+    response = play(client, scenario(readings=[{"offset_minutes": 0, "value": 650000}]))
+    assert response.status_code == 200, response.text
+    alert_id = response.json()["alerts"][0]["id"]
+    first = client.post(f"/api/v1/alerts/{alert_id}/approve")
+    second = client.post(f"/api/v1/alerts/{alert_id}/approve")
+    assert first.status_code == second.status_code == 200
+    incident_id = first.json()["event_metadata"]["incident_id"]
+    assert second.json()["event_metadata"]["incident_id"] == incident_id
+    assert first.json()["event_metadata"]["approved_at"] == second.json()["event_metadata"]["approved_at"]
+    # Every request opens a new DB session, just as the UI does after a reload.
+    assert client.get("/api/v1/alerts").json()[0]["event_metadata"]["incident_id"] == incident_id
+    incidents = client.get("/api/v1/incidents").json()
+    assert len(incidents) == 1
+    assert incidents[0]["id"] == incident_id and incidents[0]["source"] == "SIMULATED_FLOW"
+    events = client.get("/api/v1/events").json()
+    assert sum(event["event_type"] == "INCIDENT_CREATED" for event in events) == 1
+
+
+def test_operational_alert_cannot_be_approved_as_simulated(client, db_session):
+    alert = SystemEvent(event_type="ALERT_REQUIRED", location_id="TAUNSA", message="Operational alert", event_metadata={})
+    db_session.add(alert)
+    db_session.commit()
+    assert client.post(f"/api/v1/alerts/{alert.id}/approve").status_code == 400
+    assert client.get("/api/v1/incidents").json() == []
 
 
 def test_saved_thresholds_match_station_measurement_and_units(client, monitoring_db):

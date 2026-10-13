@@ -1,17 +1,15 @@
 import hashlib
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
 from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.core.enums import EventType, HazardType, IncidentStatus, Severity
+from app.core.enums import EventType, Severity
 from app.core.exceptions import AppError
-from app.models.incident import Incident
 from app.models.monitoring_simulation_run import MonitoringSimulationRun
 from app.models.system_event import SystemEvent
 from app.schemas.event import EventResponse
-from app.schemas.incident import IncidentResponse
 from app.schemas.monitoring_simulation import (
     MonitoringSimulationRequest, MonitoringSimulationResponse, SimulationStation,
     SimulationStoredReading, SimulationThreshold,
@@ -78,31 +76,20 @@ class MonitoringSimulationService:
                 severity = Severity.CRITICAL if level == "danger" else Severity.HIGH
                 message = (f"SIMULATED FLOW - {station.name}: {payload.measurement} "
                            f"{reading.value:g} {payload.unit} reached {level} threshold {limit:g} {payload.unit}")
-                incident = Incident(
-                    location_id=station.code, type=HazardType.FLOOD.value, severity=severity.value,
-                    status=IncidentStatus.OPEN.value, confidence=1.0, description=message,
-                    source="SIMULATED_FLOW", created_at=datetime.now(timezone.utc),
-                )
-                self.db.add(incident)
-                self.db.flush()
                 metadata = {
                     "source": "SIMULATED_FLOW", "value_type": "simulated", "run_id": run_id,
                     "scenario": payload.name, "station": station.code, "station_name": station.name,
                     "station_value_id": row.id, "measurement": payload.measurement, "value": reading.value,
                     "unit": payload.unit, "value_at": row.value_at.isoformat(), "severity": severity.value,
                     "threshold_level": level, "threshold_value": limit, "threshold_mode": payload.threshold_mode,
-                    "level_reference": payload.level_reference, "provider": provider.code, "incident_id": incident.id,
+                    "level_reference": payload.level_reference, "provider": provider.code,
+                    "approval_status": "pending",
                 }
                 alert = SystemEvent(event_type=EventType.ALERT_REQUIRED.value, location_id=station.code,
                                     message=message, event_metadata=metadata)
-                self.db.add_all([alert, SystemEvent(
-                    event_type=EventType.INCIDENT_CREATED.value, location_id=station.code,
-                    message=f"SIMULATED FLOW - Incident {incident.id} recorded for {station.name}",
-                    event_metadata=metadata,
-                )])
+                self.db.add(alert)
                 self.db.flush()
                 alerts.append(EventResponse.model_validate(alert))
-                incidents.append(IncidentResponse.model_validate(incident))
 
             result = MonitoringSimulationResponse(
                 run_id=run_id, name=payload.name, station=station.code, station_name=station.name,
@@ -114,7 +101,7 @@ class MonitoringSimulationService:
                 message=f"SIMULATED FLOW - {payload.name}: {len(rows)} readings saved, {len(alerts)} alerts",
                 event_metadata={"run_id": run_id, "source": "SIMULATED_FLOW", "provider": provider_code},
             ))
-            # The stores use separate databases; compensate if the alert/incident commit fails.
+            # The stores use separate databases; compensate if the alert commit fails.
             self.monitoring_db.commit()
             monitoring_committed = True
             self.db.commit()

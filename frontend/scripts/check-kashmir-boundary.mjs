@@ -19,8 +19,8 @@ try {
   assert.equal(paint.length, 3);
   for (const layer of paint) {
     assert.equal(layer.dash, null, `${layer.id} must be solid`);
-    assert.deepEqual(layer.width, ["interpolate", ["linear"], ["zoom"], 3, 3, 7, 4, 10, 5]);
-    assert.equal(layer.opacity, 1);
+    assert.deepEqual(layer.width, ["interpolate", ["linear"], ["zoom"], 3, 1.25, 7, 1.75, 10, 2.25]);
+    assert.equal(layer.opacity, 0.9);
   }
   const boundary = page.getByRole("checkbox", { name: "Pakistan boundary", exact: true });
   assert.equal(await boundary.isChecked(), true);

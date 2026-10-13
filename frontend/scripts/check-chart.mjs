@@ -35,8 +35,8 @@ try {
   assert.equal(await chart.locator(".source-chart-legend span").count(), 2);
   assert.equal(await chart.locator(".source-chart-dates span").count(), 5);
   const paths = await chart.locator("path").evaluateAll((els) => els.map((el) => el.getAttribute("d")));
-  assert.match(paths[0], /^M 0\.0 .*L 380\.0 .*L 760\.0 /);
-  assert.match(paths[1], /^M 380\.0 .*L 760\.0 /);
+  assert.match(paths[0], /^M 0\.0 .*L 760\.0 /);
+  assert.match(paths[1], /^M 0\.0 .*L 760\.0 /);
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await chart.scrollIntoViewIfNeeded();

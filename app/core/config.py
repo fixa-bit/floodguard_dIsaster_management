@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     exposure_output_root: str = ""
     ml_model_enabled: bool = False
     ml_model_path: str = "app/ml/artifacts/flood_risk_xgboost.json"
+    sar_unet_model_dir: str = ""
     allow_rule_based_fallback: bool = False
     enable_simulation: bool = False
 

@@ -1,10 +1,11 @@
-import { Activity, AlertTriangle, CloudRain, Mountain, Waves } from "lucide-react";
+import { Activity, AlertTriangle, CloudRain, Info, Mountain, Waves } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { LOCATIONS } from "../config";
 import type { DashboardData } from "../hooks/useDashboardData";
 import type { ModelForecastPoint } from "../types/api";
 import { formatDateTime } from "../utils/format";
+import { PredictiveInputsDialog } from "./PredictiveInputsDialog";
 
 interface RiskView {
   id: string;
@@ -92,9 +93,11 @@ function ForecastIntervalGraph({
     })
     .join(" ");
   const latest = series[series.length - 1];
+  const demonstration = series.some((point) => point.point_metadata.simulation_source === "dummy_model_forecast_v3");
 
   return (
     <div className="forecast-graph">
+      {demonstration && <span className="forecast-example-label">Example series</span>}
       <div className="forecast-target-tabs" aria-label="Forecast target selector">
         {targets.map(([targetId, targetName]) => (
           <button
@@ -134,19 +137,19 @@ function RiverineModelFlow({ score }: { score: number }) {
   return (
     <div className="riverine-model-flow" aria-label="Riverine model flow">
       <div className="riverine-flow-header">
-        <span>Baseline inputs</span>
-        <strong>XGBoost</strong>
-        <b>{score}%</b>
+        <span>Current screening inputs</span>
+        <strong>Rule score</strong>
+        <b>{score}/100</b>
       </div>
       <div className="riverine-feature-groups">
-        <span>Q(t), Q-3h, Q-6h, Q-12h, Q-24h</span>
-        <span>Rain 3h, 6h, 24h + forecast rain</span>
-        <span>Upstream Q, reservoir release, soil moisture</span>
+        <span>Current risk summary</span>
+        <span>Current + next-day discharge</span>
+        <span>Rising or warning river status</span>
       </div>
       <div className="riverine-station-table">
-        <div><span>Station</span><span>Horizon</span><span>Outputs</span></div>
-        <div><strong>Trimmu</strong><span>+24h</span><span>Discharge, class</span></div>
-        <div><strong>Balloki</strong><span>+48h</span><span>Discharge, class</span></div>
+        <div><span>Example target</span><span>Horizon</span><span>Graph</span></div>
+        <div><strong>Trimmu</strong><span>+24h</span><span>Demo series</span></div>
+        <div><strong>Balloki</strong><span>+48h</span><span>Demo series</span></div>
       </div>
     </div>
   );
@@ -156,20 +159,20 @@ function FlashFloodModelFlow({ score }: { score: number }) {
   return (
     <div className="flash-flood-model-flow" aria-label="Flash-flood model flow">
       <div className="flash-flow-header">
-        <span>Guidance model</span>
-        <strong>LightGBM</strong>
-        <b>{score}%</b>
+        <span>Current screening inputs</span>
+        <strong>Rule score</strong>
+        <b>{score}/100</b>
       </div>
       <div className="flash-feature-grid">
-        <span>Rain 15m, 1h, 3h, 6h</span>
-        <span>Forecast rain + soil moisture</span>
-        <span>Slope, elevation, drainage density</span>
-        <span>Land cover, area, stream distance</span>
+        <span>Current rainfall</span>
+        <span>Forecast rain 6h + 24h</span>
+        <span>Mean soil moisture</span>
+        <span>Weighted screening rule</span>
       </div>
       <div className="flash-target-row">
         <span>Target</span>
-        <strong>P(flash flood within next 6h)</strong>
-        <b>No risk to Extreme</b>
+        <strong>Screening score</strong>
+        <b>0–100</b>
       </div>
     </div>
   );
@@ -179,30 +182,30 @@ function UrbanFloodModelFlow({ score }: { score: number }) {
   return (
     <div className="urban-flood-model-flow" aria-label="Urban flooding model flow">
       <div className="urban-flow-header">
-        <span>Susceptibility</span>
-        <strong>LightGBM/XGBoost</strong>
-        <b>{score}%</b>
+        <span>Current screening inputs</span>
+        <strong>Rule score</strong>
+        <b>{score}/100</b>
       </div>
       <div className="urban-feature-grid">
-        <span>Rainfall + DEM + slope</span>
-        <span>Drainage capacity</span>
-        <span>Impervious surface + land use</span>
-        <span>Waterlogging reports</span>
+        <span>Forecast rain 6h + 24h</span>
+        <span>Mean soil moisture</span>
+        <span>Any citizen report</span>
+        <span>Weighted screening rule</span>
       </div>
       <div className="urban-class-row">
-        <span>Grid/ward class</span>
+        <span>Score bands</span>
         <strong>Low</strong>
-        <strong>Moderate</strong>
+        <strong>Medium</strong>
         <strong>High</strong>
-        <strong>Extremely high</strong>
       </div>
-      <p>Depth bands require HEC-RAS 2D or another hydraulic model.</p>
+      <p>Example grid curves are for illustration.</p>
     </div>
   );
 }
 
 export function FloodRiskMultiView({ data }: { data: DashboardData }) {
   const [selectedTargets, setSelectedTargets] = useState<Record<string, string>>({});
+  const [showInputs, setShowInputs] = useState(false);
   const views = useMemo<RiskView[]>(() => {
     const highestRisk = (data.summary?.highest_risk_probability ?? data.risk?.flood_probability ?? 0) * 100;
     const maxRain24 = maxNumber(data.locationWeather.map((weather) => weather.forecast_rainfall_next_24h_mm));
@@ -213,7 +216,7 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
     const maxForecastDischarge = maxNumber(data.locationRivers.map((river) => river.forecast_discharge_next_24h_cumecs));
     const maxPositiveChange = maxNumber(data.locationRivers.map((river) => Math.max(river.discharge_change_cumecs_per_day ?? 0, 0)));
     const hasRisingRiver = data.locationRivers.some((river) => ["RISING", "WARNING", "DANGER", "FLOOD", "CRITICAL", "ALERT"].includes(river.status.toUpperCase()));
-    const driestRainSignal = maxRain24 <= 2 && maxRain6 <= 1;
+    const driestRainSignal = data.locationWeather.length > 0 && maxRain24 <= 2 && maxRain6 <= 1;
     const riverIssuedAt = data.locationRivers[0]?.official_recording_time ?? data.river?.official_recording_time ?? data.locationRivers[0]?.timestamp ?? data.river?.timestamp ?? null;
     const weatherIssuedAt = data.locationWeather[0]?.timestamp ?? data.weather?.timestamp ?? null;
     const urbanTargetLabel = "Islamabad / Rawalpindi / Lahore grid cells";
@@ -222,11 +225,11 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
       {
         id: "riverine",
         title: "Riverine Short-Term",
-        horizon: "24-48h",
-        scope: "Trimmu and Balloki station forecasts",
-        predicts: "Station discharge and flood class",
-        model: "XGBoost baseline; TFT comparison later",
-        score: clamp(Math.max(highestRisk, hasRisingRiver ? 68 : 24, maxForecastDischarge / 35, maxDischarge / 38)),
+        horizon: "Current signal",
+        scope: "Regional river screening; example graphs for Trimmu and Balloki",
+        predicts: "River risk screening score",
+        model: "Dashboard rule score; graph uses example data",
+        score: data.locationRivers.length || data.summary || data.risk ? clamp(Math.max(highestRisk, hasRisingRiver ? 68 : 24, maxForecastDischarge / 35, maxDischarge / 38)) : 0,
         detail: `Max discharge ${Math.round(maxDischarge).toLocaleString()} cumecs; forecast ${Math.round(maxForecastDischarge).toLocaleString()} cumecs.`,
         issuedAt: riverIssuedAt,
         target: "Stations: Trimmu +24h; Balloki +48h",
@@ -235,11 +238,11 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
       {
         id: "flash",
         title: "Flash Flood",
-        horizon: "0-6h",
-        scope: "Hill torrents, streams, and urban catchments",
-        predicts: "Probability of flash flood in next 6h",
-        model: "LightGBM tabular GIS + rainfall baseline",
-        score: clamp(maxRainCurrent * 6 + maxRain6 * 2.2 + maxRain24 * 1.1 + soil * 0.25),
+        horizon: "Current signal",
+        scope: "Regional rainfall screening; example catchment graphs",
+        predicts: "Flash-flood screening score",
+        model: "Dashboard rainfall rule; graph uses example data",
+        score: data.locationWeather.length ? clamp(maxRainCurrent * 6 + maxRain6 * 2.2 + maxRain24 * 1.1 + soil * 0.25) : 0,
         detail: `Rain now ${maxRainCurrent.toFixed(1)} mm; 6h rain ${maxRain6.toFixed(1)} mm; soil moisture avg ${soil.toFixed(0)}%.`,
         issuedAt: weatherIssuedAt,
         target: "Catchments: hill torrents, streams, urban drains",
@@ -248,12 +251,12 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
       {
         id: "urban",
         title: "Urban Flooding",
-        horizon: "0-6h",
-        scope: "City grid cells / wards",
-        predicts: "Urban flood susceptibility class",
-        model: "LightGBM/XGBoost susceptibility; HEC-RAS 2D for depth",
-        score: clamp(maxRain6 * 2.3 + maxRain24 * 0.7 + soil * 0.18 + (data.reports.length > 0 ? 12 : 0)),
-        detail: `Urban rain signal ${maxRain6.toFixed(1)} mm in 6h; ${data.reports.length} citizen waterlogging reports in system.`,
+        horizon: "Current signal",
+        scope: "Regional urban screening; example city grids",
+        predicts: "Urban flood screening score",
+        model: "Dashboard rain and reports rule; graph uses example data",
+        score: data.locationWeather.length || data.reports.length ? clamp(maxRain6 * 2.3 + maxRain24 * 0.7 + soil * 0.18 + (data.reports.length > 0 ? 12 : 0)) : 0,
+        detail: `Forecast rain ${maxRain6.toFixed(1)} mm in 6h; ${data.reports.length} citizen reports in system.`,
         issuedAt: weatherIssuedAt,
         target: urbanTargetLabel,
         Icon: CloudRain,
@@ -261,12 +264,12 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
       {
         id: "seasonal",
         title: "Seasonal Basin Risk",
-        horizon: "Weeks-3mo",
-        scope: "National basin summary",
-        predicts: "Weeks-ahead basin flood risk",
-        model: "LightGBM or TFT",
-        score: clamp(highestRisk * 0.35 + soil * 0.38 + maxRain24 * 0.9),
-        detail: "Uses basin saturation, seasonal rainfall signal, and current national risk baseline.",
+        horizon: "Current signal",
+        scope: "National screening; example basin graph",
+        predicts: "Current national screening score",
+        model: "Dashboard rule score; weeks-ahead graph is example data",
+        score: data.summary || data.risk || data.locationWeather.length ? clamp(highestRisk * 0.35 + soil * 0.38 + maxRain24 * 0.9) : 0,
+        detail: "Uses current risk, soil moisture, and next-day forecast rain; no seasonal data in score.",
         issuedAt: data.nationalRisk?.metadata.generated_at ?? data.risk?.timestamp ?? null,
         target: "National basin summary",
         Icon: Mountain,
@@ -274,12 +277,12 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
       {
         id: "upstream",
         title: "Upstream / Transboundary",
-        horizon: "Hours-days",
-        scope: "Downstream river reaches",
-        predicts: "Anomalous upstream flow rise",
-        model: "Isolation Forest + residual TFT",
-        score: clamp((driestRainSignal ? 18 : 6) + maxPositiveChange / 16 + (hasRisingRiver ? 34 : 0)),
-        detail: `Positive discharge anomaly ${Math.round(maxPositiveChange).toLocaleString()} cumecs/day while local rain signal is ${driestRainSignal ? "low" : "active"}.`,
+        horizon: "Current signal",
+        scope: "Regional discharge-change screening; example downstream graph",
+        predicts: "Flow-change watch score",
+        model: "Dashboard anomaly rule; graph uses example data",
+        score: data.locationRivers.length ? clamp((driestRainSignal ? 18 : 6) + maxPositiveChange / 16 + (hasRisingRiver ? 34 : 0)) : 0,
+        detail: `Positive modeled discharge change ${Math.round(maxPositiveChange).toLocaleString()} cumecs/day while local forecast rain signal is ${driestRainSignal ? "low" : "active"}.`,
         issuedAt: riverIssuedAt,
         target: "Downstream river reaches",
         Icon: Activity,
@@ -295,6 +298,8 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
 
   return (
     <section className="flood-multiview flood-risk-page" aria-label="Predictive risk views">
+        <div className="predictive-risk-toolbar"><p>Early-stage screening scores and example interval series.</p><button type="button" onClick={() => setShowInputs(true)}><Info size={15} /> Inputs & model</button></div>
+        {showInputs && <PredictiveInputsDialog data={data} onClose={() => setShowInputs(false)} />}
         <div className="multiview-shell">
           <div className="multiview-grid">
           {views.map(({ id, title, horizon, scope, predicts, model, score, detail, issuedAt, target, outputPoints, Icon }) => (
@@ -302,7 +307,7 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
               <div className="multiview-card-head">
                 <Icon size={15} />
                 <div><strong>{title}</strong><span>{horizon}</span></div>
-                <b>{score}%</b>
+                <b>{score}/100</b>
               </div>
               <div className="multiview-forecast-meta">
                 <span>Issued {formatIssuedAt(issuedAt)}</span>
@@ -332,7 +337,7 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
                 </div>
               )}
               <div className="multiview-scope"><span>Scope</span><strong>{scope}</strong></div>
-              <div className="multiview-predicts"><span>Predicts</span><strong>{predicts}</strong></div>
+              <div className="multiview-predicts"><span>Shows</span><strong>{predicts}</strong></div>
               {outputPoints && (
                 <ul className="multiview-outputs">
                   {outputPoints.map((point) => <li key={point}>{point}</li>)}

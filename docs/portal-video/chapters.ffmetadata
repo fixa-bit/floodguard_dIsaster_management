@@ -1,0 +1,178 @@
+;FFMETADATA1
+title=FloodGuard AI - Portal Feature Walkthrough
+comment=Actual browser recording. Illustrative feeds; models assumed trained on small datasets. No new model training or validation is claimed.
+[CHAPTER]
+TIMEBASE=1/1000
+START=0
+END=7399
+title=Operational overview
+[CHAPTER]
+TIMEBASE=1/1000
+START=7399
+END=15724
+title=Command statistics
+[CHAPTER]
+TIMEBASE=1/1000
+START=15724
+END=26823
+title=Command statistics
+[CHAPTER]
+TIMEBASE=1/1000
+START=26823
+END=37922
+title=Command statistics
+[CHAPTER]
+TIMEBASE=1/1000
+START=37922
+END=49021
+title=Command statistics
+[CHAPTER]
+TIMEBASE=1/1000
+START=49021
+END=60121
+title=National GIS layers
+[CHAPTER]
+TIMEBASE=1/1000
+START=60121
+END=71220
+title=Reference outlines and Flood Hub integration
+[CHAPTER]
+TIMEBASE=1/1000
+START=71220
+END=82319
+title=Coordinate lookup
+[CHAPTER]
+TIMEBASE=1/1000
+START=82319
+END=93418
+title=Catchment study mode
+[CHAPTER]
+TIMEBASE=1/1000
+START=93418
+END=104517
+title=Station hover cards
+[CHAPTER]
+TIMEBASE=1/1000
+START=104517
+END=115617
+title=Station discharge forecast
+[CHAPTER]
+TIMEBASE=1/1000
+START=115617
+END=126716
+title=Glaciers and headwaters
+[CHAPTER]
+TIMEBASE=1/1000
+START=126716
+END=137815
+title=Satellite water extent
+[CHAPTER]
+TIMEBASE=1/1000
+START=137815
+END=148914
+title=Rainfall heatmap
+[CHAPTER]
+TIMEBASE=1/1000
+START=148914
+END=160013
+title=Population exposure analysis
+[CHAPTER]
+TIMEBASE=1/1000
+START=160013
+END=171113
+title=Exposure controls and map overlays
+[CHAPTER]
+TIMEBASE=1/1000
+START=171113
+END=182212
+title=Predictive model views
+[CHAPTER]
+TIMEBASE=1/1000
+START=182212
+END=189611
+title=Riverine short-term model
+[CHAPTER]
+TIMEBASE=1/1000
+START=189611
+END=197011
+title=Flash-flood model
+[CHAPTER]
+TIMEBASE=1/1000
+START=197011
+END=208110
+title=Urban flooding model
+[CHAPTER]
+TIMEBASE=1/1000
+START=208110
+END=215509
+title=Seasonal basin model
+[CHAPTER]
+TIMEBASE=1/1000
+START=215509
+END=222909
+title=Upstream anomaly model
+[CHAPTER]
+TIMEBASE=1/1000
+START=222909
+END=234008
+title=Upstream source flood watch
+[CHAPTER]
+TIMEBASE=1/1000
+START=234008
+END=241408
+title=Source forecast context
+[CHAPTER]
+TIMEBASE=1/1000
+START=241408
+END=252507
+title=River monitoring table
+[CHAPTER]
+TIMEBASE=1/1000
+START=252507
+END=259906
+title=Station network and chart
+[CHAPTER]
+TIMEBASE=1/1000
+START=259906
+END=271005
+title=Citizen reports
+[CHAPTER]
+TIMEBASE=1/1000
+START=271005
+END=282105
+title=Submit a geolocated report
+[CHAPTER]
+TIMEBASE=1/1000
+START=282105
+END=292279
+title=Prioritize and close reports
+[CHAPTER]
+TIMEBASE=1/1000
+START=292279
+END=303378
+title=Monitoring simulation
+[CHAPTER]
+TIMEBASE=1/1000
+START=303378
+END=310777
+title=Threshold crossing and saved results
+[CHAPTER]
+TIMEBASE=1/1000
+START=310777
+END=318177
+title=Alert review
+[CHAPTER]
+TIMEBASE=1/1000
+START=318177
+END=326501
+title=Incident management
+[CHAPTER]
+TIMEBASE=1/1000
+START=326501
+END=333901
+title=System activity
+[CHAPTER]
+TIMEBASE=1/1000
+START=333901
+END=345000
+title=Command overview

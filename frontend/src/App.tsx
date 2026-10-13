@@ -21,7 +21,7 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   overview: { title: "Operational Overview", subtitle: "Live flood intelligence and emergency coordination" },
   gis: { title: "GIS Operations", subtitle: "National hazard screening and operational geography" },
   rainfall: { title: "Rainfall Heatmap", subtitle: "Observed and forecast rainfall across Pakistan" },
-  predictive: { title: "Predictive Risk Views", subtitle: "Flood forecasts by hazard type and horizon" },
+  predictive: { title: "Predictive Risk Views", subtitle: "Early-stage risk screening with illustrative forecast series" },
   upstream: { title: "Upstream Source Flood Watch", subtitle: "Upper-basin stations, discharge forecasts, and past trends" },
   monitoring: { title: "River Monitoring", subtitle: "Barrages, headworks and river station readings" },
   alerts: { title: "Alerts", subtitle: "Monitoring alerts and recorded threshold crossings" },
@@ -34,9 +34,11 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
 export default function App() {
   const [view, setView] = useState<ViewId>("overview");
   const [locationId, setLocationId] = useState<LocationId>("JHG_001");
-  const { data, loading, errors, lastUpdated, autoRefreshMs, refresh, refreshOperations } = useDashboardData(locationId);
+  const includeLiveData = ["overview", "gis", "rainfall", "predictive"].includes(view);
+  const { data, loading, errors, lastUpdated, autoRefreshMs, refresh, refreshOperations } = useDashboardData(locationId, includeLiveData);
   const [simulationNotice, setSimulationNotice] = useState<MonitoringSimulationResult | null>(null);
   const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(null);
+  const pendingSimulationAlerts = simulationNotice ? data.alerts.filter((alert) => alert.event_metadata.run_id === simulationNotice.run_id && alert.event_metadata.approval_status !== "approved").length : 0;
   const location = LOCATIONS.find((item) => item.id === locationId)!;
   const heading = viewTitles[view];
 
@@ -51,9 +53,9 @@ export default function App() {
 
       <div className="update-strip"><Clock3 size={14} /><span>{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : "Waiting for first update"}</span><i /> River layer refresh every {Math.round(autoRefreshMs / 60000)} minutes</div>
 
-      {errors.length > 0 && <div className="error-banner"><AlertCircle size={19} /><div><strong>{errors.some((error) => error.includes("BACKEND_UNAVAILABLE")) ? "Backend unavailable" : "Some live data could not be refreshed"}</strong><span>{errors.join(" · ")}</span></div><button onClick={() => void refresh(false)}>Retry</button></div>}
+      {errors.length > 0 && <div className="error-banner" role="alert"><AlertCircle size={19} /><div><strong>{includeLiveData ? "Some dashboard data could not be refreshed" : "Some operational data could not be refreshed"}</strong><span>{errors.join(" · ")}</span></div><button onClick={() => void refresh(false)}>Retry</button></div>}
 
-      {simulationNotice && <div className="simulation-alert-banner" role="alert"><BellRing size={20} /><div><strong>SIMULATED FLOW: {simulationNotice.station_name}</strong><span>{simulationNotice.alerts.length} threshold alerts / {simulationNotice.incidents.length} incidents recorded</span></div><button type="button" className="secondary-button" onClick={() => setView("alerts")}>View alerts</button><button type="button" className="icon-button" title="Dismiss simulation alert" aria-label="Dismiss simulation alert" onClick={() => setSimulationNotice(null)}><X size={17} /></button></div>}
+      {simulationNotice && <div className="simulation-alert-banner" role="alert"><BellRing size={20} /><div><strong>SIMULATED FLOW: {simulationNotice.station_name}</strong><span>{simulationNotice.alerts.length} threshold alerts saved / {pendingSimulationAlerts} awaiting review</span></div><button type="button" className="secondary-button" onClick={() => setView("alerts")}>View alerts</button><button type="button" className="icon-button" title="Dismiss simulation alert" aria-label="Dismiss simulation alert" onClick={() => setSimulationNotice(null)}><X size={17} /></button></div>}
 
       {loading && !["overview", "gis", "rainfall", "simulation", "alerts", "incidents"].includes(view) ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
         <div className="page-content">
@@ -63,7 +65,7 @@ export default function App() {
           {view === "predictive" && <FloodRiskMultiView data={data} />}
           {view === "upstream" && <SourceFloodForecastTab />}
           {view === "monitoring" && <RiverMonitoringView />}
-          {view === "alerts" && <AlertTable alerts={data.alerts} onOpenIncident={(id) => { setSelectedIncidentId(id); setView("incidents"); }} />}
+          {view === "alerts" && <AlertTable alerts={data.alerts} onOpenIncident={(id) => { setSelectedIncidentId(id); setView("incidents"); }} onApprove={async (id) => { await api.approveSimulatedAlert(id); await refreshOperations(); }} />}
           {view === "incidents" && <IncidentTable incidents={data.incidents} initialIncidentId={selectedIncidentId} full />}
           {view === "reports" && (
             <CitizenReportsPanel

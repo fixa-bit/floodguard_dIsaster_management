@@ -56,7 +56,12 @@ UPSTREAM_STATIONS = [
         "basin": "Upper Chenab",
         "latitude": 32.675,
         "longitude": 74.464,
-        "geoglows_river_id": 440400613,
+        # The headworks coordinate snaps to a small tributary in both models.
+        # These points follow the main Chenab just downstream of Marala.
+        "glofas_latitude": 32.675,
+        "glofas_longitude": 74.425,
+        "geoglows_river_id": 440499683,
+        "model_location_note": "Main Chenab model points near Marala, slightly downstream of the headworks; neither is an observed headworks reading.",
         "why_selected": "Chenab entry watch point near Sialkot, upstream of Khanki and Qadirabad.",
         "source_focus": "Upper Chenab catchment rainfall, snowmelt, and upstream reservoir releases.",
         "facts": [
@@ -116,6 +121,7 @@ class UpstreamForecastService:
             self._geoglows(client, station),
             self._rainfall(client, station),
         )
+        self._flag_conflicting_zero_flow(glofas, geoglows)
         flood_types, stats = self._signals(glofas, geoglows, rainfall)
         return UpstreamStationForecast(
             id=station["id"],
@@ -139,8 +145,8 @@ class UpstreamForecastService:
                 response = await client.get(
                     self.flood_api_base_url,
                     params={
-                        "latitude": station["latitude"],
-                        "longitude": station["longitude"],
+                        "latitude": station.get("glofas_latitude", station["latitude"]),
+                        "longitude": station.get("glofas_longitude", station["longitude"]),
                         "daily": self.DAILY_FIELDS,
                         "past_days": 14,
                         "forecast_days": 14,
@@ -181,7 +187,12 @@ class UpstreamForecastService:
                 recent_trend_cumecs=trend,
                 series=series,
                 retrospective=[point for point in series if point.phase == "past"],
-                note="Daily modeled discharge with ensemble statistics from the Open-Meteo GloFAS endpoint.",
+                note=(
+                    "Daily modeled discharge from Open-Meteo GloFAS. "
+                    f"Selected grid cell: {payload.get('latitude', station.get('glofas_latitude', station['latitude'])):.3f}, "
+                    f"{payload.get('longitude', station.get('glofas_longitude', station['longitude'])):.3f}. "
+                    + station.get("model_location_note", "Grid-cell flow may differ from the station reading.")
+                ),
             )
         except Exception as exc:
             return self._failed_provider("GloFAS", "Open-Meteo GloFAS 5 km grid", str(exc))
@@ -223,7 +234,10 @@ class UpstreamForecastService:
                 recent_trend_cumecs=trend,
                 series=series[::4],
                 retrospective=retrospective,
-                note="3-hour forecast guidance; chart is thinned to 12-hour points for display.",
+                note=(
+                    "3-hour forecast guidance, thinned to 12-hour chart points. "
+                    + station.get("model_location_note", "Reach flow may differ from the station reading.")
+                ),
             )
         except Exception as exc:
             return self._failed_provider("GEOGloWS", "GEOGloWS ECMWF Streamflow Service v2", str(exc), river_id)
@@ -283,14 +297,19 @@ class UpstreamForecastService:
         geoglows: ProviderForecast,
         rainfall: list[RainfallPoint],
     ) -> tuple[list[FloodTypeSignal], dict[str, float | int | str | None]]:
-        provider_peaks = [value for value in [glofas.peak_forecast_cumecs, geoglows.peak_forecast_cumecs] if value is not None]
-        current_values = [value for value in [glofas.current_cumecs, geoglows.current_cumecs] if value is not None and value > 0]
+        trusted = [provider for provider in (glofas, geoglows) if provider.status == "available"]
+        provider_peaks = [provider.peak_forecast_cumecs for provider in trusted if provider.peak_forecast_cumecs is not None]
+        current_values = [provider.current_cumecs for provider in trusted if provider.current_cumecs is not None and provider.current_cumecs > 0]
         peak = max(provider_peaks, default=None)
         current = mean(current_values) if current_values else None
-        peak_ratio = (peak / current) if peak is not None and current else None
+        # Each forecast must be compared with its own model baseline; mixing
+        # one provider's peak with the other provider's current flow inflates risk.
+        ratios = [provider.peak_forecast_cumecs / provider.current_cumecs for provider in trusted
+                  if provider.peak_forecast_cumecs is not None and provider.current_cumecs is not None and provider.current_cumecs > 0]
+        peak_ratio = max(ratios, default=None)
         max_rain = max((point.precipitation_mm or 0 for point in rainfall if point.phase == "forecast"), default=0)
         rain_probability = max((point.probability_percent or 0 for point in rainfall if point.phase == "forecast"), default=0)
-        max_step_rise = self._max_step_rise(geoglows.series)
+        max_step_rise = self._max_step_rise(geoglows.series) if geoglows.status == "available" else 0.0
 
         river_probability = self._probability_from_ratio(peak_ratio, 30, 88)
         flash_probability = min(88, int(max_step_rise * 6 + max_rain * 2.5 + rain_probability * 0.25))
@@ -301,14 +320,14 @@ class UpstreamForecastService:
                 type="Riverine flood",
                 severity=self._severity(river_probability),
                 probability=river_probability,
-                basis="Forecast discharge peak compared with the latest modeled/reanalysis flow.",
+                basis="Largest within-model forecast peak relative to its current modeled flow.",
                 lead_time="1-14 days",
             ),
             FloodTypeSignal(
                 type="Flash flood",
                 severity=self._severity(flash_probability),
                 probability=flash_probability,
-                basis="Short-step GEOGloWS rise plus forecast rainfall stress.",
+                basis="Short-step GEOGloWS rise plus forecast rainfall stress." if geoglows.status == "available" else "Forecast rainfall stress; GEOGloWS flow needs review.",
                 lead_time="0-72 hours",
             ),
             FloodTypeSignal(
@@ -323,12 +342,21 @@ class UpstreamForecastService:
             "current_mean_cumecs": round(current, 2) if current is not None else None,
             "highest_provider_peak_cumecs": round(peak, 2) if peak is not None else None,
             "peak_to_current_ratio": round(peak_ratio, 2) if peak_ratio is not None else None,
-            "glofas_peak_cumecs": glofas.peak_forecast_cumecs,
-            "geoglows_peak_cumecs": geoglows.peak_forecast_cumecs,
+            "glofas_peak_cumecs": glofas.peak_forecast_cumecs if glofas.status == "available" else None,
+            "geoglows_peak_cumecs": geoglows.peak_forecast_cumecs if geoglows.status == "available" else None,
             "max_forecast_rain_mm": round(max_rain, 1),
             "max_rain_probability_percent": int(rain_probability),
             "geoglows_max_step_rise_cumecs": round(max_step_rise, 2),
         }
+
+    @staticmethod
+    def _flag_conflicting_zero_flow(glofas: ProviderForecast, geoglows: ProviderForecast) -> None:
+        for provider, other in ((glofas, geoglows), (geoglows, glofas)):
+            values = [point.value for point in provider.series if point.phase == "forecast" and point.value is not None]
+            other_values = [point.value for point in other.series if point.phase == "forecast" and point.value is not None]
+            if provider.status == "available" and other.status == "available" and values and other_values and max(values) == 0 and max(other_values) >= 10:
+                provider.status = "suspect"
+                provider.note = (provider.note or "") + " All forecast flows are zero while the other model shows substantial flow. Check this model point before using it for comparison or risk estimates."
 
     @staticmethod
     def _failed_provider(provider: str, source: str, message: str, river_id: int | None = None) -> ProviderForecast:

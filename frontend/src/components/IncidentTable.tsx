@@ -34,7 +34,7 @@ export function IncidentTable({ incidents, full = false, initialIncidentId }: { 
       )}
       {selected && (
         <div className="detail-drawer" role="dialog" aria-label={`Incident ${selected.id} details`}>
-          <div><span>Incident #{selected.id}</span><button className="text-button" onClick={() => setSelected(null)}>Close</button></div>
+          <div><span>Incident #{selected.id} {selected.source === "SIMULATED_FLOW" && <span className="simulated-flow-stamp">Simulated flow</span>}</span><button className="text-button" onClick={() => setSelected(null)}>Close</button></div>
           <h3>{selected.description}</h3>
           <dl><dt>Location</dt><dd>{locationName(selected.location_id)}</dd><dt>Type</dt><dd>{selected.type}</dd><dt>Updated</dt><dd>{formatDateTime(selected.updated_at)}</dd></dl>
         </div>

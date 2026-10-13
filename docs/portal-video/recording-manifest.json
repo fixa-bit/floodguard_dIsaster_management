@@ -1,0 +1,375 @@
+{
+  "viewport": {
+    "width": 1600,
+    "height": 800
+  },
+  "trimStartSeconds": 0,
+  "durationSeconds": 373.0,
+  "videoPath": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\joined-browser-capture.mp4",
+  "chapters": [
+    {
+      "title": "01 / Operational overview",
+      "caption": "FloodGuard AI: an actual browser walkthrough. Models are assumed trained on small datasets; all demonstrated readings are illustrative.",
+      "start": 0,
+      "end": 8.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 24.0,
+      "sourceEnd": 30.8
+    },
+    {
+      "title": "02 / Command statistics",
+      "caption": "National screening summarizes district risk, priorities, and monitoring intervals in one command view.",
+      "start": 8.0,
+      "end": 16.999999999999996,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 30.8,
+      "sourceEnd": 39.8
+    },
+    {
+      "title": "02 / Command statistics",
+      "caption": "The river summary compares city discharge and forecast values, with timestamps and a manual refresh control.",
+      "start": 16.999999999999996,
+      "end": 28.999999999999996,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 39.8,
+      "sourceEnd": 57.8
+    },
+    {
+      "title": "02 / Command statistics",
+      "caption": "The rainfall table compares current, recent, and forecast rainfall across the four operational cities.",
+      "start": 28.999999999999996,
+      "end": 41.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 57.8,
+      "sourceEnd": 73.8
+    },
+    {
+      "title": "02 / Command statistics",
+      "caption": "System information shows the configured data mode, monitoring interval, and active risk engine.",
+      "start": 41.0,
+      "end": 53.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 73.8,
+      "sourceEnd": 90.8
+    },
+    {
+      "title": "03 / National GIS layers",
+      "caption": "Toggle district boundaries, screening, waterways, catchments, and monitoring categories on the interactive map.",
+      "start": 53.0,
+      "end": 65.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 190.8,
+      "sourceEnd": 204.8
+    },
+    {
+      "title": "03 / Reference outlines and Flood Hub integration",
+      "caption": "Compare the available Kashmir outlines and enable Flood Hub markers. The gauges shown here are illustrative integration examples.",
+      "start": 65.0,
+      "end": 77.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 232.8,
+      "sourceEnd": 246.8
+    },
+    {
+      "title": "04 / Coordinate lookup",
+      "caption": "Enter latitude and longitude to inspect local coverage. The selected coordinate is pinned on the map.",
+      "start": 77.0,
+      "end": 89.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 300.8,
+      "sourceEnd": 314.8
+    },
+    {
+      "title": "05 / Catchment study mode",
+      "caption": "Enable corresponding layers to focus on the selected district and hydrological sub-basin, including matching river features.",
+      "start": 89.0,
+      "end": 101.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 401.8,
+      "sourceEnd": 415.8
+    },
+    {
+      "title": "06 / Station hover cards",
+      "caption": "Hover and pin a priority monitoring station to inspect readings, provenance, and stored trends.",
+      "start": 101.0,
+      "end": 113.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 503.79999999999995,
+      "sourceEnd": 517.8
+    },
+    {
+      "title": "07 / Station discharge forecast",
+      "caption": "Station details link to an interactive forecast, separate historical series, date inspection, a readings table, and CSV download.",
+      "start": 113.0,
+      "end": 125.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\completed-first-sections.mkv",
+      "sourceStart": 533.8,
+      "sourceEnd": 547.8
+    },
+    {
+      "title": "08 / Glaciers and headwaters",
+      "caption": "Inspect glacier coverage and upstream drainage, including glaciers that contribute to Pakistan's river basins.",
+      "start": 125.0,
+      "end": 137.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\glacier-clip.mp4",
+      "sourceStart": 0,
+      "sourceEnd": 12
+    },
+    {
+      "title": "09 / Satellite water extent",
+      "caption": "Select a place to display a dated satellite water-mask overlay. This recording uses an illustrative U-Net output.",
+      "start": 137.0,
+      "end": 149.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 36.0,
+      "sourceEnd": 50.8
+    },
+    {
+      "title": "10 / Rainfall heatmap",
+      "caption": "Switch between observed accumulation windows and 24-hour or 72-hour forecasts. Colors follow the rainfall scale.",
+      "start": 149.0,
+      "end": 161.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 78.8,
+      "sourceEnd": 92.8
+    },
+    {
+      "title": "11 / Population exposure analysis",
+      "caption": "GIS Operations estimates exposed people and mapped settlements, with district or tehsil breakdowns and coverage information.",
+      "start": 161.0,
+      "end": 173.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 92.8,
+      "sourceEnd": 110.8
+    },
+    {
+      "title": "12 / Exposure controls and map overlays",
+      "caption": "The analysis supports historical water, configured segmentation, uploaded polygons, and synthetic scenarios; inspect the existing result and its layers.",
+      "start": 173.0,
+      "end": 185.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 119.80000000000001,
+      "sourceEnd": 133.8
+    },
+    {
+      "title": "13 / Predictive model views",
+      "caption": "Five predictive views cover riverine, flash, urban, seasonal basin, and upstream or transboundary risk, with forecast times and target selectors.",
+      "start": 185.0,
+      "end": 197.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 133.8,
+      "sourceEnd": 146.8
+    },
+    {
+      "title": "14 / Riverine short-term model",
+      "caption": "Riverine forecasts: XGBoost baseline inputs, Trimmu and Balloki targets, discharge forecasts, and flood classes over 24\u201348 hours.",
+      "start": 197.0,
+      "end": 205.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 146.8,
+      "sourceEnd": 153.8
+    },
+    {
+      "title": "14 / Flash-flood model",
+      "caption": "Flash-flood guidance combines rainfall, soil moisture, and GIS features for catchment risk within six hours.",
+      "start": 205.0,
+      "end": 213.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 153.8,
+      "sourceEnd": 161.8
+    },
+    {
+      "title": "14 / Urban flooding model",
+      "caption": "Urban susceptibility uses city-scale targets, rainfall, drainage context, and selectable forecast intervals.",
+      "start": 213.0,
+      "end": 225.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 161.8,
+      "sourceEnd": 173.8
+    },
+    {
+      "title": "14 / Seasonal basin model",
+      "caption": "Seasonal basin risk shows forecasts over weeks to months, with target-specific risk series.",
+      "start": 225.0,
+      "end": 233.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 173.8,
+      "sourceEnd": 174.8
+    },
+    {
+      "title": "14 / Upstream anomaly model",
+      "caption": "Upstream and transboundary risk highlights anomalous flow changes over hours to days. Model outputs are illustrative in this demo.",
+      "start": 233.0,
+      "end": 241.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 174.8,
+      "sourceEnd": 178.8
+    },
+    {
+      "title": "15 / Upstream source flood watch",
+      "caption": "Select upper-basin stations, compare GloFAS and GEOGloWS series, and inspect historical trends, rainfall, and forecast risk signals.",
+      "start": 241.0,
+      "end": 253.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 178.8,
+      "sourceEnd": 191.8
+    },
+    {
+      "title": "16 / Source forecast context",
+      "caption": "Each station includes provider summaries, expected peaks, rainfall context, location details, and scheduled or manual refresh.",
+      "start": 253.0,
+      "end": 261.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 191.8,
+      "sourceEnd": 198.8
+    },
+    {
+      "title": "17 / River monitoring table",
+      "caption": "Filter monitoring stations by river or name, switch units, and compare current flow, forecasts, flood categories, and expected peaks.",
+      "start": 261.0,
+      "end": 273.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 198.8,
+      "sourceEnd": 211.8
+    },
+    {
+      "title": "18 / Station network and chart",
+      "caption": "Open a station to inspect its upstream network and forecast. Chart legends and date inspection help distinguish the displayed series.",
+      "start": 273.0,
+      "end": 281.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 211.8,
+      "sourceEnd": 218.8
+    },
+    {
+      "title": "19 / Citizen reports",
+      "caption": "Citizen reports provide a scrollable database-backed feed, coordinates, optional image or video links, priority flags, and closure status.",
+      "start": 281.0,
+      "end": 293.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 218.8,
+      "sourceEnd": 230.8
+    },
+    {
+      "title": "20 / Submit a geolocated report",
+      "caption": "Create a report using coordinates, browser location, or a Google Maps link. Image GPS fields remain visible when no geotag is available.",
+      "start": 293.0,
+      "end": 305.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 235.8,
+      "sourceEnd": 249.8
+    },
+    {
+      "title": "21 / Prioritize and close reports",
+      "caption": "Flag a report for attention, then close it in the database. New reports appear in the active window before remaining in the saved feed.",
+      "start": 305.0,
+      "end": 316.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 249.8,
+      "sourceEnd": 260.8
+    },
+    {
+      "title": "22 / Monitoring simulation",
+      "caption": "Configure a station, measurement, units, test thresholds, and a reading profile to exercise the monitoring workflow.",
+      "start": 316.0,
+      "end": 328.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 265.8,
+      "sourceEnd": 279.8
+    },
+    {
+      "title": "23 / Threshold crossing and saved results",
+      "caption": "Play the test scenario. Threshold crossings save simulated readings and create linked alerts and incidents.",
+      "start": 328.0,
+      "end": 336.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 279.8,
+      "sourceEnd": 285.8
+    },
+    {
+      "title": "24 / Alert review",
+      "caption": "Review threshold alerts, distinguish operational and simulated flows, and open the linked incident.",
+      "start": 336.0,
+      "end": 344.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 285.8,
+      "sourceEnd": 290.8
+    },
+    {
+      "title": "25 / Incident management",
+      "caption": "The incident view records severity, status, location, and timestamps. Linked details preserve the simulated-flow context.",
+      "start": 344.0,
+      "end": 353.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 290.8,
+      "sourceEnd": 299.8
+    },
+    {
+      "title": "26 / System activity",
+      "caption": "The activity timeline records model decisions, monitoring changes, report actions, and simulated response events.",
+      "start": 353.0,
+      "end": 361.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 299.8,
+      "sourceEnd": 307.8
+    },
+    {
+      "title": "27 / Command overview",
+      "caption": "The walkthrough covers the portal as it runs in a web browser. Small-dataset training is an assumption; this video does not validate model accuracy.",
+      "start": 361.0,
+      "end": 373.0,
+      "source": "D:\\Projects\\disaster_management\\docs\\portal-video\\raw\\page@b9046867e97a162dbbf49946fa6ec83c.webm",
+      "sourceStart": 321.8,
+      "sourceEnd": 335.8
+    }
+  ],
+  "downloads": [],
+  "browserErrors": [],
+  "captureMethod": "Joined excerpts from actual browser recordings; processing stalls omitted",
+  "validation": {
+    "fullPreflightBrowserErrors": [],
+    "resumedRecordingBrowserErrors": [],
+    "firstFootage": "Completed views recovered and visually checked after the recording controller stalled"
+  },
+  "frameMatches": {
+    "first": [
+      30.0,
+      39.0,
+      57.0,
+      73.0,
+      90.0,
+      204.0,
+      246.0,
+      314.0,
+      415.0,
+      517.0,
+      547.0,
+      1423.0
+    ],
+    "rest": [
+      50.0,
+      92.0,
+      110.0,
+      133.0,
+      146.0,
+      153.0,
+      161.0,
+      173.0,
+      174.0,
+      178.0,
+      191.0,
+      198.0,
+      211.0,
+      218.0,
+      230.0,
+      249.0,
+      260.0,
+      279.0,
+      285.0,
+      290.0,
+      299.0,
+      307.0,
+      335.0
+    ]
+  }
+}

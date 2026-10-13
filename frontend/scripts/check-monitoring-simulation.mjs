@@ -6,6 +6,16 @@ const browser = await chromium.launch({ executablePath: process.env.EDGE_PATH ??
 const screenshots = new URL("../../.pytest_cache/", import.meta.url);
 const screenshot = (name) => fileURLToPath(new URL(name, screenshots));
 const errors = [];
+async function setSlider(page, label, value) {
+  const slider = page.getByRole("slider", { name: label, exact: true });
+  if (await slider.isDisabled()) await page.getByRole("checkbox", { name: `Enable ${label}`, exact: true }).check();
+  await slider.evaluate((element, next) => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(element, next);
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+  }, value);
+  assert.equal(await slider.inputValue(), value);
+}
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, timezoneId: "Asia/Karachi" });
   const apiBase = process.env.BACKEND_URL ?? "http://127.0.0.1:8001/api/v1";
@@ -24,21 +34,22 @@ try {
   await page.getByLabel("Station", { exact: true }).selectOption("TAUNSA");
   assert.equal(await page.getByRole("button", { name: "Play", exact: true }).isDisabled(), true);
   await page.getByLabel("Measurement", { exact: true }).selectOption("water_level");
-  await page.getByLabel("Gauge datum / reference").fill("QA gauge datum");
+  await page.getByLabel("Gauge datum / reference", { exact: true }).selectOption("custom");
+  await page.getByLabel("Custom gauge datum / reference", { exact: true }).fill("QA gauge datum");
   assert.deepEqual(await page.getByLabel("Unit", { exact: true }).locator("option").allTextContents(), ["m", "ft"]);
   await page.getByLabel("Measurement", { exact: true }).selectOption("discharge_inflow");
   await page.getByRole("button", { name: "Custom test thresholds", exact: true }).click();
-  await page.getByLabel("Warning (cusecs)", { exact: true }).fill("600000");
-  await page.getByLabel("Danger (cusecs)", { exact: true }).fill("300000");
-  await page.getByLabel("Reading 1 value", { exact: true }).fill("650000");
+  await setSlider(page, "Warning (cusecs)", "600000");
+  await setSlider(page, "Danger (cusecs)", "300000");
+  await setSlider(page, "Reading 1 value", "650000");
   await page.getByRole("button", { name: "Play", exact: true }).click();
   await page.getByText("Danger threshold must exceed warning threshold.", { exact: true }).waitFor();
-  await page.getByLabel("Warning (cusecs)", { exact: true }).fill("300000");
-  await page.getByLabel("Danger (cusecs)", { exact: true }).fill("600000");
+  await setSlider(page, "Warning (cusecs)", "300000");
+  await setSlider(page, "Danger (cusecs)", "600000");
   await page.getByLabel("Testing profile").selectOption("danger");
   assert.equal(await page.locator(".simulation-readings tbody tr").count(), 3);
-  await page.getByLabel("Reading 2 p25", { exact: true }).fill("280000");
-  await page.getByLabel("Reading 2 p75", { exact: true }).fill("320000");
+  await setSlider(page, "Reading 2 p25", "280000");
+  await setSlider(page, "Reading 2 p75", "320000");
   await page.screenshot({ path: screenshot("simulation-entry-desktop.png"), fullPage: true });
   const responsePromise = page.waitForResponse((response) => response.url().endsWith("/simulation/monitoring/play") && response.request().method() === "POST");
   await page.getByRole("button", { name: "Play", exact: true }).click();
@@ -47,26 +58,29 @@ try {
   const played = await response.json();
   assert.equal(played.inserted, 3);
   assert.equal(played.alerts.length, 2);
-  assert.equal(played.incidents.length, 2);
+  assert.equal(played.incidents.length, 0, "Incidents require alert approval");
   await page.getByRole("heading", { name: "Threshold reached", exact: true }).waitFor();
   assert.equal(await page.locator(".simulation-alert-banner").count(), 1);
   await page.screenshot({ path: screenshot("simulation-result-desktop.png"), fullPage: true });
-  await page.getByRole("button", { name: "Alerts (2)", exact: true }).click();
+  await page.getByRole("button", { name: "Review alerts (2)", exact: true }).click();
   await page.locator(".alerts-table tbody tr").first().waitFor();
   await page.getByRole("button", { name: "Operational", exact: true }).click();
   assert.equal(await page.locator(".alerts-table").count(), 0);
   await page.getByRole("button", { name: "Simulated flow", exact: true }).click();
   assert.equal(await page.locator(".alerts-table tbody tr").count(), initialAlerts.length + 2);
   await page.screenshot({ path: screenshot("simulation-alerts-desktop.png"), fullPage: true });
+  await page.getByRole("button", { name: `Approve simulated alert ${played.alerts[0].id}`, exact: true }).click();
+  await page.locator(".alert-incident-link").first().waitFor();
   await page.locator(".alert-incident-link").first().click();
   await page.getByRole("dialog").waitFor();
   assert.ok((await page.getByRole("dialog").innerText()).includes("SIMULATED FLOW"));
-  assert.equal(await page.locator(".data-table tbody tr").count(), initialIncidents.length + 2);
+  assert.equal(await page.locator(".data-table tbody tr").count(), initialIncidents.length + 1);
   await page.screenshot({ path: screenshot("simulation-incidents-desktop.png"), fullPage: true });
   await page.reload({ waitUntil: "domcontentloaded" });
   await nav.getByRole("button", { name: "Alerts", exact: true }).click();
   await page.locator(".alerts-table tbody tr").first().waitFor();
   assert.equal(await page.locator(".alerts-table tbody tr").count(), initialAlerts.length + 2);
+  assert.equal(await page.getByText("Approved", { exact: true }).count(), 1);
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -74,9 +88,9 @@ try {
   await nav.getByRole("button", { name: "Simulation", exact: true }).click();
   await page.getByLabel("Station", { exact: true }).selectOption("TAUNSA");
   await page.getByRole("button", { name: "Custom test thresholds", exact: true }).click();
-  await page.getByLabel("Warning (cusecs)", { exact: true }).fill("300000");
-  await page.getByLabel("Danger (cusecs)", { exact: true }).fill("600000");
-  await page.getByLabel("Reading 1 value", { exact: true }).fill("100000");
+  await setSlider(page, "Warning (cusecs)", "300000");
+  await setSlider(page, "Danger (cusecs)", "600000");
+  await setSlider(page, "Reading 1 value", "100000");
   await page.screenshot({ path: screenshot("simulation-entry-mobile.png"), fullPage: true });
   const mobileLayout = await page.evaluate(() => ({
     width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
@@ -90,7 +104,7 @@ try {
   await page.screenshot({ path: screenshot("simulation-result-mobile.png"), fullPage: true });
 
   await page.getByRole("button", { name: "New run", exact: true }).click();
-  await page.getByLabel("Reading 1 value", { exact: true }).fill("600000");
+  await setSlider(page, "Reading 1 value", "600000");
   let committed;
   await page.route("**/simulation/monitoring/play", async (route) => {
     committed = await (await route.fetch()).json();
@@ -104,9 +118,12 @@ try {
   const alerts = await (await page.request.get(`${apiBase}/alerts`)).json();
   assert.equal(alerts.filter((alert) => alert.event_metadata.run_id === committed.run_id).length, 1);
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-  await page.getByRole("button", { name: "Alerts (1)", exact: true }).click();
+  await page.getByRole("button", { name: "Review alerts (1)", exact: true }).click();
   await page.locator(".alerts-table tbody tr").first().waitFor();
   await page.screenshot({ path: screenshot("simulation-alerts-mobile.png"), fullPage: true });
+  const retryAlert = alerts.find((alert) => alert.event_metadata.run_id === committed.run_id);
+  await page.getByRole("button", { name: `Approve simulated alert ${retryAlert.id}`, exact: true }).click();
+  await page.locator(".alert-incident-link").first().waitFor();
   await page.locator(".alert-incident-link").first().click();
   await page.getByRole("dialog").waitFor();
   await page.screenshot({ path: screenshot("simulation-incidents-mobile.png"), fullPage: true });

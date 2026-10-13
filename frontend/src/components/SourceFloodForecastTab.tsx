@@ -56,10 +56,21 @@ function modelColor(provider: string) {
 export function ForecastChart({ providers }: { providers: ProviderForecast[] }) {
   const width = 760;
   const height = 210;
-  const chartProviders = providers.map((provider) => ({
+  const usableProviders = providers.filter((provider) => provider.status === "available").map((provider) => ({
     ...provider,
-    series: [...provider.series].sort((a, b) => chartTime(a.time) - chartTime(b.time)),
+    series: provider.series.filter((point) => point.phase === "forecast" && point.value !== null && Number.isFinite(point.value) && Number.isFinite(chartTime(point.time)))
+      .sort((a, b) => chartTime(a.time) - chartTime(b.time)),
   })).filter((provider) => provider.series.some((point) => point.value !== null && Number.isFinite(point.value) && Number.isFinite(chartTime(point.time))));
+  const sharedStart = Math.max(...usableProviders.map((provider) => chartTime(provider.series[0].time)));
+  const sharedEnd = Math.min(...usableProviders.map((provider) => chartTime(provider.series[provider.series.length - 1].time)));
+  const hasSharedPeriod = usableProviders.length < 2 || sharedStart < sharedEnd;
+  const chartProviders = hasSharedPeriod ? usableProviders.map((provider) => ({
+    ...provider,
+    series: usableProviders.length < 2 ? provider.series : provider.series.filter((point) => {
+      const time = chartTime(point.time);
+      return time >= sharedStart && time <= sharedEnd;
+    }),
+  })).filter((provider) => provider.series.length > 0) : [];
   const allValues = chartProviders.flatMap((provider) => provider.series.map((point) => point.value).filter((value): value is number => value !== null));
   const maxValue = Math.max(...allValues, 0) || 1;
   const axisDigits = maxValue < 1 ? Math.min(8, Math.ceil(-Math.log10(maxValue)) + 2) : maxValue < 10 ? 2 : 1;
@@ -70,14 +81,15 @@ export function ForecastChart({ providers }: { providers: ProviderForecast[] }) 
   const dateFormatter = new Intl.DateTimeFormat("en", { month: "short", day: "numeric", timeZone: "UTC" });
 
   if (chartProviders.length === 0) {
-    return <div className="source-chart-empty">Forecast graph is unavailable from both providers.</div>;
+    return <div className="source-chart-empty">{hasSharedPeriod ? "No trustworthy forecast series is available." : "The providers have no overlapping forecast period."}</div>;
   }
 
   return (
     <div className="source-chart-wrap">
       <div className="source-chart-legend" aria-label="Forecast providers">
-        {providers.map((provider) => <span key={provider.provider}><i style={{ background: modelColor(provider.provider) }} />{provider.provider}{!chartProviders.some((item) => item.provider === provider.provider) && " (unavailable)"}</span>)}
+        {providers.map((provider) => <span key={provider.provider}><i style={{ background: modelColor(provider.provider) }} />{provider.provider}{!chartProviders.some((item) => item.provider === provider.provider) && ` (${provider.status === "suspect" ? "needs review" : "unavailable"})`}</span>)}
       </div>
+      <p className="source-chart-context">Forecast-only model estimates{chartProviders.length > 1 ? "; shared dates only" : ""}. Differences in modeled flow may remain.</p>
       <div className="source-chart-axis-title">River discharge (m3/s)</div>
       <div className="source-chart-area">
         <div className="source-chart-axis" aria-label="River discharge scale">
@@ -168,16 +180,17 @@ function SourceFloodContent({ station }: { station: UpstreamStationForecast }) {
 
       <div className="source-expanded-grid">
         <div className="source-graph-panel">
-          <div className="source-section-head"><BarChart3 size={16} /><strong>GloFAS and GEOGloWS in parallel</strong></div>
+          <div className="source-section-head"><BarChart3 size={16} /><strong>GloFAS and GEOGloWS forecast comparison</strong></div>
+          {station.providers.some((provider) => provider.status === "suspect") && <p className="source-provider-warning" role="status">A model returned zero flow while the other shows substantial flow. The suspect series is excluded from this comparison and risk statistics; check its model point before use.</p>}
           <ForecastChart providers={station.providers} />
         </div>
 
         <div className="source-stats-panel">
           <div className="source-section-head"><Activity size={16} /><strong>Important stats</strong></div>
           <div className="source-stat-grid">
-            <div><span>Mean current flow</span><strong>{formatNumber(statNumber(station.stats.current_mean_cumecs))} cumecs</strong></div>
+            <div><span>Mean modeled current</span><strong>{formatNumber(statNumber(station.stats.current_mean_cumecs))} cumecs</strong></div>
             <div><span>Highest model peak</span><strong>{formatNumber(statNumber(station.stats.highest_provider_peak_cumecs))} cumecs</strong></div>
-            <div><span>Peak/current ratio</span><strong>{formatNumber(statNumber(station.stats.peak_to_current_ratio), 2)}x</strong></div>
+            <div><span>Largest within-model peak/current</span><strong>{formatNumber(statNumber(station.stats.peak_to_current_ratio), 2)}x</strong></div>
             <div><span>Max forecast rain</span><strong>{formatNumber(typeof maxRain === "number" ? maxRain : null)} mm</strong></div>
             <div><span>Max rain probability</span><strong>{formatNumber(typeof rainProbability === "number" ? rainProbability : null, 0)}%</strong></div>
             <div><span>Fastest model rise</span><strong>{formatNumber(statNumber(station.stats.geoglows_max_step_rise_cumecs))} cumecs</strong></div>

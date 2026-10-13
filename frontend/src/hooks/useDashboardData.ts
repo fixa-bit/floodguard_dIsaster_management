@@ -68,7 +68,11 @@ function errorMessage(reason: unknown): string {
   return "Unexpected dashboard request failure";
 }
 
-export function useDashboardData(locationId: string) {
+function settledValue<T>(result: PromiseSettledResult<T | undefined>, previous: T): T {
+  return result.status === "fulfilled" && result.value !== undefined ? result.value : previous;
+}
+
+export function useDashboardData(locationId: string, includeLiveData = true) {
   const [data, setData] = useState<DashboardData>(initialData);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -83,14 +87,23 @@ export function useDashboardData(locationId: string) {
     const currentOperationsVersion = operationsVersion.current;
     if (initial) setLoading(true);
     else setRefreshing(true);
+    setErrors([]);
+
+    // Share the selected location's requests with the national overview instead
+    // of asking the same providers twice during every refresh.
+    const weatherRequests = includeLiveData ? LOCATIONS.map((location) => api.weather(location.id)) : [];
+    const riverRequests = includeLiveData ? LOCATIONS.map((location) => api.river(location.id)) : [];
+    const locationIndex = LOCATIONS.findIndex((location) => location.id === locationId);
+    const selectedWeather = includeLiveData ? weatherRequests[locationIndex] ?? api.weather(locationId) : Promise.resolve(undefined);
+    const selectedRiver = includeLiveData ? riverRequests[locationIndex] ?? api.river(locationId) : Promise.resolve(undefined);
 
     const [requests, locationWeatherRequests, locationRiverRequests] = await Promise.all([
       Promise.allSettled([
         api.dashboard(),
-        api.risk(locationId),
-        api.modelForecasts(),
-        api.weather(locationId),
-        api.river(locationId),
+        includeLiveData ? api.risk(locationId) : Promise.resolve(undefined),
+        includeLiveData ? api.modelForecasts() : Promise.resolve(undefined),
+        selectedWeather,
+        selectedRiver,
         api.incidents(),
         api.citizenReports(),
         api.events(),
@@ -99,19 +112,24 @@ export function useDashboardData(locationId: string) {
         api.shelters(),
         api.hospitals(),
         api.contacts(),
-        api.nationalRisk(),
-        api.waterIntelligence(),
+        includeLiveData ? api.nationalRisk() : Promise.resolve(undefined),
+        includeLiveData ? api.waterIntelligence() : Promise.resolve(undefined),
         api.alerts(),
       ] as const),
-      Promise.allSettled(LOCATIONS.map((location) => api.weather(location.id))),
-      Promise.allSettled(LOCATIONS.map((location) => api.river(location.id))),
+      Promise.allSettled(weatherRequests),
+      Promise.allSettled(riverRequests),
     ]);
 
     if (currentRequest !== requestId.current) return;
 
-    const failures = [...requests, ...locationWeatherRequests, ...locationRiverRequests]
-      .filter((result): result is PromiseRejectedResult => result.status === "rejected")
-      .map((result) => errorMessage(result.reason));
+    const requestLabels = ["Dashboard summary", "Flood risk", "Model forecasts", `Weather (${locationId})`, `River (${locationId})`, "Incidents", "Citizen reports", "System events", "System status", "Simulation status", "Shelters", "Hospitals", "Emergency contacts", "National risk map", "Water intelligence", "Alerts"];
+    const failures = requests.flatMap((result, index) => result.status === "rejected" ? [`${requestLabels[index]}: ${errorMessage(result.reason)}`] : []);
+    locationWeatherRequests.forEach((result, index) => {
+      if (index !== locationIndex && result.status === "rejected") failures.push(`Weather (${LOCATIONS[index].name}): ${errorMessage(result.reason)}`);
+    });
+    locationRiverRequests.forEach((result, index) => {
+      if (index !== locationIndex && result.status === "rejected") failures.push(`River (${LOCATIONS[index].name}): ${errorMessage(result.reason)}`);
+    });
     const locationWeather = locationWeatherRequests
       .filter((result): result is PromiseFulfilledResult<WeatherResponse> => result.status === "fulfilled")
       .map((result) => result.value);
@@ -121,11 +139,11 @@ export function useDashboardData(locationId: string) {
 
     setData((previous) => ({
       summary: currentOperationsVersion === operationsVersion.current && requests[0].status === "fulfilled" ? requests[0].value : previous.summary,
-      risk: requests[1].status === "fulfilled" ? requests[1].value : previous.risk,
-      modelForecasts: requests[2].status === "fulfilled" ? requests[2].value : previous.modelForecasts,
-      weather: requests[3].status === "fulfilled" ? requests[3].value : previous.weather,
-      river: requests[4].status === "fulfilled" ? requests[4].value : previous.river,
-      locationWeather: locationWeather.length > 0 ? locationWeather : previous.locationWeather.length > 0 ? previous.locationWeather : requests[3].status === "fulfilled" ? [requests[3].value] : previous.locationWeather,
+      risk: settledValue(requests[1], previous.risk),
+      modelForecasts: settledValue(requests[2], previous.modelForecasts),
+      weather: settledValue(requests[3], previous.weather),
+      river: settledValue(requests[4], previous.river),
+      locationWeather: locationWeather.length > 0 ? locationWeather : previous.locationWeather,
       locationRivers: locationRivers.length > 0 ? locationRivers : previous.locationRivers,
       incidents: currentOperationsVersion === operationsVersion.current && requests[5].status === "fulfilled" ? requests[5].value : previous.incidents,
       reports: requests[6].status === "fulfilled" ? requests[6].value : previous.reports,
@@ -133,8 +151,8 @@ export function useDashboardData(locationId: string) {
       alerts: currentOperationsVersion === operationsVersion.current && requests[15].status === "fulfilled" ? requests[15].value : previous.alerts,
       system: requests[8].status === "fulfilled" ? requests[8].value : previous.system,
       simulation: requests[9].status === "fulfilled" ? requests[9].value : previous.simulation,
-      nationalRisk: requests[13].status === "fulfilled" ? requests[13].value : previous.nationalRisk,
-      waterIntelligence: requests[14].status === "fulfilled" ? requests[14].value : previous.waterIntelligence,
+      nationalRisk: settledValue(requests[13], previous.nationalRisk),
+      waterIntelligence: settledValue(requests[14], previous.waterIntelligence),
       resources: {
         shelters: requests[10].status === "fulfilled" ? requests[10].value : previous.resources.shelters,
         hospitals: requests[11].status === "fulfilled" ? requests[11].value : previous.resources.hospitals,
@@ -145,7 +163,7 @@ export function useDashboardData(locationId: string) {
     setLastUpdated(new Date());
     setLoading(false);
     setRefreshing(false);
-  }, [locationId]);
+  }, [locationId, includeLiveData]);
 
   const refreshOperations = useCallback(async (simulation?: MonitoringSimulationResult) => {
     const version = ++operationsVersion.current;

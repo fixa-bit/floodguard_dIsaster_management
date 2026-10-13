@@ -20,7 +20,7 @@ import pakistanDistrictsUrl from "../data/pakistan/pakistan_districts.geojson?co
 import kashmirDistrictsUrl from "../data/pakistan/kashmir_districts.geojson?compressed";
 import glaciersUrl from "../data/pakistan/glaciers.geojson?compressed";
 import glacierIndusBasinRaw from "../data/pakistan/glacier_indus_basin.geojson?raw";
-import type { CitizenReport, DistrictRiskFeature, Incident, NationalRiskCollection, ResourceGroups, RiverResponse, RiverMonitoringResponse, WaterIntelligenceCollection, WaterIntelligenceFeature, WeatherResponse } from "../types/api";
+import type { CitizenReport, DistrictRiskFeature, Incident, NationalRiskCollection, ResourceGroups, RiverResponse, RiverMonitoringResponse, SarWaterOverlay, WaterIntelligenceCollection, WaterIntelligenceFeature, WeatherResponse } from "../types/api";
 import { StatusBadge } from "./StatusBadge";
 import { api } from "../services/api";
 import type { GoogleFloodCollection, GoogleFloodFeature, RegionalRainfallCollection } from "../types/api";
@@ -77,6 +77,12 @@ const baseStyle: StyleSpecification = {
       paint: { "raster-opacity": 0.94, "raster-saturation": 0.18, "raster-contrast": 0.08 },
     },
   ],
+};
+
+const boundaryLinePaint: maplibregl.LineLayerSpecification["paint"] = {
+  "line-color": "#166534",
+  "line-width": ["interpolate", ["linear"], ["zoom"], 3, 1.25, 7, 1.75, 10, 2.25],
+  "line-opacity": 0.9,
 };
 
 const emptyCollection: FeatureCollection = { type: "FeatureCollection", features: [] };
@@ -426,6 +432,12 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const floodHubRef = useRef(floodHub);
   floodHubRef.current = floodHub;
   const [requestedLayers, setLayers] = useState({ boundary: true, glaciers: false, borderTest: false, risk: false, districts: false, floodHub: false, catchments: false, water: false, waterForecasts: false, gauges: false, stations: false, incidents: false, reports: false, resources: false });
+  const sarPickRef = useRef(false);
+  const sarRequestRef = useRef(0);
+  const [sarOverlay, setSarOverlay] = useState<SarWaterOverlay | null>(null);
+  const [sarOverlayVisible, setSarOverlayVisible] = useState(true);
+  const [sarBusy, setSarBusy] = useState(false);
+  const [sarError, setSarError] = useState<string | null>(null);
   const [monitoringCategoriesOn, setMonitoringCategoriesOn] = useState<MonitoringCategory[]>([]);
   const [studyMonitoringHidden, setStudyMonitoringHidden] = useState<MonitoringCategory[]>([]);
   const [studyEnabled, setStudyEnabled] = useState(false);
@@ -792,6 +804,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }, [studySources, studyCatchment, regionalRainfall, locationWeather]);
 
   function setPickingMode(active: boolean) {
+    if (!active) sarPickRef.current = false;
     if (active) stationInteractionRef.current?.close();
     coordinatePickingRef.current = active;
     if (!active && mapRef.current) mapRef.current.getCanvas().style.cursor = "";
@@ -802,12 +815,14 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }
 
   function selectCoordinate(point: MapCoordinate, navigate = true) {
+    const analyzeWater = sarPickRef.current;
     stationInteractionRef.current?.close();
     coordinateNavigationRef.current = navigate;
     setPickingMode(false);
     setSelectedDistrict(null); setSelectedGlacier(null); setSelectedCatchment(null);
     setSelectedWaterFeature(null); setSelectedFloodHubFeature(null); setSelectedStationId(null);
     setCatchmentId(""); setVisibleCoordinateMatches([]); setSelectedCoordinate(point); setCoordinateDetailsPoint(point);
+    if (analyzeWater) void runSarInference(point);
     if (window.innerWidth < 700) setMapControlsOpen(false);
   }
   const selectCoordinateRef = useRef(selectCoordinate);
@@ -901,7 +916,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       map.addSource("pakistan-political-labels", { type: "geojson", data: pakistanPoliticalLabels });
       map.addSource("jammu-kashmir-context", { type: "geojson", data: kashmirBoundaryRef.current, tolerance: 0 });
       map.addLayer({ id: "jammu-kashmir-context-fill", type: "fill", source: "jammu-kashmir-context", paint: { "fill-color": "#afc0bd", "fill-opacity": 0.055 } });
-      map.addLayer({ id: "jammu-kashmir-context-line", type: "line", source: "jammu-kashmir-context", paint: { "line-color": "#ffffff", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 3, 7, 4, 10, 5], "line-opacity": 1 } });
+      map.addLayer({ id: "jammu-kashmir-context-line", type: "line", source: "jammu-kashmir-context", layout: { "line-cap": "round", "line-join": "round" }, paint: boundaryLinePaint });
       map.addSource("pakistan-operational-base", { type: "geojson", data: pakistanOperationalBase, tolerance: 0 });
       map.addLayer({
         id: "ndma-operational-fill",
@@ -981,9 +996,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         filter: namedDistrictFilter,
         paint: { "line-color": "#c084fc", "line-width": ["interpolate", ["linear"], ["zoom"], 2, 0.9, 6, 1.5, 10, 2.3], "line-opacity": 0.95 },
       });
-      map.addLayer({ id: "ndma-operational-line", type: "line", source: "pakistan-operational-base", paint: { "line-color": "#ffffff", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 3, 7, 4, 10, 5], "line-opacity": 1 } });
+      map.addLayer({ id: "ndma-operational-line", type: "line", source: "pakistan-operational-base", layout: { "line-cap": "round", "line-join": "round" }, paint: boundaryLinePaint });
       map.addSource("pakistan-loc-overlay", { type: "geojson", data: pakistanLocOverlay });
-      map.addLayer({ id: "pakistan-loc-line", type: "line", source: "pakistan-loc-overlay", paint: { "line-color": "#67e8f9", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 3, 7, 4, 10, 5], "line-opacity": 1 } });
+      map.addLayer({ id: "pakistan-loc-line", type: "line", source: "pakistan-loc-overlay", layout: { "line-cap": "round", "line-join": "round" }, paint: { ...boundaryLinePaint, "line-color": "#6faeb9" } });
       map.addSource("water-lines", { type: "geojson", data: waterData.lines });
       map.addLayer({ id: "water-lines-glow", type: "line", source: "water-lines", paint: { "line-color": "#0ea5e9", "line-width": ["interpolate", ["linear"], ["zoom"], 4, 4.2, 8, 7.2, 12, 11], "line-opacity": 0.26 } });
       map.addLayer({ id: "water-lines", type: "line", source: "water-lines", paint: { "line-color": "#4de7ff", "line-width": ["interpolate", ["linear"], ["zoom"], 4, 1.9, 8, 3.7, 12, 6.4], "line-opacity": 0.94 } });
@@ -1495,6 +1510,50 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }, [layers, rainfallHeatmapEnabled, catchmentId, waterQuantity, showNormalFloodHub, glacierView, studyActive]);
 
   usePopulationLayers(mapRef, populationOverlay);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const updateOverlay = () => {
+      if (map.getLayer("sar-water-extent")) map.removeLayer("sar-water-extent");
+      if (map.getSource("sar-water-extent")) map.removeSource("sar-water-extent");
+      if (!sarOverlay) return;
+      map.addSource("sar-water-extent", { type: "image", url: sarOverlay.image_data_url, coordinates: sarOverlay.coordinates });
+      map.addLayer({ id: "sar-water-extent", type: "raster", source: "sar-water-extent",
+        layout: { visibility: sarOverlayVisible ? "visible" : "none" },
+        paint: { "raster-opacity": 0.9, "raster-fade-duration": 0, "raster-resampling": "nearest" } },
+      map.getLayer("google-flood-hub-points") ? "google-flood-hub-points" : undefined);
+    };
+    map.on("style.load", updateOverlay);
+    if (map.isStyleLoaded()) updateOverlay();
+    return () => { map.off("style.load", updateOverlay); };
+  }, [sarOverlay, expanded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map?.getLayer("sar-water-extent")) map.setLayoutProperty("sar-water-extent", "visibility", sarOverlayVisible ? "visible" : "none");
+  }, [sarOverlayVisible, sarOverlay, expanded]);
+
+  async function runSarInference(point: MapCoordinate) {
+    const request = ++sarRequestRef.current;
+    setSarBusy(true);
+    setSarError(null);
+    setSarOverlay(null);
+    try {
+      const overlay = await api.sarWaterExtentAtLocation(point.latitude, point.longitude);
+      if (request !== sarRequestRef.current) return;
+      setSarOverlay(overlay);
+      setSarOverlayVisible(true);
+      const longitude = overlay.coordinates.map(([lon]) => lon);
+      const latitude = overlay.coordinates.map(([, lat]) => lat);
+      mapRef.current?.fitBounds([[Math.min(...longitude), Math.min(...latitude)], [Math.max(...longitude), Math.max(...latitude)]],
+        { padding: 45, duration: 500, maxZoom: 12 });
+    } catch (error) {
+      if (request === sarRequestRef.current) setSarError(error instanceof Error ? error.message : "Water extent inference failed.");
+    } finally {
+      if (request === sarRequestRef.current) setSarBusy(false);
+    }
+  }
   useStationHover({ mapRef, interactionRef: stationInteractionRef, pickingRef: coordinatePickingRef,
     catchment: studyActive ? studyCatchment : activeCatchment, expanded, revision: stationPopupSources,
     onPin: (touch) => {
@@ -1593,6 +1652,22 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           {([
             ["risk", "District screening"], ["waterForecasts", "River status & model forecasts"], ["gauges", "River monitoring"], ["floodHub", "Google Flood Hub"], ["incidents", "Incidents"], ["reports", "Citizen reports"], ["resources", "Response resources"],
           ] as const).map(([id, label]) => <label key={id}><input type="checkbox" checked={layers[id]} disabled={studyActive} title={studyActive ? "Controlled by corresponding catchment" : undefined} onChange={() => setLayers((current) => ({ ...current, [id]: !current[id] }))} /><span>{label}</span></label>)}
+          <details className="sar-water-control">
+            <summary><strong><Waves size={14} /> Satellite water extent</strong></summary>
+            <button className="sar-select-location" type="button" disabled={sarBusy} onClick={() => {
+              sarPickRef.current = true;
+              setPickingMode(true);
+            }}><MousePointer2 size={14} />{sarBusy ? "Processing satellite imagery..." : "Select place on map"}</button>
+            {sarBusy && <small role="status">Fetching and aligning satellite data. This may take a minute.</small>}
+            {sarError && <small role="alert">{sarError}</small>}
+            {sarOverlay && <div className="sar-water-result">
+              <label><input type="checkbox" checked={sarOverlayVisible} onChange={(event) => setSarOverlayVisible(event.target.checked)} /><span>Show water extent</span></label>
+              <button type="button" title="Remove water extent overlay" aria-label="Remove water extent overlay" onClick={() => setSarOverlay(null)}><X size={14} /></button>
+              <small>{sarOverlay.water_percent}% of valid pixels / {sarOverlay.label}</small>
+              {sarOverlay.during_date && <small>Radar: {new Date(sarOverlay.during_date).toLocaleDateString()} / previous: {new Date(sarOverlay.pre_date!).toLocaleDateString()}</small>}
+              {sarOverlay.source && <small>{sarOverlay.source}</small>}
+            </div>}
+          </details>
           <div className="feature-visualization-control">
             <strong><CloudRain size={14} /> Rainfall</strong>
             <label><input type="checkbox" checked={rainfallHeatmapEnabled} disabled={studyActive} title={studyActive ? "Controlled by corresponding catchment" : undefined} onChange={() => setRainfallHeatmapEnabled((current) => !current)} /><span>Rainfall heatmap</span></label>
@@ -1656,6 +1731,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           {layers.catchments && <span><i className="legend-catchment" /> HydroBASINS catchments</span>}
           {layers.glaciers && <>{Object.entries(glacierColors).map(([id, color]) => <span key={id}><i style={{ background: color }} />{id === "external_contributor" ? "External glacier contributor" : id === "pakistan_contributor" ? "Pakistan glacier contributor" : id === "divide_uncertain" ? "Drainage uncertain" : "Other glacier basin"}</span>)}</>}
           {layers.floodHub && floodHubLegend.filter((item) => showNormalFloodHub || item.severity !== "NO_FLOODING").map((item) => <span key={item.severity}><i className="legend-floodhub-point" style={{ background: item.color }} />Google: {item.label}</span>)}
+          {sarOverlay && sarOverlayVisible && <span><i style={{ background: "#00cae1" }} /> Satellite water extent</span>}
           {layers.districts && <span><i className="legend-district-names" /> District names &amp; boundaries</span>}
           {layers.borderTest && <><span><i style={{ background: "#ff2020" }} /> 3 border checkpoints</span><span><i className="legend-district-names" style={{ borderTopColor: "#a855f7" }} /> Pakistan / province outline</span></>}
           {layers.gauges && waterQuantity !== "status" && <div className="water-quantity-legend">
