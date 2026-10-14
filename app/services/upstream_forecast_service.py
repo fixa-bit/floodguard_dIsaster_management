@@ -25,6 +25,10 @@ UPSTREAM_STATIONS = [
         "latitude": 34.93,
         "longitude": 72.88,
         "geoglows_river_id": 440341343,
+        "low_flood_threshold_cumecs": 318.62,
+        "low_flood_threshold_label": "Modeled 2-year flow reference",
+        "low_flood_threshold_kind": "modeled",
+        "low_flood_threshold_basis": "GEOGloWS 1980-2025 daily retrospective; median of 46 annual maxima. This is a model-derived screening reference, not an official warning limit.",
         "why_selected": "Northern Indus watch point upstream of Tarbela and before the main Punjab flood corridor.",
         "source_focus": "Himalaya-Karakoram snowmelt, glacial tributaries, and fast upstream routing into Tarbela.",
         "facts": [
@@ -41,6 +45,10 @@ UPSTREAM_STATIONS = [
         "latitude": 35.92,
         "longitude": 74.38,
         "geoglows_river_id": 440121137,
+        "low_flood_threshold_cumecs": 25.01,
+        "low_flood_threshold_label": "Modeled 2-year flow reference",
+        "low_flood_threshold_kind": "modeled",
+        "low_flood_threshold_basis": "GEOGloWS 1980-2025 daily retrospective; median of 46 annual maxima. This river-flow reference does not represent localized flash-flood onset.",
         "why_selected": "Far northern tributary station that catches Karakoram/Hindukush source-basin behavior early.",
         "source_focus": "Snowmelt, glacial meltwater, steep tributary response, and localized convective rain bursts.",
         "facts": [
@@ -61,6 +69,10 @@ UPSTREAM_STATIONS = [
         "glofas_latitude": 32.675,
         "glofas_longitude": 74.425,
         "geoglows_river_id": 440499683,
+        "low_flood_threshold_cumecs": 2831.68,
+        "low_flood_threshold_label": "FFD low-flood threshold",
+        "low_flood_threshold_kind": "official",
+        "low_flood_threshold_basis": "Official FFD low-flood limit at Marala: 100,000 cusecs (about 2,832 cumecs).",
         "model_location_note": "Main Chenab model points near Marala, slightly downstream of the headworks; neither is an observed headworks reading.",
         "why_selected": "Chenab entry watch point near Sialkot, upstream of Khanki and Qadirabad.",
         "source_focus": "Upper Chenab catchment rainfall, snowmelt, and upstream reservoir releases.",
@@ -77,12 +89,22 @@ UPSTREAM_STATIONS = [
         "basin": "Upper Ravi",
         "latitude": 32.061389,
         "longitude": 74.839444,
-        "geoglows_river_id": 440491452,
+        # The gauge coordinate falls between the modeled river networks and
+        # otherwise snaps to a small tributary. Use the nearby main Ravi reach.
+        "glofas_latitude": 32.025,
+        "glofas_longitude": 74.875,
+        "geoglows_river_id": 440586398,
+        "low_flood_threshold_cumecs": 1415.84,
+        "low_flood_threshold_label": "FFD low-flood threshold",
+        "low_flood_threshold_kind": "official",
+        "low_flood_threshold_basis": "Official FFD low-flood limit at Jassar: 50,000 cusecs (about 1,416 cumecs).",
+        "model_location_note": "Main Ravi model points near Jassar, offset from the physical gauge because of model-network alignment; neither is an observed gauge reading.",
         "why_selected": "Ravi border watch point upstream of Shahdara/Lahore and Balloki.",
         "source_focus": "Upper Ravi catchment rainfall and upstream regulated flows entering Pakistan.",
         "facts": [
             "Jassar is a Ravi river observatory used for monitoring upstream flows before the Lahore corridor.",
             "Read its trend alongside Shahdara and Balloki observations to assess downstream river conditions.",
+            "FFD's low-flood threshold at Jassar is 50,000 cusecs (about 1,416 cumecs).",
             "These are modeled reach forecasts near Jassar; local rainfall alone cannot explain upstream river inflows.",
         ],
     },
@@ -122,7 +144,7 @@ class UpstreamForecastService:
             self._rainfall(client, station),
         )
         self._flag_conflicting_zero_flow(glofas, geoglows)
-        flood_types, stats = self._signals(glofas, geoglows, rainfall)
+        flood_types, stats = self._signals(glofas, geoglows, rainfall, station)
         return UpstreamStationForecast(
             id=station["id"],
             name=station["name"],
@@ -296,6 +318,7 @@ class UpstreamForecastService:
         glofas: ProviderForecast,
         geoglows: ProviderForecast,
         rainfall: list[RainfallPoint],
+        station: dict[str, Any] | None = None,
     ) -> tuple[list[FloodTypeSignal], dict[str, float | int | str | None]]:
         trusted = [provider for provider in (glofas, geoglows) if provider.status == "available"]
         provider_peaks = [provider.peak_forecast_cumecs for provider in trusted if provider.peak_forecast_cumecs is not None]
@@ -307,11 +330,16 @@ class UpstreamForecastService:
         ratios = [provider.peak_forecast_cumecs / provider.current_cumecs for provider in trusted
                   if provider.peak_forecast_cumecs is not None and provider.current_cumecs is not None and provider.current_cumecs > 0]
         peak_ratio = max(ratios, default=None)
+        low_flood_threshold = station.get("low_flood_threshold_cumecs") if station else None
+        threshold_label = station.get("low_flood_threshold_label") if station else None
+        threshold_kind = station.get("low_flood_threshold_kind") if station else None
+        threshold_basis = station.get("low_flood_threshold_basis") if station else None
+        threshold_ratio = peak / low_flood_threshold if peak is not None and low_flood_threshold else None
         max_rain = max((point.precipitation_mm or 0 for point in rainfall if point.phase == "forecast"), default=0)
         rain_probability = max((point.probability_percent or 0 for point in rainfall if point.phase == "forecast"), default=0)
         max_step_rise = self._max_step_rise(geoglows.series) if geoglows.status == "available" else 0.0
 
-        river_probability = self._probability_from_ratio(peak_ratio, 30, 88)
+        river_probability = self._probability_from_threshold(threshold_ratio) if threshold_ratio is not None else self._probability_from_ratio(peak_ratio, 30, 88)
         flash_probability = min(88, int(max_step_rise * 6 + max_rain * 2.5 + rain_probability * 0.25))
         urban_probability = min(76, int(max_rain * 3 + rain_probability * 0.2))
 
@@ -320,7 +348,8 @@ class UpstreamForecastService:
                 type="Riverine flood",
                 severity=self._severity(river_probability),
                 probability=river_probability,
-                basis="Largest within-model forecast peak relative to its current modeled flow.",
+                basis=(f"Highest modeled peak is {threshold_ratio * 100:.1f}% of the {threshold_label.lower()}."
+                       if threshold_ratio is not None else "Largest within-model forecast peak relative to its current modeled flow."),
                 lead_time="1-14 days",
             ),
             FloodTypeSignal(
@@ -342,6 +371,11 @@ class UpstreamForecastService:
             "current_mean_cumecs": round(current, 2) if current is not None else None,
             "highest_provider_peak_cumecs": round(peak, 2) if peak is not None else None,
             "peak_to_current_ratio": round(peak_ratio, 2) if peak_ratio is not None else None,
+            "low_flood_threshold_cumecs": round(low_flood_threshold, 2) if low_flood_threshold else None,
+            "low_flood_threshold_label": threshold_label,
+            "low_flood_threshold_kind": threshold_kind,
+            "low_flood_threshold_basis": threshold_basis,
+            "peak_to_low_flood_threshold": round(threshold_ratio, 3) if threshold_ratio is not None else None,
             "glofas_peak_cumecs": glofas.peak_forecast_cumecs if glofas.status == "available" else None,
             "geoglows_peak_cumecs": geoglows.peak_forecast_cumecs if geoglows.status == "available" else None,
             "max_forecast_rain_mm": round(max_rain, 1),
@@ -391,6 +425,12 @@ class UpstreamForecastService:
         if ratio is None:
             return floor
         return max(floor, min(ceiling, int(25 + ratio * 24)))
+
+    @staticmethod
+    def _probability_from_threshold(ratio: float) -> int:
+        # This is a transparent screening score: reaching the official
+        # low-flood threshold maps to 75, with a conservative cap above it.
+        return max(5, min(88, round(ratio * 75)))
 
     @staticmethod
     def _severity(probability: int) -> str:

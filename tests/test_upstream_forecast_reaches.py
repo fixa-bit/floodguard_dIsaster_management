@@ -44,6 +44,69 @@ async def test_marala_uses_main_chenab_model_points():
     assert "32.675, 74.425" in result.providers[0].note
     assert result.stats["current_mean_cumecs"] == 596.5
     assert result.stats["peak_to_current_ratio"] == 1.03
+    assert result.stats["low_flood_threshold_cumecs"] == 2831.68
+    assert result.stats["low_flood_threshold_kind"] == "official"
+    assert result.stats["peak_to_low_flood_threshold"] == 0.29
+    assert result.flood_types[0].probability == 22
+
+
+@pytest.mark.asyncio
+async def test_jassar_uses_main_ravi_points_and_official_threshold():
+    station = next(item for item in UPSTREAM_STATIONS if item["id"] == "UP_RAVI_JASSAR")
+    seen = []
+    today = date.today()
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        if request.url.path == "/v1/flood":
+            return httpx.Response(200, json={
+                "latitude": 32.025, "longitude": 74.875015,
+                "daily": {"time": [today.isoformat(), (today + timedelta(days=1)).isoformat()],
+                          "river_discharge": [28, 168]},
+            })
+        if request.url.path == "/api/v2/forecast/440586398":
+            return httpx.Response(200, json={
+                "datetime": [f"{today.isoformat()}T00:00:00+00:00", f"{(today + timedelta(days=1)).isoformat()}T00:00:00+00:00"],
+                "flow_median": [163, 167], "metadata": {"gen_date": f"{today.isoformat()}T00:00:00+00:00"},
+            })
+        if request.url.path == "/api/v2/retrospectivedaily/440586398":
+            return httpx.Response(200, json={"datetime": [today.isoformat()], "440586398": [149]})
+        return httpx.Response(200, json={"daily": {"time": [], "precipitation_sum": [], "precipitation_probability_max": []}})
+
+    service = UpstreamForecastService()
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+        result = await service._station_forecast(client, station)
+
+    flood_request = next(request for request in seen if request.url.path == "/v1/flood")
+    assert flood_request.url.params["latitude"] == "32.025"
+    assert flood_request.url.params["longitude"] == "74.875"
+    assert result.providers[1].river_id == 440586398
+    assert result.providers[0].current_cumecs == 28
+    assert result.providers[1].current_cumecs == 149
+    assert result.stats["highest_provider_peak_cumecs"] == 168
+    assert result.stats["low_flood_threshold_cumecs"] == 1415.84
+    assert result.stats["peak_to_low_flood_threshold"] == 0.119
+    assert result.flood_types[0].probability == 9
+    assert result.flood_types[0].severity == "LOW"
+    assert "11.9%" in result.flood_types[0].basis
+
+
+@pytest.mark.parametrize(
+    ("station_id", "threshold", "label"),
+    [
+        ("UP_INDUS_BESHAM", 318.62, "Modeled 2-year flow reference"),
+        ("UP_GILGIT_DANYOR", 25.01, "Modeled 2-year flow reference"),
+        ("UP_CHENAB_MARALA", 2831.68, "FFD low-flood threshold"),
+        ("UP_RAVI_JASSAR", 1415.84, "FFD low-flood threshold"),
+    ],
+)
+def test_each_upstream_station_has_a_documented_flood_reference(station_id, threshold, label):
+    station = next(item for item in UPSTREAM_STATIONS if item["id"] == station_id)
+
+    assert station["low_flood_threshold_cumecs"] == threshold
+    assert station["low_flood_threshold_label"] == label
+    assert station["low_flood_threshold_kind"] in {"official", "modeled"}
+    assert station["low_flood_threshold_basis"]
 
 
 def test_conflicting_zero_forecast_is_excluded_from_comparison_stats():

@@ -1,4 +1,4 @@
-import { Activity, BarChart3, CloudRain, MapPin, RefreshCw, Waves } from "lucide-react";
+import { Activity, BarChart3, CloudRain, ExternalLink, MapPin, RefreshCw, Waves } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { api, ApiError } from "../services/api";
@@ -53,7 +53,12 @@ function modelColor(provider: string) {
   return provider === "GloFAS" ? "#50f5d0" : "#ffc857";
 }
 
-export function ForecastChart({ providers }: { providers: ProviderForecast[] }) {
+export function ForecastChart({ providers, thresholdValue = null, thresholdLabel = "Flood reference", thresholdBasis = null }: {
+  providers: ProviderForecast[];
+  thresholdValue?: number | null;
+  thresholdLabel?: string;
+  thresholdBasis?: string | null;
+}) {
   const width = 760;
   const height = 210;
   const usableProviders = providers.filter((provider) => provider.status === "available").map((provider) => ({
@@ -72,7 +77,9 @@ export function ForecastChart({ providers }: { providers: ProviderForecast[] }) 
     }),
   })).filter((provider) => provider.series.length > 0) : [];
   const allValues = chartProviders.flatMap((provider) => provider.series.map((point) => point.value).filter((value): value is number => value !== null));
-  const maxValue = Math.max(...allValues, 0) || 1;
+  const threshold = typeof thresholdValue === "number" && Number.isFinite(thresholdValue) && thresholdValue > 0 ? thresholdValue : null;
+  const maxValue = Math.max(...allValues, threshold ? threshold * 1.08 : 0, 0) || 1;
+  const thresholdY = threshold === null ? null : height - (threshold / maxValue) * height;
   const axisDigits = maxValue < 1 ? Math.min(8, Math.ceil(-Math.log10(maxValue)) + 2) : maxValue < 10 ? 2 : 1;
   const times = chartProviders.flatMap((provider) => provider.series.filter((point) => point.value !== null && Number.isFinite(chartTime(point.time))).map((point) => chartTime(point.time)));
   const startTime = Math.min(...times);
@@ -88,6 +95,7 @@ export function ForecastChart({ providers }: { providers: ProviderForecast[] }) 
     <div className="source-chart-wrap">
       <div className="source-chart-legend" aria-label="Forecast providers">
         {providers.map((provider) => <span key={provider.provider}><i style={{ background: modelColor(provider.provider) }} />{provider.provider}{!chartProviders.some((item) => item.provider === provider.provider) && ` (${provider.status === "suspect" ? "needs review" : "unavailable"})`}</span>)}
+        {threshold !== null && <span><i className="source-chart-threshold-key" />{thresholdLabel}: {formatNumber(threshold)} cumecs</span>}
       </div>
       <p className="source-chart-context">Forecast-only model estimates{chartProviders.length > 1 ? "; shared dates only" : ""}. Differences in modeled flow may remain.</p>
       <div className="source-chart-axis-title">River discharge (m3/s)</div>
@@ -115,12 +123,18 @@ export function ForecastChart({ providers }: { providers: ProviderForecast[] }) 
           />
         ))}
       </svg>
+          {thresholdY !== null && (
+            <div className="source-chart-threshold-line" style={{ top: `${thresholdY}px` }} aria-label={`${thresholdLabel}: ${formatNumber(threshold)} cumecs`}>
+              <span>{thresholdLabel}: {formatNumber(threshold)}</span>
+            </div>
+          )}
           <div className="source-chart-dates">
             {ticks.map((tick) => <span key={tick} style={{ left: `${tick * 100}%` }}>{dateFormatter.format(startTime + tick * (endTime - startTime))}</span>)}
           </div>
           <div className="source-chart-axis-title source-chart-date-title">Date (UTC)</div>
         </div>
       </div>
+      {threshold !== null && thresholdBasis && <p className="source-threshold-context">{thresholdBasis}</p>}
     </div>
   );
 }
@@ -160,10 +174,39 @@ function ProviderStatCard({ provider }: { provider: ProviderForecast }) {
   );
 }
 
+function StationLocationMap({ station }: { station: UpstreamStationForecast }) {
+  const coordinate = `${station.latitude},${station.longitude}`;
+  const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(coordinate)}&z=11&output=embed`;
+  const fullMapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coordinate)}`;
+
+  return (
+    <div className="source-location-map">
+      <div className="source-location-map-head">
+        <div><MapPin size={16} /><strong>{station.name} location</strong></div>
+        <a href={fullMapUrl} target="_blank" rel="noopener noreferrer" title={`Open ${station.name} in Google Maps`}>
+          Open map <ExternalLink size={13} />
+        </a>
+      </div>
+      <iframe
+        src={mapUrl}
+        title={`${station.name} station location on Google Maps`}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        allowFullScreen
+      />
+      <span>Marked station coordinates: {station.latitude.toFixed(5)}, {station.longitude.toFixed(5)}</span>
+    </div>
+  );
+}
+
 function SourceFloodContent({ station }: { station: UpstreamStationForecast }) {
   const rainfallForecast = station.rainfall.filter((point) => point.phase === "forecast");
   const maxRain = station.stats.max_forecast_rain_mm;
   const rainProbability = station.stats.max_rain_probability_percent;
+  const thresholdRatio = statNumber(station.stats.peak_to_low_flood_threshold);
+  const thresholdValue = statNumber(station.stats.low_flood_threshold_cumecs);
+  const thresholdLabel = typeof station.stats.low_flood_threshold_label === "string" ? station.stats.low_flood_threshold_label : "Flood reference";
+  const thresholdBasis = typeof station.stats.low_flood_threshold_basis === "string" ? station.stats.low_flood_threshold_basis : null;
 
   return (
     <>
@@ -182,7 +225,7 @@ function SourceFloodContent({ station }: { station: UpstreamStationForecast }) {
         <div className="source-graph-panel">
           <div className="source-section-head"><BarChart3 size={16} /><strong>GloFAS and GEOGloWS forecast comparison</strong></div>
           {station.providers.some((provider) => provider.status === "suspect") && <p className="source-provider-warning" role="status">A model returned zero flow while the other shows substantial flow. The suspect series is excluded from this comparison and risk statistics; check its model point before use.</p>}
-          <ForecastChart providers={station.providers} />
+          <ForecastChart providers={station.providers} thresholdValue={thresholdValue} thresholdLabel={thresholdLabel} thresholdBasis={thresholdBasis} />
         </div>
 
         <div className="source-stats-panel">
@@ -190,7 +233,7 @@ function SourceFloodContent({ station }: { station: UpstreamStationForecast }) {
           <div className="source-stat-grid">
             <div><span>Mean modeled current</span><strong>{formatNumber(statNumber(station.stats.current_mean_cumecs))} cumecs</strong></div>
             <div><span>Highest model peak</span><strong>{formatNumber(statNumber(station.stats.highest_provider_peak_cumecs))} cumecs</strong></div>
-            <div><span>Largest within-model peak/current</span><strong>{formatNumber(statNumber(station.stats.peak_to_current_ratio), 2)}x</strong></div>
+            <div><span>{thresholdRatio !== null ? "Peak / flood reference" : "Largest within-model peak/current"}</span><strong>{thresholdRatio !== null ? `${formatNumber(thresholdRatio * 100, 1)}%` : `${formatNumber(statNumber(station.stats.peak_to_current_ratio), 2)}x`}</strong></div>
             <div><span>Max forecast rain</span><strong>{formatNumber(typeof maxRain === "number" ? maxRain : null)} mm</strong></div>
             <div><span>Max rain probability</span><strong>{formatNumber(typeof rainProbability === "number" ? rainProbability : null, 0)}%</strong></div>
             <div><span>Fastest model rise</span><strong>{formatNumber(statNumber(station.stats.geoglows_max_step_rise_cumecs))} cumecs</strong></div>
@@ -223,10 +266,13 @@ function SourceFloodContent({ station }: { station: UpstreamStationForecast }) {
         </div>
       </div>
 
-      <div className="source-facts">
-        <div><MapPin size={16} /><strong>{station.river} / {station.basin}</strong><span>{station.latitude.toFixed(2)}, {station.longitude.toFixed(2)}</span></div>
-        <p>{station.source_focus}</p>
-        {station.facts.map((fact) => <span key={fact}>{fact}</span>)}
+      <div className="source-location-grid">
+        <div className="source-facts">
+          <div><MapPin size={16} /><strong>{station.river} / {station.basin}</strong><span>{station.latitude.toFixed(2)}, {station.longitude.toFixed(2)}</span></div>
+          <p>{station.source_focus}</p>
+          {station.facts.map((fact) => <span key={fact}>{fact}</span>)}
+        </div>
+        <StationLocationMap station={station} />
       </div>
     </>
   );
