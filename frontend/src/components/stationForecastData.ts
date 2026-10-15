@@ -9,6 +9,7 @@ export function chartTime(value: string) {
 
 export interface DischargeSeries {
   id: string; label: string; source: string; color: string; points: HydroSeriesPoint[]; modeled: boolean;
+  alignment?: { offsetCumecs: number; observedTime: string; modelTime: string };
 }
 const valid = (point: HydroSeriesPoint) => typeof point.value === "number" && Number.isFinite(point.value) && point.value >= 0;
 export function stationForecastSeries(station: RiverMonitoringStation, history?: StationHistory): DischargeSeries[] {
@@ -29,10 +30,24 @@ export function stationForecastSeries(station: RiverMonitoringStation, history?:
     const future = points.filter((point) => point.phase === "forecast");
     const firstFuture = future[0];
     const historyStart = lastPast ? chartTime(lastPast.time) - 6 * 86400000 : Infinity;
-    result.push({ id: `${provider.provider}-past`, label: `${provider.provider} modeled history`, source: provider.source, color: "#a6c9c6",
-      points: past.filter((point) => chartTime(point.time) >= historyStart), modeled: true });
-    result.push({ id: `${provider.provider}-forecast`, label: `${provider.provider} forecast`, source: provider.source, color: ["#ff7686", "#ffc857"][index % 2],
-      points: future.filter((point) => firstFuture && chartTime(point.time) < chartTime(firstFuture.time) + 5 * 86400000), modeled: true });
+    const observedTime = station.observed_at ?? "";
+    const canAlign = station.current_source.startsWith("FFD") && valid(current) && Number.isFinite(chartTime(observedTime)) && lastPast && valid(lastPast);
+    const alignment = canAlign ? {
+      offsetCumecs: Math.round((current.value! - lastPast.value!) * 100) / 100, observedTime, modelTime: lastPast.time,
+    } : undefined;
+    const align = (point: HydroSeriesPoint): HydroSeriesPoint => !alignment || !valid(point) ? point
+      : { ...point, value: Math.max(0, Math.round((point.value! + alignment.offsetCumecs) * 100) / 100) };
+    const alignedSource = alignment ? `${provider.source}; additive offset aligned to latest FFD observation in this window` : provider.source;
+    const alignedSuffix = alignment ? " (FFD-aligned)" : "";
+    const pastPoints = past.filter((point) => chartTime(point.time) >= historyStart).map(align);
+    const futurePoints = future.filter((point) => firstFuture && chartTime(point.time) < chartTime(firstFuture.time) + 5 * 86400000).map(align);
+    if (alignment && (!futurePoints.length || chartTime(observedTime) < chartTime(futurePoints[0].time))) {
+      futurePoints.unshift({ time: observedTime, value: current.value, phase: "forecast" });
+    }
+    result.push({ id: `${provider.provider}-past`, label: `${provider.provider} modeled history${alignedSuffix}`, source: alignedSource, color: "#a6c9c6",
+      points: pastPoints, modeled: true, alignment });
+    result.push({ id: `${provider.provider}-forecast`, label: `${provider.provider} forecast${alignedSuffix}`, source: alignedSource, color: ["#ff7686", "#ffc857"][index % 2],
+      points: futurePoints, modeled: true, alignment });
   }
   return result.filter((item) => item.points.some(valid));
 }

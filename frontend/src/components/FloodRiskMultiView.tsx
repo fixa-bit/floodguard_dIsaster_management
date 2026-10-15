@@ -1,11 +1,15 @@
 import { Activity, AlertTriangle, CloudRain, Info, Mountain, Waves } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, type KeyboardEvent } from "react";
 
 import { LOCATIONS } from "../config";
 import type { DashboardData } from "../hooks/useDashboardData";
 import type { ModelForecastPoint } from "../types/api";
 import { formatDateTime } from "../utils/format";
 import { PredictiveInputsDialog } from "./PredictiveInputsDialog";
+import { TenYearRiskOutlook } from "./TenYearRiskOutlook";
+import "../ten-year-risk-outlook.css";
+
+type RiskMode = "near-term" | "ten-year";
 
 interface RiskView {
   id: string;
@@ -204,8 +208,24 @@ function UrbanFloodModelFlow({ score }: { score: number }) {
 }
 
 export function FloodRiskMultiView({ data }: { data: DashboardData }) {
+  const [mode, setMode] = useState<RiskMode>("near-term");
+  const modeTabs = useRef<HTMLDivElement>(null);
   const [selectedTargets, setSelectedTargets] = useState<Record<string, string>>({});
   const [showInputs, setShowInputs] = useState(false);
+  function selectMode(nextMode: RiskMode) {
+    setShowInputs(false);
+    setMode(nextMode);
+  }
+  function handleModeKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    const nextMode = event.key === "Home" ? "near-term"
+      : event.key === "End" ? "ten-year"
+      : ["ArrowLeft", "ArrowRight"].includes(event.key) ? (mode === "near-term" ? "ten-year" : "near-term")
+      : null;
+    if (!nextMode) return;
+    event.preventDefault();
+    selectMode(nextMode);
+    modeTabs.current?.querySelector<HTMLButtonElement>(`#risk-mode-${nextMode}`)?.focus();
+  }
   const views = useMemo<RiskView[]>(() => {
     const highestRisk = (data.summary?.highest_risk_probability ?? data.risk?.flood_probability ?? 0) * 100;
     const maxRain24 = maxNumber(data.locationWeather.map((weather) => weather.forecast_rainfall_next_24h_mm));
@@ -298,6 +318,22 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
 
   return (
     <section className="flood-multiview flood-risk-page" aria-label="Predictive risk views">
+      <div className="predictive-risk-modes" role="tablist" aria-label="Prediction horizon" ref={modeTabs}>
+        {([ ["near-term", "Near-Term Screening"], ["ten-year", "10-Year Outlook"] ] as const).map(([id, label]) => (
+          <button
+            type="button"
+            role="tab"
+            id={`risk-mode-${id}`}
+            aria-controls={`risk-panel-${id}`}
+            aria-selected={mode === id}
+            tabIndex={mode === id ? 0 : -1}
+            key={id}
+            onClick={() => selectMode(id)}
+            onKeyDown={handleModeKeyDown}
+          >{label}</button>
+        ))}
+      </div>
+      <div role="tabpanel" id="risk-panel-near-term" aria-labelledby="risk-mode-near-term" hidden={mode !== "near-term"} tabIndex={0}>
         <div className="predictive-risk-toolbar"><p>Early-stage screening scores and example interval series.</p><button type="button" onClick={() => setShowInputs(true)}><Info size={15} /> Inputs & model</button></div>
         {showInputs && <PredictiveInputsDialog data={data} onClose={() => setShowInputs(false)} />}
         <div className="multiview-shell">
@@ -349,6 +385,10 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
           ))}
           </div>
         </div>
+      </div>
+      <div role="tabpanel" id="risk-panel-ten-year" aria-labelledby="risk-mode-ten-year" hidden={mode !== "ten-year"} tabIndex={0}>
+        <TenYearRiskOutlook active={mode === "ten-year"} />
+      </div>
     </section>
   );
 }

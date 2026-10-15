@@ -1,5 +1,5 @@
 import { AlertTriangle, CheckCircle2, Database, FlaskConical, LoaderCircle, Play, Plus, RotateCcw, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 
 import { ApiError, api } from "../services/api";
 import type { MonitoringSimulationRequest, MonitoringSimulationResult, SimulationStation } from "../types/api";
@@ -10,6 +10,9 @@ import "../simulation.css";
 type DraftReading = { id: number; offset: string; value: string; p25: string; p75: string };
 type Measurement = MonitoringSimulationRequest["measurement"];
 type Unit = MonitoringSimulationRequest["unit"];
+const FloodVisualization = lazy(() => import("./SimulationFloodVisualization").then((module) => ({ default: module.SimulationFloodVisualization })));
+const StormReplay = lazy(() => import("./SimulationStormReplay").then((module) => ({ default: module.SimulationStormReplay })));
+const simulationViews = ["monitoring", "spread", "replay"] as const;
 
 const scenarioNames = ["Flood threshold test", "Below threshold test", "Warning crossing test", "Danger crossing test", "Surge and recovery test"];
 const sliderLimits = { cusecs: { min: 0, max: 1000000, step: 1000 }, "m3/s": { min: 0, max: 30000, step: 10 }, m: { min: -20, max: 50, step: 0.1 }, ft: { min: -60, max: 160, step: 0.1 } };
@@ -73,6 +76,7 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<MonitoringSimulationResult | null>(null);
+  const [workspaceView, setWorkspaceView] = useState<typeof simulationViews[number]>("monitoring");
 
   useEffect(() => {
     let active = true;
@@ -184,7 +188,18 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
   }
 
   return <div className="simulation-workspace">
-    <div className="simulation-workspace-header"><FlaskConical size={20} /><strong>Monitoring Scenario</strong><span className="simulated-flow-stamp">Simulated flow</span></div>
+    <div className="simulation-workspace-header"><FlaskConical size={20} /><strong>{workspaceView === "monitoring" ? "Monitoring Scenario" : workspaceView === "spread" ? "Flood spread & population" : "Storm replay"}</strong><span className="simulated-flow-stamp">Simulated flow</span></div>
+    <div className="simulation-workspace-tabs" role="tablist" aria-label="Simulation views" onKeyDown={(event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === "Home" ? simulationViews[0] : event.key === "End" ? simulationViews.at(-1)! : simulationViews[(simulationViews.indexOf(workspaceView) + (event.key === "ArrowRight" ? 1 : -1) + simulationViews.length) % simulationViews.length];
+      setWorkspaceView(next); document.getElementById(`simulation-tab-${next}`)?.focus();
+    }}>
+      <button type="button" role="tab" id="simulation-tab-monitoring" aria-controls="simulation-panel-monitoring" aria-selected={workspaceView === "monitoring"} tabIndex={workspaceView === "monitoring" ? 0 : -1} onClick={() => setWorkspaceView("monitoring")}>Monitoring scenario</button>
+      <button type="button" role="tab" id="simulation-tab-spread" aria-controls="simulation-panel-spread" aria-selected={workspaceView === "spread"} tabIndex={workspaceView === "spread" ? 0 : -1} onClick={() => setWorkspaceView("spread")}>Flood spread &amp; population</button>
+      <button type="button" role="tab" id="simulation-tab-replay" aria-controls="simulation-panel-replay" aria-selected={workspaceView === "replay"} tabIndex={workspaceView === "replay" ? 0 : -1} onClick={() => setWorkspaceView("replay")}>Storm replay</button>
+    </div>
+    <section role="tabpanel" id="simulation-panel-monitoring" aria-labelledby="simulation-tab-monitoring" hidden={workspaceView !== "monitoring"}>
     {loading ? <div className="simulation-loading" role="status"><LoaderCircle className="spinning" size={18} /> Loading monitoring stations</div>
       : loadError ? <div className="simulation-feedback" role="alert"><span>{loadError}</span><button type="button" className="secondary-button" onClick={() => setRetry((value) => value + 1)}><RotateCcw size={16} /> Retry</button></div>
       : !stations.length ? <div className="empty-state">No monitoring stations are registered.</div>
@@ -227,5 +242,12 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
       {result.alerts.map((alert) => <div className="simulation-result-event" key={alert.id}><StatusBadge value={String(alert.event_metadata.threshold_level)} /><span>{alert.message}<small>{formatDateTime(String(alert.event_metadata.value_at))} / Pending approval in Alerts</small></span></div>)}
       <div className="simulation-result-actions"><button type="button" className="secondary-button" onClick={newRun}><RotateCcw size={16} /> New run</button>{result.alerts.length > 0 && <button type="button" className="secondary-button" onClick={onOpenAlerts}>Review alerts ({result.alerts.length})</button>}{result.incidents.length > 0 && <button type="button" className="secondary-button" onClick={onOpenIncidents}>Incidents ({result.incidents.length})</button>}</div>
     </section>}
+    </section>
+    <section role="tabpanel" id="simulation-panel-spread" aria-labelledby="simulation-tab-spread" hidden={workspaceView !== "spread"}>
+      {workspaceView === "spread" && <Suspense fallback={<div className="simulation-loading" role="status">Loading flood-spread visualization…</div>}><FloodVisualization stationName={station?.name ?? stationCode} /></Suspense>}
+    </section>
+    <section role="tabpanel" id="simulation-panel-replay" aria-labelledby="simulation-tab-replay" hidden={workspaceView !== "replay"}>
+      {workspaceView === "replay" && <Suspense fallback={<div className="simulation-loading" role="status">Loading storm replay…</div>}><StormReplay /></Suspense>}
+    </section>
   </div>;
 }

@@ -1,0 +1,172 @@
+{
+  "id": "jhang",
+  "accessed_on": "2026-10-15",
+  "retrieved_at_utc": "2026-10-15T06:11:09.375201+00:00",
+  "bounds": [
+    71.6583251953125,
+    30.57408532473883,
+    72.83111572265626,
+    31.76436981705641
+  ],
+  "width": 427,
+  "height": 507,
+  "sample_spacing_m_approx": 262,
+  "elevation_min_m": 120.5,
+  "elevation_max_m": 183.8,
+  "source": "Mapzen Terrain Tiles / AWS Open Data, mixed-source global elevation",
+  "attribution": "Terrain: Mapzen / USGS SRTM and GMTED2010",
+  "source_url": "https://registry.opendata.aws/terrain-tiles/",
+  "license_url": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md",
+  "tile_encoding": "Terrarium: R*256 + G + B/256 - 32768",
+  "source_zoom": 10,
+  "resampling": "Area average of cropped Terrarium source pixels; EPSG:3857",
+  "vertical_reference": "Mixed-source provider elevations; not aligned to station gauge datum",
+  "hillshade_exaggeration": 6,
+  "used_as_hydraulic_solver": false,
+  "inputs": [
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/715/416.png",
+      "sha256": "d01dcdfc19894e56fff25ea1f2abc53ebe0ec9bda2b93e1d45a307af0ce1f4ed",
+      "bytes": 21246
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/716/416.png",
+      "sha256": "1be97ed0319a68e4d3d26dcaef8ff1468a72541315f348caefea76df1907ce35",
+      "bytes": 22156
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/717/416.png",
+      "sha256": "f77baba57b2309a33aaf058c8ebe28f39b1202a6405a73b47434c56747b58b63",
+      "bytes": 23674
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/718/416.png",
+      "sha256": "36d1ffb4bf091434d51bffc81ebbc79f10bda5bd1789be9189f3f404c610ca8f",
+      "bytes": 25324
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/719/416.png",
+      "sha256": "4c9a58a160657072b41a66521f3b632d6b13738d3b7d3a691f1a87db2a1de8b7",
+      "bytes": 23313
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/715/417.png",
+      "sha256": "6a99da63870f040d11eceee1849de4aecc2359d3502bf977a6f38fb7e4698f23",
+      "bytes": 21220
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/716/417.png",
+      "sha256": "a3481dd1a5232cc757013287a09c060a39057c156a48245f25b1fa710e8f035c",
+      "bytes": 25212
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/717/417.png",
+      "sha256": "a0c9403ce18ec63440dd8509b8d10c324b525720a2c7a4fb4051a98ac83ed297",
+      "bytes": 22809
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/718/417.png",
+      "sha256": "8b780be096afe74c6274f5da82f3a83e213683454767d248f28fca3bdce06c49",
+      "bytes": 21396
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/719/417.png",
+      "sha256": "1d666d28af649999ed53d83db5de8d314584b9db05928c3382f07b7a5b2891e0",
+      "bytes": 22454
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/715/418.png",
+      "sha256": "629ae37b19de9c2328013da40348f395e43c481be385f9d337e424588ea47c95",
+      "bytes": 24318
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/716/418.png",
+      "sha256": "65016f4dc32b25216dab9c582eebd35e5cbbb2703db07513baedcfd9d43961b3",
+      "bytes": 25500
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/717/418.png",
+      "sha256": "a10c0b25f03a286c606edb35ec6ff7ad4c860e4165b97b99c3df5cda924a98b6",
+      "bytes": 23121
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/718/418.png",
+      "sha256": "e5fc1bcf31a9775e0ca95abac24926f7266ac485f03c86f51d26dfab48f649e7",
+      "bytes": 21041
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/719/418.png",
+      "sha256": "6f23580d1f9e81951e46f3ebd79635a4021926ae97529ec82844a2e74c879555",
+      "bytes": 21116
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/715/419.png",
+      "sha256": "72072ea17c7ae6161800a04e73e0fc73b2876105a7dc186f0846707a6e9cee1c",
+      "bytes": 24727
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/716/419.png",
+      "sha256": "84296193e07a28f99e686db33d5ac5a43ca209f3adb55980d368cfae69f14d0a",
+      "bytes": 23818
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/717/419.png",
+      "sha256": "e2194edc49081a14906270f8df9800ecc9a8bf91d19d4ddcc864a3f92c4198ac",
+      "bytes": 21001
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/718/419.png",
+      "sha256": "17c55ee629942761c565a72af63ed263eb096804a55e73a25456b0ecc6ecae10",
+      "bytes": 20973
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/719/419.png",
+      "sha256": "af56cae800aa1332a8ea6b9a4d658190d2089cae6eb18d3ada3c090951be42b7",
+      "bytes": 19532
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/715/420.png",
+      "sha256": "b2e2aa9468f7473b06394c03ffea97dac23b5702727c168f29f6baf0924af415",
+      "bytes": 27336
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/716/420.png",
+      "sha256": "d82f7cfe5553fbf552a6bbc19b961bf75e6c8fc38b9644f93ab9d96fa85d6f6d",
+      "bytes": 20671
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/717/420.png",
+      "sha256": "a0b4c76110384be2c16b720d1d59a5a12edf0e7ee935771115aee5a18dc8e833",
+      "bytes": 20300
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/718/420.png",
+      "sha256": "013582926e0d86662db4993f441858b55a35dde98f1666936f832f516622690a",
+      "bytes": 21371
+    },
+    {
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/719/420.png",
+      "sha256": "7fdf569b14aaca9059213a9335e7ac5b94daa3e4ea36d80a971d7bae97e2b3a7",
+      "bytes": 20136
+    }
+  ],
+  "hydraulic_reference": {
+    "title": "Federal Flood Commission: Jhang and Bhakkar floodplain map, Sheet 8",
+    "url": "https://ffc.gov.pk/wp-content/uploads/2019/02/Sheet8_flood.pdf",
+    "status": "Reference located; not a current calibration or machine-readable hydraulic grid",
+    "used_for_animation": false,
+    "retrieval": "PDF downloaded and file signature verified",
+    "bytes": 1234694,
+    "sha256": "6184efa6f8a88522b2059b92cff53780ee32810968dd390b226c96573aa36ac1"
+  },
+  "outputs": {
+    "jhang-dem.tif": {
+      "bytes": 176593,
+      "sha256": "c5cced93d26d673dd556936463c9c98de3d8356b8c10e6ec417892f6f21507b7"
+    },
+    "jhang-hillshade.png": {
+      "bytes": 102218,
+      "sha256": "4d7f6f55fee086c1ce93a226f24ec270979b4956960b079237beb5766d08a748"
+    }
+  }
+}

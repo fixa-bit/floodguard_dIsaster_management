@@ -54,6 +54,7 @@ export default function StationForecastWindow({ station, intervalMinutes, flowUn
     return () => { document.body.style.overflow = oldOverflow; document.removeEventListener("keydown", handleKey); previous?.focus(); };
   }, [onClose]);
   const series = useMemo(() => stationForecastSeries(station, history), [station, history]);
+  const alignment = series.find((item) => item.alignment)?.alignment;
   const thresholds = useMemo(() => {
     const stats = station.stats;
     if (typeof stats.threshold_source !== "string" || !stats.threshold_source.trim()) return [];
@@ -89,7 +90,8 @@ export default function StationForecastWindow({ station, intervalMinutes, flowUn
           <div><dt>Danger discharge</dt><dd>{thresholds.some((item) => item.label === "Danger discharge") ? formatFlow(thresholds.find((item) => item.label === "Danger discharge")!.value, flowUnit) : "Unavailable"}</dd><small>{thresholds.length ? String(station.stats.threshold_source) : "No verified station threshold"}</small></div>
           <div><dt>Highest recorded discharge</dt><dd>{thresholds.some((item) => item.label === "Highest recorded discharge") ? formatFlow(thresholds.find((item) => item.label === "Highest recorded discharge")!.value, flowUnit) : "Unavailable"}</dd><small>{typeof station.stats.highest_recorded_at === "string" ? readingTime(station.stats.highest_recorded_at) : "Record date unavailable"}</small></div></dl>
         {historyStatus && <p role="status">{historyStatus}</p>}
-        {series.some((item) => !item.modeled) && series.some((item) => item.modeled) && <p className="station-forecast-data-note">FFD station readings and daily GloFAS grid estimates are not interchangeable; the model is not calibrated to this gauge.</p>}
+        {alignment ? <p className="station-forecast-data-note">This window aligns GloFAS to the latest FFD reading with an additive {formatFlow(Math.abs(alignment.offsetCumecs), flowUnit)} {alignment.offsetCumecs >= 0 ? "increase" : "decrease"}. The displayed series preserves modeled changes in cumecs and joins at the observation time; it is a comparison aid, not a calibrated gauge forecast. Raw API values elsewhere are unchanged.</p>
+          : series.some((item) => !item.modeled) && series.some((item) => item.modeled) && <p className="station-forecast-data-note">FFD station readings and daily GloFAS grid estimates are not interchangeable; no alignment could be applied without a valid observation and modeled baseline.</p>}
         {allPoints.length ? <>
           <div className="station-forecast-chart" onPointerLeave={() => setHover(null)}>
             <div className="station-forecast-y-label">Discharge ({flowUnit === "cumecs" ? "m3/s" : "cusecs"})</div>

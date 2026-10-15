@@ -1,0 +1,90 @@
+{
+  "version": "river-corridor-what-if-v1",
+  "population_year": 2025,
+  "grid_m": 2000,
+  "widths_m": [
+    0,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+  ],
+  "population_source": "WorldPop R2025A v1, Pakistan 2025 constrained 100 m people-per-pixel",
+  "source_url": "https://doi.org/10.5258/SOTON/WP00839",
+  "license": "CC BY 4.0",
+  "inputs": [
+    {
+      "file": "pak_pop_2025_CN_100m_R2025A_v1.tif",
+      "sha256": "7e73afde76d6648904260d933a20b5ccc595bd6e56d1d8bd4d3e6dc5423b4c95"
+    },
+    {
+      "file": "pakistan_districts.geojson",
+      "sha256": "a504c4653b8592fff4adabf31f3688e8a6993726099d497ea799d60529131924"
+    },
+    {
+      "file": "pakistan_osm_waterways.geojson",
+      "sha256": "d902a43f5c791fb515b09c3e9b5f9a007bc2cad06022ca7216324b63dc2833ac"
+    }
+  ],
+  "method": "Native pixel-center district mask; sum counts to 2 km equal-area display cells. Exposure = count x footprint/cell area. Uniform population within each clipped cell. NoData excluded. Population fixed at 2025.",
+  "flood_method": "Arbitrary nested UTM river buffers, clipped to display districts. Levels 0-5 are ordinal, not water heights, discharge, official categories, or predicted inundation. No DEM, levees, drainage, or hydraulic routing.",
+  "regions": [
+    {
+      "id": "jhang",
+      "name": "Jhang",
+      "supported": true,
+      "known_population_2025": 3265382.2344,
+      "valid_native_pixels": 572952
+    },
+    {
+      "id": "multan",
+      "name": "Multan",
+      "supported": true,
+      "known_population_2025": 5654618.6563,
+      "valid_native_pixels": 402364
+    },
+    {
+      "id": "lahore",
+      "name": "Lahore",
+      "supported": true,
+      "known_population_2025": 13308077.3648,
+      "valid_native_pixels": 167358
+    },
+    {
+      "id": "rawalpindi",
+      "name": "Rawalpindi",
+      "supported": true,
+      "known_population_2025": 6465352.4954,
+      "valid_native_pixels": 405390
+    },
+    {
+      "id": "charsadda",
+      "name": "Charsadda",
+      "supported": true,
+      "known_population_2025": 1932021.1063,
+      "valid_native_pixels": 109561
+    },
+    {
+      "id": "sukkur",
+      "name": "Sukkur",
+      "supported": true,
+      "known_population_2025": 1767310.233,
+      "valid_native_pixels": 163336
+    },
+    {
+      "id": "dadu",
+      "name": "Dadu",
+      "supported": true,
+      "known_population_2025": 1820211.3534,
+      "valid_native_pixels": 132492
+    },
+    {
+      "id": "badin",
+      "name": "Badin",
+      "supported": false,
+      "known_population_2025": 2139283.2199,
+      "valid_native_pixels": 338543
+    }
+  ]
+}
