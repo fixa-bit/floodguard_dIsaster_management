@@ -1,0 +1,37 @@
+{
+  "method": "WorldCover class-80 largest connected Chenab component; skeleton-clipped animation; continuous original connected-fill thresholds",
+  "source": {
+    "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N30E072_Map.tif",
+    "year": 2021,
+    "class": 80,
+    "cached_window": {
+      "file": "worldcover-2021-window.tif",
+      "bytes": 302059,
+      "sha256": "ef8ad347c18f747090359e281fd44c6d17f18517915862f8540ec9e68e86ede8"
+    },
+    "credit": "© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "data_documentation": "https://esa-worldcover.org/en/data-access"
+  },
+  "population_weights": "Native pixel count times exact UTM overlap fraction; NoData excluded; one-centimetre sample spacing",
+  "presentation": "Only mapped 2021 river water receives moving streaks. Potential floodplain is a separate static material; 0.03m alpha fade after cell activation.",
+  "hydraulic_model": false,
+  "calibrated": false,
+  "outputs": [
+    {
+      "file": "jhang-channels.geojson",
+      "bytes": 489724,
+      "sha256": "4cb438fce310db2c12e1840e356589ffa7449997e9fe30483668e0997f459652"
+    },
+    {
+      "file": "activation-thresholds.tif",
+      "bytes": 520951,
+      "sha256": "ae7c7ce99814783da55eb3c21e9c806f9a3b48fc6e695be0736691f21f63adfc"
+    },
+    {
+      "file": "continuous-thresholds.png",
+      "bytes": 248864,
+      "sha256": "faafa2a29506573170dc4f533a11185bde35e5bd254a579e6f7aa5b6bd11b50e"
+    }
+  ]
+}

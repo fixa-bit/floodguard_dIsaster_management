@@ -1,4 +1,6 @@
 # Model Records
+
+The [HEC-RAS 2D tutorial replay record](models/hec_ras_2d/README.md) documents the installed portable engine, the official source and hashes, native result verification, and the demonstration's limits.
 why it doesnt show time it did forecasting and station
 ## Riverine XGBoost Baseline
 
@@ -87,3 +89,11 @@ Build check passed with npm run build. The only warning i
 
 
 why it doesnt show time it did forecasting and station
+# Packaged satellite water-extent model
+
+The SAR U-Net inference bundle lives in `app/ml/sar_unet/`, including trained
+weights, architecture, and fitted normalization. The water-extent API uses this
+bundle by default; deployment does not require the sibling NDMA_tasks project.
+Training data and training runs remain in NDMA_tasks. See
+[the bundle guide](app/ml/sar_unet/README.md) for inputs and model limitations.
+

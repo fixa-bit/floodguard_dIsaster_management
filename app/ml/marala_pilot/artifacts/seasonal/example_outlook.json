@@ -1,0 +1,41 @@
+{
+  "station_id": "MARALA",
+  "river": "Chenab",
+  "issued_at": "2021-12-31T23:59:59+00:00",
+  "generated_at": "2026-10-16T06:41:14.517115+00:00",
+  "input_through_month": "2021-12",
+  "model_name": "marala_monthly_flow_outlook_v1",
+  "output_type": "monthly_mean_modeled_reach_discharge_outlook",
+  "research_only": true,
+  "current_forecast": false,
+  "outlook": [
+    {
+      "horizon_months": 1,
+      "target_month": "2022-01",
+      "predicted_monthly_mean_discharge_cumecs": 158.3910537771775,
+      "model_type": "ridge_climatology_residual",
+      "selected_candidate": "ridge_alpha_10"
+    },
+    {
+      "horizon_months": 2,
+      "target_month": "2022-02",
+      "predicted_monthly_mean_discharge_cumecs": 220.71668629384786,
+      "model_type": "xgboost_climatology_residual",
+      "selected_candidate": "xgboost_d1_n100_lr0.05"
+    },
+    {
+      "horizon_months": 3,
+      "target_month": "2022-03",
+      "predicted_monthly_mean_discharge_cumecs": 265.82687497764505,
+      "model_type": "xgboost_climatology_residual",
+      "selected_candidate": "xgboost_d1_n100_lr0.03"
+    },
+    {
+      "horizon_months": 4,
+      "target_month": "2022-04",
+      "predicted_monthly_mean_discharge_cumecs": 292.9214928972456,
+      "model_type": "xgboost_climatology_residual",
+      "selected_candidate": "xgboost_d2_n100_lr0.05"
+    }
+  ]
+}

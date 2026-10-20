@@ -7,9 +7,11 @@ import type { ModelForecastPoint } from "../types/api";
 import { formatDateTime } from "../utils/format";
 import { PredictiveInputsDialog } from "./PredictiveInputsDialog";
 import { TenYearRiskOutlook } from "./TenYearRiskOutlook";
+import { MaralaMonthlyTab } from "./MaralaMonthlyTab";
 import "../ten-year-risk-outlook.css";
 
 type RiskMode = "near-term" | "ten-year";
+type RiverineMode = "short-term" | "monthly-marala";
 
 interface RiskView {
   id: string;
@@ -84,15 +86,22 @@ function ForecastIntervalGraph({
   }
   const unit = series[0].value_unit;
   const percentLike = unit.includes("percent");
-  const maxValue = percentLike ? 100 : Math.max(...points.map((point) => point.value), 1) * 1.08;
+  const rawMax = Math.max(...series.map((point) => point.value), 1);
+  const tickStep = 10 ** Math.floor(Math.log10(rawMax)) / 2;
+  const maxValue = percentLike ? 100 : Math.ceil(rawMax * 1.1 / tickStep) * tickStep;
   const minValue = 0;
   const valueRange = Math.max(maxValue - minValue, 1);
-  const width = 220;
-  const height = 62;
+  const width = 640;
+  const height = 270;
+  const left = 70, right = 30, top = 35, bottom = 55;
+  const maxHorizon = Math.max(...series.map(point => point.horizon_hours), 1);
+  const xFor = (hours: number) => left + hours / maxHorizon * (width - left - right);
+  const yFor = (value: number) => top + (1 - (value - minValue) / valueRange) * (height - top - bottom);
+  const axisLabel = unit === "cumecs" ? "Discharge (m³/s)" : unit.replaceAll("_", " ");
   const path = series
     .map((point, index) => {
-      const x = series.length === 1 ? width / 2 : (index / (series.length - 1)) * width;
-      const y = height - ((point.value - minValue) / valueRange) * height;
+      const x = xFor(point.horizon_hours);
+      const y = yFor(point.value);
       return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
     })
     .join(" ");
@@ -101,7 +110,7 @@ function ForecastIntervalGraph({
 
   return (
     <div className="forecast-graph">
-      {demonstration && <span className="forecast-example-label">Example series</span>}
+      {demonstration && <span className="forecast-example-label">Demonstration data · illustrative values</span>}
       <div className="forecast-target-tabs" aria-label="Forecast target selector">
         {targets.map(([targetId, targetName]) => (
           <button
@@ -115,20 +124,23 @@ function ForecastIntervalGraph({
         ))}
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${latest.target_name} forecast interval graph`}>
+        <text x={left} y="16" className="forecast-axis-title">{axisLabel}</text>
+        {[0, 1, 2, 3, 4].map(step => {
+          const value = maxValue * step / 4;
+          return <g key={step}><line x1={left} x2={width - right} y1={yFor(value)} y2={yFor(value)} className="forecast-grid-line" /><text x={left - 10} y={yFor(value) + 4} textAnchor="end">{value.toLocaleString(undefined, { maximumFractionDigits: 1 })}</text></g>;
+        })}
+        {[0, 1, 2, 3, 4].map(step => {
+          const hours = maxHorizon * step / 4;
+          return <text key={step} x={xFor(hours)} y={height - bottom + 23} textAnchor="middle">{formatHorizon(hours)}</text>;
+        })}
+        <text x={left + (width - left - right) / 2} y={height - 5} textAnchor="middle">Hours after issue time</text>
         <path d={path} />
-        {series.map((point, index) => {
-          const x = series.length === 1 ? width / 2 : (index / (series.length - 1)) * width;
-          const y = height - ((point.value - minValue) / valueRange) * height;
-          return <circle cx={x} cy={y} key={`${point.target_id}-${point.horizon_hours}`} r="2.4" />;
+        {series.map((point) => {
+          const x = xFor(point.horizon_hours);
+          const y = yFor(point.value);
+          return <circle cx={x} cy={y} key={`${point.target_id}-${point.horizon_hours}`} r="3.5"><title>{formatHorizon(point.horizon_hours)}: {point.value.toLocaleString()} {unit === "cumecs" ? "m³/s" : unit.replaceAll("_", " ")}</title></circle>;
         })}
       </svg>
-      <div className="forecast-graph-axis">
-        {series.map((point, index) => (
-          <span className={index % 2 === 0 || index === series.length - 1 ? "" : "muted"} key={point.horizon_hours}>
-            {formatHorizon(point.horizon_hours)}
-          </span>
-        ))}
-      </div>
       <div className="forecast-graph-summary">
         <strong>{latest.value.toLocaleString()} {latest.value_unit.replaceAll("_", " ")}</strong>
         <span>{latest.risk_class} at {formatHorizon(latest.horizon_hours)}</span>
@@ -150,6 +162,8 @@ function RiverineModelFlow({ score }: { score: number }) {
         <span>Current + next-day discharge</span>
         <span>Rising or warning river status</span>
       </div>
+      <p className="screening-score-explanation">{score}/100 = {riskBand(score)} screening level. This rule score is separate from the graph; it is not a flood probability.</p>
+      <details className="screening-score-details"><summary>How this score is calculated</summary><p>Take the highest of: current risk summary × 100; river-status score (68 if rising or in warning, otherwise 24); next-day discharge ÷ 35; and current discharge ÷ 38. Round and limit to 0–100. Bands: Low 0–39, Medium 40–69, High 70–100. These are screening rules, not calibrated flood thresholds.</p></details>
       <div className="riverine-station-table">
         <div><span>Example target</span><span>Horizon</span><span>Graph</span></div>
         <div><strong>Trimmu</strong><span>+24h</span><span>Demo series</span></div>
@@ -211,15 +225,19 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
   const [mode, setMode] = useState<RiskMode>("near-term");
   const modeTabs = useRef<HTMLDivElement>(null);
   const [selectedTargets, setSelectedTargets] = useState<Record<string, string>>({});
+  const [riverineMode, setRiverineMode] = useState<RiverineMode>("short-term");
   const [showInputs, setShowInputs] = useState(false);
   function selectMode(nextMode: RiskMode) {
     setShowInputs(false);
     setMode(nextMode);
   }
   function handleModeKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
-    const nextMode = event.key === "Home" ? "near-term"
-      : event.key === "End" ? "ten-year"
-      : ["ArrowLeft", "ArrowRight"].includes(event.key) ? (mode === "near-term" ? "ten-year" : "near-term")
+    const modes: RiskMode[] = ["near-term", "ten-year"];
+    const index = modes.indexOf(mode);
+    const nextMode = event.key === "Home" ? modes[0]
+      : event.key === "End" ? modes[modes.length - 1]
+      : event.key === "ArrowLeft" ? modes[(index + modes.length - 1) % modes.length]
+      : event.key === "ArrowRight" ? modes[(index + 1) % modes.length]
       : null;
     if (!nextMode) return;
     event.preventDefault();
@@ -327,6 +345,7 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
             aria-controls={`risk-panel-${id}`}
             aria-selected={mode === id}
             tabIndex={mode === id ? 0 : -1}
+            data-tour-target={id === "near-term" ? "risk-near-term" : "risk-ten-year"}
             key={id}
             onClick={() => selectMode(id)}
             onKeyDown={handleModeKeyDown}
@@ -338,13 +357,20 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         {showInputs && <PredictiveInputsDialog data={data} onClose={() => setShowInputs(false)} />}
         <div className="multiview-shell">
           <div className="multiview-grid">
-          {views.map(({ id, title, horizon, scope, predicts, model, score, detail, issuedAt, target, outputPoints, Icon }) => (
-            <article className={`multiview-card risk-${riskBand(score)}`} key={id}>
+          {views.map(({ id, title, horizon, scope, predicts, model, score, detail, issuedAt, target, outputPoints, Icon }) => {
+            const isRiverineMonthly = id === "riverine" && riverineMode === "monthly-marala";
+            return <article className={`multiview-card risk-${riskBand(score)}${isRiverineMonthly ? " riverine-monthly-card" : ""}`} key={id}>
               <div className="multiview-card-head">
                 <Icon size={15} />
-                <div><strong>{title}</strong><span>{horizon}</span></div>
-                <b>{score}/100</b>
+                <div><strong>{isRiverineMonthly ? "Marala Monthly River Flow" : title}</strong><span>{isRiverineMonthly ? "Monthly dataset and outlook" : horizon}</span></div>
+                {!isRiverineMonthly && <b className="screening-score-badge"><span>Screening score</span>{score}/100</b>}
               </div>
+              {id === "riverine" && <div className="riverine-case-tabs" role="tablist" aria-label="Riverine forecast view">
+                {([ ["short-term", "Short-term screening"], ["monthly-marala", "Monthly Marala"] ] as const).map(([tab, label]) => (
+                  <button type="button" role="tab" id={`riverine-tab-${tab}`} aria-controls={`riverine-panel-${tab}`} aria-selected={riverineMode === tab} tabIndex={riverineMode === tab ? 0 : -1} key={tab} onClick={() => setRiverineMode(tab)}>{label}</button>
+                ))}
+              </div>}
+              {isRiverineMonthly ? <div role="tabpanel" id="riverine-panel-monthly-marala" aria-labelledby="riverine-tab-monthly-marala" className="riverine-case-panel"><MaralaMonthlyTab /></div> : <div role={id === "riverine" ? "tabpanel" : undefined} id={id === "riverine" ? "riverine-panel-short-term" : undefined} aria-labelledby={id === "riverine" ? "riverine-tab-short-term" : undefined} className="riverine-case-panel">
               <div className="multiview-forecast-meta">
                 <span>Issued {formatIssuedAt(issuedAt)}</span>
                 <strong>{target}</strong>
@@ -381,8 +407,9 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
               )}
               <p>{detail}</p>
               <small><AlertTriangle size={11} /> {model}</small>
+              </div>}
             </article>
-          ))}
+          })}
           </div>
         </div>
       </div>

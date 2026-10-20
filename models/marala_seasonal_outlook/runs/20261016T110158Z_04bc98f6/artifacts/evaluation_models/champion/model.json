@@ -1,0 +1,34 @@
+{
+  "spec": {
+    "id": "seasonal_climatology",
+    "family": "seasonal_climatology"
+  },
+  "features": [
+    "lead_fraction",
+    "log_current",
+    "log_previous_7d_mean",
+    "log_previous_30d_mean",
+    "log_previous_90d_mean",
+    "log_previous_year_target",
+    "log_previous_year_target_7d_mean",
+    "current_7d_log_change",
+    "current_30d_log_change",
+    "target_sin_1",
+    "target_cos_1",
+    "target_sin_2",
+    "target_cos_2",
+    "target_sin_3",
+    "target_cos_3"
+  ],
+  "training_last_target": "2017-12-31",
+  "training_rows": 82874,
+  "weights": [
+    441.85243339485226,
+    -185.41341711160803,
+    -316.0210355033315,
+    197.6109222232579,
+    29.12987158848196,
+    -121.48120071972261,
+    9.31988440147363
+  ]
+}

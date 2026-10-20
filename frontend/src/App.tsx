@@ -1,5 +1,5 @@
-import { AlertCircle, BellRing, ChevronDown, Clock3, RefreshCw, X } from "lucide-react";
-import { useState } from "react";
+import { AlertCircle, BellRing, ChevronDown, Clock3, Compass, RefreshCw, X } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 
 import { ActivityTimeline } from "./components/ActivityTimeline";
 import { AppShell, type ViewId } from "./components/AppShell";
@@ -10,6 +10,7 @@ import { SimulationPanel } from "./components/SimulationPanel";
 import { FloodRiskMultiView } from "./components/FloodRiskMultiView";
 import { SourceFloodForecastTab } from "./components/SourceFloodForecastTab";
 import { RiverMonitoringView } from "./components/RiverMonitoringView";
+import { PortalTour } from "./components/PortalTour";
 import { LOCATIONS, type LocationId } from "./config";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { OverviewPage } from "./pages/OverviewPage";
@@ -33,6 +34,8 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
 
 export default function App() {
   const [view, setView] = useState<ViewId>("overview");
+  const [tourOpen, setTourOpen] = useState(false);
+  const tourButton = useRef<HTMLButtonElement>(null);
   const [locationId, setLocationId] = useState<LocationId>("JHG_001");
   const includeLiveData = ["overview", "gis", "rainfall", "predictive"].includes(view);
   const { data, loading, errors, lastUpdated, autoRefreshMs, refresh, refreshOperations } = useDashboardData(locationId, includeLiveData);
@@ -41,13 +44,23 @@ export default function App() {
   const pendingSimulationAlerts = simulationNotice ? data.alerts.filter((alert) => alert.event_metadata.run_id === simulationNotice.run_id && alert.event_metadata.approval_status !== "approved").length : 0;
   const location = LOCATIONS.find((item) => item.id === locationId)!;
   const heading = viewTitles[view];
+  const navigateToTourView = useCallback((next: ViewId) => {
+    setSelectedIncidentId(null);
+    setView(next);
+    if (["alerts", "incidents"].includes(next)) void refreshOperations();
+  }, [refreshOperations]);
+  const closeTour = useCallback(() => {
+    setTourOpen(false);
+    window.requestAnimationFrame(() => tourButton.current?.focus());
+  }, []);
 
   return (
-    <AppShell activeView={view} onViewChange={(next) => { setSelectedIncidentId(null); setView(next); if (["alerts", "incidents"].includes(next)) void refreshOperations(); }}>
+    <AppShell activeView={view} onViewChange={navigateToTourView}>
       <header className="topbar">
-        <div><p className="eyebrow">Emergency Command Dashboard</p><h1>{heading.title}</h1><span>{heading.subtitle}</span></div>
+        <div><p className="eyebrow">Emergency Command Dashboard</p><h1 data-tour-target="page-title">{heading.title}</h1><span>{heading.subtitle}</span></div>
         <div className="topbar-actions">
-          <label className="location-select"><span>Operational area</span><div><strong>{location.name}</strong><small>{location.river} River · {location.id}</small><ChevronDown size={17} /></div><select aria-label="Operational location" value={locationId} onChange={(event) => setLocationId(event.target.value as LocationId)}>{LOCATIONS.map((item) => <option value={item.id} key={item.id}>{item.name} ({item.id})</option>)}</select></label>
+          <button ref={tourButton} type="button" className="portal-tour-trigger" aria-haspopup="dialog" aria-expanded={tourOpen} onClick={() => setTourOpen(true)}><Compass size={17} /><span>Portal tour</span></button>
+          <label className="location-select"><span>Operational area</span><div data-tour-target="tour-location-control"><strong>{location.name}</strong><small>{location.river} River · {location.id}</small><ChevronDown size={17} /></div><select data-tour-target="tour-location-select" aria-label="Operational location" value={locationId} onChange={(event) => setLocationId(event.target.value as LocationId)}>{LOCATIONS.map((item) => <option value={item.id} key={item.id}>{item.name} ({item.id})</option>)}</select></label>
         </div>
       </header>
 
@@ -80,6 +93,7 @@ export default function App() {
           {view === "simulation" && <SimulationPanel onCompleted={(result) => { setSimulationNotice(result.alerts.length ? result : null); void refreshOperations(result); }} onOpenAlerts={() => setView("alerts")} onOpenIncidents={() => { setSelectedIncidentId(null); setView("incidents"); }} />}
         </div>
       )}
+      {tourOpen && <PortalTour open onClose={closeTour} onNavigate={navigateToTourView} />}
     </AppShell>
   );
 }

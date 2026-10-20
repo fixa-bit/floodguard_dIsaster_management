@@ -1,0 +1,14 @@
+{
+  "station_id": "MARALA",
+  "river": "Chenab",
+  "issued_at": "2025-09-29T06:00:00+05:00",
+  "target_at": "2025-09-30T06:00:00+05:00",
+  "horizon_hours": 24,
+  "predicted_discharge_cumecs": 862.2903647800293,
+  "predicted_discharge_cusecs": 30451.496849357558,
+  "flood_class": "Below Low",
+  "model_name": "marala_daily_riverine_pilot_v1",
+  "research_only": true,
+  "example_kind": "historical_holdout_prediction",
+  "observed_target_cumecs": 835.346974
+}

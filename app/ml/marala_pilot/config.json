@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "station_id": "MARALA",
+  "station_name": "Marala",
+  "river": "Chenab",
+  "latitude": 32.660583,
+  "longitude": 74.41125,
+  "horizon_hours": 24,
+  "seasons": [2024, 2025],
+  "start_month_day": "06-24",
+  "end_month_day": "09-30",
+  "training_end": "2024-08-31",
+  "validation_end": "2024-09-30",
+  "weather_points": [
+    {"name": "lower_upper_chenab", "latitude": 32.9, "longitude": 74.75},
+    {"name": "middle_upper_chenab", "latitude": 33.3, "longitude": 75.75},
+    {"name": "headwaters_chenab", "latitude": 32.6, "longitude": 76.9}
+  ],
+  "weather_aggregation": "Equal-weight three-point proxy; not an area-weighted delineated catchment",
+  "weather_model": "era5_land",
+  "threshold_source": "https://ffd.pmd.gov.pk/flood-limits",
+  "thresholds_cusecs": {"Low": 100000, "Medium": 150000, "High": 200000, "Very High": 400000, "Exceptionally High": 600000},
+  "optional_unavailable_features": ["upstream_observed_discharge_cumecs", "reservoir_release_cumecs", "archived_forecast_rainfall_mm", "observed_gauge_height_m"]
+}

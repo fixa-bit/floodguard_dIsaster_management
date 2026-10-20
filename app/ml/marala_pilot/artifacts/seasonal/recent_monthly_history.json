@@ -1,0 +1,142 @@
+{
+  "station_id": "MARALA",
+  "river": "Chenab",
+  "station_observation": false,
+  "kind": "historical_modeled_discharge",
+  "source": "Open-Meteo Flood API / GloFAS seamless",
+  "documentation": "https://open-meteo.com/en/docs/flood-api",
+  "source_url": "https://flood-api.open-meteo.com/v1/flood?latitude=32.675&longitude=74.425&start_date=2024-10-01&end_date=2026-09-30&daily=river_discharge&cell_selection=nearest&timezone=GMT",
+  "response_sha256": "d064519ffd25837b7372e8593a2f330f2c7ed95dc3b3b3204c92fb1605c5597e",
+  "source_grid": {
+    "latitude": 32.675003,
+    "longitude": 74.425
+  },
+  "retrieved_at": "2026-10-16T09:34:54.901936+00:00",
+  "period_start": "2024-10-01",
+  "period_end": "2026-09-30",
+  "aggregation": "Arithmetic mean of all daily river_discharge values per complete UTC calendar month",
+  "limitations": "Provider historical modeled river flow, not measured Marala gauge observations. Seamless data may combine historical model products.",
+  "monthly_records": 24,
+  "monthly": [
+    {
+      "month": "2024-10",
+      "days": 31,
+      "flow_mean_cumecs": 415.53322580645164
+    },
+    {
+      "month": "2024-11",
+      "days": 30,
+      "flow_mean_cumecs": 234.54233333333335
+    },
+    {
+      "month": "2024-12",
+      "days": 31,
+      "flow_mean_cumecs": 173.9267741935484
+    },
+    {
+      "month": "2025-01",
+      "days": 31,
+      "flow_mean_cumecs": 154.9816129032258
+    },
+    {
+      "month": "2025-02",
+      "days": 28,
+      "flow_mean_cumecs": 154.225
+    },
+    {
+      "month": "2025-03",
+      "days": 31,
+      "flow_mean_cumecs": 233.80290322580652
+    },
+    {
+      "month": "2025-04",
+      "days": 30,
+      "flow_mean_cumecs": 235.55866666666662
+    },
+    {
+      "month": "2025-05",
+      "days": 31,
+      "flow_mean_cumecs": 250.7145161290322
+    },
+    {
+      "month": "2025-06",
+      "days": 30,
+      "flow_mean_cumecs": 375.18466666666666
+    },
+    {
+      "month": "2025-07",
+      "days": 31,
+      "flow_mean_cumecs": 837.2283870967742
+    },
+    {
+      "month": "2025-08",
+      "days": 31,
+      "flow_mean_cumecs": 1199.3277419354843
+    },
+    {
+      "month": "2025-09",
+      "days": 30,
+      "flow_mean_cumecs": 1496.097
+    },
+    {
+      "month": "2025-10",
+      "days": 31,
+      "flow_mean_cumecs": 814.8993548387099
+    },
+    {
+      "month": "2025-11",
+      "days": 30,
+      "flow_mean_cumecs": 419.3456666666667
+    },
+    {
+      "month": "2025-12",
+      "days": 31,
+      "flow_mean_cumecs": 237.69419354838706
+    },
+    {
+      "month": "2026-01",
+      "days": 31,
+      "flow_mean_cumecs": 190.0338709677419
+    },
+    {
+      "month": "2026-02",
+      "days": 28,
+      "flow_mean_cumecs": 178.19535714285715
+    },
+    {
+      "month": "2026-03",
+      "days": 31,
+      "flow_mean_cumecs": 190.00193548387102
+    },
+    {
+      "month": "2026-04",
+      "days": 30,
+      "flow_mean_cumecs": 286.48066666666665
+    },
+    {
+      "month": "2026-05",
+      "days": 31,
+      "flow_mean_cumecs": 244.4758064516129
+    },
+    {
+      "month": "2026-06",
+      "days": 30,
+      "flow_mean_cumecs": 203.5116666666667
+    },
+    {
+      "month": "2026-07",
+      "days": 31,
+      "flow_mean_cumecs": 923.898064516129
+    },
+    {
+      "month": "2026-08",
+      "days": 31,
+      "flow_mean_cumecs": 1044.2329032258067
+    },
+    {
+      "month": "2026-09",
+      "days": 30,
+      "flow_mean_cumecs": 711.1740000000002
+    }
+  ]
+}

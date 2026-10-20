@@ -1,0 +1,237 @@
+{
+  "config": {
+    "maximum_horizon_days": 365,
+    "origin_sampling": "calendar_month_end_for_training_and_evaluation",
+    "training_last_year": 2013,
+    "validation_years": [
+      2014,
+      2015,
+      2016,
+      2017
+    ],
+    "test_years": [
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "target": "GloFAS modeled reach daily mean discharge; NOT measured Marala gauge inflow",
+    "selection": "validation RMSE, then MAE",
+    "random_seed": 42
+  },
+  "source": {
+    "source_url": "https://flood-api.open-meteo.com/v1/flood?latitude=32.675&longitude=74.425&start_date=1984-01-01&end_date=2026-10-15&daily=river_discharge&cell_selection=nearest&timezone=GMT",
+    "response_sha256": "0dc2fdb80d7d750b3aa4ed017f6c51b2a218a82886e896d1dd35d375b2b9ed8a",
+    "retrieved_at": "2026-10-16T10:59:58.251186+00:00",
+    "target_kind": "modeled_reach_discharge_not_gauge_measurements",
+    "documentation": "https://open-meteo.com/en/docs/flood-api",
+    "raw_file": "provider_daily_20261015.json"
+  },
+  "numpy": "2.1.3",
+  "xgboost": "2.1.3",
+  "available_modeled_days": 10880,
+  "first_available_day": "1997-01-01",
+  "last_available_day": "2026-10-15",
+  "missing_days": 4749,
+  "selection": {
+    "spec": {
+      "id": "seasonal_climatology",
+      "family": "seasonal_climatology"
+    },
+    "validation": {
+      "rows": 15157,
+      "rmse_cumecs": 211.45319460357948,
+      "mae_cumecs": 134.44563166866863,
+      "bias_cumecs": -75.03354551140856
+    }
+  },
+  "test": {
+    "champion": {
+      "rows": 15157,
+      "rmse_cumecs": 182.49370668927986,
+      "mae_cumecs": 121.48012017416173,
+      "bias_cumecs": -68.55793142416508,
+      "by_lead_window": {
+        "1-30": {
+          "rows": 1410,
+          "rmse_cumecs": 177.66969358985557,
+          "mae_cumecs": 119.99433328175023,
+          "bias_cumecs": -51.79248304442119
+        },
+        "31-90": {
+          "rows": 2732,
+          "rmse_cumecs": 180.19473415742812,
+          "mae_cumecs": 121.54069059250524,
+          "bias_cumecs": -56.09143254424829
+        },
+        "91-180": {
+          "rows": 3877,
+          "rmse_cumecs": 182.72960995324988,
+          "mae_cumecs": 121.63429642084397,
+          "bias_cumecs": -67.33910877410017
+        },
+        "181-365": {
+          "rows": 7138,
+          "rmse_cumecs": 184.17245249066713,
+          "mae_cumecs": 121.66669061784327,
+          "bias_cumecs": -77.30311670991362
+        }
+      }
+    },
+    "best_learned": {
+      "rows": 15157,
+      "rmse_cumecs": 188.86380157468082,
+      "mae_cumecs": 114.43819734261436,
+      "bias_cumecs": -77.36879549282392,
+      "by_lead_window": {
+        "1-30": {
+          "rows": 1410,
+          "rmse_cumecs": 168.52304983286348,
+          "mae_cumecs": 107.61166493055953,
+          "bias_cumecs": -54.233029913258335
+        },
+        "31-90": {
+          "rows": 2732,
+          "rmse_cumecs": 180.65873381126772,
+          "mae_cumecs": 111.78969008800806,
+          "bias_cumecs": -60.91988056012159
+        },
+        "91-180": {
+          "rows": 3877,
+          "rmse_cumecs": 184.2344772414174,
+          "mae_cumecs": 113.33450976405317,
+          "bias_cumecs": -74.91686557553255
+        },
+        "181-365": {
+          "rows": 7138,
+          "rmse_cumecs": 198.00022881088847,
+          "mae_cumecs": 117.39982934915166,
+          "bias_cumecs": -89.56632944528523
+        }
+      }
+    },
+    "seasonal_naive": {
+      "rows": 15157,
+      "rmse_cumecs": 221.2347071850868,
+      "mae_cumecs": 146.14807547667743,
+      "bias_cumecs": -1.4917754172989395,
+      "by_lead_window": {
+        "1-30": {
+          "rows": 1410,
+          "rmse_cumecs": 223.47994625504103,
+          "mae_cumecs": 149.89479432624114,
+          "bias_cumecs": 19.430368794326245
+        },
+        "31-90": {
+          "rows": 2732,
+          "rmse_cumecs": 228.5896977071373,
+          "mae_cumecs": 152.8228074670571,
+          "bias_cumecs": 17.575706442166904
+        },
+        "91-180": {
+          "rows": 3877,
+          "rmse_cumecs": 231.5501574096648,
+          "mae_cumecs": 151.95193706474075,
+          "bias_cumecs": 7.786721692029919
+        },
+        "181-365": {
+          "rows": 7138,
+          "rmse_cumecs": 212.0009533203942,
+          "mae_cumecs": 139.7009176239843,
+          "bias_cumecs": -17.962119641356125
+        }
+      }
+    },
+    "persistence": {
+      "rows": 15157,
+      "rmse_cumecs": 536.7492431806166,
+      "mae_cumecs": 378.7139242594181,
+      "bias_cumecs": -28.404468562380426,
+      "by_lead_window": {
+        "1-30": {
+          "rows": 1410,
+          "rmse_cumecs": 245.132920285857,
+          "mae_cumecs": 124.82630496453898,
+          "bias_cumecs": -6.8667446808510615
+        },
+        "31-90": {
+          "rows": 2732,
+          "rmse_cumecs": 498.4945447812314,
+          "mae_cumecs": 345.31796486090775,
+          "bias_cumecs": -11.77956076134698
+        },
+        "91-180": {
+          "rows": 3877,
+          "rmse_cumecs": 638.3289796281323,
+          "mae_cumecs": 493.29155274696933,
+          "bias_cumecs": -43.766564353881876
+        },
+        "181-365": {
+          "rows": 7138,
+          "rmse_cumecs": 532.413898840535,
+          "mae_cumecs": 379.41465816755397,
+          "bias_cumecs": -30.67801765200336
+        }
+      }
+    },
+    "seasonal_climatology": {
+      "rows": 15157,
+      "rmse_cumecs": 182.49370668927986,
+      "mae_cumecs": 121.48012017416173,
+      "bias_cumecs": -68.55793142416508,
+      "by_lead_window": {
+        "1-30": {
+          "rows": 1410,
+          "rmse_cumecs": 177.66969358985557,
+          "mae_cumecs": 119.99433328175023,
+          "bias_cumecs": -51.79248304442119
+        },
+        "31-90": {
+          "rows": 2732,
+          "rmse_cumecs": 180.19473415742812,
+          "mae_cumecs": 121.54069059250524,
+          "bias_cumecs": -56.09143254424829
+        },
+        "91-180": {
+          "rows": 3877,
+          "rmse_cumecs": 182.72960995324988,
+          "mae_cumecs": 121.63429642084397,
+          "bias_cumecs": -67.33910877410017
+        },
+        "181-365": {
+          "rows": 7138,
+          "rmse_cumecs": 184.17245249066713,
+          "mae_cumecs": 121.66669061784327,
+          "bias_cumecs": -77.30311670991362
+        }
+      }
+    }
+  },
+  "splits": {
+    "train": {
+      "rows": 67717,
+      "first_origin": "1998-01-31",
+      "last_target": "2013-12-31"
+    },
+    "validation": {
+      "rows": 15157,
+      "first_origin": "2014-01-31",
+      "last_target": "2017-12-31"
+    },
+    "test": {
+      "rows": 15157,
+      "first_origin": "2018-01-31",
+      "last_target": "2021-12-31"
+    }
+  },
+  "deployment_eligible": false,
+  "limitations": [
+    "Target and test truth are GloFAS modeled reach daily means, never real gauge readings.",
+    "Historic modeled values may be retrospective reanalysis; rolling tests do not prove real-time input availability.",
+    "Historical provider model versions may differ; the response has no per-day version metadata.",
+    "Overlapping monthly origins share target days; rows are correlated, not independent flood events.",
+    "Long-lead event timing cannot be inferred from past discharge alone; output is a seasonal statistical outlook.",
+    "365 values do not imply 365-day weather or flood-event prediction skill.",
+    "Final refits include data after the holdout period and have no new independent evaluation."
+  ]
+}

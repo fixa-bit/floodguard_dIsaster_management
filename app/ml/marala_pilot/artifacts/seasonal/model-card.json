@@ -1,0 +1,911 @@
+{
+  "model_name": "marala_monthly_flow_outlook_v1",
+  "schema_version": 3,
+  "trained_at": "2026-10-16T06:41:14.350467+00:00",
+  "station_id": "MARALA",
+  "river": "Chenab",
+  "forecast_unit": "complete calendar-month mean discharge",
+  "horizons_months": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "target": "GloFAS daily modeled discharge averaged by month at a grid cell near Marala; not gauge-measured flow",
+  "input_period": "2000-01 through 2021-12",
+  "monthly_records": 264,
+  "features": [
+    "flow_anomaly_current_cumecs",
+    "flow_anomaly_previous_month_cumecs",
+    "flow_anomaly_previous_year_cumecs",
+    "flow_change_1m_cumecs",
+    "rainfall_previous_1m_mm",
+    "rainfall_previous_3m_mm",
+    "snowfall_previous_1m_cm",
+    "temperature_anomaly_c"
+  ],
+  "feature_count": 8,
+  "models": {
+    "1": {
+      "model": {
+        "model_type": "ridge_climatology_residual",
+        "selected_candidate": "ridge_alpha_10",
+        "target_month_climatology_cumecs": {
+          "01": 152.43680107526882,
+          "02": 207.40298597953773,
+          "03": 251.9138213399504,
+          "04": 282.6867948717949,
+          "05": 294.63565756823823,
+          "06": 360.0395641025641,
+          "07": 1011.7950372208436,
+          "08": 1025.3719851116625,
+          "09": 670.1278717948718,
+          "10": 366.2974193548388,
+          "11": 215.02902564102564,
+          "12": 163.55498759305212
+        },
+        "validation_candidate_metrics": {
+          "ridge_alpha_10": {
+            "mae_cumecs": 74.23014035109622,
+            "rmse_cumecs": 114.22072625404114
+          },
+          "ridge_alpha_100": {
+            "mae_cumecs": 78.61286454659462,
+            "rmse_cumecs": 120.83659027316583
+          },
+          "ridge_alpha_1000": {
+            "mae_cumecs": 107.09692475010253,
+            "rmse_cumecs": 146.61476472309147
+          },
+          "xgboost_d1_n50_lr0.03": {
+            "mae_cumecs": 90.27094707970677,
+            "rmse_cumecs": 138.6546710482026
+          },
+          "xgboost_d1_n50_lr0.05": {
+            "mae_cumecs": 82.61764806501544,
+            "rmse_cumecs": 131.2383410180709
+          },
+          "xgboost_d1_n100_lr0.03": {
+            "mae_cumecs": 77.75247362491695,
+            "rmse_cumecs": 128.0969415283093
+          },
+          "xgboost_d1_n100_lr0.05": {
+            "mae_cumecs": 71.42000742181105,
+            "rmse_cumecs": 123.26150849786882
+          },
+          "xgboost_d2_n50_lr0.03": {
+            "mae_cumecs": 89.0761849846281,
+            "rmse_cumecs": 136.02312587107494
+          },
+          "xgboost_d2_n50_lr0.05": {
+            "mae_cumecs": 79.46460544538937,
+            "rmse_cumecs": 129.78778424002206
+          },
+          "xgboost_d2_n100_lr0.03": {
+            "mae_cumecs": 77.04388690374643,
+            "rmse_cumecs": 129.36876014892434
+          },
+          "xgboost_d2_n100_lr0.05": {
+            "mae_cumecs": 72.37090933561066,
+            "rmse_cumecs": 125.58168539161062
+          },
+          "seasonal_climatology": {
+            "mae_cumecs": 120.01187903791474,
+            "rmse_cumecs": 161.2119148139883
+          },
+          "persistence": {
+            "mae_cumecs": 185.17556551295883,
+            "rmse_cumecs": 281.00093927086095
+          },
+          "seasonal_naive": {
+            "mae_cumecs": 148.8733157335687,
+            "rmse_cumecs": 223.30466566005234
+          }
+        },
+        "feature_mean": [
+          7.629630105378859,
+          6.881336651139718,
+          -11.657215631563925,
+          1.0676203260492538,
+          120.89655913978503,
+          362.8888172043012,
+          21.916473118279566,
+          -0.014897091665257083
+        ],
+        "feature_scale": [
+          163.5047878629866,
+          163.3308421741658,
+          158.00641887314507,
+          280.7261747372042,
+          83.88420386706532,
+          158.32966815349997,
+          25.649465746498855,
+          1.01928077924426
+        ],
+        "feature_weights": [
+          83.21485271316867,
+          4.769364947637144,
+          15.288922446256098,
+          -1.3263204018540484,
+          3.8621880258802177,
+          17.026725565462193,
+          -0.009973787051034109,
+          -11.220348653719778
+        ],
+        "residual_intercept": 2.0536977136808056e-14,
+        "ridge_alpha": 10.0
+      },
+      "validation_selected_candidate": "ridge_alpha_10",
+      "metrics": {
+        "train": {
+          "selected_model": {
+            "rows": 155,
+            "mae_cumecs": 75.59509731708437,
+            "rmse_cumecs": 129.71082368211435
+          },
+          "seasonal_climatology": {
+            "rows": 155,
+            "mae_cumecs": 108.36432742210845,
+            "rmse_cumecs": 163.23618840949433
+          },
+          "persistence": {
+            "rows": 155,
+            "mae_cumecs": 171.6278884198008,
+            "rmse_cumecs": 280.86515571080554
+          },
+          "seasonal_naive": {
+            "rows": 155,
+            "mae_cumecs": 150.2877452675699,
+            "rmse_cumecs": 236.79878922996465
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 155,
+              "mae_cumecs": 75.59509731708437,
+              "rmse_cumecs": 129.71082368211435
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.05",
+              "rows": 155,
+              "mae_cumecs": 70.37592879528542,
+              "rmse_cumecs": 117.41837936838542
+            }
+          }
+        },
+        "validation": {
+          "selected_model": {
+            "rows": 47,
+            "mae_cumecs": 74.23014035109622,
+            "rmse_cumecs": 114.22072625404114
+          },
+          "seasonal_climatology": {
+            "rows": 47,
+            "mae_cumecs": 120.01187903791474,
+            "rmse_cumecs": 161.2119148139883
+          },
+          "persistence": {
+            "rows": 47,
+            "mae_cumecs": 185.17556551295883,
+            "rmse_cumecs": 281.00093927086095
+          },
+          "seasonal_naive": {
+            "rows": 47,
+            "mae_cumecs": 148.8733157335687,
+            "rmse_cumecs": 223.30466566005234
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 47,
+              "mae_cumecs": 74.23014035109622,
+              "rmse_cumecs": 114.22072625404114
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.05",
+              "rows": 47,
+              "mae_cumecs": 71.42000742181105,
+              "rmse_cumecs": 123.26150849786882
+            }
+          }
+        },
+        "test": {
+          "selected_model": {
+            "rows": 47,
+            "mae_cumecs": 56.23901051771624,
+            "rmse_cumecs": 97.20154026671726
+          },
+          "seasonal_climatology": {
+            "rows": 47,
+            "mae_cumecs": 96.72328316492948,
+            "rmse_cumecs": 133.41981574393924
+          },
+          "persistence": {
+            "rows": 47,
+            "mae_cumecs": 187.44544006342747,
+            "rmse_cumecs": 293.0067939906811
+          },
+          "seasonal_naive": {
+            "rows": 47,
+            "mae_cumecs": 125.02456824198451,
+            "rmse_cumecs": 171.03814595655774
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 47,
+              "mae_cumecs": 56.23901051771624,
+              "rmse_cumecs": 97.20154026671726
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.05",
+              "rows": 47,
+              "mae_cumecs": 62.302669614844845,
+              "rmse_cumecs": 98.12006452089241
+            }
+          }
+        }
+      },
+      "splits": {
+        "train": {
+          "rows": 155,
+          "first_issue": "2001-01",
+          "last_issue": "2013-11",
+          "last_target": "2013-12"
+        },
+        "validation": {
+          "rows": 47,
+          "first_issue": "2014-01",
+          "last_issue": "2017-11",
+          "last_target": "2017-12"
+        },
+        "test": {
+          "rows": 47,
+          "first_issue": "2018-01",
+          "last_issue": "2021-11",
+          "last_target": "2021-12"
+        }
+      }
+    },
+    "2": {
+      "model": {
+        "model_type": "xgboost_climatology_residual",
+        "selected_candidate": "xgboost_d1_n100_lr0.05",
+        "target_month_climatology_cumecs": {
+          "01": 152.43680107526882,
+          "02": 214.09621100164205,
+          "03": 251.9138213399504,
+          "04": 282.6867948717949,
+          "05": 294.63565756823823,
+          "06": 360.0395641025641,
+          "07": 1011.7950372208436,
+          "08": 1025.3719851116625,
+          "09": 670.1278717948718,
+          "10": 366.2974193548388,
+          "11": 215.02902564102564,
+          "12": 163.55498759305212
+        },
+        "validation_candidate_metrics": {
+          "ridge_alpha_10": {
+            "mae_cumecs": 98.61735429939218,
+            "rmse_cumecs": 139.10684068215755
+          },
+          "ridge_alpha_100": {
+            "mae_cumecs": 99.100892487199,
+            "rmse_cumecs": 140.54321515497142
+          },
+          "ridge_alpha_1000": {
+            "mae_cumecs": 114.78214489563828,
+            "rmse_cumecs": 154.40002881163952
+          },
+          "xgboost_d1_n50_lr0.03": {
+            "mae_cumecs": 101.39844239361021,
+            "rmse_cumecs": 144.55430168027448
+          },
+          "xgboost_d1_n50_lr0.05": {
+            "mae_cumecs": 96.12569013435633,
+            "rmse_cumecs": 139.14271333776372
+          },
+          "xgboost_d1_n100_lr0.03": {
+            "mae_cumecs": 94.87445511834207,
+            "rmse_cumecs": 137.18975536656694
+          },
+          "xgboost_d1_n100_lr0.05": {
+            "mae_cumecs": 92.52778988806706,
+            "rmse_cumecs": 133.67827587338456
+          },
+          "xgboost_d2_n50_lr0.03": {
+            "mae_cumecs": 99.43694312513455,
+            "rmse_cumecs": 143.01477806958061
+          },
+          "xgboost_d2_n50_lr0.05": {
+            "mae_cumecs": 93.83720154310927,
+            "rmse_cumecs": 137.47896874237625
+          },
+          "xgboost_d2_n100_lr0.03": {
+            "mae_cumecs": 94.1608737593329,
+            "rmse_cumecs": 136.2034829528267
+          },
+          "xgboost_d2_n100_lr0.05": {
+            "mae_cumecs": 92.34032696812321,
+            "rmse_cumecs": 135.26858305141462
+          },
+          "seasonal_climatology": {
+            "mae_cumecs": 122.35056592069083,
+            "rmse_cumecs": 162.92328400424026
+          },
+          "persistence": {
+            "mae_cumecs": 325.0602362419021,
+            "rmse_cumecs": 428.4094852739301
+          },
+          "seasonal_naive": {
+            "mae_cumecs": 151.24388470914315,
+            "rmse_cumecs": 225.642443338849
+          }
+        },
+        "model_artifact": "lead-2m.xgb.json"
+      },
+      "validation_selected_candidate": "xgboost_d1_n100_lr0.05",
+      "metrics": {
+        "train": {
+          "selected_model": {
+            "rows": 154,
+            "mae_cumecs": 90.10462872066937,
+            "rmse_cumecs": 136.65565483047536
+          },
+          "seasonal_climatology": {
+            "rows": 154,
+            "mae_cumecs": 108.55161531090341,
+            "rmse_cumecs": 163.62670459371512
+          },
+          "persistence": {
+            "rows": 154,
+            "mae_cumecs": 293.7429505456142,
+            "rmse_cumecs": 430.73029055433705
+          },
+          "seasonal_naive": {
+            "rows": 154,
+            "mae_cumecs": 150.6664485587642,
+            "rmse_cumecs": 237.45075101529787
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 154,
+              "mae_cumecs": 97.03992658253296,
+              "rmse_cumecs": 147.79351694078014
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.05",
+              "rows": 154,
+              "mae_cumecs": 90.10462872066937,
+              "rmse_cumecs": 136.65565483047536
+            }
+          }
+        },
+        "validation": {
+          "selected_model": {
+            "rows": 46,
+            "mae_cumecs": 92.52778988806706,
+            "rmse_cumecs": 133.67827587338456
+          },
+          "seasonal_climatology": {
+            "rows": 46,
+            "mae_cumecs": 122.35056592069083,
+            "rmse_cumecs": 162.92328400424026
+          },
+          "persistence": {
+            "rows": 46,
+            "mae_cumecs": 325.0602362419021,
+            "rmse_cumecs": 428.4094852739301
+          },
+          "seasonal_naive": {
+            "rows": 46,
+            "mae_cumecs": 151.24388470914315,
+            "rmse_cumecs": 225.642443338849
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 46,
+              "mae_cumecs": 98.61735429939218,
+              "rmse_cumecs": 139.10684068215755
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.05",
+              "rows": 46,
+              "mae_cumecs": 92.52778988806706,
+              "rmse_cumecs": 133.67827587338456
+            }
+          }
+        },
+        "test": {
+          "selected_model": {
+            "rows": 46,
+            "mae_cumecs": 74.90297801964523,
+            "rmse_cumecs": 112.6701324651232
+          },
+          "seasonal_climatology": {
+            "rows": 46,
+            "mae_cumecs": 97.62694622437984,
+            "rmse_cumecs": 134.5929591319708
+          },
+          "persistence": {
+            "rows": 46,
+            "mae_cumecs": 334.9245970954615,
+            "rmse_cumecs": 457.1423416227485
+          },
+          "seasonal_naive": {
+            "rows": 46,
+            "mae_cumecs": 125.57370481867363,
+            "rmse_cumecs": 172.2603763386912
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 46,
+              "mae_cumecs": 71.032206639976,
+              "rmse_cumecs": 109.93413115710872
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.05",
+              "rows": 46,
+              "mae_cumecs": 74.90297801964523,
+              "rmse_cumecs": 112.6701324651232
+            }
+          }
+        }
+      },
+      "splits": {
+        "train": {
+          "rows": 154,
+          "first_issue": "2001-01",
+          "last_issue": "2013-10",
+          "last_target": "2013-12"
+        },
+        "validation": {
+          "rows": 46,
+          "first_issue": "2014-01",
+          "last_issue": "2017-10",
+          "last_target": "2017-12"
+        },
+        "test": {
+          "rows": 46,
+          "first_issue": "2018-01",
+          "last_issue": "2021-10",
+          "last_target": "2021-12"
+        }
+      }
+    },
+    "3": {
+      "model": {
+        "model_type": "xgboost_climatology_residual",
+        "selected_candidate": "xgboost_d1_n100_lr0.03",
+        "target_month_climatology_cumecs": {
+          "01": 152.43680107526882,
+          "02": 214.09621100164205,
+          "03": 262.81905913978494,
+          "04": 282.6867948717949,
+          "05": 294.63565756823823,
+          "06": 360.0395641025641,
+          "07": 1011.7950372208436,
+          "08": 1025.3719851116625,
+          "09": 670.1278717948718,
+          "10": 366.2974193548388,
+          "11": 215.02902564102564,
+          "12": 163.55498759305212
+        },
+        "validation_candidate_metrics": {
+          "ridge_alpha_10": {
+            "mae_cumecs": 108.28533947719369,
+            "rmse_cumecs": 150.71014932518156
+          },
+          "ridge_alpha_100": {
+            "mae_cumecs": 108.36459129547266,
+            "rmse_cumecs": 151.5880227456422
+          },
+          "ridge_alpha_1000": {
+            "mae_cumecs": 118.16249622353475,
+            "rmse_cumecs": 159.40143191690942
+          },
+          "xgboost_d1_n50_lr0.03": {
+            "mae_cumecs": 111.55260650294449,
+            "rmse_cumecs": 153.05828163172174
+          },
+          "xgboost_d1_n50_lr0.05": {
+            "mae_cumecs": 108.51075866994684,
+            "rmse_cumecs": 151.14537232081915
+          },
+          "xgboost_d1_n100_lr0.03": {
+            "mae_cumecs": 107.50987296082005,
+            "rmse_cumecs": 150.12891097874495
+          },
+          "xgboost_d1_n100_lr0.05": {
+            "mae_cumecs": 107.00447325810053,
+            "rmse_cumecs": 150.63811373816853
+          },
+          "xgboost_d2_n50_lr0.03": {
+            "mae_cumecs": 109.99740224380133,
+            "rmse_cumecs": 153.5435708250665
+          },
+          "xgboost_d2_n50_lr0.05": {
+            "mae_cumecs": 105.96295234717729,
+            "rmse_cumecs": 151.4911442723006
+          },
+          "xgboost_d2_n100_lr0.03": {
+            "mae_cumecs": 105.47837727039777,
+            "rmse_cumecs": 152.15088902213108
+          },
+          "xgboost_d2_n100_lr0.05": {
+            "mae_cumecs": 103.77631813179697,
+            "rmse_cumecs": 151.92668486760232
+          },
+          "seasonal_climatology": {
+            "mae_cumecs": 123.95476924204209,
+            "rmse_cumecs": 164.37676348838966
+          },
+          "persistence": {
+            "mae_cumecs": 428.9448484895034,
+            "rmse_cumecs": 524.8347664750407
+          },
+          "seasonal_naive": {
+            "mae_cumecs": 154.40222910052913,
+            "rmse_cumecs": 228.1317561736509
+          }
+        },
+        "model_artifact": "lead-3m.xgb.json"
+      },
+      "validation_selected_candidate": "xgboost_d1_n100_lr0.03",
+      "metrics": {
+        "train": {
+          "selected_model": {
+            "rows": 153,
+            "mae_cumecs": 97.8049442391106,
+            "rmse_cumecs": 147.45671325863793
+          },
+          "seasonal_climatology": {
+            "rows": 153,
+            "mae_cumecs": 108.42644838696627,
+            "rmse_cumecs": 163.79082358490658
+          },
+          "persistence": {
+            "rows": 153,
+            "mae_cumecs": 375.8361224893863,
+            "rmse_cumecs": 511.19854766798164
+          },
+          "seasonal_naive": {
+            "rows": 153,
+            "mae_cumecs": 151.24078545636524,
+            "rmse_cumecs": 238.17137458257625
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 153,
+              "mae_cumecs": 101.91932516667146,
+              "rmse_cumecs": 156.00160433012567
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.03",
+              "rows": 153,
+              "mae_cumecs": 97.8049442391106,
+              "rmse_cumecs": 147.45671325863793
+            }
+          }
+        },
+        "validation": {
+          "selected_model": {
+            "rows": 45,
+            "mae_cumecs": 107.50987296082005,
+            "rmse_cumecs": 150.12891097874495
+          },
+          "seasonal_climatology": {
+            "rows": 45,
+            "mae_cumecs": 123.95476924204209,
+            "rmse_cumecs": 164.37676348838966
+          },
+          "persistence": {
+            "rows": 45,
+            "mae_cumecs": 428.9448484895034,
+            "rmse_cumecs": 524.8347664750407
+          },
+          "seasonal_naive": {
+            "rows": 45,
+            "mae_cumecs": 154.40222910052913,
+            "rmse_cumecs": 228.1317561736509
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 45,
+              "mae_cumecs": 108.28533947719369,
+              "rmse_cumecs": 150.71014932518156
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.03",
+              "rows": 45,
+              "mae_cumecs": 107.50987296082005,
+              "rmse_cumecs": 150.12891097874495
+            }
+          }
+        },
+        "test": {
+          "selected_model": {
+            "rows": 45,
+            "mae_cumecs": 82.47006993884979,
+            "rmse_cumecs": 118.75418780614805
+          },
+          "seasonal_climatology": {
+            "rows": 45,
+            "mae_cumecs": 97.54930070439592,
+            "rmse_cumecs": 135.22547500123883
+          },
+          "persistence": {
+            "rows": 45,
+            "mae_cumecs": 440.5784794204025,
+            "rmse_cumecs": 551.1998890816383
+          },
+          "seasonal_naive": {
+            "rows": 45,
+            "mae_cumecs": 127.10106313364057,
+            "rmse_cumecs": 173.95760880919516
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 45,
+              "mae_cumecs": 77.80735161599891,
+              "rmse_cumecs": 116.29935867754448
+            },
+            "xgboost": {
+              "candidate": "xgboost_d1_n100_lr0.03",
+              "rows": 45,
+              "mae_cumecs": 82.47006993884979,
+              "rmse_cumecs": 118.75418780614805
+            }
+          }
+        }
+      },
+      "splits": {
+        "train": {
+          "rows": 153,
+          "first_issue": "2001-01",
+          "last_issue": "2013-09",
+          "last_target": "2013-12"
+        },
+        "validation": {
+          "rows": 45,
+          "first_issue": "2014-01",
+          "last_issue": "2017-09",
+          "last_target": "2017-12"
+        },
+        "test": {
+          "rows": 45,
+          "first_issue": "2018-01",
+          "last_issue": "2021-09",
+          "last_target": "2021-12"
+        }
+      }
+    },
+    "4": {
+      "model": {
+        "model_type": "xgboost_climatology_residual",
+        "selected_candidate": "xgboost_d2_n100_lr0.05",
+        "target_month_climatology_cumecs": {
+          "01": 152.43680107526882,
+          "02": 214.09621100164205,
+          "03": 262.81905913978494,
+          "04": 293.83830555555556,
+          "05": 294.63565756823823,
+          "06": 360.0395641025641,
+          "07": 1011.7950372208436,
+          "08": 1025.3719851116625,
+          "09": 670.1278717948718,
+          "10": 366.2974193548388,
+          "11": 215.02902564102564,
+          "12": 163.55498759305212
+        },
+        "validation_candidate_metrics": {
+          "ridge_alpha_10": {
+            "mae_cumecs": 114.55587624337181,
+            "rmse_cumecs": 154.27630494258742
+          },
+          "ridge_alpha_100": {
+            "mae_cumecs": 114.29559880581634,
+            "rmse_cumecs": 155.6445251959756
+          },
+          "ridge_alpha_1000": {
+            "mae_cumecs": 119.43827117691734,
+            "rmse_cumecs": 161.21942072315758
+          },
+          "xgboost_d1_n50_lr0.03": {
+            "mae_cumecs": 112.02574230482254,
+            "rmse_cumecs": 152.8032220912608
+          },
+          "xgboost_d1_n50_lr0.05": {
+            "mae_cumecs": 109.3345455213673,
+            "rmse_cumecs": 149.35770206553806
+          },
+          "xgboost_d1_n100_lr0.03": {
+            "mae_cumecs": 108.58815919045418,
+            "rmse_cumecs": 147.43937062779472
+          },
+          "xgboost_d1_n100_lr0.05": {
+            "mae_cumecs": 106.0927985092499,
+            "rmse_cumecs": 144.47018943344756
+          },
+          "xgboost_d2_n50_lr0.03": {
+            "mae_cumecs": 111.35640174507806,
+            "rmse_cumecs": 152.4653473268146
+          },
+          "xgboost_d2_n50_lr0.05": {
+            "mae_cumecs": 105.92107744445667,
+            "rmse_cumecs": 148.10950998246872
+          },
+          "xgboost_d2_n100_lr0.03": {
+            "mae_cumecs": 104.94860368105209,
+            "rmse_cumecs": 145.8773993513181
+          },
+          "xgboost_d2_n100_lr0.05": {
+            "mae_cumecs": 101.57252081139809,
+            "rmse_cumecs": 142.319688705761
+          },
+          "seasonal_climatology": {
+            "mae_cumecs": 123.20319421316077,
+            "rmse_cumecs": 164.46488262682638
+          },
+          "persistence": {
+            "mae_cumecs": 462.67251541335014,
+            "rmse_cumecs": 577.1457531130037
+          },
+          "seasonal_naive": {
+            "mae_cumecs": 155.3365524891775,
+            "rmse_cumecs": 230.07653571471576
+          }
+        },
+        "model_artifact": "lead-4m.xgb.json"
+      },
+      "validation_selected_candidate": "xgboost_d2_n100_lr0.05",
+      "metrics": {
+        "train": {
+          "selected_model": {
+            "rows": 152,
+            "mae_cumecs": 78.53058280312777,
+            "rmse_cumecs": 120.38232755365031
+          },
+          "seasonal_climatology": {
+            "rows": 152,
+            "mae_cumecs": 108.27089749634975,
+            "rmse_cumecs": 163.93993242757674
+          },
+          "persistence": {
+            "rows": 152,
+            "mae_cumecs": 404.72885356850134,
+            "rmse_cumecs": 545.6937263120396
+          },
+          "seasonal_naive": {
+            "rows": 152,
+            "mae_cumecs": 151.76866562384131,
+            "rmse_cumecs": 238.8841375126639
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 152,
+              "mae_cumecs": 105.86632410566749,
+              "rmse_cumecs": 159.5179828074872
+            },
+            "xgboost": {
+              "candidate": "xgboost_d2_n100_lr0.05",
+              "rows": 152,
+              "mae_cumecs": 78.53058280312777,
+              "rmse_cumecs": 120.38232755365031
+            }
+          }
+        },
+        "validation": {
+          "selected_model": {
+            "rows": 44,
+            "mae_cumecs": 101.57252081139809,
+            "rmse_cumecs": 142.319688705761
+          },
+          "seasonal_climatology": {
+            "rows": 44,
+            "mae_cumecs": 123.20319421316077,
+            "rmse_cumecs": 164.46488262682638
+          },
+          "persistence": {
+            "rows": 44,
+            "mae_cumecs": 462.67251541335014,
+            "rmse_cumecs": 577.1457531130037
+          },
+          "seasonal_naive": {
+            "rows": 44,
+            "mae_cumecs": 155.3365524891775,
+            "rmse_cumecs": 230.07653571471576
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 44,
+              "mae_cumecs": 114.55587624337181,
+              "rmse_cumecs": 154.27630494258742
+            },
+            "xgboost": {
+              "candidate": "xgboost_d2_n100_lr0.05",
+              "rows": 44,
+              "mae_cumecs": 101.57252081139809,
+              "rmse_cumecs": 142.319688705761
+            }
+          }
+        },
+        "test": {
+          "selected_model": {
+            "rows": 44,
+            "mae_cumecs": 97.80775389996641,
+            "rmse_cumecs": 130.88170080441057
+          },
+          "seasonal_climatology": {
+            "rows": 44,
+            "mae_cumecs": 97.50917938202109,
+            "rmse_cumecs": 135.75530790482856
+          },
+          "persistence": {
+            "rows": 44,
+            "mae_cumecs": 483.53136355329883,
+            "rmse_cumecs": 603.6543005652301
+          },
+          "seasonal_naive": {
+            "rows": 44,
+            "mae_cumecs": 124.62752668970815,
+            "rmse_cumecs": 172.2900648839708
+          },
+          "candidate_comparison": {
+            "ridge_alpha": {
+              "candidate": "ridge_alpha_10",
+              "rows": 44,
+              "mae_cumecs": 82.16971300432603,
+              "rmse_cumecs": 124.38719257084344
+            },
+            "xgboost": {
+              "candidate": "xgboost_d2_n100_lr0.05",
+              "rows": 44,
+              "mae_cumecs": 97.80775389996641,
+              "rmse_cumecs": 130.88170080441057
+            }
+          }
+        }
+      },
+      "splits": {
+        "train": {
+          "rows": 152,
+          "first_issue": "2001-01",
+          "last_issue": "2013-08",
+          "last_target": "2013-12"
+        },
+        "validation": {
+          "rows": 44,
+          "first_issue": "2014-01",
+          "last_issue": "2017-08",
+          "last_target": "2017-12"
+        },
+        "test": {
+          "rows": 44,
+          "first_issue": "2018-01",
+          "last_issue": "2021-08",
+          "last_target": "2021-12"
+        }
+      }
+    }
+  },
+  "validation_policy": "Chronological 2000-2013 train, 2014-2017 validation, 2018-2021 test; select Ridge, XGBoost, climatology, persistence, or seasonal-naive on validation only",
+  "deployment_eligible": false,
+  "status": "historical_research_hindcast_only",
+  "limitations": [
+    "GloFAS is modeled reach discharge, not a Marala gauge measurement.",
+    "ERA5 is retrospective reanalysis, not weather available to an operational forecast.",
+    "Monthly means do not predict flood peaks, dates, probability, or inundation.",
+    "The monthly archive ends in 2021; this artifact is not a current forecast."
+  ],
+  "dataset_sha256": "adf631e50265f63f9150f6fb47f97afdfce6230d0dede67e84b2531f853c7771"
+}

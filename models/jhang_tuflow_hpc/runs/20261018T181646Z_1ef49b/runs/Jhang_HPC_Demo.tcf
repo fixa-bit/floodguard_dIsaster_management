@@ -1,0 +1,25 @@
+! Permitted custom demo. No Tutorial Model flag is used for Jhang.
+Demo Model == ON
+Solution Scheme == HPC
+Hardware == CPU
+CPU Threads == 2
+GIS Format == SHP
+SHP Projection == ..\model\gis\projection.prj
+Use GDAL == OFF
+TIF Projection == ..\model\grid\dem.tif
+Geometry Control File == ..\model\jhang.tgc
+BC Control File == ..\model\jhang.tbc
+BC Database == ..\bc_dbase\bc_dbase.csv
+Read Materials File == ..\model\materials.csv
+Timestep == 1
+Start Time == 0
+End Time == 0.16666666666667
+Log Folder == log
+Output Folder == ..\results
+Write Check Files == ..\check
+Map Output Format == TIF
+Map Output Data Types == h d V
+Map Output Interval == 20
+Grid Output Cell Size == 30
+Grid Output Origin == Model Origin
+Time Series Output Interval == 10

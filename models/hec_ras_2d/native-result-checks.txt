@@ -1,0 +1,172 @@
+﻿Filename:        tools/hec_ras/tutorial_recovered/Simple_Plans/Results/1c. 400ft nCh wCh.h5
+File Type:       RAS 2025 Result
+Name:            1c. 400ft nCh wCh
+Short ID:        January 1997
+
+Solver:          CPU_Explicit
+Software:        0.1.0.2539-dev
+Computed OK:     True
+Compute Start:   2025-12-29 10:39:25
+Compute Time:    00:00:34.8465822
+
+Profiles:        649
+Sim Start:       1997-01-01 00:00:00
+Sim End:         1997-01-05 12:00:00
+Output Blocks:   1
+  Base Output (649 profiles)
+
+=== Plan ===
+Filename:        tools/hec_ras/tutorial_recovered/Simple_Plans/Results/1c. 400ft nCh wCh.h5
+File Type:       RAS 2025 Plan
+File Version:    1.0-dev
+Name:            1c. 400ft nCh wCh
+Short ID:        January 1997
+Embedded in:     Result file
+Project:         (none)
+Geometry:        (unassociated)
+Boundary Cond.:  (unassociated)
+
+Solver:          CPU
+Equation Set:    DWE
+Time Stepping:   Explicit
+Use FBF:         True
+Use Advection:   True
+Use Diffusion:   False
+Core Count:      8
+
+Time Window:     BoundaryCondition
+Start:           1997-01-01 00:00:00
+End:             1997-01-05 12:00:00
+Compute Step:    00:01:00
+Output Interval: 00:10:00
+Profiles:        649
+
+=== Geometry ===
+Filename:   tools/hec_ras/tutorial_recovered/Simple_Plans/Results/1c. 400ft nCh wCh.h5
+File Type:  RAS 2025 Geometry
+File Version: 1.0-dev
+Name:       1c. 400ft nCh wCh
+Description: (none)
+Projection: (unknown)
+Layers:     4
+  Flow Areas (2D)         1
+  Opening Properties      0
+  Barrel Properties       0
+  Culvert Barrels         0
+Topology:
+  Regions                 3
+  Arcs                    6
+  Nodes                   4
+  Region Control Points   3
+Property Tables: 1 flow area(s)
+  Mesh: processed
+      Software Version: 0.1.0.2539-dev
+      Signature Version: 0.1.0 (Nov 2025)
+      Mesh: 512 cells, 1011 faces, hash -1503050587
+      Computed (UTC): 2025-12-29T10:39:25.5800541 in 0.17s
+      Terrain Signature: Terrain (1 inputs)
+        [0] USGS_Original (Raster File)
+            File: Terrain.USGS_Original.tif
+            Size: 88577492 bytes
+            Modified (UTC): 2025-11-02T01:44:17.1424597
+            Hash: 85B43F9F94ECF8B0
+
+=== Boundary Condition ===
+Filename:     tools/hec_ras/tutorial_recovered/Simple_Plans/Results/1c. 400ft nCh wCh.h5
+File Type:    RAS 2025 Boundary Condition
+File Version: 1.0-dev
+Name:         January 1997 Event
+Embedded in:  Result file
+Project:      (none)
+
+Start:        1997-01-01 00:00:00
+End:          1997-01-05 12:00:00
+Duration:     4.12:00:00
+
+BC Lines:     2
+Filename:        tools/hec_ras/tutorial_recovered/Simple_Plans/Results/2a. 200ft wCh1.h5
+File Type:       RAS 2025 Result
+Name:            2a. 200ft wCh1
+Short ID:        January 1997
+
+Solver:          CPU_Explicit
+Software:        0.1.0.2539-dev
+Computed OK:     True
+Compute Start:   2025-12-29 10:39:27
+Compute Time:    00:01:47.4096679
+
+Profiles:        649
+Sim Start:       1997-01-01 00:00:00
+Sim End:         1997-01-05 12:00:00
+Output Blocks:   1
+  Base Output (649 profiles)
+
+=== Plan ===
+Filename:        tools/hec_ras/tutorial_recovered/Simple_Plans/Results/2a. 200ft wCh1.h5
+File Type:       RAS 2025 Plan
+File Version:    1.0-dev
+Name:            2a. 200ft wCh1
+Short ID:        January 1997
+Embedded in:     Result file
+Project:         (none)
+Geometry:        (unassociated)
+Boundary Cond.:  (unassociated)
+
+Solver:          CPU
+Equation Set:    DWE
+Time Stepping:   Explicit
+Use FBF:         True
+Use Advection:   True
+Use Diffusion:   False
+Core Count:      8
+
+Time Window:     BoundaryCondition
+Start:           1997-01-01 00:00:00
+End:             1997-01-05 12:00:00
+Compute Step:    00:01:00
+Output Interval: 00:10:00
+Profiles:        649
+
+=== Geometry ===
+Filename:   tools/hec_ras/tutorial_recovered/Simple_Plans/Results/2a. 200ft wCh1.h5
+File Type:  RAS 2025 Geometry
+File Version: 1.0-dev
+Name:       2a. 200ft wCh1
+Description: (none)
+Projection: (unknown)
+Layers:     4
+  Flow Areas (2D)         1
+  Opening Properties      0
+  Barrel Properties       0
+  Culvert Barrels         0
+Topology:
+  Regions                 3
+  Arcs                    6
+  Nodes                   4
+  Region Control Points   3
+Property Tables: 1 flow area(s)
+  Mesh: processed
+      Software Version: 0.1.0.2539-dev
+      Signature Version: 0.1.0 (Nov 2025)
+      Mesh: 1718 cells, 3377 faces, hash 1868201087
+      Computed (UTC): 2025-12-29T10:39:27.4770455 in 0.449s
+      Terrain Signature: Terrain (1 inputs)
+        [0] USGS_Original (Raster File)
+            File: Terrain.USGS_Original.tif
+            Size: 88577492 bytes
+            Modified (UTC): 2025-11-02T01:44:17.1424597
+            Hash: 85B43F9F94ECF8B0
+
+=== Boundary Condition ===
+Filename:     tools/hec_ras/tutorial_recovered/Simple_Plans/Results/2a. 200ft wCh1.h5
+File Type:    RAS 2025 Boundary Condition
+File Version: 1.0-dev
+Name:         January 1997 Event
+Embedded in:  Result file
+Project:      (none)
+
+Start:        1997-01-01 00:00:00
+End:          1997-01-05 12:00:00
+Duration:     4.12:00:00
+
+BC Lines:     2

@@ -1,0 +1,90 @@
+[
+  {
+    "id": "seasonal_naive",
+    "family": "seasonal_naive"
+  },
+  {
+    "id": "persistence",
+    "family": "persistence"
+  },
+  {
+    "id": "seasonal_climatology",
+    "family": "seasonal_climatology"
+  },
+  {
+    "id": "ridge_log_correction_1",
+    "family": "ridge",
+    "penalty": 1
+  },
+  {
+    "id": "ridge_log_correction_10",
+    "family": "ridge",
+    "penalty": 10
+  },
+  {
+    "id": "ridge_log_correction_100",
+    "family": "ridge",
+    "penalty": 100
+  },
+  {
+    "id": "ridge_log_correction_1000",
+    "family": "ridge",
+    "penalty": 1000
+  },
+  {
+    "id": "xgb_log_correction_d2_p10_n60",
+    "family": "xgboost",
+    "depth": 2,
+    "penalty": 10,
+    "rounds": 60
+  },
+  {
+    "id": "xgb_log_correction_d2_p10_n160",
+    "family": "xgboost",
+    "depth": 2,
+    "penalty": 10,
+    "rounds": 160
+  },
+  {
+    "id": "xgb_log_correction_d2_p100_n60",
+    "family": "xgboost",
+    "depth": 2,
+    "penalty": 100,
+    "rounds": 60
+  },
+  {
+    "id": "xgb_log_correction_d2_p100_n160",
+    "family": "xgboost",
+    "depth": 2,
+    "penalty": 100,
+    "rounds": 160
+  },
+  {
+    "id": "xgb_log_correction_d3_p10_n60",
+    "family": "xgboost",
+    "depth": 3,
+    "penalty": 10,
+    "rounds": 60
+  },
+  {
+    "id": "xgb_log_correction_d3_p10_n160",
+    "family": "xgboost",
+    "depth": 3,
+    "penalty": 10,
+    "rounds": 160
+  },
+  {
+    "id": "xgb_log_correction_d3_p100_n60",
+    "family": "xgboost",
+    "depth": 3,
+    "penalty": 100,
+    "rounds": 60
+  },
+  {
+    "id": "xgb_log_correction_d3_p100_n160",
+    "family": "xgboost",
+    "depth": 3,
+    "penalty": 100,
+    "rounds": 160
+  }
+]

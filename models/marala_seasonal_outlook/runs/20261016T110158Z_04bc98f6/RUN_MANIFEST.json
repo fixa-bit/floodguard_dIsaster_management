@@ -1,0 +1,142 @@
+{
+  "run_id": "20261016T110158Z_04bc98f6",
+  "files": {
+    "artifacts/daily_forecast.csv": {
+      "sha256": "c45807a820e5ad172536e223b51837d4f1f215cc3ab54abf6b8d589749270f82",
+      "bytes": 12516
+    },
+    "artifacts/evaluation_models/best_learned/booster.json": {
+      "sha256": "b7590fce61f1558233ac1491031b09569661c387d607588d347059938ffea74c",
+      "bytes": 189814
+    },
+    "artifacts/evaluation_models/best_learned/model.json": {
+      "sha256": "eed59ee43c2470764a3075ad9b245ba5b5aca65284435d3597f115fe1f467e86",
+      "bytes": 722
+    },
+    "artifacts/evaluation_models/champion/model.json": {
+      "sha256": "9b91eacb6e4cbd23a142af795f367d14730c09c1904488673b2d1069ffd9b00e",
+      "bytes": 773
+    },
+    "artifacts/evaluation_models/persistence/model.json": {
+      "sha256": "4d084a6ad3ae0f03317fa726fb0f761ebeed17f49d94d58cc665a421d8a9c4f1",
+      "bytes": 561
+    },
+    "artifacts/evaluation_models/seasonal_climatology/model.json": {
+      "sha256": "9b91eacb6e4cbd23a142af795f367d14730c09c1904488673b2d1069ffd9b00e",
+      "bytes": 773
+    },
+    "artifacts/evaluation_models/seasonal_naive/model.json": {
+      "sha256": "39e6a639feab5699d646652513923652b0c354907382a5c82ed05f3bf43301bd",
+      "bytes": 567
+    },
+    "artifacts/holdout_predictions_2018_2021.csv": {
+      "sha256": "e33041cfe8d76006ba0168b9e6841c69d65cc26f7db1f47fb08b248311217340",
+      "bytes": 1561489
+    },
+    "artifacts/model-card.json": {
+      "sha256": "84e7b01257804a9e71a1d39f4cb2e5c9cba0fd4c5b0b5b08db7204964e5451b0",
+      "bytes": 7637
+    },
+    "artifacts/models/best_learned/booster.json": {
+      "sha256": "ca702c98a69d6ff92cf31a45536d47df561928587d5689ce7896078beb596f0d",
+      "bytes": 192079
+    },
+    "artifacts/models/best_learned/model.json": {
+      "sha256": "6d742b1fc0e40cce2b1351a76233e331ecfd215e47c29dbd3c213bac6d2dc25d",
+      "bytes": 723
+    },
+    "artifacts/models/champion/model.json": {
+      "sha256": "eb976e517aafd6176f7a8bfc2c70829fd31381cd38180ef90b06bf6429cb098f",
+      "bytes": 775
+    },
+    "artifacts/monthly_forecast.csv": {
+      "sha256": "2e7c08b7ca88f0168c2e794966c8eceeccda98cd91918966c90cfcbdd780c2bd",
+      "bytes": 596
+    },
+    "artifacts/outlook_365_days.json": {
+      "sha256": "2cb77a0a899f5545b1386e8d783f1cc1eb77cd341a55a862c93374fb311ef1f3",
+      "bytes": 48761
+    },
+    "artifacts/predeclared_candidates.json": {
+      "sha256": "12329fe0d4e85f125b7e6e9ea028f21983b6e40b8d49b30de92ad736b9ebde85",
+      "bytes": 1703
+    },
+    "artifacts/REPORT.md": {
+      "sha256": "82f7e5dd6d0e162bc707d6b35c0ae64647dfdded16885e674a6f26922cafd2e2",
+      "bytes": 1082
+    },
+    "artifacts/selection.json": {
+      "sha256": "36b95673dca2d981d01f5cb78b598436d47f19d8ad5eae02b445587b521ab4e8",
+      "bytes": 5897
+    },
+    "code/models/marala_seasonal_outlook/__init__.py": {
+      "sha256": "509150b23df78d0774d3eaafbcf53564ab44e3ce7cb5758bc92627c1ae09c9a1",
+      "bytes": 87
+    },
+    "code/models/marala_seasonal_outlook/config.json": {
+      "sha256": "05bf986dcf695a1ef3a8ead3ee0c47f79d337570ae25328e77baab3d71f725d3",
+      "bytes": 381
+    },
+    "code/models/marala_seasonal_outlook/experiment.py": {
+      "sha256": "8f1074e64db188f349b411b13b349d5fba179a5f563518790da50e0346e83158",
+      "bytes": 20660
+    },
+    "code/models/marala_seasonal_outlook/README.md": {
+      "sha256": "0ca9558d70e908612aaf15cc8a4888a9ed3c5adf8e62bbf6a006cd6ef3f58486",
+      "bytes": 3013
+    },
+    "code/models/marala_station_forecast/__init__.py": {
+      "sha256": "9983be1d988768dc59afdf6ebb60158ae3c26c32cea0a4a4f27e52ab114b349b",
+      "bytes": 63
+    },
+    "code/models/marala_station_forecast/archive.py": {
+      "sha256": "4f0ec20f7587949c540ace8fa78078091f0022f6805261e86c91e06a2c623c77",
+      "bytes": 6925
+    },
+    "code/models/marala_station_forecast/config.json": {
+      "sha256": "fcc5c97a042da83f09295494e7173cd3373cf3ba33bb81bf059aecc3bad63e75",
+      "bytes": 458
+    },
+    "code/models/marala_station_forecast/core.py": {
+      "sha256": "965006db38cf933786dfdf82791f257462407125037909ca947a7fd846e26cbb",
+      "bytes": 11989
+    },
+    "code/models/marala_station_forecast/predict.py": {
+      "sha256": "c70951358ffd7486743fcc9a7dda345a87e2693ecfddcea8b365b856c9f1e080",
+      "bytes": 2377
+    },
+    "code/models/marala_station_forecast/README.md": {
+      "sha256": "8be1cdda6a585b9afebb4866b19e396904310bba5065fcf4f9ad849d1760435f",
+      "bytes": 3622
+    },
+    "code/models/marala_station_forecast/train.py": {
+      "sha256": "4479d5c7e14f6ae4713edb3a959a41641b50eecb3e5c158b5fd176f7554bded2",
+      "bytes": 14465
+    },
+    "code/models/marala_station_forecast/validate.py": {
+      "sha256": "d2f9179c224d7836b4b5a59ecb3fda0b60e80225daec24a6c59055b91b7746eb",
+      "bytes": 2860
+    },
+    "code/requirements.txt": {
+      "sha256": "57096542cd308dca1c1099574773d02e5ee08bd487fcf97ad6d2f460f132f42f",
+      "bytes": 30
+    },
+    "data/daily_source_ledger.csv": {
+      "sha256": "6b2097027d56d2c969b95dcb50743524d0fe149c1383283dcad072c43f9d9630",
+      "bytes": 539505
+    },
+    "data/download_manifest_20261015.json": {
+      "sha256": "6e9f2b6ac47154f6ca8c59ef7fd33693971788a521af13fd188a9fa88432a826",
+      "bytes": 522
+    },
+    "data/provider_daily_20261015.json": {
+      "sha256": "0dc2fdb80d7d750b3aa4ed017f6c51b2a218a82886e896d1dd35d375b2b9ed8a",
+      "bytes": 304443
+    },
+    "data/training_rows.csv": {
+      "sha256": "6b6386368f6b5cc8fa53605c0bd78dbb809a2caf657e778b4614e11d6f29aa14",
+      "bytes": 40635101
+    }
+  },
+  "policy": "Do not edit sealed runs. New inputs or experiments require a new run."
+}

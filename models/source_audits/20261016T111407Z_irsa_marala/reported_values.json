@@ -1,0 +1,242 @@
+[
+  {
+    "date": "2024-10-16",
+    "inflow_cusecs": 10100.0,
+    "outflow_cusecs": 3500.0,
+    "inflow_cumecs": 286.0001505792,
+    "outflow_cumecs": 99.10896307200001,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2024-11-15",
+    "inflow_cusecs": 8440.0,
+    "outflow_cusecs": 3000.0,
+    "inflow_cumecs": 238.99418523648,
+    "outflow_cumecs": 84.950539776,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2024-12-15",
+    "inflow_cusecs": 4566.0,
+    "outflow_cusecs": 1522.0,
+    "inflow_cumecs": 129.29472153907201,
+    "outflow_cumecs": 43.098240513024,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-01-15",
+    "inflow_cusecs": 5533.0,
+    "outflow_cusecs": 5533.0,
+    "inflow_cumecs": 156.677112193536,
+    "outflow_cumecs": 156.677112193536,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-02-15",
+    "inflow_cusecs": 5041.0,
+    "outflow_cusecs": 0.0,
+    "inflow_cumecs": 142.745223670272,
+    "outflow_cumecs": 0.0,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-03-15",
+    "inflow_cusecs": 10771.0,
+    "outflow_cusecs": 6071.0,
+    "inflow_cumecs": 305.000754642432,
+    "outflow_cumecs": 171.911575660032,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-04-15",
+    "inflow_cusecs": 12571.0,
+    "outflow_cusecs": 6071.0,
+    "inflow_cumecs": 355.971078508032,
+    "outflow_cumecs": 171.911575660032,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-05-15",
+    "inflow_cusecs": 22884.0,
+    "outflow_cusecs": 3484.0,
+    "inflow_cumecs": 648.002717411328,
+    "outflow_cumecs": 98.655893526528,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-06-15",
+    "inflow_cusecs": 59401.0,
+    "outflow_cusecs": 27571.0,
+    "inflow_cumecs": 1682.049004411392,
+    "outflow_cumecs": 780.723777388032,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-07-15",
+    "inflow_cusecs": 49622.0,
+    "outflow_cusecs": 22872.0,
+    "inflow_cumecs": 1405.138561588224,
+    "outflow_cumecs": 647.662915252224,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-08-15",
+    "inflow_cusecs": 170156.0,
+    "outflow_cusecs": 140556.0,
+    "inflow_cumecs": 4818.281348708352,
+    "outflow_cumecs": 3980.102689585152,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-09-15",
+    "inflow_cusecs": 60376.0,
+    "outflow_cusecs": 57376.0,
+    "inflow_cumecs": 1709.657929838592,
+    "outflow_cumecs": 1624.7073900625921,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-10-15",
+    "inflow_cusecs": 17726.0,
+    "outflow_cusecs": 10326.0,
+    "inflow_cumecs": 501.944422689792,
+    "outflow_cumecs": 292.399757908992,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-11-15",
+    "inflow_cusecs": 8092.0,
+    "outflow_cusecs": 1792.0,
+    "inflow_cumecs": 229.139922622464,
+    "outflow_cumecs": 50.743789092864,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2025-12-15",
+    "inflow_cusecs": 1982.0,
+    "outflow_cusecs": 0.0,
+    "inflow_cumecs": 56.123989945344,
+    "outflow_cumecs": 0.0,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-01-15",
+    "inflow_cusecs": 7346.0,
+    "outflow_cusecs": 7346.0,
+    "inflow_cumecs": 208.015555064832,
+    "outflow_cumecs": 208.015555064832,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-02-15",
+    "inflow_cusecs": 3576.0,
+    "outflow_cusecs": 0.0,
+    "inflow_cumecs": 101.26104341299201,
+    "outflow_cumecs": 0.0,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-03-15",
+    "inflow_cusecs": 14999.0,
+    "outflow_cusecs": 8099.0,
+    "inflow_cumecs": 424.724382033408,
+    "outflow_cumecs": 229.338140548608,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-04-15",
+    "inflow_cusecs": 14600.0,
+    "outflow_cusecs": 3000.0,
+    "inflow_cumecs": 413.4259602432,
+    "outflow_cumecs": 84.950539776,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-05-15",
+    "inflow_cusecs": 22709.0,
+    "outflow_cusecs": 8159.0,
+    "inflow_cumecs": 643.047269257728,
+    "outflow_cumecs": 231.037151344128,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-06-15",
+    "inflow_cusecs": 29760.0,
+    "outflow_cusecs": 7000.0,
+    "inflow_cumecs": 842.7093545779201,
+    "outflow_cumecs": 198.21792614400002,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-07-15",
+    "inflow_cusecs": 54519.0,
+    "outflow_cusecs": 25246.0,
+    "inflow_cumecs": 1543.806159349248,
+    "outflow_cumecs": 714.887109061632,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-08-15",
+    "inflow_cusecs": 77626.0,
+    "outflow_cusecs": 57376.0,
+    "inflow_cumecs": 2198.123533550592,
+    "outflow_cumecs": 1624.7073900625921,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  },
+  {
+    "date": "2026-09-15",
+    "inflow_cusecs": 41662.0,
+    "outflow_cusecs": 14512.0,
+    "inflow_cumecs": 1179.736462715904,
+    "outflow_cumecs": 410.934077743104,
+    "measurement_kind": "IRSA_reported_discharge_time_basis_unconfirmed",
+    "observed_at": null,
+    "time_basis": "Report date verified; exact observation time and daily-mean definition not specified for the Marala card"
+  }
+]

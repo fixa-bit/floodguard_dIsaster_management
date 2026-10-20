@@ -1,0 +1,35 @@
+.ndma-flow-facts {display:flex;flex-wrap:wrap;gap:9px;margin:-10px 0 22px;font-size:11px;color:#a5c8d0}
+.ndma-flow-facts span,.ndma-flow-facts strong {padding:8px 10px;border:1px solid #355059;border-radius:5px;font-weight:400}
+.ndma-flow-facts strong {color:#e7c58d;border-color:#6b583b}
+.ndma-flow .storm-replay-layout {grid-template-columns:minmax(0,1fr) 320px}
+.ndma-flow-stage {min-height:660px}
+.ndma-flow .storm-replay-map-title strong {font-size:28px}
+.ndma-flow .storm-replay-map-tools {top:150px}
+.ndma-flow-time {position:absolute;right:18px;bottom:120px;display:flex;flex-direction:column;gap:7px;background:#0c252ee8;padding:16px 20px;border:1px solid #365564;border-radius:6px;pointer-events:none}
+.ndma-flow-time span {font-size:10px;color:#79ddc6;letter-spacing:2px}
+.ndma-flow-time strong {font-size:32px;color:#e4f5fa}
+.ndma-flow-time small {font-size:11px;color:#a4c2cd}
+.ndma-flow-key {position:absolute;left:18px;right:18px;bottom:35px;display:flex;flex-wrap:wrap;gap:12px 18px;padding:14px;background:#0c252ef2;border:1px solid #355564;border-radius:5px;font-size:10px;color:#c5dce1;pointer-events:none}
+.ndma-flow-key span {display:flex;align-items:center;gap:7px}
+.ndma-flow-key b {background:#ffd08b;width:9px;height:9px;border-radius:50%}
+.ndma-flow-key b.ndma-outlet {background:#8ce3b5}
+.ndma-flow .storm-replay-method code {overflow-wrap:anywhere;font-size:10px}
+.ndma-flow-stage {min-height:740px}
+.ndma-flow-depth i {width:65px;height:8px;background:linear-gradient(90deg,#309fd2,#1765af)}
+.ndma-flow-inspector {padding:26px 22px}
+.ndma-flow-metrics {display:grid;grid-template-columns:1fr 1fr;gap:18px 10px;padding:20px 0;margin:0;border-bottom:1px solid #314c58}
+.ndma-flow-metrics div {min-width:0}
+.ndma-flow dt {color:#a5c5d0;font-size:10px;line-height:1.6}
+.ndma-flow-metrics dd {margin:7px 0 0;color:#8fddf7;font-size:27px}
+.ndma-flow-metrics small {font-size:12px}
+.ndma-flow-cell {margin-top:24px;padding:17px;background:#16353b;border:1px solid #365b61;border-radius:6px}
+.ndma-flow-cell h3 {font-size:13px;color:#a9ecdb;margin:0 0 12px}
+.ndma-flow-cell p,.ndma-flow-note {font-size:11px;color:#a4bec5;line-height:1.9}
+.ndma-flow-cell dl {margin:0;display:flex;flex-direction:column;gap:10px}
+.ndma-flow-cell dl>div {display:flex;justify-content:space-between;gap:12px}
+.ndma-flow-cell dd {font-size:11px;color:#d5ecee;margin:0;text-align:right}
+.ndma-flow-note {margin-top:20px}
+.ndma-flow .storm-replay-method li {font-size:12px;line-height:1.8;color:#a6bec5}
+.ndma-flow a {color:#9edbdc}
+@media(max-width:1100px){.ndma-flow .storm-replay-layout{grid-template-columns:1fr}.ndma-flow-inspector{display:block}.ndma-flow-metrics{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:600px){.ndma-flow-stage{min-height:650px}.ndma-flow .storm-replay-map-title strong{font-size:22px}.ndma-flow-time{bottom:155px}.ndma-flow-key{left:10px;right:10px}.ndma-flow-metrics{grid-template-columns:1fr 1fr}}

@@ -1,6 +1,10 @@
 Terminal 1 
+
+
+
 cd D:\Projects\disaster_management
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+
 
 terminal 2
 

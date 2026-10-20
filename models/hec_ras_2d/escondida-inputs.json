@@ -1,0 +1,58 @@
+{
+  "source": "USACE HEC-RAS 2025 sample: Escondida Example Project",
+  "sample_command": "ras sample pull 'Escondida Example Project' tools/hec_ras/samples/escondida",
+  "source_files_sha256": {
+    "Escondida Example Project.ras": "02e21e49145e1434ed5c14c2916b6b548e26ef1297bacb0b052b90f04b22b3a4",
+    "Escondida Example Project.thumbnail.png": "fa57f33ea2f2fbc5ef6a1dbc5a3e2a246a2da70505f34a53cb8c43c595aa46d9",
+    "Escondida Example Project.vis": "fab4563735ff768ebb579bac70b5089e6eaf4d3573b2e453fc10adcfba822c9a",
+    "Boundary Conditions/Boundary Condition.h5": "01079447ae20f707204776fee856d96901fe2849c95829eb97c13f9c570f1bc5",
+    "Geometries/Base Cell Size.h5": "d04dfa593b7eed0865316da6775a0d6392ae6d5570d457a7cd425b23a43255f6",
+    "Geometries/Half Cell Size.h5": "8a382d69c9760fe1b08f62a9f6ddd054ef445135d49de2b4cb68667a9b8ed80a",
+    "Plans/Base Cell Size.h5": "ffd2cb11feed2a58178ab41987817aa91201262833f2d33ad9ebdcf1f73f85af",
+    "Plans/Half Cell Size.h5": "d6444bd2fcba19c8c11f15550f96df46d0b79bd69ef8695833c7e3300f69542a",
+    "Results/Base Cell Size.h5": "fa9040ca93b0ddad7afca3cd8194ff4057b573ddbdc436cae25509ba00f6b82b",
+    "Results/Half Cell Size.h5": "fdab005ec176c296602e8b72212138396b6049a3406b6d146ccdc633b9799be8",
+    "Surface Layers/N Values.h5": "3a9d08f5bf62051a9c34f584b3c514f01567ffd00587adb1547be41725345849",
+    "Terrains/Terrain.EcondidaClipped.tif": "5d383f5cc2abd12a0d48b6eb9f98cf67ecb51220f36c4a08326eac7150af7b4e",
+    "Terrains/Terrain.h5": "8a3a2a463a699f819366a0ecba4225a78ec62e547e9c5ddf268179a3fcab9d9c"
+  },
+  "cases": [
+    {
+      "id": "mainstem",
+      "parameters": {
+        "branch_cfs": 0.0,
+        "rain_in_per_hr": 0.0
+      },
+      "main_flow_table_cfs": "unchanged from official sample (300\u20132800 cfs)",
+      "run_dir": "tools/hec_ras/runs/escondida_mainstem",
+      "boundary_condition_sha256": "4782bd178d43da156997332b86d94b6e7e60b12aacb229082c5e51d26de96b4b",
+      "created_at_utc": "2026-10-19T04:27:29.277140+00:00",
+      "project_association_sha256": "3bd51573f64cc34f1f92362f975106d3d1248b63d74387648285257bfba11d24"
+    },
+    {
+      "id": "tributary",
+      "parameters": {
+        "branch_cfs": 50.0,
+        "rain_in_per_hr": 0.0
+      },
+      "main_flow_table_cfs": "unchanged from official sample (300\u20132800 cfs)",
+      "run_dir": "tools/hec_ras/runs/escondida_tributary",
+      "boundary_condition_sha256": "3872130bfd002b30bda1f1f87f1b03308586fef9dd02dbdaadf90c4cd3e9d197",
+      "created_at_utc": "2026-10-19T04:27:30.429384+00:00",
+      "project_association_sha256": "3bd51573f64cc34f1f92362f975106d3d1248b63d74387648285257bfba11d24"
+    },
+    {
+      "id": "tributary_rain",
+      "parameters": {
+        "branch_cfs": 50.0,
+        "rain_in_per_hr": 0.02
+      },
+      "main_flow_table_cfs": "unchanged from official sample (300\u20132800 cfs)",
+      "run_dir": "tools/hec_ras/runs/escondida_tributary_rain",
+      "boundary_condition_sha256": "4a03e632d9e2ee10d4e987eea8e5d14be6fbf89b683830e1e0c0b59acd09a172",
+      "created_at_utc": "2026-10-19T04:27:31.510552+00:00",
+      "project_association_sha256": "3bd51573f64cc34f1f92362f975106d3d1248b63d74387648285257bfba11d24"
+    }
+  ],
+  "warning": "Hypothetical, uncalibrated demonstration inputs; not a forecast"
+}

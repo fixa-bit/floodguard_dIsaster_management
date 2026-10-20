@@ -1,6 +1,6 @@
 # Simulation: assessment of tributaries and branched flood spreading
 
-Reviewed 2026-10-15 following the user's question about the missing small branches in Storm replay. **Status: assessment and proposed next stage; branch-aware inundation has not been implemented.** Existing animation and exposure totals remain based on their documented hypothetical river buffers.
+Reviewed 2026-10-15 following the user's question about the missing small branches in Storm replay. **Original assessment below; a separate [small Jhang terrain-guided prototype](simulation-jhang-terrain-guided-prototype.md) has since been implemented.** The original district replay and its exposure totals remain based on their documented hypothetical river buffers. The new local mode uses terrain-connected fill; it is not validated dynamic hydraulic routing.
 
 ## Verified cause in this repository
 

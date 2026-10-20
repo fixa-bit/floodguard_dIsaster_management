@@ -1,0 +1,77 @@
+import assert from "node:assert/strict";
+import { mkdir } from "node:fs/promises";
+import { chromium } from "playwright";
+
+const browser = await chromium.launch({executablePath:process.env.EDGE_PATH ?? "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",headless:true});
+let page;
+try {
+  page = await browser.newPage({viewport:{width:1600,height:1100}});
+  const errors=[];
+  page.setDefaultTimeout(60000);
+  page.on("pageerror",e=>errors.push(e.message));
+  await page.route("**/api/v1/**",route=>new URL(route.request().url()).pathname.endsWith("/simulation/monitoring/stations") ? route.fulfill({json:[]}) : route.fulfill({status:503,json:{error:{message:"Offline UI verification"}}}));
+  if (process.env.LIVE_IMAGERY !== "1") await page.route("**/World_Imagery/MapServer/tile/**",route=>route.abort());
+  let failAssets = false;
+  await page.route("**/river-channel-flow/frames.bin.gz",route=>failAssets ? route.fulfill({status:503,body:"Unavailable"}) : route.continue());
+  await page.goto(process.env.FRONTEND_URL ?? "http://127.0.0.1:3000/",{waitUntil:"domcontentloaded"});
+  await page.locator(".sidebar nav").getByRole("button",{name:"Simulation",exact:true}).click();
+  await page.getByRole("tab",{name:"Storm replay",exact:true}).click();
+  await page.getByRole("button",{name:"River hydraulic flow",exact:false}).click({force:true});
+  const root=page.locator(".ndma-flow"), stage=root.locator(".ndma-flow-stage"), canvas=root.locator("canvas.storm-replay-currents");
+  await page.waitForFunction(()=>document.querySelector(".ndma-flow .storm-replay-map")?.dataset.ready==="true");
+  await stage.scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>Number(document.querySelector(".ndma-flow canvas.storm-replay-currents")?.dataset.wetCells)>0);
+  await page.waitForTimeout(700);
+  const mapError = await root.locator(".storm-replay-map").getAttribute("data-last-error");
+  assert.equal(await root.getByRole("button",{name:"Play river flood",exact:true}).isEnabled(),true,mapError ?? "Playback should be available");
+  const pixels=()=>canvas.evaluate(el=>{const a=el.getContext("2d").getImageData(0,0,el.width,el.height).data;let hash=2166136261;for(let i=0;i<a.length;i+=19)hash=Math.imul(hash^a[i],16777619);return hash>>>0;});
+  await mkdir("screenshots",{recursive:true});
+  await root.locator(".storm-replay-layout").screenshot({path:"screenshots/river-channel-flow-initial.png"});
+  const start=await pixels();
+  await root.getByRole("button",{name:"Play river flood",exact:true}).click();
+  await page.waitForFunction(()=>Number(document.querySelector(".ndma-flow canvas.storm-replay-currents")?.dataset.frames)>6);
+  assert.notEqual(await pixels(),start,"Computed velocities must move actual water pixels");
+  await root.getByRole("button",{name:"Pause river flood",exact:true}).click();
+  const paused=await pixels();await page.waitForTimeout(250);assert.equal(await pixels(),paused,"Pause freezes the water animation");
+  const slider=root.getByRole("slider",{name:"River flood elapsed time"});
+  await slider.fill("12");
+  await page.waitForFunction(()=>document.querySelector(".ndma-flow")?.dataset.frame==="12");
+  assert.notEqual(await pixels(),paused,"Seeking displays a different computed depth grid");
+  const mapBox=await root.locator(".storm-replay-map").boundingBox();
+  await page.mouse.click(mapBox.x+mapBox.width*.56,mapBox.y+mapBox.height*.55);
+  await page.waitForFunction(()=>document.querySelector(".ndma-flow-cell")?.textContent.includes("Computed depth"));
+  await root.getByRole("button",{name:"Flow trails",exact:true}).click();
+  assert.equal(await root.getByRole("button",{name:"Flow trails",exact:true}).getAttribute("aria-pressed"),"false");
+  await root.getByRole("button",{name:"Flow trails",exact:true}).click();
+  await mkdir("screenshots",{recursive:true});
+  await root.locator(".storm-replay-layout").screenshot({path:"screenshots/river-channel-flow.png"});
+  await root.getByRole("button",{name:"Reset river flood",exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector(".ndma-flow canvas.storm-replay-currents")?.dataset.frame==="0" && Number(document.querySelector(".ndma-flow canvas.storm-replay-currents")?.dataset.wetCells)>0);
+  await slider.fill("24");
+  await root.getByRole("button",{name:"Play river flood",exact:true}).click();
+  await page.waitForFunction(()=>Number(document.querySelector(".ndma-flow")?.dataset.frame)<24);
+  await root.getByRole("button",{name:"Pause river flood",exact:true}).click();
+  await page.emulateMedia({reducedMotion:"reduce"});
+  await page.waitForFunction(()=>document.querySelector(".ndma-flow .storm-replay-play")?.disabled);
+  await page.emulateMedia({reducedMotion:"no-preference"});
+  await page.setViewportSize({width:560,height:900});
+  await stage.scrollIntoViewIfNeeded();
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true,"Mobile must not overflow horizontally");
+  failAssets=true;
+  await page.getByRole("button",{name:"District storm replay",exact:false}).click();
+  assert(await page.locator("#storm-replay-title").isVisible(),"Original replay still available");
+  await page.getByRole("button",{name:"River hydraulic flow",exact:false}).click();
+  await root.getByText("frames.bin.gz returned HTTP 503",{exact:true}).waitFor();
+  failAssets=false;
+  await root.getByRole("button",{name:"Retry terrain flow",exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector(".ndma-flow .storm-replay-map")?.dataset.ready==="true");
+  assert.deepEqual(errors,[]);
+  console.log("PASS: initially wet river, computed water pixels, pause, seek, inspection, layers, reset/restart, reduced motion, mobile, original replay, retry");
+} catch (error) {
+  if (page) {
+    await mkdir("screenshots",{recursive:true});
+    await page.screenshot({path:"screenshots/river-channel-flow-error.png",fullPage:true});
+    console.error((await page.locator("body").innerText()).slice(-2200));
+  }
+  throw error;
+} finally {await browser.close();}

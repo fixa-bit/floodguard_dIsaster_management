@@ -1,0 +1,528 @@
+{
+  "study": "Escondida Example Project \u00b7 New Mexico, USA",
+  "source_url": "https://s3.hecdev.net/ras-public-examples/Escondida%20Example%20Project-2024-Sep-29%2016-06-28.json",
+  "source_provenance": "Official USACE HEC-RAS 2025 sample, copied locally; input SHA-256 in models/hec_ras_2d/escondida-inputs.json",
+  "solver": "HEC-RAS 2025 Beta 0.1.0.5048, CPU implicit diffusion-wave",
+  "status": "computed",
+  "terrain_resolution_ft": 5,
+  "cell_count": 906,
+  "minimum_shown_depth_m": 0.1,
+  "display_end_hours": 48,
+  "main_flow_min_cfs": 300,
+  "main_flow_max_cfs": 2800,
+  "scenarios": [
+    {
+      "id": "mainstem",
+      "name": "Main river only",
+      "branch_cfs": 0.0,
+      "rain_in_per_hr": 0.0,
+      "result_sha256": "86ef09d6b84c62cfc08cd8e8b063f5e7849609f31f020927a7d58ccab6123ee3",
+      "frames": [
+        {
+          "hour": 0,
+          "image": "escondida/mainstem/depth-00.png",
+          "wet_area_km2": 0.0,
+          "max_depth_m": 0.0
+        },
+        {
+          "hour": 2,
+          "image": "escondida/mainstem/depth-02.png",
+          "wet_area_km2": 0.04776,
+          "max_depth_m": 1.131
+        },
+        {
+          "hour": 4,
+          "image": "escondida/mainstem/depth-04.png",
+          "wet_area_km2": 0.04776,
+          "max_depth_m": 1.131
+        },
+        {
+          "hour": 6,
+          "image": "escondida/mainstem/depth-06.png",
+          "wet_area_km2": 0.04776,
+          "max_depth_m": 1.131
+        },
+        {
+          "hour": 8,
+          "image": "escondida/mainstem/depth-08.png",
+          "wet_area_km2": 0.04776,
+          "max_depth_m": 1.131
+        },
+        {
+          "hour": 10,
+          "image": "escondida/mainstem/depth-10.png",
+          "wet_area_km2": 0.04776,
+          "max_depth_m": 1.131
+        },
+        {
+          "hour": 12,
+          "image": "escondida/mainstem/depth-12.png",
+          "wet_area_km2": 0.04776,
+          "max_depth_m": 1.131
+        },
+        {
+          "hour": 14,
+          "image": "escondida/mainstem/depth-14.png",
+          "wet_area_km2": 0.05347,
+          "max_depth_m": 1.429
+        },
+        {
+          "hour": 16,
+          "image": "escondida/mainstem/depth-16.png",
+          "wet_area_km2": 0.05923,
+          "max_depth_m": 1.711
+        },
+        {
+          "hour": 18,
+          "image": "escondida/mainstem/depth-18.png",
+          "wet_area_km2": 0.06201,
+          "max_depth_m": 1.938
+        },
+        {
+          "hour": 20,
+          "image": "escondida/mainstem/depth-20.png",
+          "wet_area_km2": 0.06371,
+          "max_depth_m": 2.133
+        },
+        {
+          "hour": 22,
+          "image": "escondida/mainstem/depth-22.png",
+          "wet_area_km2": 0.06532,
+          "max_depth_m": 2.309
+        },
+        {
+          "hour": 24,
+          "image": "escondida/mainstem/depth-24.png",
+          "wet_area_km2": 0.06682,
+          "max_depth_m": 2.475
+        },
+        {
+          "hour": 26,
+          "image": "escondida/mainstem/depth-26.png",
+          "wet_area_km2": 0.06644,
+          "max_depth_m": 2.427
+        },
+        {
+          "hour": 28,
+          "image": "escondida/mainstem/depth-28.png",
+          "wet_area_km2": 0.06573,
+          "max_depth_m": 2.358
+        },
+        {
+          "hour": 30,
+          "image": "escondida/mainstem/depth-30.png",
+          "wet_area_km2": 0.0651,
+          "max_depth_m": 2.285
+        },
+        {
+          "hour": 32,
+          "image": "escondida/mainstem/depth-32.png",
+          "wet_area_km2": 0.06443,
+          "max_depth_m": 2.21
+        },
+        {
+          "hour": 34,
+          "image": "escondida/mainstem/depth-34.png",
+          "wet_area_km2": 0.06372,
+          "max_depth_m": 2.132
+        },
+        {
+          "hour": 36,
+          "image": "escondida/mainstem/depth-36.png",
+          "wet_area_km2": 0.06295,
+          "max_depth_m": 2.049
+        },
+        {
+          "hour": 38,
+          "image": "escondida/mainstem/depth-38.png",
+          "wet_area_km2": 0.06222,
+          "max_depth_m": 1.964
+        },
+        {
+          "hour": 40,
+          "image": "escondida/mainstem/depth-40.png",
+          "wet_area_km2": 0.06131,
+          "max_depth_m": 1.873
+        },
+        {
+          "hour": 42,
+          "image": "escondida/mainstem/depth-42.png",
+          "wet_area_km2": 0.06021,
+          "max_depth_m": 1.776
+        },
+        {
+          "hour": 44,
+          "image": "escondida/mainstem/depth-44.png",
+          "wet_area_km2": 0.05857,
+          "max_depth_m": 1.672
+        },
+        {
+          "hour": 46,
+          "image": "escondida/mainstem/depth-46.png",
+          "wet_area_km2": 0.05604,
+          "max_depth_m": 1.557
+        },
+        {
+          "hour": 48,
+          "image": "escondida/mainstem/depth-48.png",
+          "wet_area_km2": 0.05356,
+          "max_depth_m": 1.428
+        }
+      ]
+    },
+    {
+      "id": "tributary",
+      "name": "Main river + branch",
+      "branch_cfs": 50.0,
+      "rain_in_per_hr": 0.0,
+      "result_sha256": "27401058dcb3376628498b915e972f747c224a090a2efa4f856ac43f5f87a742",
+      "frames": [
+        {
+          "hour": 0,
+          "image": "escondida/tributary/depth-00.png",
+          "wet_area_km2": 0.0,
+          "max_depth_m": 0.0
+        },
+        {
+          "hour": 2,
+          "image": "escondida/tributary/depth-02.png",
+          "wet_area_km2": 0.05183,
+          "max_depth_m": 1.182
+        },
+        {
+          "hour": 4,
+          "image": "escondida/tributary/depth-04.png",
+          "wet_area_km2": 0.05183,
+          "max_depth_m": 1.183
+        },
+        {
+          "hour": 6,
+          "image": "escondida/tributary/depth-06.png",
+          "wet_area_km2": 0.05183,
+          "max_depth_m": 1.183
+        },
+        {
+          "hour": 8,
+          "image": "escondida/tributary/depth-08.png",
+          "wet_area_km2": 0.05183,
+          "max_depth_m": 1.183
+        },
+        {
+          "hour": 10,
+          "image": "escondida/tributary/depth-10.png",
+          "wet_area_km2": 0.05183,
+          "max_depth_m": 1.183
+        },
+        {
+          "hour": 12,
+          "image": "escondida/tributary/depth-12.png",
+          "wet_area_km2": 0.05183,
+          "max_depth_m": 1.183
+        },
+        {
+          "hour": 14,
+          "image": "escondida/tributary/depth-14.png",
+          "wet_area_km2": 0.05601,
+          "max_depth_m": 1.466
+        },
+        {
+          "hour": 16,
+          "image": "escondida/tributary/depth-16.png",
+          "wet_area_km2": 0.06077,
+          "max_depth_m": 1.74
+        },
+        {
+          "hour": 18,
+          "image": "escondida/tributary/depth-18.png",
+          "wet_area_km2": 0.06326,
+          "max_depth_m": 1.962
+        },
+        {
+          "hour": 20,
+          "image": "escondida/tributary/depth-20.png",
+          "wet_area_km2": 0.06469,
+          "max_depth_m": 2.155
+        },
+        {
+          "hour": 22,
+          "image": "escondida/tributary/depth-22.png",
+          "wet_area_km2": 0.06606,
+          "max_depth_m": 2.329
+        },
+        {
+          "hour": 24,
+          "image": "escondida/tributary/depth-24.png",
+          "wet_area_km2": 0.06728,
+          "max_depth_m": 2.487
+        },
+        {
+          "hour": 26,
+          "image": "escondida/tributary/depth-26.png",
+          "wet_area_km2": 0.06691,
+          "max_depth_m": 2.445
+        },
+        {
+          "hour": 28,
+          "image": "escondida/tributary/depth-28.png",
+          "wet_area_km2": 0.06639,
+          "max_depth_m": 2.377
+        },
+        {
+          "hour": 30,
+          "image": "escondida/tributary/depth-30.png",
+          "wet_area_km2": 0.06586,
+          "max_depth_m": 2.306
+        },
+        {
+          "hour": 32,
+          "image": "escondida/tributary/depth-32.png",
+          "wet_area_km2": 0.06526,
+          "max_depth_m": 2.231
+        },
+        {
+          "hour": 34,
+          "image": "escondida/tributary/depth-34.png",
+          "wet_area_km2": 0.06468,
+          "max_depth_m": 2.153
+        },
+        {
+          "hour": 36,
+          "image": "escondida/tributary/depth-36.png",
+          "wet_area_km2": 0.06408,
+          "max_depth_m": 2.072
+        },
+        {
+          "hour": 38,
+          "image": "escondida/tributary/depth-38.png",
+          "wet_area_km2": 0.06348,
+          "max_depth_m": 1.988
+        },
+        {
+          "hour": 40,
+          "image": "escondida/tributary/depth-40.png",
+          "wet_area_km2": 0.06269,
+          "max_depth_m": 1.899
+        },
+        {
+          "hour": 42,
+          "image": "escondida/tributary/depth-42.png",
+          "wet_area_km2": 0.06168,
+          "max_depth_m": 1.804
+        },
+        {
+          "hour": 44,
+          "image": "escondida/tributary/depth-44.png",
+          "wet_area_km2": 0.06031,
+          "max_depth_m": 1.701
+        },
+        {
+          "hour": 46,
+          "image": "escondida/tributary/depth-46.png",
+          "wet_area_km2": 0.05818,
+          "max_depth_m": 1.59
+        },
+        {
+          "hour": 48,
+          "image": "escondida/tributary/depth-48.png",
+          "wet_area_km2": 0.05621,
+          "max_depth_m": 1.465
+        }
+      ]
+    },
+    {
+      "id": "tributary_rain",
+      "name": "Main river + branch + rain",
+      "branch_cfs": 50.0,
+      "rain_in_per_hr": 0.02,
+      "result_sha256": "c04c8047781ab8c7059c771eea3fdb08cac3c92873aaaea21a12edf539925d89",
+      "frames": [
+        {
+          "hour": 0,
+          "image": "escondida/tributary_rain/depth-00.png",
+          "wet_area_km2": 0.0,
+          "max_depth_m": 0.0
+        },
+        {
+          "hour": 2,
+          "image": "escondida/tributary_rain/depth-02.png",
+          "wet_area_km2": 0.05424,
+          "max_depth_m": 1.392
+        },
+        {
+          "hour": 4,
+          "image": "escondida/tributary_rain/depth-04.png",
+          "wet_area_km2": 0.05457,
+          "max_depth_m": 1.393
+        },
+        {
+          "hour": 6,
+          "image": "escondida/tributary_rain/depth-06.png",
+          "wet_area_km2": 0.05497,
+          "max_depth_m": 1.396
+        },
+        {
+          "hour": 8,
+          "image": "escondida/tributary_rain/depth-08.png",
+          "wet_area_km2": 0.05535,
+          "max_depth_m": 1.397
+        },
+        {
+          "hour": 10,
+          "image": "escondida/tributary_rain/depth-10.png",
+          "wet_area_km2": 0.05576,
+          "max_depth_m": 1.399
+        },
+        {
+          "hour": 12,
+          "image": "escondida/tributary_rain/depth-12.png",
+          "wet_area_km2": 0.05614,
+          "max_depth_m": 1.402
+        },
+        {
+          "hour": 14,
+          "image": "escondida/tributary_rain/depth-14.png",
+          "wet_area_km2": 0.06068,
+          "max_depth_m": 1.552
+        },
+        {
+          "hour": 16,
+          "image": "escondida/tributary_rain/depth-16.png",
+          "wet_area_km2": 0.06572,
+          "max_depth_m": 1.756
+        },
+        {
+          "hour": 18,
+          "image": "escondida/tributary_rain/depth-18.png",
+          "wet_area_km2": 0.06857,
+          "max_depth_m": 1.98
+        },
+        {
+          "hour": 20,
+          "image": "escondida/tributary_rain/depth-20.png",
+          "wet_area_km2": 0.07061,
+          "max_depth_m": 2.175
+        },
+        {
+          "hour": 22,
+          "image": "escondida/tributary_rain/depth-22.png",
+          "wet_area_km2": 0.07278,
+          "max_depth_m": 2.368
+        },
+        {
+          "hour": 24,
+          "image": "escondida/tributary_rain/depth-24.png",
+          "wet_area_km2": 0.07475,
+          "max_depth_m": 2.543
+        },
+        {
+          "hour": 26,
+          "image": "escondida/tributary_rain/depth-26.png",
+          "wet_area_km2": 0.07506,
+          "max_depth_m": 2.48
+        },
+        {
+          "hour": 28,
+          "image": "escondida/tributary_rain/depth-28.png",
+          "wet_area_km2": 0.07476,
+          "max_depth_m": 2.402
+        },
+        {
+          "hour": 30,
+          "image": "escondida/tributary_rain/depth-30.png",
+          "wet_area_km2": 0.07507,
+          "max_depth_m": 2.325
+        },
+        {
+          "hour": 32,
+          "image": "escondida/tributary_rain/depth-32.png",
+          "wet_area_km2": 0.07547,
+          "max_depth_m": 2.251
+        },
+        {
+          "hour": 34,
+          "image": "escondida/tributary_rain/depth-34.png",
+          "wet_area_km2": 0.07569,
+          "max_depth_m": 2.173
+        },
+        {
+          "hour": 36,
+          "image": "escondida/tributary_rain/depth-36.png",
+          "wet_area_km2": 0.07562,
+          "max_depth_m": 2.091
+        },
+        {
+          "hour": 38,
+          "image": "escondida/tributary_rain/depth-38.png",
+          "wet_area_km2": 0.07585,
+          "max_depth_m": 2.006
+        },
+        {
+          "hour": 40,
+          "image": "escondida/tributary_rain/depth-40.png",
+          "wet_area_km2": 0.07574,
+          "max_depth_m": 1.916
+        },
+        {
+          "hour": 42,
+          "image": "escondida/tributary_rain/depth-42.png",
+          "wet_area_km2": 0.07552,
+          "max_depth_m": 1.821
+        },
+        {
+          "hour": 44,
+          "image": "escondida/tributary_rain/depth-44.png",
+          "wet_area_km2": 0.0752,
+          "max_depth_m": 1.72
+        },
+        {
+          "hour": 46,
+          "image": "escondida/tributary_rain/depth-46.png",
+          "wet_area_km2": 0.07341,
+          "max_depth_m": 1.639
+        },
+        {
+          "hour": 48,
+          "image": "escondida/tributary_rain/depth-48.png",
+          "wet_area_km2": 0.07256,
+          "max_depth_m": 1.548
+        }
+      ]
+    }
+  ],
+  "bounds_lonlat": [
+    [
+      -106.88870280396803,
+      34.13267887897642
+    ],
+    [
+      -106.8830064280292,
+      34.13267887897642
+    ],
+    [
+      -106.8830064280292,
+      34.12077201294311
+    ],
+    [
+      -106.88870280396803,
+      34.12077201294311
+    ]
+  ],
+  "inlets": [
+    {
+      "label": "Main upstream inflow",
+      "lonlat": [
+        -106.88334460966139,
+        34.132030944419895
+      ],
+      "color": "#f9b84b"
+    },
+    {
+      "label": "Tributary inflow",
+      "lonlat": [
+        -106.883513455303,
+        34.12660717336745
+      ],
+      "color": "#72e3d2"
+    }
+  ]
+}

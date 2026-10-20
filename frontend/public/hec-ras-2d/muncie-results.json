@@ -1,0 +1,228 @@
+{
+  "study": "Muncie 2025 \u00b7 Indiana, USA",
+  "source_url": "https://s3.hecdev.net/ras-public-examples/Muncie%202025-2024-Sep-30%2010-37-23.json",
+  "status": "computed",
+  "solver": "HEC-RAS 2025 Beta 0.1.0.5048, CPU implicit diffusion-wave",
+  "result_sha256": "bcd770b82a78e8738eec9c893f74ccddc67690db49f80b7d3e41ccc6acb5ab1e",
+  "terrain_resolution_ft": 5,
+  "map_resolution_ft": 10,
+  "cell_count": 7257,
+  "minimum_shown_depth_m": 0.1,
+  "main_flow_min_cfs": 1000,
+  "main_flow_max_cfs": 20000,
+  "display_end_hours": 24,
+  "depth_legend_labels": [
+    "0.1",
+    "1",
+    "2",
+    "4",
+    "8+"
+  ],
+  "bounds_lonlat": [
+    [
+      -85.41317017977937,
+      40.21421080135398
+    ],
+    [
+      -85.35770974711195,
+      40.21421080135398
+    ],
+    [
+      -85.35770974711195,
+      40.18576758979197
+    ],
+    [
+      -85.41317017977937,
+      40.18576758979197
+    ]
+  ],
+  "focus_bounds_lonlat": [
+    [
+      -85.3961679617663,
+      40.20346621697342
+    ],
+    [
+      -85.37442544301676,
+      40.20346621697342
+    ],
+    [
+      -85.37442544301676,
+      40.195196016260205
+    ],
+    [
+      -85.3961679617663,
+      40.195196016260205
+    ]
+  ],
+  "mobile_focus_bounds_lonlat": [
+    [
+      -85.3971840214913,
+      40.20410152360709
+    ],
+    [
+      -85.38448161318344,
+      40.20410152360709
+    ],
+    [
+      -85.38448161318344,
+      40.19442156743982
+    ],
+    [
+      -85.3971840214913,
+      40.19442156743982
+    ]
+  ],
+  "focus_wet_fraction_at_peak": 0.67,
+  "frames": [
+    {
+      "hour": 0,
+      "image": "muncie/depth-00.png",
+      "wet_area_km2": 0.16633,
+      "max_depth_m": 2.357
+    },
+    {
+      "hour": 1,
+      "image": "muncie/depth-01.png",
+      "wet_area_km2": 0.35984,
+      "max_depth_m": 2.542
+    },
+    {
+      "hour": 2,
+      "image": "muncie/depth-02.png",
+      "wet_area_km2": 0.52264,
+      "max_depth_m": 4.11
+    },
+    {
+      "hour": 3,
+      "image": "muncie/depth-03.png",
+      "wet_area_km2": 0.72043,
+      "max_depth_m": 4.715
+    },
+    {
+      "hour": 4,
+      "image": "muncie/depth-04.png",
+      "wet_area_km2": 0.96532,
+      "max_depth_m": 5.031
+    },
+    {
+      "hour": 5,
+      "image": "muncie/depth-05.png",
+      "wet_area_km2": 1.25783,
+      "max_depth_m": 5.205
+    },
+    {
+      "hour": 6,
+      "image": "muncie/depth-06.png",
+      "wet_area_km2": 1.49898,
+      "max_depth_m": 5.313
+    },
+    {
+      "hour": 7,
+      "image": "muncie/depth-07.png",
+      "wet_area_km2": 1.71598,
+      "max_depth_m": 5.623
+    },
+    {
+      "hour": 8,
+      "image": "muncie/depth-08.png",
+      "wet_area_km2": 1.88764,
+      "max_depth_m": 6.133
+    },
+    {
+      "hour": 9,
+      "image": "muncie/depth-09.png",
+      "wet_area_km2": 2.04677,
+      "max_depth_m": 6.57
+    },
+    {
+      "hour": 10,
+      "image": "muncie/depth-10.png",
+      "wet_area_km2": 2.17358,
+      "max_depth_m": 6.952
+    },
+    {
+      "hour": 11,
+      "image": "muncie/depth-11.png",
+      "wet_area_km2": 2.28778,
+      "max_depth_m": 7.146
+    },
+    {
+      "hour": 12,
+      "image": "muncie/depth-12.png",
+      "wet_area_km2": 2.37902,
+      "max_depth_m": 7.297
+    },
+    {
+      "hour": 13,
+      "image": "muncie/depth-13.png",
+      "wet_area_km2": 2.46283,
+      "max_depth_m": 7.42
+    },
+    {
+      "hour": 14,
+      "image": "muncie/depth-14.png",
+      "wet_area_km2": 2.50475,
+      "max_depth_m": 7.472
+    },
+    {
+      "hour": 15,
+      "image": "muncie/depth-15.png",
+      "wet_area_km2": 2.5235,
+      "max_depth_m": 7.486
+    },
+    {
+      "hour": 16,
+      "image": "muncie/depth-16.png",
+      "wet_area_km2": 2.53812,
+      "max_depth_m": 7.489
+    },
+    {
+      "hour": 17,
+      "image": "muncie/depth-17.png",
+      "wet_area_km2": 2.54844,
+      "max_depth_m": 7.491
+    },
+    {
+      "hour": 18,
+      "image": "muncie/depth-18.png",
+      "wet_area_km2": 2.56197,
+      "max_depth_m": 7.494
+    },
+    {
+      "hour": 19,
+      "image": "muncie/depth-19.png",
+      "wet_area_km2": 2.57148,
+      "max_depth_m": 7.495
+    },
+    {
+      "hour": 20,
+      "image": "muncie/depth-20.png",
+      "wet_area_km2": 2.58241,
+      "max_depth_m": 7.496
+    },
+    {
+      "hour": 21,
+      "image": "muncie/depth-21.png",
+      "wet_area_km2": 2.59163,
+      "max_depth_m": 7.496
+    },
+    {
+      "hour": 22,
+      "image": "muncie/depth-22.png",
+      "wet_area_km2": 2.60367,
+      "max_depth_m": 7.497
+    },
+    {
+      "hour": 23,
+      "image": "muncie/depth-23.png",
+      "wet_area_km2": 2.61257,
+      "max_depth_m": 7.497
+    },
+    {
+      "hour": 24,
+      "image": "muncie/depth-24.png",
+      "wet_area_km2": 2.6213,
+      "max_depth_m": 7.498
+    }
+  ]
+}

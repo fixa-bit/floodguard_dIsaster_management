@@ -1,0 +1,1494 @@
+{
+  "station_id": "MARALA",
+  "river": "Chenab",
+  "retrieved_at": "2026-10-16T10:21:55.382909+00:00",
+  "forecast_issue_start": "2026-10-16",
+  "forecast_available_through": "2027-05-13",
+  "forecast_source": "Open-Meteo Flood API, GloFAS v4 seamless default",
+  "source_url": "https://flood-api.open-meteo.com/v1/flood?latitude=32.675&longitude=74.425&daily=river_discharge_mean%2Criver_discharge_median%2Criver_discharge_p25%2Criver_discharge_p75&forecast_days=210&cell_selection=nearest&timezone=GMT",
+  "response_sha256": "7f247c2afd7ca1db117f196a6186600d6b892f4003f66670a071fc714d0fc24e",
+  "source_grid": {
+    "latitude": 32.675003,
+    "longitude": 74.425
+  },
+  "output_type": "provider_forecast_monthly_mean_modeled_reach_discharge",
+  "station_observation": false,
+  "forecast": [
+    {
+      "target_month": "2026-11",
+      "days": 30,
+      "monthly_mean_discharge_cumecs": {
+        "mean": 263.526,
+        "median": 243.18233333333333,
+        "p25": 232.31433333333334,
+        "p75": 268.4026666666666
+      },
+      "uncertainty_note": "Mean of daily ensemble statistics; p25/p75 are not a calibrated monthly prediction interval."
+    },
+    {
+      "target_month": "2026-12",
+      "days": 31,
+      "monthly_mean_discharge_cumecs": {
+        "mean": 233.78548387096768,
+        "median": 201.81193548387097,
+        "p25": 183.6412903225806,
+        "p75": 239.4890322580645
+      },
+      "uncertainty_note": "Mean of daily ensemble statistics; p25/p75 are not a calibrated monthly prediction interval."
+    },
+    {
+      "target_month": "2027-01",
+      "days": 31,
+      "monthly_mean_discharge_cumecs": {
+        "mean": 218.19903225806453,
+        "median": 189.09258064516132,
+        "p25": 171.27548387096772,
+        "p75": 232.2825806451613
+      },
+      "uncertainty_note": "Mean of daily ensemble statistics; p25/p75 are not a calibrated monthly prediction interval."
+    },
+    {
+      "target_month": "2027-02",
+      "days": 28,
+      "monthly_mean_discharge_cumecs": {
+        "mean": 224.09642857142856,
+        "median": 201.3678571428572,
+        "p25": 175.70357142857142,
+        "p75": 259.1275
+      },
+      "uncertainty_note": "Mean of daily ensemble statistics; p25/p75 are not a calibrated monthly prediction interval."
+    },
+    {
+      "target_month": "2027-03",
+      "days": 31,
+      "monthly_mean_discharge_cumecs": {
+        "mean": 290.7987096774194,
+        "median": 249.9570967741935,
+        "p25": 206.64935483870968,
+        "p75": 330.72
+      },
+      "uncertainty_note": "Mean of daily ensemble statistics; p25/p75 are not a calibrated monthly prediction interval."
+    },
+    {
+      "target_month": "2027-04",
+      "days": 30,
+      "monthly_mean_discharge_cumecs": {
+        "mean": 348.745,
+        "median": 327.64933333333323,
+        "p25": 246.73866666666663,
+        "p75": 411.81000000000006
+      },
+      "uncertainty_note": "Mean of daily ensemble statistics; p25/p75 are not a calibrated monthly prediction interval."
+    }
+  ],
+  "daily_forecast": [
+    {
+      "date": "2026-10-16",
+      "mean_cumecs": 387.59,
+      "median_cumecs": 387.15,
+      "p25_cumecs": 387.15,
+      "p75_cumecs": 388.05
+    },
+    {
+      "date": "2026-10-17",
+      "mean_cumecs": 384.95,
+      "median_cumecs": 384.48,
+      "p25_cumecs": 384.04,
+      "p75_cumecs": 386.26
+    },
+    {
+      "date": "2026-10-18",
+      "mean_cumecs": 378.01,
+      "median_cumecs": 377.44,
+      "p25_cumecs": 376.57,
+      "p75_cumecs": 379.19
+    },
+    {
+      "date": "2026-10-19",
+      "mean_cumecs": 369.53,
+      "median_cumecs": 369.68,
+      "p25_cumecs": 367.98,
+      "p75_cumecs": 370.54
+    },
+    {
+      "date": "2026-10-20",
+      "mean_cumecs": 361.2,
+      "median_cumecs": 361.24,
+      "p25_cumecs": 360.41,
+      "p75_cumecs": 362.08
+    },
+    {
+      "date": "2026-10-21",
+      "mean_cumecs": 353.24,
+      "median_cumecs": 353.0,
+      "p25_cumecs": 352.18,
+      "p75_cumecs": 354.22
+    },
+    {
+      "date": "2026-10-22",
+      "mean_cumecs": 345.49,
+      "median_cumecs": 344.94,
+      "p25_cumecs": 344.54,
+      "p75_cumecs": 346.54
+    },
+    {
+      "date": "2026-10-23",
+      "mean_cumecs": 338.32,
+      "median_cumecs": 337.84,
+      "p25_cumecs": 337.06,
+      "p75_cumecs": 339.41
+    },
+    {
+      "date": "2026-10-24",
+      "mean_cumecs": 331.35,
+      "median_cumecs": 330.89,
+      "p25_cumecs": 330.13,
+      "p75_cumecs": 332.43
+    },
+    {
+      "date": "2026-10-25",
+      "mean_cumecs": 324.84,
+      "median_cumecs": 324.84,
+      "p25_cumecs": 324.09,
+      "p75_cumecs": 325.59
+    },
+    {
+      "date": "2026-10-26",
+      "mean_cumecs": 318.8,
+      "median_cumecs": 318.15,
+      "p25_cumecs": 317.42,
+      "p75_cumecs": 318.89
+    },
+    {
+      "date": "2026-10-27",
+      "mean_cumecs": 313.14,
+      "median_cumecs": 311.61,
+      "p25_cumecs": 311.61,
+      "p75_cumecs": 313.05
+    },
+    {
+      "date": "2026-10-28",
+      "mean_cumecs": 307.42,
+      "median_cumecs": 305.9,
+      "p25_cumecs": 305.2,
+      "p75_cumecs": 306.96
+    },
+    {
+      "date": "2026-10-29",
+      "mean_cumecs": 301.94,
+      "median_cumecs": 300.3,
+      "p25_cumecs": 299.61,
+      "p75_cumecs": 301.34
+    },
+    {
+      "date": "2026-10-30",
+      "mean_cumecs": 297.08,
+      "median_cumecs": 294.8,
+      "p25_cumecs": 294.12,
+      "p75_cumecs": 295.48
+    },
+    {
+      "date": "2026-10-31",
+      "mean_cumecs": 292.89,
+      "median_cumecs": 289.4,
+      "p25_cumecs": 288.07,
+      "p75_cumecs": 291.42
+    },
+    {
+      "date": "2026-11-01",
+      "mean_cumecs": 289.03,
+      "median_cumecs": 284.1,
+      "p25_cumecs": 283.45,
+      "p75_cumecs": 287.74
+    },
+    {
+      "date": "2026-11-02",
+      "mean_cumecs": 284.83,
+      "median_cumecs": 279.54,
+      "p25_cumecs": 278.25,
+      "p75_cumecs": 283.77
+    },
+    {
+      "date": "2026-11-03",
+      "mean_cumecs": 280.26,
+      "median_cumecs": 275.06,
+      "p25_cumecs": 273.79,
+      "p75_cumecs": 278.58
+    },
+    {
+      "date": "2026-11-04",
+      "mean_cumecs": 275.6,
+      "median_cumecs": 270.64,
+      "p25_cumecs": 268.77,
+      "p75_cumecs": 274.74
+    },
+    {
+      "date": "2026-11-05",
+      "mean_cumecs": 271.37,
+      "median_cumecs": 265.69,
+      "p25_cumecs": 264.46,
+      "p75_cumecs": 271.91
+    },
+    {
+      "date": "2026-11-06",
+      "mean_cumecs": 266.97,
+      "median_cumecs": 262.03,
+      "p25_cumecs": 260.22,
+      "p75_cumecs": 266.93
+    },
+    {
+      "date": "2026-11-07",
+      "mean_cumecs": 263.32,
+      "median_cumecs": 257.23,
+      "p25_cumecs": 255.74,
+      "p75_cumecs": 264.77
+    },
+    {
+      "date": "2026-11-08",
+      "mean_cumecs": 259.65,
+      "median_cumecs": 253.1,
+      "p25_cumecs": 251.64,
+      "p75_cumecs": 260.22
+    },
+    {
+      "date": "2026-11-09",
+      "mean_cumecs": 255.64,
+      "median_cumecs": 249.61,
+      "p25_cumecs": 247.89,
+      "p75_cumecs": 256.04
+    },
+    {
+      "date": "2026-11-10",
+      "mean_cumecs": 251.69,
+      "median_cumecs": 245.6,
+      "p25_cumecs": 243.91,
+      "p75_cumecs": 252.51
+    },
+    {
+      "date": "2026-11-11",
+      "mean_cumecs": 248.07,
+      "median_cumecs": 241.66,
+      "p25_cumecs": 239.99,
+      "p75_cumecs": 249.61
+    },
+    {
+      "date": "2026-11-12",
+      "mean_cumecs": 255.42,
+      "median_cumecs": 243.35,
+      "p25_cumecs": 236.75,
+      "p75_cumecs": 256.64
+    },
+    {
+      "date": "2026-11-13",
+      "mean_cumecs": 264.82,
+      "median_cumecs": 245.84,
+      "p25_cumecs": 233.69,
+      "p75_cumecs": 270.89
+    },
+    {
+      "date": "2026-11-14",
+      "mean_cumecs": 274.45,
+      "median_cumecs": 246.9,
+      "p25_cumecs": 230.87,
+      "p75_cumecs": 280.9
+    },
+    {
+      "date": "2026-11-15",
+      "mean_cumecs": 279.71,
+      "median_cumecs": 250.77,
+      "p25_cumecs": 228.09,
+      "p75_cumecs": 287.43
+    },
+    {
+      "date": "2026-11-16",
+      "mean_cumecs": 275.57,
+      "median_cumecs": 247.31,
+      "p25_cumecs": 226.77,
+      "p75_cumecs": 285.75
+    },
+    {
+      "date": "2026-11-17",
+      "mean_cumecs": 271.82,
+      "median_cumecs": 243.91,
+      "p25_cumecs": 224.42,
+      "p75_cumecs": 284.81
+    },
+    {
+      "date": "2026-11-18",
+      "mean_cumecs": 268.41,
+      "median_cumecs": 239.99,
+      "p25_cumecs": 221.59,
+      "p75_cumecs": 283.12
+    },
+    {
+      "date": "2026-11-19",
+      "mean_cumecs": 265.12,
+      "median_cumecs": 237.23,
+      "p25_cumecs": 218.53,
+      "p75_cumecs": 281.49
+    },
+    {
+      "date": "2026-11-20",
+      "mean_cumecs": 262.28,
+      "median_cumecs": 236.14,
+      "p25_cumecs": 217.02,
+      "p75_cumecs": 276.34
+    },
+    {
+      "date": "2026-11-21",
+      "mean_cumecs": 259.58,
+      "median_cumecs": 233.42,
+      "p25_cumecs": 215.27,
+      "p75_cumecs": 276.03
+    },
+    {
+      "date": "2026-11-22",
+      "mean_cumecs": 257.1,
+      "median_cumecs": 230.21,
+      "p25_cumecs": 212.55,
+      "p75_cumecs": 270.03
+    },
+    {
+      "date": "2026-11-23",
+      "mean_cumecs": 254.96,
+      "median_cumecs": 226.51,
+      "p25_cumecs": 211.08,
+      "p75_cumecs": 267.54
+    },
+    {
+      "date": "2026-11-24",
+      "mean_cumecs": 251.4,
+      "median_cumecs": 223.39,
+      "p25_cumecs": 208.41,
+      "p75_cumecs": 262.94
+    },
+    {
+      "date": "2026-11-25",
+      "mean_cumecs": 248.56,
+      "median_cumecs": 221.84,
+      "p25_cumecs": 206.49,
+      "p75_cumecs": 258.42
+    },
+    {
+      "date": "2026-11-26",
+      "mean_cumecs": 254.54,
+      "median_cumecs": 218.79,
+      "p25_cumecs": 203.88,
+      "p75_cumecs": 253.98
+    },
+    {
+      "date": "2026-11-27",
+      "mean_cumecs": 254.0,
+      "median_cumecs": 215.77,
+      "p25_cumecs": 201.77,
+      "p75_cumecs": 252.52
+    },
+    {
+      "date": "2026-11-28",
+      "mean_cumecs": 247.72,
+      "median_cumecs": 213.78,
+      "p25_cumecs": 202.0,
+      "p75_cumecs": 249.33
+    },
+    {
+      "date": "2026-11-29",
+      "mean_cumecs": 245.89,
+      "median_cumecs": 218.79,
+      "p25_cumecs": 202.0,
+      "p75_cumecs": 255.16
+    },
+    {
+      "date": "2026-11-30",
+      "mean_cumecs": 268.0,
+      "median_cumecs": 217.27,
+      "p25_cumecs": 200.14,
+      "p75_cumecs": 251.94
+    },
+    {
+      "date": "2026-12-01",
+      "mean_cumecs": 262.25,
+      "median_cumecs": 214.28,
+      "p25_cumecs": 198.3,
+      "p75_cumecs": 251.94
+    },
+    {
+      "date": "2026-12-02",
+      "mean_cumecs": 250.32,
+      "median_cumecs": 212.3,
+      "p25_cumecs": 196.47,
+      "p75_cumecs": 246.75
+    },
+    {
+      "date": "2026-12-03",
+      "mean_cumecs": 244.55,
+      "median_cumecs": 211.32,
+      "p25_cumecs": 195.11,
+      "p75_cumecs": 242.23
+    },
+    {
+      "date": "2026-12-04",
+      "mean_cumecs": 241.12,
+      "median_cumecs": 211.81,
+      "p25_cumecs": 194.44,
+      "p75_cumecs": 238.06
+    },
+    {
+      "date": "2026-12-05",
+      "mean_cumecs": 238.76,
+      "median_cumecs": 211.32,
+      "p25_cumecs": 193.09,
+      "p75_cumecs": 238.06
+    },
+    {
+      "date": "2026-12-06",
+      "mean_cumecs": 236.87,
+      "median_cumecs": 213.78,
+      "p25_cumecs": 191.98,
+      "p75_cumecs": 233.7
+    },
+    {
+      "date": "2026-12-07",
+      "mean_cumecs": 235.73,
+      "median_cumecs": 210.35,
+      "p25_cumecs": 190.65,
+      "p75_cumecs": 229.68
+    },
+    {
+      "date": "2026-12-08",
+      "mean_cumecs": 235.84,
+      "median_cumecs": 213.29,
+      "p25_cumecs": 189.77,
+      "p75_cumecs": 226.25
+    },
+    {
+      "date": "2026-12-09",
+      "mean_cumecs": 235.68,
+      "median_cumecs": 210.84,
+      "p25_cumecs": 188.23,
+      "p75_cumecs": 223.13
+    },
+    {
+      "date": "2026-12-10",
+      "mean_cumecs": 235.07,
+      "median_cumecs": 207.45,
+      "p25_cumecs": 186.93,
+      "p75_cumecs": 220.31
+    },
+    {
+      "date": "2026-12-11",
+      "mean_cumecs": 235.27,
+      "median_cumecs": 206.01,
+      "p25_cumecs": 185.42,
+      "p75_cumecs": 218.28
+    },
+    {
+      "date": "2026-12-12",
+      "mean_cumecs": 235.07,
+      "median_cumecs": 203.64,
+      "p25_cumecs": 185.21,
+      "p75_cumecs": 228.08
+    },
+    {
+      "date": "2026-12-13",
+      "mean_cumecs": 236.56,
+      "median_cumecs": 203.17,
+      "p25_cumecs": 185.43,
+      "p75_cumecs": 251.65
+    },
+    {
+      "date": "2026-12-14",
+      "mean_cumecs": 236.9,
+      "median_cumecs": 206.01,
+      "p25_cumecs": 184.57,
+      "p75_cumecs": 250.77
+    },
+    {
+      "date": "2026-12-15",
+      "mean_cumecs": 235.68,
+      "median_cumecs": 204.12,
+      "p25_cumecs": 184.99,
+      "p75_cumecs": 247.32
+    },
+    {
+      "date": "2026-12-16",
+      "mean_cumecs": 233.56,
+      "median_cumecs": 202.7,
+      "p25_cumecs": 183.29,
+      "p75_cumecs": 245.36
+    },
+    {
+      "date": "2026-12-17",
+      "mean_cumecs": 231.19,
+      "median_cumecs": 201.77,
+      "p25_cumecs": 182.87,
+      "p75_cumecs": 242.57
+    },
+    {
+      "date": "2026-12-18",
+      "mean_cumecs": 230.11,
+      "median_cumecs": 199.91,
+      "p25_cumecs": 182.02,
+      "p75_cumecs": 240.05
+    },
+    {
+      "date": "2026-12-19",
+      "mean_cumecs": 235.93,
+      "median_cumecs": 198.53,
+      "p25_cumecs": 180.97,
+      "p75_cumecs": 246.46
+    },
+    {
+      "date": "2026-12-20",
+      "mean_cumecs": 237.44,
+      "median_cumecs": 196.7,
+      "p25_cumecs": 179.93,
+      "p75_cumecs": 255.22
+    },
+    {
+      "date": "2026-12-21",
+      "mean_cumecs": 235.27,
+      "median_cumecs": 194.88,
+      "p25_cumecs": 179.3,
+      "p75_cumecs": 251.12
+    },
+    {
+      "date": "2026-12-22",
+      "mean_cumecs": 233.33,
+      "median_cumecs": 193.98,
+      "p25_cumecs": 178.89,
+      "p75_cumecs": 250.32
+    },
+    {
+      "date": "2026-12-23",
+      "mean_cumecs": 231.1,
+      "median_cumecs": 192.2,
+      "p25_cumecs": 177.85,
+      "p75_cumecs": 251.64
+    },
+    {
+      "date": "2026-12-24",
+      "mean_cumecs": 229.21,
+      "median_cumecs": 192.64,
+      "p25_cumecs": 177.24,
+      "p75_cumecs": 245.32
+    },
+    {
+      "date": "2026-12-25",
+      "mean_cumecs": 227.57,
+      "median_cumecs": 192.2,
+      "p25_cumecs": 176.01,
+      "p75_cumecs": 240.0
+    },
+    {
+      "date": "2026-12-26",
+      "mean_cumecs": 225.87,
+      "median_cumecs": 191.75,
+      "p25_cumecs": 175.2,
+      "p75_cumecs": 239.71
+    },
+    {
+      "date": "2026-12-27",
+      "mean_cumecs": 223.51,
+      "median_cumecs": 191.75,
+      "p25_cumecs": 174.59,
+      "p75_cumecs": 240.57
+    },
+    {
+      "date": "2026-12-28",
+      "mean_cumecs": 221.49,
+      "median_cumecs": 191.31,
+      "p25_cumecs": 174.19,
+      "p75_cumecs": 238.33
+    },
+    {
+      "date": "2026-12-29",
+      "mean_cumecs": 219.76,
+      "median_cumecs": 190.87,
+      "p25_cumecs": 173.78,
+      "p75_cumecs": 231.56
+    },
+    {
+      "date": "2026-12-30",
+      "mean_cumecs": 218.44,
+      "median_cumecs": 193.54,
+      "p25_cumecs": 173.38,
+      "p75_cumecs": 227.32
+    },
+    {
+      "date": "2026-12-31",
+      "mean_cumecs": 217.9,
+      "median_cumecs": 191.75,
+      "p25_cumecs": 172.78,
+      "p75_cumecs": 232.4
+    },
+    {
+      "date": "2027-01-01",
+      "mean_cumecs": 217.29,
+      "median_cumecs": 194.43,
+      "p25_cumecs": 172.18,
+      "p75_cumecs": 236.71
+    },
+    {
+      "date": "2027-01-02",
+      "mean_cumecs": 218.33,
+      "median_cumecs": 195.79,
+      "p25_cumecs": 171.78,
+      "p75_cumecs": 242.28
+    },
+    {
+      "date": "2027-01-03",
+      "mean_cumecs": 231.93,
+      "median_cumecs": 193.54,
+      "p25_cumecs": 175.6,
+      "p75_cumecs": 239.72
+    },
+    {
+      "date": "2027-01-04",
+      "mean_cumecs": 230.45,
+      "median_cumecs": 191.31,
+      "p25_cumecs": 174.99,
+      "p75_cumecs": 233.97
+    },
+    {
+      "date": "2027-01-05",
+      "mean_cumecs": 221.44,
+      "median_cumecs": 189.11,
+      "p25_cumecs": 174.39,
+      "p75_cumecs": 229.16
+    },
+    {
+      "date": "2027-01-06",
+      "mean_cumecs": 216.89,
+      "median_cumecs": 189.11,
+      "p25_cumecs": 172.98,
+      "p75_cumecs": 225.74
+    },
+    {
+      "date": "2027-01-07",
+      "mean_cumecs": 216.54,
+      "median_cumecs": 187.8,
+      "p25_cumecs": 171.58,
+      "p75_cumecs": 230.81
+    },
+    {
+      "date": "2027-01-08",
+      "mean_cumecs": 216.8,
+      "median_cumecs": 185.64,
+      "p25_cumecs": 170.59,
+      "p75_cumecs": 235.88
+    },
+    {
+      "date": "2027-01-09",
+      "mean_cumecs": 215.22,
+      "median_cumecs": 184.78,
+      "p25_cumecs": 170.79,
+      "p75_cumecs": 229.14
+    },
+    {
+      "date": "2027-01-10",
+      "mean_cumecs": 214.25,
+      "median_cumecs": 184.35,
+      "p25_cumecs": 170.59,
+      "p75_cumecs": 223.16
+    },
+    {
+      "date": "2027-01-11",
+      "mean_cumecs": 214.09,
+      "median_cumecs": 185.64,
+      "p25_cumecs": 170.59,
+      "p75_cumecs": 223.13
+    },
+    {
+      "date": "2027-01-12",
+      "mean_cumecs": 213.57,
+      "median_cumecs": 188.67,
+      "p25_cumecs": 168.82,
+      "p75_cumecs": 226.53
+    },
+    {
+      "date": "2027-01-13",
+      "mean_cumecs": 211.67,
+      "median_cumecs": 181.39,
+      "p25_cumecs": 169.22,
+      "p75_cumecs": 230.21
+    },
+    {
+      "date": "2027-01-14",
+      "mean_cumecs": 221.02,
+      "median_cumecs": 187.36,
+      "p25_cumecs": 169.42,
+      "p75_cumecs": 223.21
+    },
+    {
+      "date": "2027-01-15",
+      "mean_cumecs": 231.82,
+      "median_cumecs": 186.07,
+      "p25_cumecs": 168.44,
+      "p75_cumecs": 221.69
+    },
+    {
+      "date": "2027-01-16",
+      "mean_cumecs": 224.09,
+      "median_cumecs": 184.78,
+      "p25_cumecs": 167.66,
+      "p75_cumecs": 217.33
+    },
+    {
+      "date": "2027-01-17",
+      "mean_cumecs": 217.75,
+      "median_cumecs": 183.93,
+      "p25_cumecs": 168.43,
+      "p75_cumecs": 223.18
+    },
+    {
+      "date": "2027-01-18",
+      "mean_cumecs": 217.49,
+      "median_cumecs": 183.93,
+      "p25_cumecs": 168.82,
+      "p75_cumecs": 232.35
+    },
+    {
+      "date": "2027-01-19",
+      "mean_cumecs": 217.63,
+      "median_cumecs": 183.08,
+      "p25_cumecs": 170.61,
+      "p75_cumecs": 232.13
+    },
+    {
+      "date": "2027-01-20",
+      "mean_cumecs": 214.81,
+      "median_cumecs": 184.35,
+      "p25_cumecs": 169.82,
+      "p75_cumecs": 232.88
+    },
+    {
+      "date": "2027-01-21",
+      "mean_cumecs": 213.05,
+      "median_cumecs": 185.64,
+      "p25_cumecs": 171.39,
+      "p75_cumecs": 233.15
+    },
+    {
+      "date": "2027-01-22",
+      "mean_cumecs": 214.11,
+      "median_cumecs": 189.99,
+      "p25_cumecs": 171.39,
+      "p75_cumecs": 227.82
+    },
+    {
+      "date": "2027-01-23",
+      "mean_cumecs": 214.79,
+      "median_cumecs": 191.31,
+      "p25_cumecs": 169.8,
+      "p75_cumecs": 244.49
+    },
+    {
+      "date": "2027-01-24",
+      "mean_cumecs": 215.66,
+      "median_cumecs": 192.64,
+      "p25_cumecs": 171.39,
+      "p75_cumecs": 241.95
+    },
+    {
+      "date": "2027-01-25",
+      "mean_cumecs": 216.0,
+      "median_cumecs": 192.2,
+      "p25_cumecs": 172.78,
+      "p75_cumecs": 235.61
+    },
+    {
+      "date": "2027-01-26",
+      "mean_cumecs": 217.59,
+      "median_cumecs": 190.43,
+      "p25_cumecs": 172.98,
+      "p75_cumecs": 236.42
+    },
+    {
+      "date": "2027-01-27",
+      "mean_cumecs": 217.99,
+      "median_cumecs": 189.11,
+      "p25_cumecs": 171.98,
+      "p75_cumecs": 233.16
+    },
+    {
+      "date": "2027-01-28",
+      "mean_cumecs": 216.79,
+      "median_cumecs": 195.34,
+      "p25_cumecs": 171.98,
+      "p75_cumecs": 230.21
+    },
+    {
+      "date": "2027-01-29",
+      "mean_cumecs": 218.04,
+      "median_cumecs": 194.88,
+      "p25_cumecs": 172.38,
+      "p75_cumecs": 245.65
+    },
+    {
+      "date": "2027-01-30",
+      "mean_cumecs": 218.64,
+      "median_cumecs": 194.43,
+      "p25_cumecs": 173.58,
+      "p75_cumecs": 244.76
+    },
+    {
+      "date": "2027-01-31",
+      "mean_cumecs": 218.43,
+      "median_cumecs": 200.84,
+      "p25_cumecs": 172.59,
+      "p75_cumecs": 238.33
+    },
+    {
+      "date": "2027-02-01",
+      "mean_cumecs": 217.42,
+      "median_cumecs": 199.45,
+      "p25_cumecs": 171.78,
+      "p75_cumecs": 242.83
+    },
+    {
+      "date": "2027-02-02",
+      "mean_cumecs": 215.77,
+      "median_cumecs": 197.15,
+      "p25_cumecs": 171.19,
+      "p75_cumecs": 243.66
+    },
+    {
+      "date": "2027-02-03",
+      "mean_cumecs": 213.79,
+      "median_cumecs": 193.98,
+      "p25_cumecs": 169.02,
+      "p75_cumecs": 237.06
+    },
+    {
+      "date": "2027-02-04",
+      "mean_cumecs": 212.43,
+      "median_cumecs": 188.67,
+      "p25_cumecs": 167.66,
+      "p75_cumecs": 233.21
+    },
+    {
+      "date": "2027-02-05",
+      "mean_cumecs": 211.89,
+      "median_cumecs": 187.36,
+      "p25_cumecs": 170.0,
+      "p75_cumecs": 229.44
+    },
+    {
+      "date": "2027-02-06",
+      "mean_cumecs": 211.36,
+      "median_cumecs": 185.64,
+      "p25_cumecs": 171.39,
+      "p75_cumecs": 225.22
+    },
+    {
+      "date": "2027-02-07",
+      "mean_cumecs": 210.68,
+      "median_cumecs": 187.36,
+      "p25_cumecs": 171.19,
+      "p75_cumecs": 226.01
+    },
+    {
+      "date": "2027-02-08",
+      "mean_cumecs": 211.66,
+      "median_cumecs": 186.93,
+      "p25_cumecs": 171.78,
+      "p75_cumecs": 228.54
+    },
+    {
+      "date": "2027-02-09",
+      "mean_cumecs": 218.13,
+      "median_cumecs": 200.37,
+      "p25_cumecs": 171.78,
+      "p75_cumecs": 245.75
+    },
+    {
+      "date": "2027-02-10",
+      "mean_cumecs": 221.01,
+      "median_cumecs": 201.3,
+      "p25_cumecs": 170.79,
+      "p75_cumecs": 254.64
+    },
+    {
+      "date": "2027-02-11",
+      "mean_cumecs": 219.95,
+      "median_cumecs": 199.91,
+      "p25_cumecs": 170.2,
+      "p75_cumecs": 261.52
+    },
+    {
+      "date": "2027-02-12",
+      "mean_cumecs": 218.39,
+      "median_cumecs": 200.37,
+      "p25_cumecs": 169.81,
+      "p75_cumecs": 255.85
+    },
+    {
+      "date": "2027-02-13",
+      "mean_cumecs": 217.07,
+      "median_cumecs": 198.99,
+      "p25_cumecs": 170.79,
+      "p75_cumecs": 250.28
+    },
+    {
+      "date": "2027-02-14",
+      "mean_cumecs": 218.31,
+      "median_cumecs": 198.07,
+      "p25_cumecs": 170.4,
+      "p75_cumecs": 258.46
+    },
+    {
+      "date": "2027-02-15",
+      "mean_cumecs": 223.22,
+      "median_cumecs": 199.45,
+      "p25_cumecs": 173.18,
+      "p75_cumecs": 259.05
+    },
+    {
+      "date": "2027-02-16",
+      "mean_cumecs": 225.17,
+      "median_cumecs": 205.06,
+      "p25_cumecs": 172.8,
+      "p75_cumecs": 260.52
+    },
+    {
+      "date": "2027-02-17",
+      "mean_cumecs": 226.99,
+      "median_cumecs": 209.38,
+      "p25_cumecs": 173.24,
+      "p75_cumecs": 258.44
+    },
+    {
+      "date": "2027-02-18",
+      "mean_cumecs": 227.6,
+      "median_cumecs": 210.35,
+      "p25_cumecs": 171.62,
+      "p75_cumecs": 256.7
+    },
+    {
+      "date": "2027-02-19",
+      "mean_cumecs": 226.33,
+      "median_cumecs": 207.45,
+      "p25_cumecs": 176.87,
+      "p75_cumecs": 258.42
+    },
+    {
+      "date": "2027-02-20",
+      "mean_cumecs": 226.22,
+      "median_cumecs": 207.45,
+      "p25_cumecs": 176.87,
+      "p75_cumecs": 261.74
+    },
+    {
+      "date": "2027-02-21",
+      "mean_cumecs": 225.76,
+      "median_cumecs": 208.41,
+      "p25_cumecs": 179.93,
+      "p75_cumecs": 271.58
+    },
+    {
+      "date": "2027-02-22",
+      "mean_cumecs": 224.94,
+      "median_cumecs": 209.86,
+      "p25_cumecs": 180.55,
+      "p75_cumecs": 272.55
+    },
+    {
+      "date": "2027-02-23",
+      "mean_cumecs": 226.44,
+      "median_cumecs": 208.41,
+      "p25_cumecs": 180.35,
+      "p75_cumecs": 276.34
+    },
+    {
+      "date": "2027-02-24",
+      "mean_cumecs": 232.26,
+      "median_cumecs": 207.93,
+      "p25_cumecs": 181.19,
+      "p75_cumecs": 289.48
+    },
+    {
+      "date": "2027-02-25",
+      "mean_cumecs": 239.44,
+      "median_cumecs": 207.93,
+      "p25_cumecs": 187.61,
+      "p75_cumecs": 288.1
+    },
+    {
+      "date": "2027-02-26",
+      "mean_cumecs": 246.45,
+      "median_cumecs": 211.81,
+      "p25_cumecs": 193.09,
+      "p75_cumecs": 295.48
+    },
+    {
+      "date": "2027-02-27",
+      "mean_cumecs": 253.5,
+      "median_cumecs": 211.81,
+      "p25_cumecs": 192.2,
+      "p75_cumecs": 303.09
+    },
+    {
+      "date": "2027-02-28",
+      "mean_cumecs": 252.52,
+      "median_cumecs": 207.45,
+      "p25_cumecs": 192.42,
+      "p75_cumecs": 311.61
+    },
+    {
+      "date": "2027-03-01",
+      "mean_cumecs": 257.08,
+      "median_cumecs": 215.77,
+      "p25_cumecs": 194.21,
+      "p75_cumecs": 321.86
+    },
+    {
+      "date": "2027-03-02",
+      "mean_cumecs": 257.81,
+      "median_cumecs": 215.77,
+      "p25_cumecs": 193.98,
+      "p75_cumecs": 320.37
+    },
+    {
+      "date": "2027-03-03",
+      "mean_cumecs": 253.78,
+      "median_cumecs": 213.78,
+      "p25_cumecs": 195.11,
+      "p75_cumecs": 314.5
+    },
+    {
+      "date": "2027-03-04",
+      "mean_cumecs": 252.99,
+      "median_cumecs": 214.28,
+      "p25_cumecs": 194.66,
+      "p75_cumecs": 308.39
+    },
+    {
+      "date": "2027-03-05",
+      "mean_cumecs": 254.78,
+      "median_cumecs": 211.81,
+      "p25_cumecs": 192.2,
+      "p75_cumecs": 304.49
+    },
+    {
+      "date": "2027-03-06",
+      "mean_cumecs": 262.19,
+      "median_cumecs": 212.3,
+      "p25_cumecs": 192.87,
+      "p75_cumecs": 308.49
+    },
+    {
+      "date": "2027-03-07",
+      "mean_cumecs": 265.52,
+      "median_cumecs": 226.51,
+      "p25_cumecs": 196.7,
+      "p75_cumecs": 303.53
+    },
+    {
+      "date": "2027-03-08",
+      "mean_cumecs": 271.12,
+      "median_cumecs": 231.27,
+      "p25_cumecs": 196.48,
+      "p75_cumecs": 306.97
+    },
+    {
+      "date": "2027-03-09",
+      "mean_cumecs": 274.91,
+      "median_cumecs": 235.59,
+      "p25_cumecs": 197.17,
+      "p75_cumecs": 302.39
+    },
+    {
+      "date": "2027-03-10",
+      "mean_cumecs": 276.84,
+      "median_cumecs": 236.14,
+      "p25_cumecs": 196.71,
+      "p75_cumecs": 298.57
+    },
+    {
+      "date": "2027-03-11",
+      "mean_cumecs": 274.54,
+      "median_cumecs": 229.67,
+      "p25_cumecs": 196.02,
+      "p75_cumecs": 299.66
+    },
+    {
+      "date": "2027-03-12",
+      "mean_cumecs": 288.51,
+      "median_cumecs": 235.05,
+      "p25_cumecs": 200.14,
+      "p75_cumecs": 295.87
+    },
+    {
+      "date": "2027-03-13",
+      "mean_cumecs": 296.49,
+      "median_cumecs": 235.05,
+      "p25_cumecs": 199.45,
+      "p75_cumecs": 309.85
+    },
+    {
+      "date": "2027-03-14",
+      "mean_cumecs": 296.46,
+      "median_cumecs": 236.68,
+      "p25_cumecs": 200.18,
+      "p75_cumecs": 318.94
+    },
+    {
+      "date": "2027-03-15",
+      "mean_cumecs": 295.32,
+      "median_cumecs": 242.78,
+      "p25_cumecs": 202.24,
+      "p75_cumecs": 321.85
+    },
+    {
+      "date": "2027-03-16",
+      "mean_cumecs": 292.33,
+      "median_cumecs": 255.45,
+      "p25_cumecs": 198.76,
+      "p75_cumecs": 324.54
+    },
+    {
+      "date": "2027-03-17",
+      "mean_cumecs": 289.29,
+      "median_cumecs": 254.27,
+      "p25_cumecs": 200.61,
+      "p75_cumecs": 318.61
+    },
+    {
+      "date": "2027-03-18",
+      "mean_cumecs": 289.19,
+      "median_cumecs": 253.68,
+      "p25_cumecs": 206.57,
+      "p75_cumecs": 312.04
+    },
+    {
+      "date": "2027-03-19",
+      "mean_cumecs": 290.94,
+      "median_cumecs": 251.93,
+      "p25_cumecs": 206.14,
+      "p75_cumecs": 308.44
+    },
+    {
+      "date": "2027-03-20",
+      "mean_cumecs": 293.02,
+      "median_cumecs": 249.61,
+      "p25_cumecs": 210.59,
+      "p75_cumecs": 313.77
+    },
+    {
+      "date": "2027-03-21",
+      "mean_cumecs": 296.2,
+      "median_cumecs": 264.46,
+      "p25_cumecs": 207.71,
+      "p75_cumecs": 318.53
+    },
+    {
+      "date": "2027-03-22",
+      "mean_cumecs": 302.36,
+      "median_cumecs": 270.02,
+      "p25_cumecs": 214.55,
+      "p75_cumecs": 348.14
+    },
+    {
+      "date": "2027-03-23",
+      "mean_cumecs": 307.2,
+      "median_cumecs": 272.53,
+      "p25_cumecs": 216.3,
+      "p75_cumecs": 371.43
+    },
+    {
+      "date": "2027-03-24",
+      "mean_cumecs": 312.3,
+      "median_cumecs": 279.54,
+      "p25_cumecs": 215.78,
+      "p75_cumecs": 381.38
+    },
+    {
+      "date": "2027-03-25",
+      "mean_cumecs": 316.82,
+      "median_cumecs": 281.49,
+      "p25_cumecs": 215.27,
+      "p75_cumecs": 387.22
+    },
+    {
+      "date": "2027-03-26",
+      "mean_cumecs": 334.43,
+      "median_cumecs": 281.49,
+      "p25_cumecs": 223.54,
+      "p75_cumecs": 384.52
+    },
+    {
+      "date": "2027-03-27",
+      "mean_cumecs": 330.79,
+      "median_cumecs": 283.45,
+      "p25_cumecs": 221.42,
+      "p75_cumecs": 379.19
+    },
+    {
+      "date": "2027-03-28",
+      "mean_cumecs": 324.48,
+      "median_cumecs": 290.74,
+      "p25_cumecs": 224.94,
+      "p75_cumecs": 372.27
+    },
+    {
+      "date": "2027-03-29",
+      "mean_cumecs": 321.09,
+      "median_cumecs": 289.4,
+      "p25_cumecs": 228.15,
+      "p75_cumecs": 366.36
+    },
+    {
+      "date": "2027-03-30",
+      "mean_cumecs": 318.45,
+      "median_cumecs": 286.74,
+      "p25_cumecs": 235.06,
+      "p75_cumecs": 362.99
+    },
+    {
+      "date": "2027-03-31",
+      "mean_cumecs": 317.53,
+      "median_cumecs": 291.42,
+      "p25_cumecs": 232.62,
+      "p75_cumecs": 367.16
+    },
+    {
+      "date": "2027-04-01",
+      "mean_cumecs": 317.53,
+      "median_cumecs": 287.4,
+      "p25_cumecs": 229.41,
+      "p75_cumecs": 365.87
+    },
+    {
+      "date": "2027-04-02",
+      "mean_cumecs": 320.0,
+      "median_cumecs": 287.4,
+      "p25_cumecs": 226.25,
+      "p75_cumecs": 375.28
+    },
+    {
+      "date": "2027-04-03",
+      "mean_cumecs": 339.8,
+      "median_cumecs": 294.8,
+      "p25_cumecs": 226.26,
+      "p75_cumecs": 380.99
+    },
+    {
+      "date": "2027-04-04",
+      "mean_cumecs": 346.09,
+      "median_cumecs": 296.17,
+      "p25_cumecs": 227.61,
+      "p75_cumecs": 396.84
+    },
+    {
+      "date": "2027-04-05",
+      "mean_cumecs": 340.37,
+      "median_cumecs": 296.17,
+      "p25_cumecs": 228.63,
+      "p75_cumecs": 418.38
+    },
+    {
+      "date": "2027-04-06",
+      "mean_cumecs": 338.81,
+      "median_cumecs": 302.39,
+      "p25_cumecs": 231.28,
+      "p75_cumecs": 415.69
+    },
+    {
+      "date": "2027-04-07",
+      "mean_cumecs": 355.8,
+      "median_cumecs": 301.69,
+      "p25_cumecs": 234.79,
+      "p75_cumecs": 424.11
+    },
+    {
+      "date": "2027-04-08",
+      "mean_cumecs": 353.98,
+      "median_cumecs": 305.2,
+      "p25_cumecs": 234.78,
+      "p75_cumecs": 418.76
+    },
+    {
+      "date": "2027-04-09",
+      "mean_cumecs": 350.59,
+      "median_cumecs": 315.23,
+      "p25_cumecs": 233.43,
+      "p75_cumecs": 418.77
+    },
+    {
+      "date": "2027-04-10",
+      "mean_cumecs": 348.72,
+      "median_cumecs": 321.11,
+      "p25_cumecs": 232.35,
+      "p75_cumecs": 413.96
+    },
+    {
+      "date": "2027-04-11",
+      "mean_cumecs": 348.8,
+      "median_cumecs": 318.15,
+      "p25_cumecs": 239.44,
+      "p75_cumecs": 414.43
+    },
+    {
+      "date": "2027-04-12",
+      "mean_cumecs": 350.23,
+      "median_cumecs": 335.51,
+      "p25_cumecs": 248.83,
+      "p75_cumecs": 410.15
+    },
+    {
+      "date": "2027-04-13",
+      "mean_cumecs": 350.72,
+      "median_cumecs": 332.43,
+      "p25_cumecs": 254.58,
+      "p75_cumecs": 405.45
+    },
+    {
+      "date": "2027-04-14",
+      "mean_cumecs": 351.86,
+      "median_cumecs": 333.19,
+      "p25_cumecs": 256.93,
+      "p75_cumecs": 403.58
+    },
+    {
+      "date": "2027-04-15",
+      "mean_cumecs": 353.34,
+      "median_cumecs": 344.14,
+      "p25_cumecs": 257.25,
+      "p75_cumecs": 404.04
+    },
+    {
+      "date": "2027-04-16",
+      "mean_cumecs": 352.21,
+      "median_cumecs": 351.37,
+      "p25_cumecs": 254.29,
+      "p75_cumecs": 400.37
+    },
+    {
+      "date": "2027-04-17",
+      "mean_cumecs": 350.24,
+      "median_cumecs": 348.14,
+      "p25_cumecs": 252.81,
+      "p75_cumecs": 399.41
+    },
+    {
+      "date": "2027-04-18",
+      "mean_cumecs": 347.79,
+      "median_cumecs": 340.19,
+      "p25_cumecs": 255.53,
+      "p75_cumecs": 400.81
+    },
+    {
+      "date": "2027-04-19",
+      "mean_cumecs": 345.56,
+      "median_cumecs": 336.29,
+      "p25_cumecs": 253.83,
+      "p75_cumecs": 394.82
+    },
+    {
+      "date": "2027-04-20",
+      "mean_cumecs": 346.1,
+      "median_cumecs": 342.56,
+      "p25_cumecs": 251.73,
+      "p75_cumecs": 396.74
+    },
+    {
+      "date": "2027-04-21",
+      "mean_cumecs": 349.46,
+      "median_cumecs": 348.14,
+      "p25_cumecs": 255.45,
+      "p75_cumecs": 427.74
+    },
+    {
+      "date": "2027-04-22",
+      "mean_cumecs": 353.28,
+      "median_cumecs": 340.98,
+      "p25_cumecs": 257.83,
+      "p75_cumecs": 428.54
+    },
+    {
+      "date": "2027-04-23",
+      "mean_cumecs": 353.59,
+      "median_cumecs": 347.34,
+      "p25_cumecs": 256.64,
+      "p75_cumecs": 425.1
+    },
+    {
+      "date": "2027-04-24",
+      "mean_cumecs": 350.6,
+      "median_cumecs": 344.94,
+      "p25_cumecs": 254.57,
+      "p75_cumecs": 420.21
+    },
+    {
+      "date": "2027-04-25",
+      "mean_cumecs": 350.76,
+      "median_cumecs": 340.19,
+      "p25_cumecs": 259.95,
+      "p75_cumecs": 421.26
+    },
+    {
+      "date": "2027-04-26",
+      "mean_cumecs": 356.41,
+      "median_cumecs": 340.98,
+      "p25_cumecs": 261.12,
+      "p75_cumecs": 418.45
+    },
+    {
+      "date": "2027-04-27",
+      "mean_cumecs": 359.31,
+      "median_cumecs": 345.74,
+      "p25_cumecs": 256.65,
+      "p75_cumecs": 426.58
+    },
+    {
+      "date": "2027-04-28",
+      "mean_cumecs": 359.68,
+      "median_cumecs": 342.56,
+      "p25_cumecs": 254.29,
+      "p75_cumecs": 443.67
+    },
+    {
+      "date": "2027-04-29",
+      "mean_cumecs": 359.0,
+      "median_cumecs": 344.14,
+      "p25_cumecs": 257.52,
+      "p75_cumecs": 443.17
+    },
+    {
+      "date": "2027-04-30",
+      "mean_cumecs": 361.72,
+      "median_cumecs": 344.94,
+      "p25_cumecs": 258.13,
+      "p75_cumecs": 441.13
+    },
+    {
+      "date": "2027-05-01",
+      "mean_cumecs": 365.2,
+      "median_cumecs": 353.81,
+      "p25_cumecs": 259.02,
+      "p75_cumecs": 439.65
+    },
+    {
+      "date": "2027-05-02",
+      "mean_cumecs": 364.16,
+      "median_cumecs": 353.0,
+      "p25_cumecs": 258.42,
+      "p75_cumecs": 439.15
+    },
+    {
+      "date": "2027-05-03",
+      "mean_cumecs": 361.47,
+      "median_cumecs": 360.41,
+      "p25_cumecs": 257.27,
+      "p75_cumecs": 436.08
+    },
+    {
+      "date": "2027-05-04",
+      "mean_cumecs": 363.14,
+      "median_cumecs": 358.75,
+      "p25_cumecs": 261.42,
+      "p75_cumecs": 431.54
+    }
+  ],
+  "daily_time_basis": "UTC calendar-day modeled discharge mean; not an instantaneous 06:00 PKT gauge forecast"
+}

@@ -1,0 +1,43 @@
+{
+  "solver": "ANUGA 4.0.1, serial CPU, DE0 finite-volume shallow-water equations",
+  "study": "6 km square around the mapped Chenab near Jhang",
+  "centre_utm43n": [
+    239960,
+    3466940
+  ],
+  "side_m": 6000,
+  "mesh_spacing_m": 120,
+  "duration_seconds": 21600,
+  "output_interval_seconds": 900,
+  "manning_n": 0.04,
+  "wet_depth_threshold_m": 0.1,
+  "inlet_radius_m": 240,
+  "hydrograph_seconds_cumecs": [
+    [
+      0,
+      100
+    ],
+    [
+      3600,
+      1200
+    ],
+    [
+      7200,
+      1200
+    ],
+    [
+      10800,
+      100
+    ],
+    [
+      21600,
+      100
+    ]
+  ],
+  "hydrograph_kind": "hypothetical_test_input_not_observed_or_forecast",
+  "initial_condition": "dry surface; no surveyed initial river water level",
+  "boundary_condition": "transmissive on every outer boundary; artificial study-window truncation",
+  "rainfall": "none",
+  "infiltration": "none",
+  "calibrated": false
+}

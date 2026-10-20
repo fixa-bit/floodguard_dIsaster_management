@@ -1,0 +1,15 @@
+{
+  "lake_at_rest": {
+    "max_stage_error_m": 1.1102230246251565e-15,
+    "max_speed_m_s": 2.99538648199371e-15,
+    "relative_volume_error": 3.172323843109543e-16
+  },
+  "ritter_dam_break": {
+    "time_seconds": 20,
+    "depth_l1_error_m": 0.009725601072175277,
+    "relative_volume_error": 1.520046855330799e-16,
+    "depth_l1_acceptance_m": 0.12
+  },
+  "passed": true,
+  "scope": "Numerical setup checks only, not validation of Jhang flood prediction"
+}

@@ -1,0 +1,32 @@
+{
+  "spec": {
+    "id": "persistence",
+    "family": "persistence"
+  },
+  "horizon_days": 1,
+  "training_rows": 176,
+  "training_last_target": "2025-10-15T06:00:00+05:00",
+  "features": [
+    "log_flow",
+    "log_lag_1d",
+    "log_lag_2d",
+    "log_lag_3d",
+    "log_lag_7d",
+    "log_change_1d",
+    "log_change_3d",
+    "log_change_7d",
+    "log_outflow",
+    "outflow_inflow_ratio",
+    "log_retained_flow",
+    "log_mean_3d",
+    "relative_std_3d",
+    "log_mean_7d",
+    "relative_std_7d",
+    "log_max_7d",
+    "available_days_7d",
+    "season_sin",
+    "season_cos",
+    "flow_cumecs",
+    "change_1d_cumecs"
+  ]
+}

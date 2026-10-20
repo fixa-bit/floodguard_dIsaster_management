@@ -26,6 +26,7 @@ import type {
   WeatherResponse,
   SarInputRole,
   SarWaterOverlay,
+  MaralaMonthlyModelData,
 } from "../types/api";
 
 interface ErrorPayload {
@@ -91,6 +92,11 @@ export async function apiFetch<T>(path: string, options?: RequestInit, baseUrl =
 }
 
 export const api = {
+  sarWaterExample: async (example: "historical" | "permanent" = "historical"): Promise<SarWaterOverlay> => {
+    const response = await fetch(`${import.meta.env.BASE_URL}examples/${example === "permanent" ? "sar-pakistan-permanent" : "sar-pakistan"}.json`);
+    if (!response.ok) throw new Error("The historical flood example could not be loaded.");
+    return response.json() as Promise<SarWaterOverlay>;
+  },
   sarWaterExtentAtLocation: (latitude: number, longitude: number) =>
     apiFetch<SarWaterOverlay>(`/flood/water-extent/location?latitude=${latitude}&longitude=${longitude}`, undefined, undefined, 120000),
   sarWaterExtent: (files: Record<SarInputRole, File>) => {
@@ -102,6 +108,7 @@ export const api = {
   dashboard: () => apiFetch<DashboardSummary>("/dashboard/summary"),
   risk: (locationId: string) => apiFetch<RiskResponse>(`/flood/risk?location_id=${locationId}`),
   modelForecasts: () => apiFetch<ModelForecastPoint[]>("/flood/model-forecasts"),
+  maralaMonthlyModelData: () => apiFetch<MaralaMonthlyModelData>("/predictive/marala-monthly"),
   weather: (locationId: string) => apiFetch<WeatherResponse>(`/weather/current?location_id=${locationId}`),
   river: (locationId: string) => apiFetch<RiverResponse>(`/river/current?location_id=${locationId}`),
   upstreamForecasts: () => apiFetch<UpstreamForecastResponse>("/river/upstream-forecasts"),

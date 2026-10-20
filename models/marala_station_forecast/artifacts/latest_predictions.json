@@ -1,0 +1,73 @@
+{
+  "computed_at": "2026-10-16T11:03:36.994886+00:00",
+  "origin_source": "https://ffd.pmd.gov.pk/b/56582214-15be-46fc-8bb2-96fc5ff5227a",
+  "observation_time_is_not_publication_time": true,
+  "predictions": [
+    {
+      "horizon_days": 1,
+      "candidate_role": "champion",
+      "candidate": "ridge_log_return_100.0",
+      "origin_observed_at": "2026-10-15T06:00:00+05:00",
+      "target_at": "2026-10-16T06:00:00+05:00",
+      "predicted_inflow_cumecs": 379.8456341360685,
+      "last_measured_inflow_cumecs": 365.287321,
+      "research_only": true,
+      "production_refit_uses_test_season_after_evaluation": true
+    },
+    {
+      "horizon_days": 1,
+      "candidate_role": "best_learned",
+      "candidate": "ridge_log_return_100.0",
+      "origin_observed_at": "2026-10-15T06:00:00+05:00",
+      "target_at": "2026-10-16T06:00:00+05:00",
+      "predicted_inflow_cumecs": 379.8456341360685,
+      "last_measured_inflow_cumecs": 365.287321,
+      "research_only": true,
+      "production_refit_uses_test_season_after_evaluation": true
+    },
+    {
+      "horizon_days": 3,
+      "candidate_role": "champion",
+      "candidate": "training_median",
+      "origin_observed_at": "2026-10-15T06:00:00+05:00",
+      "target_at": "2026-10-18T06:00:00+05:00",
+      "predicted_inflow_cumecs": 1704.674165,
+      "last_measured_inflow_cumecs": 365.287321,
+      "research_only": true,
+      "production_refit_uses_test_season_after_evaluation": true
+    },
+    {
+      "horizon_days": 3,
+      "candidate_role": "best_learned",
+      "candidate": "ridge_log_return_1000.0",
+      "origin_observed_at": "2026-10-15T06:00:00+05:00",
+      "target_at": "2026-10-18T06:00:00+05:00",
+      "predicted_inflow_cumecs": 380.28190981362917,
+      "last_measured_inflow_cumecs": 365.287321,
+      "research_only": true,
+      "production_refit_uses_test_season_after_evaluation": true
+    },
+    {
+      "horizon_days": 7,
+      "candidate_role": "champion",
+      "candidate": "ridge_log_return_1000.0",
+      "origin_observed_at": "2026-10-15T06:00:00+05:00",
+      "target_at": "2026-10-22T06:00:00+05:00",
+      "predicted_inflow_cumecs": 360.4009507648827,
+      "last_measured_inflow_cumecs": 365.287321,
+      "research_only": true,
+      "production_refit_uses_test_season_after_evaluation": true
+    },
+    {
+      "horizon_days": 7,
+      "candidate_role": "best_learned",
+      "candidate": "ridge_log_return_1000.0",
+      "origin_observed_at": "2026-10-15T06:00:00+05:00",
+      "target_at": "2026-10-22T06:00:00+05:00",
+      "predicted_inflow_cumecs": 360.4009507648827,
+      "last_measured_inflow_cumecs": 365.287321,
+      "research_only": true,
+      "production_refit_uses_test_season_after_evaluation": true
+    }
+  ]
+}

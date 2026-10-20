@@ -1,0 +1,193 @@
+{
+  "files": {
+    "benchmarks.json": {
+      "sha256": "a8963737c79d87428de824d8c03e7308e29acd48b51ca7a25606677ebedb34ae",
+      "bytes": 473
+    },
+    "cell_results.npz": {
+      "sha256": "7e8df7bf7134d1de5a3b9d21f6f01bc4dfefde94ac0b7b8dbc05fbd2ccf3ceba",
+      "bytes": 297942
+    },
+    "code/__init__.py": {
+      "sha256": "3f0abb809d21aab61aec5f20d0fe6dfbcd07fbf84d4e0ea8ff1b58554bc9421a",
+      "bytes": 81
+    },
+    "code/run.py": {
+      "sha256": "11012a21e088fc7086bfd7e12b9b0b44b137aa427ae776843b5036b8068d5660",
+      "bytes": 17685
+    },
+    "code/verify.py": {
+      "sha256": "1b05fb02248462e475854198ad771475b26617c31a32ce6e243052163f0cf78d",
+      "bytes": 3752
+    },
+    "environment.json": {
+      "sha256": "d776baab17a3343c0ca120d92a17f72b5f5649463cc35194ccc43516ac92bb43",
+      "bytes": 545
+    },
+    "inputs/config.json": {
+      "sha256": "caa06677fa6303e99565768c14f75205dc8acf241afb4f473d6f7a9e66e19431",
+      "bytes": 958
+    },
+    "inputs/elevation-30m.tif": {
+      "sha256": "2135cea4441dd4923d19ccb9b294cee8fb8f0ea7dc316de4cadfb2d6209352e4",
+      "bytes": 659115
+    },
+    "inputs/hypothetical_inflow.csv": {
+      "sha256": "d165646e0b8ac4da9e6e4aac396d9b3901d10acaee099e8b193bccfd1c8f8bc5",
+      "bytes": 103
+    },
+    "inputs/inlet.json": {
+      "sha256": "de746aab9a6658e7833572e33d3ccace683147dc65a540a638bd9f0a77535eff",
+      "bytes": 303
+    },
+    "inputs/mapped-waterways.geojson": {
+      "sha256": "25f6f8c1446b7a4b9aabe172a201f55796ca214ffe76e09f81ad6ba80fa45cb3",
+      "bytes": 6492
+    },
+    "inputs/metadata.json": {
+      "sha256": "f2ee33fa1bbae068f8a6be2fd5956ba67ae07312ca4fd085e2cdbe76011a7774",
+      "bytes": 5236
+    },
+    "inputs/NOTICE.txt": {
+      "sha256": "9c593380599fd636a2684f877ced42fdc35359255fce915464e53991672b6008",
+      "bytes": 476
+    },
+    "jhang_hypothetical_inflow.sww": {
+      "sha256": "967b598c3625e8bc0708d529cde19f201090b975498063e40715b3599f54f128",
+      "bytes": 4813984
+    },
+    "portal/frames/000.png": {
+      "sha256": "0a1202bd452870df2c0582f07d09a122a42e2d51f269f5d1fd23a7cdb652429d",
+      "bytes": 2312
+    },
+    "portal/frames/001.png": {
+      "sha256": "3a7e6542caa3db61280195bcb41622f7e2465429936640b05def7dc4768f3a15",
+      "bytes": 3387
+    },
+    "portal/frames/002.png": {
+      "sha256": "1d71b8dda5702e5b55dfb4129e59f91e9baed5f7af64d6e49541f7a9a04a2f39",
+      "bytes": 5206
+    },
+    "portal/frames/003.png": {
+      "sha256": "a92c69b84793dd4278605d9ceeaaa4ea0ea6eaf80c0a1ee5c3b217cbe7e3627a",
+      "bytes": 7058
+    },
+    "portal/frames/004.png": {
+      "sha256": "96fc9dd2e21060f73f9240e677c640a9d7b40390cb5ec0f7b2179004acbf9913",
+      "bytes": 9318
+    },
+    "portal/frames/005.png": {
+      "sha256": "02d0b7a1c1e4f54e96a3301022b4cfae43b6b19ca18135ee4549eece3b553bc5",
+      "bytes": 11475
+    },
+    "portal/frames/006.png": {
+      "sha256": "2c366e93b5e5882fa6a23ee14064d0fd91221d282f8fcb1ea517e150f94953e7",
+      "bytes": 14144
+    },
+    "portal/frames/007.png": {
+      "sha256": "62ae8a34f556913b96adcea752a3f5e13530df6751b198aaa6ef6d519df20053",
+      "bytes": 17345
+    },
+    "portal/frames/008.png": {
+      "sha256": "ca24756ec2e77677da3f53d7b1a282e63c72844e9cfe24396394b15fb1717d68",
+      "bytes": 20178
+    },
+    "portal/frames/009.png": {
+      "sha256": "ca2b92c025b069d7971986703047a88c2bbc68a0639bdbb0214b5677be6271fb",
+      "bytes": 22261
+    },
+    "portal/frames/010.png": {
+      "sha256": "6020ed390859fa12be8ec3b126fc87336881f53b4b8e8432f737530359ffc7bc",
+      "bytes": 24448
+    },
+    "portal/frames/011.png": {
+      "sha256": "2666fe974cb4ce7405f770cb5a50a8157106419033430f4636f6feac4e31d625",
+      "bytes": 25030
+    },
+    "portal/frames/012.png": {
+      "sha256": "fff2a3eb45cbdacc170dcbfa6277e843ad60631e6d7ec0515c07e1a26ea88215",
+      "bytes": 24791
+    },
+    "portal/frames/013.png": {
+      "sha256": "aec38922f4271f589acb45251c0bf4090fa95e45f14e3febf3ad746ad2da3e7a",
+      "bytes": 23921
+    },
+    "portal/frames/014.png": {
+      "sha256": "b892f836954d7a799f1af451de8cfb7e8c8f2d9d3e9855327de1a886f8cf54bf",
+      "bytes": 23198
+    },
+    "portal/frames/015.png": {
+      "sha256": "3e8ea914aa77912cfe40e36b5c9190c762c856b1494d8dc4604ffaf0d60f5326",
+      "bytes": 22620
+    },
+    "portal/frames/016.png": {
+      "sha256": "1ec8ff79ca52c264ff1818a24fb3a2d888e89bf73c33f39b0a98b16934f27a4e",
+      "bytes": 22382
+    },
+    "portal/frames/017.png": {
+      "sha256": "11d96a902ed8254fe3165545d42e369d07cfc7f991d53d69b6ec4cd47e1a9b15",
+      "bytes": 22468
+    },
+    "portal/frames/018.png": {
+      "sha256": "8f81aed1c2c456ca4aca5a854249f0a823dd0ea29b6e6fe7ec9cd6a8e436b1d7",
+      "bytes": 22256
+    },
+    "portal/frames/019.png": {
+      "sha256": "2aa28ea8fe0411ecac8f43efa6ad44297c39e6c8d80a51544f9ee135b2209e01",
+      "bytes": 21950
+    },
+    "portal/frames/020.png": {
+      "sha256": "aedd07b60105bca0f3b12ee1e20fff3986bdd7bc50a4ed325f9fa0a1171b29bc",
+      "bytes": 21967
+    },
+    "portal/frames/021.png": {
+      "sha256": "065d21226cc8a31616cfd88afc31f4f290ebb2c225ca85d5f9353ab052760ebc",
+      "bytes": 21811
+    },
+    "portal/frames/022.png": {
+      "sha256": "4040e96441837a54156b1441cfa5b859567fa96f143b1afa0f13daea402de9cb",
+      "bytes": 22101
+    },
+    "portal/frames/023.png": {
+      "sha256": "2266836ffb188cbb687a2d4bffdbd93ea473dee6ca3e1f1f1518621a2a886f82",
+      "bytes": 21855
+    },
+    "portal/frames/024.png": {
+      "sha256": "ef255cad621a09e2c7e0f51b212dc0a0857c793adf67106b91b6b22fcec9890b",
+      "bytes": 21987
+    },
+    "portal/maximum-depth.tif": {
+      "sha256": "076991980bb3cff12788ae4b668ceffb278d8742ba35cadfe694555a2bee6d44",
+      "bytes": 62940
+    },
+    "portal/NOTICE.txt": {
+      "sha256": "9c593380599fd636a2684f877ced42fdc35359255fce915464e53991672b6008",
+      "bytes": 476
+    },
+    "portal/results.json": {
+      "sha256": "4637ceaeb811bee1003f349d13210b6089e0ed706efa2ebdb5be5c89f12b7104",
+      "bytes": 15740
+    },
+    "portal/terrain.png": {
+      "sha256": "7cf4af415c7d5977e3a587c07d8114519d631a00a0fa3746b49526fd31fc0915",
+      "bytes": 67499
+    },
+    "portal/timeseries.csv": {
+      "sha256": "62e97042eca6062d76afa8ca7cc7492ec122f3ee484531f1970d2605efb112c9",
+      "bytes": 4416
+    },
+    "results.json": {
+      "sha256": "e062f514dbb583a5d4dab0d6bbdaf32cbdbf610cc893e88f2c1f74123f6f99c5",
+      "bytes": 14890
+    },
+    "timeseries.csv": {
+      "sha256": "c56ad6a37b33d00b8065a180e55fdfaa95008facedaf8c0730fd3080ba93a1a2",
+      "bytes": 4035
+    },
+    "trial-summary.png": {
+      "sha256": "f76f4f37d1222707e2eb32cb68b27a16659ddcf806d255bd57ae1f58cb8403f1",
+      "bytes": 377328
+    }
+  },
+  "policy": "Retained inputs and outputs; do not modify sealed runs"
+}

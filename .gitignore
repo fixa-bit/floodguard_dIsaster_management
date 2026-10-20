@@ -1,9 +1,14 @@
 .env
 .venv/
 .pytest_cache/
+.pip-tmp/
 __pycache__/
 *.py[cod]
 *.db
+
+# Locally installed hydraulic engine binaries; provenance lives under models/.
+/tools/tuflow/
+/tools/hec_ras/
 
 frontend/.env
 frontend/node_modules/

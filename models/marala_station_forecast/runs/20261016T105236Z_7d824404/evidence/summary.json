@@ -1,0 +1,8 @@
+{
+  "observations": 322,
+  "documents_retained": 322,
+  "original_byte_hash_matches": 321,
+  "extracted_values_match": 322,
+  "errors": 0,
+  "note": "The training snapshot is preserved unchanged. HTML bytes may change; hash mismatches are disclosed rather than replacing the original evidence hash."
+}

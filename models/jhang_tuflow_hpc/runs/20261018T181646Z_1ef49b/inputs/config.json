@@ -1,0 +1,44 @@
+{
+  "solver": "TUFLOW HPC",
+  "version": "2026.3.0",
+  "hardware": "CPU, 2 threads",
+  "licence_mode": "official licence-free custom demo",
+  "duration_seconds": 600,
+  "bounds_utm43n": [
+    237560.0,
+    3464540.0,
+    242360.0,
+    3469340.0
+  ],
+  "cell_size_m": 30,
+  "cell_count": 25600,
+  "source_dem_spacing_m": 30,
+  "initial_condition": "dry; no observed initial river level",
+  "manning_n": 0.04,
+  "inflow_hydrograph_seconds_cumecs": [
+    [
+      0.0,
+      100.0
+    ],
+    [
+      600,
+      283.33333333333337
+    ]
+  ],
+  "source_area_centre_utm43n": [
+    240027.82094637927,
+    3468740.0
+  ],
+  "source_radius_m": 180,
+  "source_kind": "hypothetical inflow, not observed or forecast",
+  "outlet": "south-edge automatic HQ with assumed slope 0.0002; remaining boundaries closed",
+  "rainfall": "none",
+  "infiltration": "none",
+  "calibrated": false,
+  "licence_limits": {
+    "maximum_active_cells": 30000,
+    "maximum_bounding_cells": 100000,
+    "maximum_duration_seconds": 600
+  },
+  "licence_documentation": "https://docs.tuflow.com/classic-hpc/manual/2026.3/02-Getting-Started.html#licence-free-demo-mode"
+}

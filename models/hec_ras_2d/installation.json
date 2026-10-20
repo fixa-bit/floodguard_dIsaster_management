@@ -1,0 +1,15 @@
+{
+  "official_source": {
+    "kind": "beta",
+    "url": "https://github.com/HydrologicEngineeringCenter/hec-downloads/releases/download/1.0.44/HEC-RAS_2025_Beta.zip",
+    "path": "tools/hec_ras/downloads/HEC-RAS_2025_Beta.zip",
+    "bytes": 144913158,
+    "sha256": "3a719861139302e1e6d61d0996b7e2c645e3d5e447164ec1cb62e00ad6df0460",
+    "recorded_at_utc": "2026-10-18T18:36:21.953880+00:00"
+  },
+  "engine_relative_path": "tools/hec_ras/2025-beta/HEC-RAS 2025 Beta/ras.exe",
+  "engine_sha256": "75da18ed68e61596c14738cc7c8ec81fb39646db9b6bb6a2808ca128a9e2d19d",
+  "installed_at_utc": "2026-10-18T18:36:56.967116+00:00",
+  "version": "HEC-RAS 2025 Beta",
+  "mode": "portable local extraction; no administrator rights or system install"
+}

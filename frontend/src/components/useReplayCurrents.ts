@@ -6,7 +6,7 @@ import { ReplayWaterRenderer } from "./ReplayWaterRenderer";
 
 export function useReplayCurrents({ map, canvas, data, level, enabled, animate }: {
   map: MapLibreMap | null; canvas: RefObject<HTMLCanvasElement | null>;
-  data: FloodExposurePreview | null; level: number; enabled: boolean; animate: boolean;
+  data: Pick<FloodExposurePreview, "supported" | "water" | "river_lines"> | null; level: number; enabled: boolean; animate: boolean;
 }) {
   const routes = useMemo(() => data?.supported ? currentRoutes(data) : [], [data]);
   const polygons = useMemo(() => waterPolygons(data, level), [data, level]);

@@ -1,0 +1,840 @@
+{
+  "study": "Merced River, Yosemite Valley, California",
+  "source": "USACE HEC-RAS 2025 Beta Simple_Plans tutorial",
+  "source_url": "https://www.hec.usace.army.mil/confluence/rasdocs/hecras/latest/tutorials/plans-and-results",
+  "source_archive_complete": false,
+  "source_members_crc_checked": true,
+  "input_event": "January 1997 Event (official tutorial label)",
+  "simulation_start": "1997-01-01 00:00:00 (model time)",
+  "status": "Demonstration only; not a Pakistan flood simulation or forecast",
+  "solver": "HEC-RAS 2025 Beta CPU, Diffusion Wave Equation",
+  "time_step_minutes": 1,
+  "native_output_interval_minutes": 10,
+  "display_interval_hours": 2,
+  "display_start_hours": 12,
+  "display_end_hours": 108,
+  "depth_unit": "m",
+  "minimum_shown_depth_m": 0.1,
+  "bounds_lonlat": [
+    [
+      -119.61952458273167,
+      37.75173250570213
+    ],
+    [
+      -119.5530207677145,
+      37.75173250570213
+    ],
+    [
+      -119.5530207677145,
+      37.721894224489986
+    ],
+    [
+      -119.61952458273167,
+      37.721894224489986
+    ]
+  ],
+  "plans": [
+    {
+      "id": "400ft",
+      "name": "1c. 400ft nCh wCh",
+      "mesh_spacing_ft": 400,
+      "cell_count": 512,
+      "result_sha256": "86788cbee19430904a979d3f28769d32fb62f52eafd760902548509a3ad0e12b",
+      "frames": [
+        {
+          "hour": 12.0,
+          "date_label": "01 Jan 1997 \u00b7 12:00",
+          "image": "400ft/depth-072.png",
+          "wet_area_km2": 1.375,
+          "max_depth_m": 1.337,
+          "wet_cells": 177
+        },
+        {
+          "hour": 14.0,
+          "date_label": "01 Jan 1997 \u00b7 14:00",
+          "image": "400ft/depth-084.png",
+          "wet_area_km2": 1.375,
+          "max_depth_m": 1.346,
+          "wet_cells": 177
+        },
+        {
+          "hour": 16.0,
+          "date_label": "01 Jan 1997 \u00b7 16:00",
+          "image": "400ft/depth-096.png",
+          "wet_area_km2": 1.381,
+          "max_depth_m": 1.35,
+          "wet_cells": 178
+        },
+        {
+          "hour": 18.0,
+          "date_label": "01 Jan 1997 \u00b7 18:00",
+          "image": "400ft/depth-108.png",
+          "wet_area_km2": 1.398,
+          "max_depth_m": 1.358,
+          "wet_cells": 180
+        },
+        {
+          "hour": 20.0,
+          "date_label": "01 Jan 1997 \u00b7 20:00",
+          "image": "400ft/depth-120.png",
+          "wet_area_km2": 1.413,
+          "max_depth_m": 1.374,
+          "wet_cells": 181
+        },
+        {
+          "hour": 22.0,
+          "date_label": "01 Jan 1997 \u00b7 22:00",
+          "image": "400ft/depth-132.png",
+          "wet_area_km2": 1.44,
+          "max_depth_m": 1.512,
+          "wet_cells": 184
+        },
+        {
+          "hour": 24.0,
+          "date_label": "02 Jan 1997 \u00b7 00:00",
+          "image": "400ft/depth-144.png",
+          "wet_area_km2": 1.644,
+          "max_depth_m": 1.56,
+          "wet_cells": 201
+        },
+        {
+          "hour": 26.0,
+          "date_label": "02 Jan 1997 \u00b7 02:00",
+          "image": "400ft/depth-156.png",
+          "wet_area_km2": 1.941,
+          "max_depth_m": 1.713,
+          "wet_cells": 228
+        },
+        {
+          "hour": 28.0,
+          "date_label": "02 Jan 1997 \u00b7 04:00",
+          "image": "400ft/depth-168.png",
+          "wet_area_km2": 2.337,
+          "max_depth_m": 1.975,
+          "wet_cells": 261
+        },
+        {
+          "hour": 30.0,
+          "date_label": "02 Jan 1997 \u00b7 06:00",
+          "image": "400ft/depth-180.png",
+          "wet_area_km2": 2.696,
+          "max_depth_m": 2.161,
+          "wet_cells": 292
+        },
+        {
+          "hour": 32.0,
+          "date_label": "02 Jan 1997 \u00b7 08:00",
+          "image": "400ft/depth-192.png",
+          "wet_area_km2": 2.938,
+          "max_depth_m": 2.647,
+          "wet_cells": 316
+        },
+        {
+          "hour": 34.0,
+          "date_label": "02 Jan 1997 \u00b7 10:00",
+          "image": "400ft/depth-204.png",
+          "wet_area_km2": 3.265,
+          "max_depth_m": 2.753,
+          "wet_cells": 344
+        },
+        {
+          "hour": 36.0,
+          "date_label": "02 Jan 1997 \u00b7 12:00",
+          "image": "400ft/depth-216.png",
+          "wet_area_km2": 3.521,
+          "max_depth_m": 2.965,
+          "wet_cells": 362
+        },
+        {
+          "hour": 38.0,
+          "date_label": "02 Jan 1997 \u00b7 14:00",
+          "image": "400ft/depth-228.png",
+          "wet_area_km2": 3.678,
+          "max_depth_m": 3.255,
+          "wet_cells": 373
+        },
+        {
+          "hour": 40.0,
+          "date_label": "02 Jan 1997 \u00b7 16:00",
+          "image": "400ft/depth-240.png",
+          "wet_area_km2": 3.896,
+          "max_depth_m": 3.51,
+          "wet_cells": 391
+        },
+        {
+          "hour": 42.0,
+          "date_label": "02 Jan 1997 \u00b7 18:00",
+          "image": "400ft/depth-252.png",
+          "wet_area_km2": 3.929,
+          "max_depth_m": 3.694,
+          "wet_cells": 394
+        },
+        {
+          "hour": 44.0,
+          "date_label": "02 Jan 1997 \u00b7 20:00",
+          "image": "400ft/depth-264.png",
+          "wet_area_km2": 4.019,
+          "max_depth_m": 3.836,
+          "wet_cells": 400
+        },
+        {
+          "hour": 46.0,
+          "date_label": "02 Jan 1997 \u00b7 22:00",
+          "image": "400ft/depth-276.png",
+          "wet_area_km2": 4.034,
+          "max_depth_m": 3.943,
+          "wet_cells": 401
+        },
+        {
+          "hour": 48.0,
+          "date_label": "03 Jan 1997 \u00b7 00:00",
+          "image": "400ft/depth-288.png",
+          "wet_area_km2": 4.063,
+          "max_depth_m": 3.999,
+          "wet_cells": 403
+        },
+        {
+          "hour": 50.0,
+          "date_label": "03 Jan 1997 \u00b7 02:00",
+          "image": "400ft/depth-300.png",
+          "wet_area_km2": 4.063,
+          "max_depth_m": 4.028,
+          "wet_cells": 403
+        },
+        {
+          "hour": 52.0,
+          "date_label": "03 Jan 1997 \u00b7 04:00",
+          "image": "400ft/depth-312.png",
+          "wet_area_km2": 4.063,
+          "max_depth_m": 4.052,
+          "wet_cells": 403
+        },
+        {
+          "hour": 54.0,
+          "date_label": "03 Jan 1997 \u00b7 06:00",
+          "image": "400ft/depth-324.png",
+          "wet_area_km2": 4.078,
+          "max_depth_m": 4.097,
+          "wet_cells": 404
+        },
+        {
+          "hour": 56.0,
+          "date_label": "03 Jan 1997 \u00b7 08:00",
+          "image": "400ft/depth-336.png",
+          "wet_area_km2": 4.093,
+          "max_depth_m": 4.162,
+          "wet_cells": 405
+        },
+        {
+          "hour": 58.0,
+          "date_label": "03 Jan 1997 \u00b7 10:00",
+          "image": "400ft/depth-348.png",
+          "wet_area_km2": 4.093,
+          "max_depth_m": 4.232,
+          "wet_cells": 405
+        },
+        {
+          "hour": 60.0,
+          "date_label": "03 Jan 1997 \u00b7 12:00",
+          "image": "400ft/depth-360.png",
+          "wet_area_km2": 4.093,
+          "max_depth_m": 4.279,
+          "wet_cells": 405
+        },
+        {
+          "hour": 62.0,
+          "date_label": "03 Jan 1997 \u00b7 14:00",
+          "image": "400ft/depth-372.png",
+          "wet_area_km2": 4.093,
+          "max_depth_m": 4.296,
+          "wet_cells": 405
+        },
+        {
+          "hour": 64.0,
+          "date_label": "03 Jan 1997 \u00b7 16:00",
+          "image": "400ft/depth-384.png",
+          "wet_area_km2": 4.108,
+          "max_depth_m": 4.317,
+          "wet_cells": 406
+        },
+        {
+          "hour": 66.0,
+          "date_label": "03 Jan 1997 \u00b7 18:00",
+          "image": "400ft/depth-396.png",
+          "wet_area_km2": 4.108,
+          "max_depth_m": 4.315,
+          "wet_cells": 406
+        },
+        {
+          "hour": 68.0,
+          "date_label": "03 Jan 1997 \u00b7 20:00",
+          "image": "400ft/depth-408.png",
+          "wet_area_km2": 4.093,
+          "max_depth_m": 4.276,
+          "wet_cells": 405
+        },
+        {
+          "hour": 70.0,
+          "date_label": "03 Jan 1997 \u00b7 22:00",
+          "image": "400ft/depth-420.png",
+          "wet_area_km2": 4.093,
+          "max_depth_m": 4.221,
+          "wet_cells": 405
+        },
+        {
+          "hour": 72.0,
+          "date_label": "04 Jan 1997 \u00b7 00:00",
+          "image": "400ft/depth-432.png",
+          "wet_area_km2": 4.078,
+          "max_depth_m": 4.15,
+          "wet_cells": 404
+        },
+        {
+          "hour": 74.0,
+          "date_label": "04 Jan 1997 \u00b7 02:00",
+          "image": "400ft/depth-444.png",
+          "wet_area_km2": 4.035,
+          "max_depth_m": 4.051,
+          "wet_cells": 401
+        },
+        {
+          "hour": 76.0,
+          "date_label": "04 Jan 1997 \u00b7 04:00",
+          "image": "400ft/depth-456.png",
+          "wet_area_km2": 4.021,
+          "max_depth_m": 3.919,
+          "wet_cells": 400
+        },
+        {
+          "hour": 78.0,
+          "date_label": "04 Jan 1997 \u00b7 06:00",
+          "image": "400ft/depth-468.png",
+          "wet_area_km2": 3.976,
+          "max_depth_m": 3.752,
+          "wet_cells": 397
+        },
+        {
+          "hour": 80.0,
+          "date_label": "04 Jan 1997 \u00b7 08:00",
+          "image": "400ft/depth-480.png",
+          "wet_area_km2": 3.942,
+          "max_depth_m": 3.577,
+          "wet_cells": 394
+        },
+        {
+          "hour": 82.0,
+          "date_label": "04 Jan 1997 \u00b7 10:00",
+          "image": "400ft/depth-492.png",
+          "wet_area_km2": 3.875,
+          "max_depth_m": 3.397,
+          "wet_cells": 389
+        },
+        {
+          "hour": 84.0,
+          "date_label": "04 Jan 1997 \u00b7 12:00",
+          "image": "400ft/depth-504.png",
+          "wet_area_km2": 3.762,
+          "max_depth_m": 3.23,
+          "wet_cells": 380
+        },
+        {
+          "hour": 86.0,
+          "date_label": "04 Jan 1997 \u00b7 14:00",
+          "image": "400ft/depth-516.png",
+          "wet_area_km2": 3.703,
+          "max_depth_m": 3.087,
+          "wet_cells": 376
+        },
+        {
+          "hour": 88.0,
+          "date_label": "04 Jan 1997 \u00b7 16:00",
+          "image": "400ft/depth-528.png",
+          "wet_area_km2": 3.664,
+          "max_depth_m": 2.957,
+          "wet_cells": 372
+        },
+        {
+          "hour": 90.0,
+          "date_label": "04 Jan 1997 \u00b7 18:00",
+          "image": "400ft/depth-540.png",
+          "wet_area_km2": 3.62,
+          "max_depth_m": 2.845,
+          "wet_cells": 369
+        },
+        {
+          "hour": 92.0,
+          "date_label": "04 Jan 1997 \u00b7 20:00",
+          "image": "400ft/depth-552.png",
+          "wet_area_km2": 3.567,
+          "max_depth_m": 2.75,
+          "wet_cells": 365
+        },
+        {
+          "hour": 94.0,
+          "date_label": "04 Jan 1997 \u00b7 22:00",
+          "image": "400ft/depth-564.png",
+          "wet_area_km2": 3.533,
+          "max_depth_m": 2.673,
+          "wet_cells": 362
+        },
+        {
+          "hour": 96.0,
+          "date_label": "05 Jan 1997 \u00b7 00:00",
+          "image": "400ft/depth-576.png",
+          "wet_area_km2": 3.466,
+          "max_depth_m": 2.617,
+          "wet_cells": 358
+        },
+        {
+          "hour": 98.0,
+          "date_label": "05 Jan 1997 \u00b7 02:00",
+          "image": "400ft/depth-588.png",
+          "wet_area_km2": 3.433,
+          "max_depth_m": 2.536,
+          "wet_cells": 355
+        },
+        {
+          "hour": 100.0,
+          "date_label": "05 Jan 1997 \u00b7 04:00",
+          "image": "400ft/depth-600.png",
+          "wet_area_km2": 3.404,
+          "max_depth_m": 2.477,
+          "wet_cells": 351
+        },
+        {
+          "hour": 102.0,
+          "date_label": "05 Jan 1997 \u00b7 06:00",
+          "image": "400ft/depth-612.png",
+          "wet_area_km2": 3.399,
+          "max_depth_m": 2.424,
+          "wet_cells": 350
+        },
+        {
+          "hour": 104.0,
+          "date_label": "05 Jan 1997 \u00b7 08:00",
+          "image": "400ft/depth-624.png",
+          "wet_area_km2": 3.385,
+          "max_depth_m": 2.391,
+          "wet_cells": 348
+        },
+        {
+          "hour": 106.0,
+          "date_label": "05 Jan 1997 \u00b7 10:00",
+          "image": "400ft/depth-636.png",
+          "wet_area_km2": 3.341,
+          "max_depth_m": 2.36,
+          "wet_cells": 344
+        },
+        {
+          "hour": 108.0,
+          "date_label": "05 Jan 1997 \u00b7 12:00",
+          "image": "400ft/depth-648.png",
+          "wet_area_km2": 3.329,
+          "max_depth_m": 2.337,
+          "wet_cells": 342
+        }
+      ]
+    },
+    {
+      "id": "200ft",
+      "name": "2a. 200ft wCh1",
+      "mesh_spacing_ft": 200,
+      "cell_count": 1718,
+      "result_sha256": "2d709f61ac5debccc3b67fda5b650c5e38ba977470de4f439b2fd234f5fbf4a7",
+      "frames": [
+        {
+          "hour": 12.0,
+          "date_label": "01 Jan 1997 \u00b7 12:00",
+          "image": "200ft/depth-072.png",
+          "wet_area_km2": 0.831,
+          "max_depth_m": 1.238,
+          "wet_cells": 343
+        },
+        {
+          "hour": 14.0,
+          "date_label": "01 Jan 1997 \u00b7 14:00",
+          "image": "200ft/depth-084.png",
+          "wet_area_km2": 0.833,
+          "max_depth_m": 1.241,
+          "wet_cells": 344
+        },
+        {
+          "hour": 16.0,
+          "date_label": "01 Jan 1997 \u00b7 16:00",
+          "image": "200ft/depth-096.png",
+          "wet_area_km2": 0.836,
+          "max_depth_m": 1.253,
+          "wet_cells": 345
+        },
+        {
+          "hour": 18.0,
+          "date_label": "01 Jan 1997 \u00b7 18:00",
+          "image": "200ft/depth-108.png",
+          "wet_area_km2": 0.846,
+          "max_depth_m": 1.263,
+          "wet_cells": 349
+        },
+        {
+          "hour": 20.0,
+          "date_label": "01 Jan 1997 \u00b7 20:00",
+          "image": "200ft/depth-120.png",
+          "wet_area_km2": 0.847,
+          "max_depth_m": 1.276,
+          "wet_cells": 350
+        },
+        {
+          "hour": 22.0,
+          "date_label": "01 Jan 1997 \u00b7 22:00",
+          "image": "200ft/depth-132.png",
+          "wet_area_km2": 0.859,
+          "max_depth_m": 1.301,
+          "wet_cells": 356
+        },
+        {
+          "hour": 24.0,
+          "date_label": "02 Jan 1997 \u00b7 00:00",
+          "image": "200ft/depth-144.png",
+          "wet_area_km2": 0.9,
+          "max_depth_m": 1.41,
+          "wet_cells": 373
+        },
+        {
+          "hour": 26.0,
+          "date_label": "02 Jan 1997 \u00b7 02:00",
+          "image": "200ft/depth-156.png",
+          "wet_area_km2": 1.029,
+          "max_depth_m": 1.636,
+          "wet_cells": 426
+        },
+        {
+          "hour": 28.0,
+          "date_label": "02 Jan 1997 \u00b7 04:00",
+          "image": "200ft/depth-168.png",
+          "wet_area_km2": 1.22,
+          "max_depth_m": 1.89,
+          "wet_cells": 492
+        },
+        {
+          "hour": 30.0,
+          "date_label": "02 Jan 1997 \u00b7 06:00",
+          "image": "200ft/depth-180.png",
+          "wet_area_km2": 1.458,
+          "max_depth_m": 2.172,
+          "wet_cells": 576
+        },
+        {
+          "hour": 32.0,
+          "date_label": "02 Jan 1997 \u00b7 08:00",
+          "image": "200ft/depth-192.png",
+          "wet_area_km2": 1.761,
+          "max_depth_m": 2.524,
+          "wet_cells": 678
+        },
+        {
+          "hour": 34.0,
+          "date_label": "02 Jan 1997 \u00b7 10:00",
+          "image": "200ft/depth-204.png",
+          "wet_area_km2": 1.974,
+          "max_depth_m": 2.766,
+          "wet_cells": 748
+        },
+        {
+          "hour": 36.0,
+          "date_label": "02 Jan 1997 \u00b7 12:00",
+          "image": "200ft/depth-216.png",
+          "wet_area_km2": 2.23,
+          "max_depth_m": 2.997,
+          "wet_cells": 825
+        },
+        {
+          "hour": 38.0,
+          "date_label": "02 Jan 1997 \u00b7 14:00",
+          "image": "200ft/depth-228.png",
+          "wet_area_km2": 2.537,
+          "max_depth_m": 3.295,
+          "wet_cells": 913
+        },
+        {
+          "hour": 40.0,
+          "date_label": "02 Jan 1997 \u00b7 16:00",
+          "image": "200ft/depth-240.png",
+          "wet_area_km2": 2.753,
+          "max_depth_m": 3.559,
+          "wet_cells": 972
+        },
+        {
+          "hour": 42.0,
+          "date_label": "02 Jan 1997 \u00b7 18:00",
+          "image": "200ft/depth-252.png",
+          "wet_area_km2": 2.906,
+          "max_depth_m": 3.752,
+          "wet_cells": 1015
+        },
+        {
+          "hour": 44.0,
+          "date_label": "02 Jan 1997 \u00b7 20:00",
+          "image": "200ft/depth-264.png",
+          "wet_area_km2": 2.982,
+          "max_depth_m": 3.885,
+          "wet_cells": 1037
+        },
+        {
+          "hour": 46.0,
+          "date_label": "02 Jan 1997 \u00b7 22:00",
+          "image": "200ft/depth-276.png",
+          "wet_area_km2": 3.065,
+          "max_depth_m": 3.99,
+          "wet_cells": 1061
+        },
+        {
+          "hour": 48.0,
+          "date_label": "03 Jan 1997 \u00b7 00:00",
+          "image": "200ft/depth-288.png",
+          "wet_area_km2": 3.097,
+          "max_depth_m": 4.04,
+          "wet_cells": 1070
+        },
+        {
+          "hour": 50.0,
+          "date_label": "03 Jan 1997 \u00b7 02:00",
+          "image": "200ft/depth-300.png",
+          "wet_area_km2": 3.116,
+          "max_depth_m": 4.067,
+          "wet_cells": 1075
+        },
+        {
+          "hour": 52.0,
+          "date_label": "03 Jan 1997 \u00b7 04:00",
+          "image": "200ft/depth-312.png",
+          "wet_area_km2": 3.134,
+          "max_depth_m": 4.091,
+          "wet_cells": 1080
+        },
+        {
+          "hour": 54.0,
+          "date_label": "03 Jan 1997 \u00b7 06:00",
+          "image": "200ft/depth-324.png",
+          "wet_area_km2": 3.184,
+          "max_depth_m": 4.136,
+          "wet_cells": 1093
+        },
+        {
+          "hour": 56.0,
+          "date_label": "03 Jan 1997 \u00b7 08:00",
+          "image": "200ft/depth-336.png",
+          "wet_area_km2": 3.239,
+          "max_depth_m": 4.203,
+          "wet_cells": 1108
+        },
+        {
+          "hour": 58.0,
+          "date_label": "03 Jan 1997 \u00b7 10:00",
+          "image": "200ft/depth-348.png",
+          "wet_area_km2": 3.28,
+          "max_depth_m": 4.278,
+          "wet_cells": 1119
+        },
+        {
+          "hour": 60.0,
+          "date_label": "03 Jan 1997 \u00b7 12:00",
+          "image": "200ft/depth-360.png",
+          "wet_area_km2": 3.292,
+          "max_depth_m": 4.338,
+          "wet_cells": 1122
+        },
+        {
+          "hour": 62.0,
+          "date_label": "03 Jan 1997 \u00b7 14:00",
+          "image": "200ft/depth-372.png",
+          "wet_area_km2": 3.299,
+          "max_depth_m": 4.353,
+          "wet_cells": 1124
+        },
+        {
+          "hour": 64.0,
+          "date_label": "03 Jan 1997 \u00b7 16:00",
+          "image": "200ft/depth-384.png",
+          "wet_area_km2": 3.31,
+          "max_depth_m": 4.375,
+          "wet_cells": 1127
+        },
+        {
+          "hour": 66.0,
+          "date_label": "03 Jan 1997 \u00b7 18:00",
+          "image": "200ft/depth-396.png",
+          "wet_area_km2": 3.306,
+          "max_depth_m": 4.372,
+          "wet_cells": 1126
+        },
+        {
+          "hour": 68.0,
+          "date_label": "03 Jan 1997 \u00b7 20:00",
+          "image": "200ft/depth-408.png",
+          "wet_area_km2": 3.295,
+          "max_depth_m": 4.33,
+          "wet_cells": 1123
+        },
+        {
+          "hour": 70.0,
+          "date_label": "03 Jan 1997 \u00b7 22:00",
+          "image": "200ft/depth-420.png",
+          "wet_area_km2": 3.247,
+          "max_depth_m": 4.274,
+          "wet_cells": 1110
+        },
+        {
+          "hour": 72.0,
+          "date_label": "04 Jan 1997 \u00b7 00:00",
+          "image": "200ft/depth-432.png",
+          "wet_area_km2": 3.205,
+          "max_depth_m": 4.192,
+          "wet_cells": 1099
+        },
+        {
+          "hour": 74.0,
+          "date_label": "04 Jan 1997 \u00b7 02:00",
+          "image": "200ft/depth-444.png",
+          "wet_area_km2": 3.146,
+          "max_depth_m": 4.08,
+          "wet_cells": 1081
+        },
+        {
+          "hour": 76.0,
+          "date_label": "04 Jan 1997 \u00b7 04:00",
+          "image": "200ft/depth-456.png",
+          "wet_area_km2": 3.075,
+          "max_depth_m": 3.945,
+          "wet_cells": 1060
+        },
+        {
+          "hour": 78.0,
+          "date_label": "04 Jan 1997 \u00b7 06:00",
+          "image": "200ft/depth-468.png",
+          "wet_area_km2": 2.986,
+          "max_depth_m": 3.779,
+          "wet_cells": 1034
+        },
+        {
+          "hour": 80.0,
+          "date_label": "04 Jan 1997 \u00b7 08:00",
+          "image": "200ft/depth-480.png",
+          "wet_area_km2": 2.91,
+          "max_depth_m": 3.608,
+          "wet_cells": 1014
+        },
+        {
+          "hour": 82.0,
+          "date_label": "04 Jan 1997 \u00b7 10:00",
+          "image": "200ft/depth-492.png",
+          "wet_area_km2": 2.78,
+          "max_depth_m": 3.434,
+          "wet_cells": 977
+        },
+        {
+          "hour": 84.0,
+          "date_label": "04 Jan 1997 \u00b7 12:00",
+          "image": "200ft/depth-504.png",
+          "wet_area_km2": 2.686,
+          "max_depth_m": 3.28,
+          "wet_cells": 952
+        },
+        {
+          "hour": 86.0,
+          "date_label": "04 Jan 1997 \u00b7 14:00",
+          "image": "200ft/depth-516.png",
+          "wet_area_km2": 2.598,
+          "max_depth_m": 3.139,
+          "wet_cells": 925
+        },
+        {
+          "hour": 88.0,
+          "date_label": "04 Jan 1997 \u00b7 16:00",
+          "image": "200ft/depth-528.png",
+          "wet_area_km2": 2.527,
+          "max_depth_m": 3.013,
+          "wet_cells": 904
+        },
+        {
+          "hour": 90.0,
+          "date_label": "04 Jan 1997 \u00b7 18:00",
+          "image": "200ft/depth-540.png",
+          "wet_area_km2": 2.454,
+          "max_depth_m": 2.894,
+          "wet_cells": 880
+        },
+        {
+          "hour": 92.0,
+          "date_label": "04 Jan 1997 \u00b7 20:00",
+          "image": "200ft/depth-552.png",
+          "wet_area_km2": 2.409,
+          "max_depth_m": 2.791,
+          "wet_cells": 864
+        },
+        {
+          "hour": 94.0,
+          "date_label": "04 Jan 1997 \u00b7 22:00",
+          "image": "200ft/depth-564.png",
+          "wet_area_km2": 2.348,
+          "max_depth_m": 2.7,
+          "wet_cells": 847
+        },
+        {
+          "hour": 96.0,
+          "date_label": "05 Jan 1997 \u00b7 00:00",
+          "image": "200ft/depth-576.png",
+          "wet_area_km2": 2.299,
+          "max_depth_m": 2.635,
+          "wet_cells": 833
+        },
+        {
+          "hour": 98.0,
+          "date_label": "05 Jan 1997 \u00b7 02:00",
+          "image": "200ft/depth-588.png",
+          "wet_area_km2": 2.259,
+          "max_depth_m": 2.575,
+          "wet_cells": 817
+        },
+        {
+          "hour": 100.0,
+          "date_label": "05 Jan 1997 \u00b7 04:00",
+          "image": "200ft/depth-600.png",
+          "wet_area_km2": 2.211,
+          "max_depth_m": 2.517,
+          "wet_cells": 804
+        },
+        {
+          "hour": 102.0,
+          "date_label": "05 Jan 1997 \u00b7 06:00",
+          "image": "200ft/depth-612.png",
+          "wet_area_km2": 2.167,
+          "max_depth_m": 2.466,
+          "wet_cells": 789
+        },
+        {
+          "hour": 104.0,
+          "date_label": "05 Jan 1997 \u00b7 08:00",
+          "image": "200ft/depth-624.png",
+          "wet_area_km2": 2.147,
+          "max_depth_m": 2.432,
+          "wet_cells": 781
+        },
+        {
+          "hour": 106.0,
+          "date_label": "05 Jan 1997 \u00b7 10:00",
+          "image": "200ft/depth-636.png",
+          "wet_area_km2": 2.115,
+          "max_depth_m": 2.4,
+          "wet_cells": 768
+        },
+        {
+          "hour": 108.0,
+          "date_label": "05 Jan 1997 \u00b7 12:00",
+          "image": "200ft/depth-648.png",
+          "wet_area_km2": 2.091,
+          "max_depth_m": 2.371,
+          "wet_cells": 760
+        }
+      ]
+    }
+  ]
+}

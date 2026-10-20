@@ -1,0 +1,445 @@
+{
+  "run_id": "20261018T181236Z_854ad3",
+  "solver": "TUFLOW HPC",
+  "version": "2026.3.0",
+  "hardware": "CPU, 2 threads",
+  "licence_mode": "Demo Model ON; retained playback of one permitted ten-minute simulation",
+  "duration_seconds": 600,
+  "calibrated": false,
+  "config": {
+    "solver": "TUFLOW HPC",
+    "version": "2026.3.0",
+    "hardware": "CPU, 2 threads",
+    "licence_mode": "official licence-free custom demo",
+    "duration_seconds": 600,
+    "bounds_utm43n": [
+      237560.0,
+      3464540.0,
+      242360.0,
+      3469340.0
+    ],
+    "cell_size_m": 30,
+    "cell_count": 25600,
+    "source_dem_spacing_m": 30,
+    "initial_condition": "dry; no observed initial river level",
+    "manning_n": 0.04,
+    "inflow_hydrograph_seconds_cumecs": [
+      [
+        0.0,
+        100.0
+      ],
+      [
+        600,
+        283.33333333333337
+      ]
+    ],
+    "source_area_centre_utm43n": [
+      240027.82094637927,
+      3468740.0
+    ],
+    "source_radius_m": 180,
+    "source_kind": "hypothetical inflow, not observed or forecast",
+    "outlet": "south-edge automatic HQ with assumed slope 0.0002; remaining boundaries closed",
+    "rainfall": "none",
+    "infiltration": "none",
+    "calibrated": false,
+    "licence_limits": {
+      "maximum_active_cells": 30000,
+      "maximum_bounding_cells": 100000,
+      "maximum_duration_seconds": 600
+    },
+    "licence_documentation": "https://docs.tuflow.com/classic-hpc/manual/2026.3/02-Getting-Started.html#licence-free-demo-mode",
+    "active_cells_engine": 25442
+  },
+  "checks": {
+    "successful_solver_exit": true,
+    "completion_marker": true,
+    "nan_repeated_timesteps": 0,
+    "maximum_relative_mass_error": 3.535013e-07,
+    "independently_integrated_inflow_m3": 115000.00000000001,
+    "final_water_volume_m3": 115000.0,
+    "depth_exports": "Native 30m TUFLOW GeoTIFFs; dry/inactive output cells remain masked in the retained numeric arrays"
+  },
+  "frames": [
+    {
+      "elapsed_seconds": 0,
+      "depth_image": "frames/000-depth.png",
+      "speed_image": "frames/000-speed.png",
+      "points": "frames/000.geojson",
+      "wet_area_km2": 0.0,
+      "maximum_depth_m": 0,
+      "maximum_speed_m_s": 0,
+      "water_volume_m3": 0.0,
+      "relative_mass_error": 0.0
+    },
+    {
+      "elapsed_seconds": 20,
+      "depth_image": "frames/001-depth.png",
+      "speed_image": "frames/001-speed.png",
+      "points": "frames/001.geojson",
+      "wet_area_km2": 0.0,
+      "maximum_depth_m": 0.027801871299743652,
+      "maximum_speed_m_s": 0,
+      "water_volume_m3": 2061.111,
+      "relative_mass_error": 1.711987e-07
+    },
+    {
+      "elapsed_seconds": 40,
+      "depth_image": "frames/002-depth.png",
+      "speed_image": "frames/002-speed.png",
+      "points": "frames/002.geojson",
+      "wet_area_km2": 0.0,
+      "maximum_depth_m": 0.07971227169036865,
+      "maximum_speed_m_s": 0,
+      "water_volume_m3": 4244.444,
+      "relative_mass_error": 1.0650189999999999e-07
+    },
+    {
+      "elapsed_seconds": 60,
+      "depth_image": "frames/003-depth.png",
+      "speed_image": "frames/003-speed.png",
+      "points": "frames/003.geojson",
+      "wet_area_km2": 0.0072,
+      "maximum_depth_m": 0.17443877458572388,
+      "maximum_speed_m_s": 0.561007559299469,
+      "water_volume_m3": 6550.001,
+      "relative_mass_error": 5.503646e-08
+    },
+    {
+      "elapsed_seconds": 80,
+      "depth_image": "frames/004-depth.png",
+      "speed_image": "frames/004-speed.png",
+      "points": "frames/004.geojson",
+      "wet_area_km2": 0.018,
+      "maximum_depth_m": 0.3236543834209442,
+      "maximum_speed_m_s": 0.7524963021278381,
+      "water_volume_m3": 8977.776,
+      "relative_mass_error": 2.64503e-07
+    },
+    {
+      "elapsed_seconds": 100,
+      "depth_image": "frames/005-depth.png",
+      "speed_image": "frames/005-speed.png",
+      "points": "frames/005.geojson",
+      "wet_area_km2": 0.0432,
+      "maximum_depth_m": 0.5547485947608948,
+      "maximum_speed_m_s": 0.8941981196403503,
+      "water_volume_m3": 11527.78,
+      "relative_mass_error": 2.549688e-07
+    },
+    {
+      "elapsed_seconds": 120,
+      "depth_image": "frames/006-depth.png",
+      "speed_image": "frames/006-speed.png",
+      "points": "frames/006.geojson",
+      "wet_area_km2": 0.0486,
+      "maximum_depth_m": 0.70147705078125,
+      "maximum_speed_m_s": 1.024932861328125,
+      "water_volume_m3": 14200.0,
+      "relative_mass_error": 3.380841e-07
+    },
+    {
+      "elapsed_seconds": 140,
+      "depth_image": "frames/007-depth.png",
+      "speed_image": "frames/007-speed.png",
+      "points": "frames/007.geojson",
+      "wet_area_km2": 0.0639,
+      "maximum_depth_m": 0.7981109619140625,
+      "maximum_speed_m_s": 1.0795453786849976,
+      "water_volume_m3": 16994.45,
+      "relative_mass_error": 2.6374899999999998e-08
+    },
+    {
+      "elapsed_seconds": 160,
+      "depth_image": "frames/008-depth.png",
+      "speed_image": "frames/008-speed.png",
+      "points": "frames/008.geojson",
+      "wet_area_km2": 0.0711,
+      "maximum_depth_m": 0.9553527235984802,
+      "maximum_speed_m_s": 1.1292061805725098,
+      "water_volume_m3": 19911.11,
+      "relative_mass_error": 2.809613e-07
+    },
+    {
+      "elapsed_seconds": 180,
+      "depth_image": "frames/009-depth.png",
+      "speed_image": "frames/009-speed.png",
+      "points": "frames/009.geojson",
+      "wet_area_km2": 0.0783,
+      "maximum_depth_m": 1.0384674072265625,
+      "maximum_speed_m_s": 1.3190335035324097,
+      "water_volume_m3": 22950.0,
+      "relative_mass_error": 3.022669e-07
+    },
+    {
+      "elapsed_seconds": 200,
+      "depth_image": "frames/010-depth.png",
+      "speed_image": "frames/010-speed.png",
+      "points": "frames/010.geojson",
+      "wet_area_km2": 0.0846,
+      "maximum_depth_m": 1.0767974853515625,
+      "maximum_speed_m_s": 1.485385537147522,
+      "water_volume_m3": 26111.11,
+      "relative_mass_error": 6.230943e-08
+    },
+    {
+      "elapsed_seconds": 220,
+      "depth_image": "frames/011-depth.png",
+      "speed_image": "frames/011-speed.png",
+      "points": "frames/011.geojson",
+      "wet_area_km2": 0.0945,
+      "maximum_depth_m": 1.1466522216796875,
+      "maximum_speed_m_s": 1.5762598514556885,
+      "water_volume_m3": 29394.45,
+      "relative_mass_error": 7.338839e-08
+    },
+    {
+      "elapsed_seconds": 240,
+      "depth_image": "frames/012-depth.png",
+      "speed_image": "frames/012-speed.png",
+      "points": "frames/012.geojson",
+      "wet_area_km2": 0.1062,
+      "maximum_depth_m": 1.20782470703125,
+      "maximum_speed_m_s": 1.643981695175171,
+      "water_volume_m3": 32800.01,
+      "relative_mass_error": 1.180463e-08
+    },
+    {
+      "elapsed_seconds": 260,
+      "depth_image": "frames/013-depth.png",
+      "speed_image": "frames/013-speed.png",
+      "points": "frames/013.geojson",
+      "wet_area_km2": 0.1161,
+      "maximum_depth_m": 1.2564696073532104,
+      "maximum_speed_m_s": 1.7513197660446167,
+      "water_volume_m3": 36327.78,
+      "relative_mass_error": 1.5735409999999999e-07
+    },
+    {
+      "elapsed_seconds": 280,
+      "depth_image": "frames/014-depth.png",
+      "speed_image": "frames/014-speed.png",
+      "points": "frames/014.geojson",
+      "wet_area_km2": 0.1242,
+      "maximum_depth_m": 1.2954100370407104,
+      "maximum_speed_m_s": 1.8347514867782593,
+      "water_volume_m3": 39977.78,
+      "relative_mass_error": 1.3382719999999998e-07
+    },
+    {
+      "elapsed_seconds": 300,
+      "depth_image": "frames/015-depth.png",
+      "speed_image": "frames/015-speed.png",
+      "points": "frames/015.geojson",
+      "wet_area_km2": 0.1296,
+      "maximum_depth_m": 1.3277586698532104,
+      "maximum_speed_m_s": 1.8800384998321533,
+      "water_volume_m3": 43750.01,
+      "relative_mass_error": 4.233223e-08
+    },
+    {
+      "elapsed_seconds": 320,
+      "depth_image": "frames/016-depth.png",
+      "speed_image": "frames/016-speed.png",
+      "points": "frames/016.geojson",
+      "wet_area_km2": 0.1359,
+      "maximum_depth_m": 1.3620604276657104,
+      "maximum_speed_m_s": 1.9655684232711792,
+      "water_volume_m3": 47644.45,
+      "relative_mass_error": 1.237019e-08
+    },
+    {
+      "elapsed_seconds": 340,
+      "depth_image": "frames/017-depth.png",
+      "speed_image": "frames/017-speed.png",
+      "points": "frames/017.geojson",
+      "wet_area_km2": 0.1404,
+      "maximum_depth_m": 1.392867922782898,
+      "maximum_speed_m_s": 2.0195138454437256,
+      "water_volume_m3": 51661.11,
+      "relative_mass_error": 1.106504e-07
+    },
+    {
+      "elapsed_seconds": 360,
+      "depth_image": "frames/018-depth.png",
+      "speed_image": "frames/018-speed.png",
+      "points": "frames/018.geojson",
+      "wet_area_km2": 0.1476,
+      "maximum_depth_m": 1.429519534111023,
+      "maximum_speed_m_s": 2.0638766288757324,
+      "water_volume_m3": 55800.0,
+      "relative_mass_error": 9.588015e-08
+    },
+    {
+      "elapsed_seconds": 380,
+      "depth_image": "frames/019-depth.png",
+      "speed_image": "frames/019-speed.png",
+      "points": "frames/019.geojson",
+      "wet_area_km2": 0.153,
+      "maximum_depth_m": 1.4589842557907104,
+      "maximum_speed_m_s": 2.1206657886505127,
+      "water_volume_m3": 60061.11,
+      "relative_mass_error": 1.378563e-07
+    },
+    {
+      "elapsed_seconds": 400,
+      "depth_image": "frames/020-depth.png",
+      "speed_image": "frames/020-speed.png",
+      "points": "frames/020.geojson",
+      "wet_area_km2": 0.1575,
+      "maximum_depth_m": 1.4808653593063354,
+      "maximum_speed_m_s": 2.1566720008850098,
+      "water_volume_m3": 64444.46,
+      "relative_mass_error": 1.670146e-07
+    },
+    {
+      "elapsed_seconds": 420,
+      "depth_image": "frames/021-depth.png",
+      "speed_image": "frames/021-speed.png",
+      "points": "frames/021.geojson",
+      "wet_area_km2": 0.1611,
+      "maximum_depth_m": 1.510269045829773,
+      "maximum_speed_m_s": 2.1935393810272217,
+      "water_volume_m3": 68950.03,
+      "relative_mass_error": 3.242906e-07
+    },
+    {
+      "elapsed_seconds": 440,
+      "depth_image": "frames/022-depth.png",
+      "speed_image": "frames/022-speed.png",
+      "points": "frames/022.geojson",
+      "wet_area_km2": 0.1665,
+      "maximum_depth_m": 1.530258059501648,
+      "maximum_speed_m_s": 2.2306554317474365,
+      "water_volume_m3": 73577.77,
+      "relative_mass_error": 1.523488e-07
+    },
+    {
+      "elapsed_seconds": 460,
+      "depth_image": "frames/023-depth.png",
+      "speed_image": "frames/023-speed.png",
+      "points": "frames/023.geojson",
+      "wet_area_km2": 0.171,
+      "maximum_depth_m": 1.5431517362594604,
+      "maximum_speed_m_s": 2.257638692855835,
+      "water_volume_m3": 78327.77,
+      "relative_mass_error": 3.535013e-07
+    },
+    {
+      "elapsed_seconds": 480,
+      "depth_image": "frames/024-depth.png",
+      "speed_image": "frames/024-speed.png",
+      "points": "frames/024.geojson",
+      "wet_area_km2": 0.1755,
+      "maximum_depth_m": 1.564285159111023,
+      "maximum_speed_m_s": 2.2778029441833496,
+      "water_volume_m3": 83200.02,
+      "relative_mass_error": 7.604174999999999e-08
+    },
+    {
+      "elapsed_seconds": 500,
+      "depth_image": "frames/025-depth.png",
+      "speed_image": "frames/025-speed.png",
+      "points": "frames/025.geojson",
+      "wet_area_km2": 0.1827,
+      "maximum_depth_m": 1.592361330986023,
+      "maximum_speed_m_s": 2.297609806060791,
+      "water_volume_m3": 88194.44,
+      "relative_mass_error": 3.457881e-07
+    },
+    {
+      "elapsed_seconds": 520,
+      "depth_image": "frames/026-depth.png",
+      "speed_image": "frames/026-speed.png",
+      "points": "frames/026.geojson",
+      "wet_area_km2": 0.1917,
+      "maximum_depth_m": 1.6062010526657104,
+      "maximum_speed_m_s": 2.344881057739258,
+      "water_volume_m3": 93311.12,
+      "relative_mass_error": 1.279795e-07
+    },
+    {
+      "elapsed_seconds": 540,
+      "depth_image": "frames/027-depth.png",
+      "speed_image": "frames/027-speed.png",
+      "points": "frames/027.geojson",
+      "wet_area_km2": 0.198,
+      "maximum_depth_m": 1.6314085721969604,
+      "maximum_speed_m_s": 2.370952606201172,
+      "water_volume_m3": 98550.03,
+      "relative_mass_error": 9.558998e-08
+    },
+    {
+      "elapsed_seconds": 560,
+      "depth_image": "frames/028-depth.png",
+      "speed_image": "frames/028-speed.png",
+      "points": "frames/028.geojson",
+      "wet_area_km2": 0.2052,
+      "maximum_depth_m": 1.6484678983688354,
+      "maximum_speed_m_s": 2.379920482635498,
+      "water_volume_m3": 103911.1,
+      "relative_mass_error": 1.172738e-07
+    },
+    {
+      "elapsed_seconds": 580,
+      "depth_image": "frames/029-depth.png",
+      "speed_image": "frames/029-speed.png",
+      "points": "frames/029.geojson",
+      "wet_area_km2": 0.2115,
+      "maximum_depth_m": 1.667404055595398,
+      "maximum_speed_m_s": 2.3830296993255615,
+      "water_volume_m3": 109394.4,
+      "relative_mass_error": 2.720812e-07
+    },
+    {
+      "elapsed_seconds": 600,
+      "depth_image": "frames/030-depth.png",
+      "speed_image": "frames/030-speed.png",
+      "points": "frames/030.geojson",
+      "wet_area_km2": 0.2187,
+      "maximum_depth_m": 1.6861571073532104,
+      "maximum_speed_m_s": 2.376575231552124,
+      "water_volume_m3": 115000.0,
+      "relative_mass_error": 1.97253e-07
+    }
+  ],
+  "image_coordinates": [
+    [
+      72.2419396611129,
+      31.32998161205096
+    ],
+    [
+      72.29372095070988,
+      31.32998161205096
+    ],
+    [
+      72.29372095070988,
+      31.285740325109842
+    ],
+    [
+      72.2419396611129,
+      31.285740325109842
+    ]
+  ],
+  "focus_bounds": [
+    72.26236039943818,
+    31.31925111330447,
+    72.2720451572742,
+    31.331315401198047
+  ],
+  "study_bounds": [
+    72.2419396611129,
+    31.285740325109842,
+    72.29372095070988,
+    31.32998161205096
+  ],
+  "limitations": [
+    "Hypothetical inflow and initially dry terrain; not an observed event or future forecast.",
+    "One ten-minute custom demo run, not a stitched or accelerated multi-hour simulation.",
+    "No channel bathymetry, structure/gate survey or calibration against observed Jhang floods.",
+    "Real 30m Copernicus surface terrain; mesh refinement cannot create missing channel or building detail.",
+    "Wet area is calculated from exported raster cells at depth >=0.1m; it is not a surveyed flood footprint.",
+    "Velocity displayed is computed scalar speed; no artificial flow vectors are added."
+  ],
+  "source_metadata": "Copied source metadata, geometry, control files, engine logs and numeric outputs are retained in this run"
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "installer",
+  "url": "https://github.com/HydrologicEngineeringCenter/hec-downloads/releases/download/1.0.46/HEC-RAS_701_Setup.exe",
+  "path": "tools/hec_ras/downloads/HEC-RAS_701_Setup.exe",
+  "bytes": 178833488,
+  "sha256": "1fe76297076aa7a13e43191ecc76c3ba152fdc4bbd606fa2c349eec7db3cee73",
+  "recorded_at_utc": "2026-10-18T18:33:06.289637+00:00"
+}

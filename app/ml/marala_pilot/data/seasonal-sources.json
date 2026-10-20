@@ -1,0 +1,49 @@
+{
+  "retrieved_at": "2026-10-16T05:30:26.859848+00:00",
+  "station_id": "MARALA",
+  "rows": 264,
+  "first_month": "2000-01",
+  "last_month": "2021-12",
+  "omitted_months": [],
+  "requests": [
+    {
+      "name": "GloFAS daily modeled discharge",
+      "url": "https://flood-api.open-meteo.com/v1/flood?latitude=32.675&longitude=74.425&start_date=2000-01-01&end_date=2021-12-31&daily=river_discharge&cell_selection=nearest&timezone=GMT",
+      "response_sha256": "a16035a8cab84724ed00e40dae76f67bfff360399cfa714e6f781599c4b74a5c",
+      "grid_latitude": 32.675003,
+      "grid_longitude": 74.425
+    },
+    {
+      "name": "ERA5 weather lower_upper_chenab",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.9&longitude=74.75&start_date=2000-01-01&end_date=2021-12-31&daily=precipitation_sum%2Ctemperature_2m_mean%2Csnowfall_sum&models=era5&timezone=UTC",
+      "response_sha256": "ec39b89b4060ef8167d2d5adf7348bd5b9858e25abb9bd87ccd6bcbc0549964d",
+      "grid_latitude": 33.0,
+      "grid_longitude": 74.75
+    },
+    {
+      "name": "ERA5 weather middle_upper_chenab",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=33.3&longitude=75.75&start_date=2000-01-01&end_date=2021-12-31&daily=precipitation_sum%2Ctemperature_2m_mean%2Csnowfall_sum&models=era5&timezone=UTC",
+      "response_sha256": "80d30d5ce3b10552792e06ff34f6c92180adf72badedc1b1d20fb887e094edd4",
+      "grid_latitude": 33.25,
+      "grid_longitude": 75.75
+    },
+    {
+      "name": "ERA5 weather headwaters_chenab",
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.6&longitude=76.9&start_date=2000-01-01&end_date=2021-12-31&daily=precipitation_sum%2Ctemperature_2m_mean%2Csnowfall_sum&models=era5&timezone=UTC",
+      "response_sha256": "64e2c029f857e2a103464282b04022a7206c880ec8dc94909f2946bb6adee4e7",
+      "grid_latitude": 32.5,
+      "grid_longitude": 77.0
+    }
+  ],
+  "reach": {
+    "latitude": 32.675003,
+    "longitude": 74.425
+  },
+  "target_definition": "Complete-calendar-month mean daily GloFAS modeled river discharge near Marala; not measured headworks flow",
+  "weather_definition": "ERA5 daily precipitation, temperature, and snowfall averaged across three upstream sample points",
+  "attribution": "GloFAS/Copernicus Emergency Management Service; ERA5/Copernicus Climate Change Service; Open-Meteo API CC BY 4.0",
+  "documentation": [
+    "https://open-meteo.com/en/docs/flood-api",
+    "https://open-meteo.com/en/docs/historical-weather-api"
+  ]
+}

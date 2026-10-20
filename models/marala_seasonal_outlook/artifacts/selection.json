@@ -1,0 +1,240 @@
+{
+  "champion": {
+    "spec": {
+      "id": "seasonal_climatology",
+      "family": "seasonal_climatology"
+    },
+    "validation": {
+      "rows": 15157,
+      "rmse_cumecs": 211.45319460357948,
+      "mae_cumecs": 134.44563166866863,
+      "bias_cumecs": -75.03354551140856
+    }
+  },
+  "best_learned": {
+    "spec": {
+      "id": "xgb_log_correction_d3_p10_n160",
+      "family": "xgboost",
+      "depth": 3,
+      "penalty": 10,
+      "rounds": 160
+    },
+    "validation": {
+      "rows": 15157,
+      "rmse_cumecs": 214.78172502627123,
+      "mae_cumecs": 130.45616858490487,
+      "bias_cumecs": -77.40744210069373
+    }
+  },
+  "test_used_for_selection": false,
+  "leaderboard": [
+    {
+      "spec": {
+        "id": "seasonal_climatology",
+        "family": "seasonal_climatology"
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 211.45319460357948,
+        "mae_cumecs": 134.44563166866863,
+        "bias_cumecs": -75.03354551140856
+      }
+    },
+    {
+      "spec": {
+        "id": "xgb_log_correction_d3_p10_n160",
+        "family": "xgboost",
+        "depth": 3,
+        "penalty": 10,
+        "rounds": 160
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 214.78172502627123,
+        "mae_cumecs": 130.45616858490487,
+        "bias_cumecs": -77.40744210069373
+      }
+    },
+    {
+      "spec": {
+        "id": "xgb_log_correction_d3_p100_n160",
+        "family": "xgboost",
+        "depth": 3,
+        "penalty": 100,
+        "rounds": 160
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 216.3431766192344,
+        "mae_cumecs": 130.95188412339365,
+        "bias_cumecs": -80.01830206182467
+      }
+    },
+    {
+      "spec": {
+        "id": "xgb_log_correction_d3_p10_n60",
+        "family": "xgboost",
+        "depth": 3,
+        "penalty": 10,
+        "rounds": 60
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 223.13768715543458,
+        "mae_cumecs": 134.5518368714368,
+        "bias_cumecs": -73.81161823915164
+      }
+    },
+    {
+      "spec": {
+        "id": "xgb_log_correction_d3_p100_n60",
+        "family": "xgboost",
+        "depth": 3,
+        "penalty": 100,
+        "rounds": 60
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 224.42841355524607,
+        "mae_cumecs": 135.37002533440668,
+        "bias_cumecs": -74.83600542305032
+      }
+    },
+    {
+      "spec": {
+        "id": "xgb_log_correction_d2_p10_n160",
+        "family": "xgboost",
+        "depth": 2,
+        "penalty": 10,
+        "rounds": 160
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 225.9316391226601,
+        "mae_cumecs": 136.77027367862064,
+        "bias_cumecs": -77.14598740207454
+      }
+    },
+    {
+      "spec": {
+        "id": "xgb_log_correction_d2_p100_n160",
+        "family": "xgboost",
+        "depth": 2,
+        "penalty": 100,
+        "rounds": 160
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 226.1079870874889,
+        "mae_cumecs": 136.39015562257438,
+        "bias_cumecs": -77.49009406792536
+      }
+    },
+    {
+      "spec": {
+        "id": "ridge_log_correction_1",
+        "family": "ridge",
+        "penalty": 1
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 227.2756336583778,
+        "mae_cumecs": 140.0320125858594,
+        "bias_cumecs": -91.40507742556623
+      }
+    },
+    {
+      "spec": {
+        "id": "ridge_log_correction_10",
+        "family": "ridge",
+        "penalty": 10
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 227.33110488690843,
+        "mae_cumecs": 140.05588367422843,
+        "bias_cumecs": -91.345617398982
+      }
+    },
+    {
+      "spec": {
+        "id": "ridge_log_correction_100",
+        "family": "ridge",
+        "penalty": 100
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 227.78904047352387,
+        "mae_cumecs": 140.2589508045424,
+        "bias_cumecs": -90.91367947468073
+      }
+    },
+    {
+      "spec": {
+        "id": "ridge_log_correction_1000",
+        "family": "ridge",
+        "penalty": 1000
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 230.28378727713033,
+        "mae_cumecs": 141.28018647512624,
+        "bias_cumecs": -88.79611165535692
+      }
+    },
+    {
+      "spec": {
+        "id": "xgb_log_correction_d2_p10_n60",
+        "family": "xgboost",
+        "depth": 2,
+        "penalty": 10,
+        "rounds": 60
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 234.6356428683352,
+        "mae_cumecs": 145.5614751144152,
+        "bias_cumecs": -63.924279120189546
+      }
+    },
+    {
+      "spec": {
+        "id": "xgb_log_correction_d2_p100_n60",
+        "family": "xgboost",
+        "depth": 2,
+        "penalty": 100,
+        "rounds": 60
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 235.09403276946918,
+        "mae_cumecs": 145.55213506060525,
+        "bias_cumecs": -63.42343585371593
+      }
+    },
+    {
+      "spec": {
+        "id": "seasonal_naive",
+        "family": "seasonal_naive"
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 284.328929476751,
+        "mae_cumecs": 172.20148380286338,
+        "bias_cumecs": -1.2258791317542987
+      }
+    },
+    {
+      "spec": {
+        "id": "persistence",
+        "family": "persistence"
+      },
+      "validation": {
+        "rows": 15157,
+        "rmse_cumecs": 515.2863662091042,
+        "mae_cumecs": 357.2665111829518,
+        "bias_cumecs": -28.77588243056014
+      }
+    }
+  ]
+}

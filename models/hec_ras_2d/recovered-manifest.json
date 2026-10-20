@@ -1,0 +1,56 @@
+{
+  "source_url": "https://www.hec.usace.army.mil/confluence/rasdocs/hecras/files/latest/334760427/334763850/1/1768486562468/Simple_Plans.zip",
+  "archive_complete": false,
+  "partial_bytes": 73400320,
+  "partial_sha256": "381f59f2b8d27ac35ae8289e87fe59dd8a5c97c531e3f3f49fcd7c0187d179fe",
+  "members": [
+    {
+      "member": "Simple_Plans/Boundary Conditions/January 1997 Event.h5",
+      "bytes": 294047,
+      "sha256": "336072b85be10cc6a648f44a8b07c4c766eb5145af0308bada8911cc731a985c",
+      "crc_checked": true
+    },
+    {
+      "member": "Simple_Plans/Geometries/1c. 400ft nCh wCh.h5",
+      "bytes": 644048,
+      "sha256": "bda2c54348f183a276b01f140f17d5a5515e07da7a4d97d0789479aa15f548fe",
+      "crc_checked": true
+    },
+    {
+      "member": "Simple_Plans/Geometries/2a. 200ft wCh1.h5",
+      "bytes": 2930891,
+      "sha256": "7915b94fd5a92e047c7c0187573a769bed340c60afbf7553eba0f19206bee096",
+      "crc_checked": true
+    },
+    {
+      "member": "Simple_Plans/GISData/projection.prj",
+      "bytes": 570,
+      "sha256": "bda960e30997fbc43705e00cf2ff4ef18f867d42c0866b08d5e4f0a3a189c38b",
+      "crc_checked": true
+    },
+    {
+      "member": "Simple_Plans/Plans/1c. 400ft nCh wCh.h5",
+      "bytes": 5469,
+      "sha256": "88a2ea8f861150e1f103f94e3543cf8179466b3d8eff42780c3197ab0d2f4bd5",
+      "crc_checked": true
+    },
+    {
+      "member": "Simple_Plans/Plans/2a. 200ft wCh1.h5",
+      "bytes": 5469,
+      "sha256": "fd186cc3234d47a131d37755b5dc6d820ffab23597dd901f7a03c9114603b2be",
+      "crc_checked": true
+    },
+    {
+      "member": "Simple_Plans/Results/1c. 400ft nCh wCh.h5",
+      "bytes": 8721134,
+      "sha256": "86788cbee19430904a979d3f28769d32fb62f52eafd760902548509a3ad0e12b",
+      "crc_checked": true
+    },
+    {
+      "member": "Simple_Plans/Results/2a. 200ft wCh1.h5",
+      "bytes": 23592532,
+      "sha256": "2d709f61ac5debccc3b67fda5b650c5e38ba977470de4f439b2fd234f5fbf4a7",
+      "crc_checked": true
+    }
+  ]
+}

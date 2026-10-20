@@ -1,0 +1,7 @@
+{
+  "run": "20261012T035709Z_6f1bb1",
+  "checkpoint_sha256": "cfe254b896995d5337d27635d5fee95bc92f64bd6f2601d6bd9b3f5e5be5e07f",
+  "scalers_sha256": "31b43d3447e409a5519c132a46df92ebc1782564503783ce136f19dd4d69eb53",
+  "architecture_sha256": "c5b42570c0a800a30004a82002e8d77257cedaa131800869d2e7b8d285f3a5c0",
+  "reason": "Candidate models failed Pakistan release assessment; retain baseline"
+}

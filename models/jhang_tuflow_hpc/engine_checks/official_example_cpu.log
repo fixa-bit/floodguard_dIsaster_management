@@ -1,0 +1,1650 @@
+
+Max CPU threads available = 4
+
+Executable: D:\Projects\disaster_management\tools\tuflow\2026.3.0\tuflow-2026.3\TUFLOW_iSP_w64.exe
+Input argument switches = -/–
+ 
+
+Build: 2026.3.0-iSP-w64
+
+
+            *=========================///========================*
+            |                                                    |
+            |         TTTTT U   U FFFF L     OOO  W   W          |
+            |           T   U   U F    L    O   O W   W          |
+            |           T   U   U FFF  L    O   O W W W          |
+            |           T   U   U F    L    O   O W W W          |
+            |           T    UUU  F    LLLL  OOO   W W           |
+            |                                                    |
+            |              Build: 2026.3.0-iSP-w64             |
+            |                                                    |
+            |     Copyright BMT Commercial Australia Pty Ltd     |
+            |                   www.tuflow.com                   |
+            |                 support@tuflow.com                 |
+            |                                                    |
+            *=========================///========================*
+ 
+
+Trying to open (I) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\EG00_001.tcf...OK.  File Unit: 901
+
+Full input file name is "D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\EG00_001.tcf"
+
+Searching for any Set Variable == commands...
+Searching for SQLITE Pragma Commands...
+GIS Projection being extracted from D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\projection.prj
+
+Trying to open (I) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\projection.prj...OK.  File Unit: 902
+
+SHP Projection: PROJCS["WGS_1984_UTM_Zone_60S",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",10000000.0],PARAMETER["Central_Meridian",177.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Meter",1.0]]
+Extracting GeoTIFF projection from D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\grid\DEM_SI_Unit_01.tif
+Opening GRID Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\grid\DEM_SI_Unit_01.tif
+GRID Layer assigned ID of 1
+
+Trying to open (SI) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\grid\DEM_SI_Unit_01.tif...OK.  File Unit: 903
+WARNING 0635 - GeoTIFF ASCII Parameter GeoKey not found
+...Closed File Unit: 903
+
+Trying to open (O) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001.tlf...Can't Open: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001.tlf
+OK.  File Unit: 903
+
+Executable: D:\Projects\disaster_management\tools\tuflow\2026.3.0\tuflow-2026.3\TUFLOW_iSP_w64.exe (Copyright BMT Commercial Australia Pty Ltd)
+
+Licence maintenance period: July 2026 - June 2027
+
+Computer Name: DESKTOP-C7JQO0C
+
+Simulation Started: 2026-Oct-18 23:08
+
+
+Compiler: IntelLLVM 2025.3.0
+
+Hazard Routines ID in TUFLOW_USER_DEFINED.dll: Default Hazard Routines
+
+No Specified Events.
+
+No Specified Scenarios.
+
+No variables defined using Set Variable ==
+
+Initialising Time of Startup Summary == D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_start_stats.txt
+
+Trying to open (O) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_start_stats.txt...OK.  File Unit: 904
+
+Initialising TUFLOW Licence Settings...
+Looking for "D:\Projects\disaster_management\tools\tuflow\2026.3.0\tuflow-2026.3\TUFLOW_Licence_Settings.lcf"...not found.
+Looking for "C:\ProgramData\TUFLOW\TUFLOW_Licence_Settings.lcf"...not found.
+Looking for "C:\BMT_WBM\TUFLOW_Licence_Settings.lcf"...not found.
+Looking for "C:\BMT_WBM\TUFLOW_Dongle_Settings.dcf"...not found.
+
+No TUFLOW licence Settings files found.  Default settings applied.
+WIBU Retry Time == 60
+WIBU Retry Count == 0
+WIBU Dongles Only == OFF  ! If set to ON, searches for WIBU dongles only.
+
+Simulations Log Folder == C:\ProgramData\TUFLOW\log\ALLAH\
+
+Trying to open (A) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\_ TUFLOW Simulations.log...OK.  File Unit: 905
+...Closed File Unit: 905
+
+Detected 4 CPUs.
+CPU limiting not activated for standalone dongle.
+
+Setting up dynamic arrays...
+
+Reading .tcf File .. D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\EG00_001.tcf
+
+Trying to open (O) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001.wor...OK.  File Unit: 905
+
+Trying to open (O) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001.qgs...OK.  File Unit: 906
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_messages.shp
+GIS Layer assigned ID of 1
+
+Trying to open (BO) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_messages_P.shp...OK.  File Unit: 907
+
+Trying to open (BO) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_messages_P.shx...OK.  File Unit: 908
+
+Trying to open (O) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_messages_P.prj...OK.  File Unit: 909
+
+Trying to open (BO) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_messages_P.dbf...OK.  File Unit: 910
+...Closed File Unit: 909
+
+Trying to open (O) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_messages.csv...OK.  File Unit: 909
+
+Trying to open (I) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_messages.csv...OK.  File Unit: 911
+...Closed File Unit: 911
+
+Home Folder: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\
+
+Free-Form Input Assumed...
+
+
+tcf>> Tutorial Model == ON
+   << Tutorial Model...
+tcf>> GIS Format == SHP
+   << GIS Format...processed elsewhere
+
+tcf>> SHP Projection == ..\model\gis\projection.prj
+   << SHP Projection...processed elsewhere
+
+tcf>> TIF Projection == ..\model\grid\DEM_SI_Unit_01.tif
+   << TIF Projection...processed elsewhere
+
+tcf>> Solution Scheme == HPC
+   << Solution Scheme...HPC 2
+
+tcf>> Hardware == GPU
+   << Hardware...
+NoXY: CHECK 2592 - Ignoring "Hardware ==" command due to -hw command line option.
+
+tcf>> SGS == ON
+   << SGS...switched on
+
+tcf>> SGS Sample Target Distance == 0.5
+   << SGS Sample Target Distance...set to    0.500
+
+tcf>> Geometry Control File == ..\model\EG00_001.tgc
+   << Geometry Control File...set to  ..\model\EG00_001.tgc
+
+tcf>> BC Control File == ..\model\EG00_001.tbc
+   << BC Control File...set to  ..\model\EG00_001.tbc
+
+tcf>> BC Database == ..\bc_dbase\bc_dbase_EG00_001.csv
+   << BC Database...set as D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\bc_dbase\bc_dbase_EG00_001.csv
+
+tcf>> Read Materials File == ..\model\materials.csv
+   << Read Materials File...setting bed resistance to Manning's n and reading n values...
+
+Trying to open (I) file D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\materials.csv...OK.  File Unit: 911
+
+  1...Processing: 1,0.06,,,
+
+  2...Processing: 2,0.022,,,
+
+  3...Processing: 3,0.4,,,
+
+  4...Processing: 4,0.03,,,
+
+  5...Processing: 10,0.08,,,
+
+  6...Processing: 11,0.04,,,
+...Closed File Unit: 911
+
+tcf>> Set IWL == 36.5
+   << Set IWL...to be read later on
+
+tcf>> Timestep == 1
+   << Timestep...set to     1.000 seconds
+
+tcf>> Timestep Maximum == 2.5
+   << Timestep Maximum...set to 2.5 seconds
+
+tcf>> Start Time == 0
+   << Start Time...set to       0.000 hours
+
+tcf>> End Time == 3
+   << End Time...set to       3.000 hours
+
+tcf>> Log Folder == log
+   << Log Folder...processed elsewhere
+
+tcf>> Output Folder == ..\results\EG00\
+   << Output Folder...set as D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\results\EG00\
+
+tcf>> Write Check Files == ..\check\EG00\
+   << Write Check Files...
+tcf>> Map Output Format == XMDF TIF
+   << Map Output Format... using XMDF format
+ using TIF format
+
+tcf>> Map Output Data Types == h V d z0
+   << Map Output Data Types...set to  h V d z0
+
+tcf>> TIF Map Output Data Types == h
+   << TIF Map Output Data Types...set to  h
+
+tcf>> Map Output Interval == 300
+   << Map Output Interval...set to   300.000 seconds
+
+tcf>> TIF Map Output Interval == 0
+   << TIF Map Output Interval...turned off
+
+No Event Sources found.
+
+Start Time (h):.......     0.000
+Finish Time (h):......     3.000
+
+Primary 2D timestep (the largest) set to 1. secs
+Domain: Domain_001    Original Timestep:    1.00  Iterations:   1  Adopted Timestep:    1.00
+
+Start Output (h):.....     0.000
+Output Interval (s):..   300.000
+Maximums Start Track Time:      0.000
+
+Material Values:
+
+#1 - Material 1:
+Fixed Manning's n = 0.060
+IL/CL values not set.
+SRF (Storage Reduction Factor) = 0.
+Fraction Impervious = 0.
+
+#2 - Material 2:
+Fixed Manning's n = 0.022
+IL/CL values not set.
+SRF (Storage Reduction Factor) = 0.
+Fraction Impervious = 0.
+
+#3 - Material 3:
+Fixed Manning's n = 0.400
+IL/CL values not set.
+SRF (Storage Reduction Factor) = 0.
+Fraction Impervious = 0.
+
+#4 - Material 4:
+Fixed Manning's n = 0.030
+IL/CL values not set.
+SRF (Storage Reduction Factor) = 0.
+Fraction Impervious = 0.
+
+#5 - Material 10:
+Fixed Manning's n = 0.080
+IL/CL values not set.
+SRF (Storage Reduction Factor) = 0.
+Fraction Impervious = 0.
+
+#6 - Material 11:
+Fixed Manning's n = 0.040
+IL/CL values not set.
+SRF (Storage Reduction Factor) = 0.
+Fraction Impervious = 0.
+
+
+NoXY: WARNING 2583 - Material ID 3 has a manning's n value (0.400) greater than Wu n limit (0.100) - n value will be limited in Wu formulation
+Output Files to be Pre-fixed by: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\results\EG00\EG00_001
+Log and message files to be pre-fixed by: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001
+
+Writing summary of .tcf commands to .tlf file...
+
+NoXY: CHECK 2251 - HPC Infiltration Drying Depth not specified, set to Cell Wet/Dry Depth - 0.0001.
+...Finished writing summary of .tcf commands.
+
+
+Found 0 User Defined Output Zone(s)
+
+
+Found 1 2D domain(s)
+
+
+Projection output: use simulation name.
+
+Scanning .tgc for:
+    Number of groundwater layers...
+    Minimum Read Grid Zpt raster resolution
+Opening GRID Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\grid\DEM_SI_Unit_01.tif
+GRID Layer assigned ID of 1
+Number of groundwater layers: 1
+Minimum raster resolution: 0.5
+Using buffer size of: 16384               
+
+Attempting to create XMDF file "D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\results\EG00\EG00_001.xmdf"
+
+Created XMDF file "D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\results\EG00\EG00_001.xmdf"
+
+Found a total of 1 hazard map outputs.
+
+Allocating 1600 Kb of temporary memory (RAM)
+
+Opening BC Control File "D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\EG00_001.tbc" for 2D Domain Domain_001
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_bc_EG00_001_L.shp
+GIS Layer assigned ID of 2
+ShapefileX Code: 9994  Length: 58
+ShapefileX Version: 1000  Type: 3
+Shapefile Code: 9994  Length: 170
+Shapefile Version: 1000  Type: 3
+DBF file contains 2 records.
+8 DBF Fields (Name [#/Type/Length]): Type [1/C/2]  Flags [2/C/3]  Name [3/C/100]  f [4/N/19]  d [5/N/19]  td [6/N/19]  a [7/N/19]  b [8/N/19]  
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_bc_EG00_001_L.shp]...
+
+Deallocating temporary memory (RAM)
+
+Allocating 30000 Kb of temporary 1D domain memory (RAM)
+
+Determining 1D array sizes
+
+ESTRY Input Filename: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\EG00_001.tcf
+
+Maximum 1D Timestep == 0.5  ! 1D maximum timestep not specified - set to half the starting 2D timestep.
+Temporary memory (RAM) requested =          1 Mb
+
+Allocating additional 1600 Kb of temporary 1D domain memory (RAM)
+
+Deallocating additional temporary 1D domain memory (RAM)
+
+...Finished determining 1D array sizes
+
+
+Found a total of 1 1D nodes.  1 ESTRY nodes and 0 external 1D scheme nodes.
+
+
+Allocating space for output zones based on a resolution factor of 2
+
+tgc>> Read GIS Location == gis\2d_loc_EG00_001_L.shp
+out > Read GIS Location...Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_loc_EG00_001_L.shp
+GIS Layer assigned ID of 2
+ShapefileX Code: 9994  Length: 58
+ShapefileX Version: 1000  Type: 3
+Shapefile Code: 9994  Length: 138
+Shapefile Version: 1000  Type: 3
+DBF file contains 2 records.
+1 DBF Fields (Name [#/Type/Length]): Comment [1/C/250]  
+found first line - see below for grid location
+found first line - see below for grid location
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_loc_EG00_001_L.shp]...
+
+tgc>> Cell Size == 5
+out > Cell Size...set to   5.000
+
+tgc>> Grid Size (X,Y) == 850, 1000
+out > Grid Size (X,Y)...see below for calculated size
+
+Domain_001  : Grid Dimensions (N,M): 200,170
+Domain_001  : Geographic Origin:      292725.000     6177615.000
+Domain_001  : Geographic Rotation Angle: -13.165795
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_dom_check.shp
+GIS Layer assigned ID of 2
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_dom_check.shp]...
+
+Counting any Variable Zpt, SGS Zpt, FC and/or Layered FC Shapes...
+
+...Found total of 0 Variable Z Shape Zpts in 2D Domain Domain_001.
+
+...Found total of 0 FC Shape Cell Sides in 2D Domain Domain_001.
+
+...Found total of 0 Layered FC Shape Cell Sides in 2D Domain Domain_001.
+
+Allocated space for 0 Time Series Plot Outputs including Reporting Locations
+
+Allocated space for 0 Time Series Plot Output flow lines including Reporting Locations
+   with a maximum of 1 cell sides plus cell centres along longest line
+
+Allocated space for 0 Longitudinal Plot Line Segments
+   with a maximum of 1 cells along a segment
+
+Allocating 13 Mb of temporary 2D domain memory (RAM)
+FINDING Boundary Conditions:
+
+Allocating additional 70 Kb of temporary processing of boundary regions.
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_bc_EG00_001_L.shp
+GIS Layer assigned ID of 2
+ShapefileX Code: 9994  Length: 58
+ShapefileX Version: 1000  Type: 3
+Shapefile Code: 9994  Length: 170
+Shapefile Version: 1000  Type: 3
+DBF file contains 2 records.
+8 DBF Fields (Name [#/Type/Length]): Type [1/C/2]  Flags [2/C/3]  Name [3/C/100]  f [4/N/19]  d [5/N/19]  td [6/N/19]  a [7/N/19]  b [8/N/19]  
+Number of Input Layers: 1
+Input Layer 1: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_bc_EG00_001_L.shp
+
+Found TUFLOW "QT" BC with name "FC01"...
+Opening Database...
+.Found database line: FC01,EG00_001.csv,inflow_time_hr,inflow_FC01,,,,,
+
+Looking for data in columns 1, 2 after line starting with:
+inflow_time_hr,inflow_FC01
+Converting .csv file to xf: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\bc_dbase\EG00_001.csv
+Scanning number of lines of lines in .csv file.
+Number of lines in .csv file: 42
+Found 2 columns based on header line.
+Found 41 rows of data
+Column    1: with name "inflow_time_hr" has 41 rows of data
+Column    2: with name "inflow_FC01" has 41 rows of data
+Finished reading data
+Writing xf data...
+Finished writing xf file.
+...Array size from xf file: 41
+
+Found TUFLOW "HQ" BC with name ""...
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_bc_EG00_001_L.shp]...
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt    ngt
+
+Just Read:      0     79      0      0     64      0      0      0      0      0      0      0      0     15      0
+Just Read:      0
+
+Found 0 possible pit SX connections inside 2D Domain Domain_001
+Ignoring 0 pit SX connections outside 2D Domain Domain_001
+
+No SA(ST) inputs specified.
+
+De-allocating temporary processing of boundary regions.
+
+Deallocating temporary 2D domain memory (RAM)
+
+Domain_001  : Allocating Memory Pointers:
+Domain_001  : Grid data memory ...............          2 Mb
+Domain_001  : No infiltration data memory required. 
+Domain_001  : Variable Z and Layered FC memory          0 Mb
+Domain_001  : Sub-domain linking memory ......          0 Mb
+Domain_001  : Flow constrictions memory ......          0 Mb
+Domain_001  : Weirs and viscosity factor memory         0 Mb
+Domain_001  : Pressure, wind and waves memory           0 Mb
+Domain_001  : General Memory .................          0 Mb
+Domain_001  : Boundary conditions memory .....          0 Mb
+Domain_001  : Wind & waves boundary memory ...          0 Mb
+Domain_001  : Hydraulic results memory .......          3 Mb
+Domain_001  : Maximums results memory ........          2 Mb
+Domain_001  : Mass balance tracking memory ...          0 Mb
+Domain_001  : Minimums results memory ........          0 Mb
+Domain_001  : 2D grid indexing memory ........          1 Mb
+Domain_001  : SMS High Res format memory .....          0 Mb
+Domain_001  : Plot output (PO) memory ........          0 Mb
+Domain_001  : Longitudinal output (LP) memory           0 Mb
+
+Allocating memory (RAM) for SGS coefficients...
+Memory required          6 Mb.
+...Done
+
+Allocating memory (RAM) for storing elevations at SGS sampling points (SGS Approach == Method C)
+Checking SGS Sample Frequency for memory allocation...
+
+SGS sampling:
+Domain 1, Cell Size 5., Sample Frequency 11, Sample Distance 0.5
+
+
+Estimating memory (RAM) requirement...
+Memory required         37 Mb.
+...Done
+
+Domain_001  : Total SGS memory ...............         44 Mb
+ 
+Memory requested for 2D domain Domain_001     = 9 Mb
+SGS Memory requested for 2D domain Domain_001 = 44 Mb
+Total Memory requested thus far               = 55 Mb
+
+Licence free mode requested.
+
+No sub-domains found
+External 1D Scheme arrays memory ..............          0 Mb
+Cyclone track array memory ....................          0 Mb
+Tri-diagonal matrix memory ....................          0 Mb
+
+Outside extent of model output: 292725., 6177421.396, 293780.4274, 6178588.715
+
+Setting Grid Output Cell Size to: 2.5
+
+Grid output dimensions: 467 rows by 423 columns
+Grid output memory ............................          3 Mb
+TIN and output mesh memory ....................          4 Mb
+Mass balance tracking memory ..................          0 Mb
+
+No (evacuation) routes found.
+Route array memory ............................          0 Mb
+
+Number of Gauges ... 0
+
+Number of GIS Objects/Receptors ... 0
+Output Gauge array memory .....................          0 Mb
+Miscellaneous array memory ....................          0 Mb
+Maximum boundary table size ... 102
+Temporary arrays memory .......................          0 Mb
+
+Total 2D Domain(s) Real SP Memory requested ...         11 Mb
+Total 2D Domain(s) Real DP Memory requested ...          1 Mb
+Total 2D Domain(s) Integer Memory requested ...          4 Mb
+Total 2D Domain(s) Logical Memory requested ...          1 Mb
+Total 2D Domain(s) Character Memory requested .           0 Mb
+
+
+________________________________________________________________________________
+2D Domain Cell Sizes:         5.00, 
+2D Domain Timesteps:         1.000, 
+
+________________________________________________________________________________
+
+
+Deallocating temporary 1D domain memory (RAM)
+mmc  =                 2954240
+mmci =                 1050292
+mmcl =                  390594
+mmc8 =                  142163
+mmcc =                    1373
+
+Allocating                      18 Mb of dynamic memory (RAM)
+
+Allocation successful.
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\results\EG00\plot\gis\EG00_001_PLOT.shp
+GIS Layer assigned ID of 2
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\results\EG00\plot\gis\EG00_001_PLOT.shp
+GIS Layer assigned ID of 3
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\results\EG00\plot\gis\EG00_001_PLOT.shp
+GIS Layer assigned ID of 4
+
+________________________________________________________________________________
+CPU Time:        0:00:00  [0.000104 h]
+Clock Time:      0:00:01  [0.000278 h]
+
+Domain_001: Reading Geometry File ... D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\EG00_001.tgc
+
+tgc>> Set Code == 0
+out>> Set Code...global value of     0.000 being applied
+
+tgc>> Read GIS Code == gis\2d_code_EG00_001_R.shp
+out>> Read GIS Code... Opening Read GIS Code File: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_code_EG00_001_R.shp
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_code_EG00_001_R.shp
+GIS Layer assigned ID of 5
+Reading Read GIS Code File: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_code_EG00_001_R.shp
+ShapefileX Code: 9994  Length: 54
+ShapefileX Version: 1000  Type: 5
+Shapefile Code: 9994  Length: 406
+Shapefile Version: 1000  Type: 5
+DBF file contains 1 records.
+1 DBF Fields (Name [#/Type/Length]): CODE [1/N/11]  
+   20570
+       1 objects read
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_code_EG00_001_R.shp]...
+
+tgc>> Set Zpts == 100
+out>> Set Zpts...global value of   100.000 being applied
+
+tgc>> Read GRID Zpts == grid\DEM_SI_Unit_01.tif
+out>> Read GRID Zpts...Allocating temporary memory for XF zpt array, memory required 2896kB.
+
+Processing GRID File: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\grid\DEM_SI_Unit_01.tif
+
+Using Grid Approach == METHOD B
+Opening GRID Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\grid\DEM_SI_Unit_01.tif
+GRID Layer assigned ID of 1
+
+Reading GeoTIFF grid...
+    0....10....20....30....40....50....60....70....80....90....100
+
+Interpolating SGS elevations from external grid...
+
+Number of sampling points for face: 11, for cell: 121
+
+Allocating 55Mb memory for processing SGS GRID...(Method C)
+     200     100       0
+
+tgc>> Set Mat == 1
+out>> Set Mat...global value of     1.000 being applied
+
+tgc>> Read GIS Mat == gis\2d_mat_EG00_001_R.shp
+out>> Read GIS Mat... Opening Read GIS Mat File: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_mat_EG00_001_R.shp
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_mat_EG00_001_R.shp
+GIS Layer assigned ID of 5
+Reading Read GIS Mat File: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_mat_EG00_001_R.shp
+ShapefileX Code: 9994  Length: 202
+ShapefileX Version: 1000  Type: 5
+Shapefile Code: 9994  Length: 13674
+Shapefile Version: 1000  Type: 5
+DBF file contains 38 records.
+1 DBF Fields (Name [#/Type/Length]): MATERIAL [1/N/11]  
+     771      49      74     105     454     271     155     231       0      47      20      16      15       4      38      20      40      24      19      15      12      10       3       1      27       9      28      28       5      10       0       0     379     152     125     233     760     560
+      38 objects read
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_mat_EG00_001_R.shp]...
+...Finished Reading Geometry File
+
+Starting checking consistency of SGS elevations (SGS Approach == Method C)...
+
+Processing C Cell Data...
+     200     100       0
+Processing U Face Data...
+     200     100       0
+Processing V Face Data...
+     200     100       0
+Processing H Corner Data...
+     200     100       0
+... Finished checking consistency of SGS elevations (SGS Approach == Method C). CRC =        120617779
+
+Pre-processing SGS elevations (SGS Approach == Method C)
+  Using 2 OMP threads
+
+Processing C Cell Data...
+     100     200       0
+Processing U Face Data...
+     100     200       0
+Processing V Face Data...
+     100     200       0
+Processing H Corner Data...
+     100     200       0... Finished pre-processing SGS elevations.
+
+Calculating statistics SGS elevations (SGS Approach == Method C)
+
+Processing C Cell Data...
+     200     100       0
+Processing U Face Data...
+     200     100       0
+Processing V Face Data...
+     200     100       0
+Processing H Corner Data...
+     200     100       0... Finished calculating statistics SGS elevations
+ 
+
+Domain_001: Searching .tcf file for data ... 
+
+Initial water levels (IWL) globally set to 36.5
+...Finished Searching .tcf File
+Identifying cells within user defined output zones...
+...Finished identifying cells within user defined output zones...
+
+Setting instability water level...
+...Instability water level limit set to   110.000
+
+Partially releasing memory (RAM) for storing elevations at SGS sampling points (SGS Approach == Method C)
+... Done
+
+Pre-processing breakline ZH points for depth interpolation
+
+... Finished processing breakline ZH points for depth interpolation
+
+Assigning any Variable Z Shape 1D Trigger Nodes...
+...Finished
+
+
+________________________________________________________________________________
+CPU Time:        0:01:05  [0.01826 h]
+Clock Time:      0:00:46  [0.01278 h]
+
+Domain_001: Reading Boundary File: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\EG00_001.tbc
+
+READING Boundary Conditions:
+
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt
+Requested:            79      0      0     64      0      0      0      0      0      0      0      0     15      0
+
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_bcc_check.shp
+GIS Layer assigned ID of 5
+
+Creating D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_2d_bc_tables_check.csv
+
+Allocating additional 70 Kb of temporary processing of boundary regions.
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_bc_EG00_001_L.shp
+GIS Layer assigned ID of 6
+ShapefileX Code: 9994  Length: 58
+ShapefileX Version: 1000  Type: 3
+Shapefile Code: 9994  Length: 170
+Shapefile Version: 1000  Type: 3
+DBF file contains 2 records.
+8 DBF Fields (Name [#/Type/Length]): Type [1/C/2]  Flags [2/C/3]  Name [3/C/100]  f [4/N/19]  d [5/N/19]  td [6/N/19]  a [7/N/19]  b [8/N/19]  
+Number of Input Layers: 1
+Input Layer 1: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_bc_EG00_001_L.shp
+...Reading coordinates of any 1D connections from Layer 1
+Found     0 1D connections
+
+Rewinding GIS Layer 6...
+DBF file contains 2 records.
+8 DBF Fields (Name [#/Type/Length]): Type [1/C/2]  Flags [2/C/3]  Name [3/C/100]  f [4/N/19]  d [5/N/19]  td [6/N/19]  a [7/N/19]  b [8/N/19]  
+
+Processing TUFLOW "QT" BC with name "FC01"...
+Opening Database...
+.Found database line: FC01,EG00_001.csv,inflow_time_hr,inflow_FC01,,,,,
+
+Checking if D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\bc_dbase\xf\EG00_001.csv.xf4 file is newer...it is
+Looking for data in columns 1, 2 of xf file.
+Extracting Data...
+...Finished Extracting Data
+Checking ascending order of Column 1...OK
+Applying time shift of ...................:       0.000
+Applying value addition factor of ........:       0.000
+Applying value multiplication factor of ..:       1.000
+Column 1 ranges from        0.000 to        3.333
+Column 2 ranges from        0.000 to       92.240
+
+Processing TUFLOW "HQ" BC with name ""...
+
+Closing GIS Layer 6 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\gis\2d_bc_EG00_001_L.shp]...
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt
+     Read:      0     79      0      0     64      0      0      0      0      0      0      0      0     15      0
+Requested:            79      0      0     64      0      0      0      0      0      0      0      0     15      0
+
+Checking all connection objects are used...
+...Finished.
+
+
+    Final:            79      0      0     64      0      0      0      0      0      0      0      0     15      0
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt
+
+
+De-allocating temporary processing of boundary regions.
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_bcc_check.shp]...
+
+...Finished Reading Boundary File for Domain Domain_001
+
+Domain_001: Setting Bed Elevations for SGS Depth Output ... D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\model\EG00_001.tgc
+...Finished Setting Bed Elevations for SGS Depth Output
+
+Indexing HX and SX cells connectivity to 1D nodes...
+Maximum number HX cells linked to a 1D node = 15
+Maximum number SX cells linked to a 1D node = 0
+Allocating memory for HX and SX 1D/2D link indexing...
+Domain_001: Indexing HX and SX cells...
+Finished indexing HX and SX cells connectivity to 1D nodes.
+
+________________________________________________________________________________
+CPU Time:        0:01:05  [0.01827 h]
+Clock Time:      0:00:46  [0.01278 h]
+
+Domain_001: Initialising 2D Data (Stage 1)...
+
+Completing unit conversions...
+
+Setting up linear and spline interpolation tables...
+   HT Boundaries...    0
+   HQ Boundaries...   64
+   QT Boundaries...    1
+   QTA Boundaries...    0
+   ST Boundaries...    0
+   SH and SD Boundaries...    0
+   VG Boundaries...    0
+   VT Boundaries...    0
+   WT Boundaries...    0
+
+Checking Material and Manning's n values...
+
+Initialising any layered FC coefficients...
+
+Setting default computational array values...
+
+...Finished Initialising Data (Stage 1) for Domain Domain_001
+
+________________________________________________________________________________
+CPU Time:        0:01:05  [0.01827 h]
+Clock Time:      0:00:46  [0.01278 h]
+
+Domain_001: Initialising 2D Data (Stage 2)...
+
+Assigning 2D cell codes...
+
+Pre-processing any SA regions...
+
+Setting invert levels for distributing SX flows...
+
+Setting flow constriction lids...
+
+Initialising any tgc FC obverts...
+
+Checking storage reduction factors...
+
+Setting initial wet/dry flags...
+
+Pre-processing bed resistance values...
+
+Checking for any uninitialised Zpt values...
+
+Setting groundwater base levels for distributing SX flows...
+
+Calculating SGS cutoff depths at cells...
+
+Checking all cells have active faces...
+
+...Finished Initialising Data (Stage 2) for Domain Domain_001
+
+________________________________________________________________________________
+
+Domain_001: Checking 2D Input Data...
+
+Calculating any automatic HQ boundaries in Domain Domain_001
+
+...Finished calculating any automatic HQ boundaries in Domain Domain_001
+...Finished Checking Input Data for Domain Domain_001
+
+________________________________________________________________________________
+
+Domain_001: Initialising any 2D2D link data
+Domain_001: Finished setting up any 2D2D link data
+
+Checking for mismatches in 1D node/channel bed levels...
+
+Indexed 1 1D nodes and 0 channels for HPC simulation.
+HPC Virtual Pipe system has 0 1D nodes and 0 pit channels.
+
+Setting up 1D structure groups...
+
+Setting up primary upstream and downstream channels...
+
+Checking upstream channel inverts for structures...
+
+Checking any 1D/2D and 2D/2D Link Elevations...
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_1d_to_2d_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_1d_to_2d_check.shp]...
+...Finished.
+
+________________________________________________________________________________
+
+Domain_001: Setting up any 2D structure flow group and reporting location links... 
+...Finished setting up any 2D structure flow group and reporting location links
+
+Found a total of 0 structure groups.
+
+________________________________________________________________________________
+
+1D Initial water levels (IWL) set by user - use check files to verify
+2D Initial water levels (IWL) set by user - use check files to verify
+
+________________________________________________________________________________
+
+Writing any remaining check files...
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_grd_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_grd_check.shp]...
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_zpt_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_zpt_check.shp]...
+Opening GIS Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_uvpt_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_uvpt_check.shp]...
+...Finished writing any remaining check files
+
+Checking Zpt values are within Zpt Range Check values of -9998.000 and 99998.000...
+
+Zpts range from 35.925 to 55.336 m.
+
+...Finished.  All active Zpt values are within Zpt Range Check.
+
+Isolating redundant perimeter sections of 2D domain Domain_001...
+...Reduced computational grid by 8%.  Now extends from [5,7] to [196,169].
+...Reduced output grid by 8%.  Now extends from [5,7] to [196,169].
+
+________________________________________________________________________________
+CPU Time:        0:01:50  [0.03063 h]
+Clock Time:      0:01:36  [0.02667 h]
+
+Processing 1D/2D mesh and writing mesh file(s) where applicable...
+...Processing 2D Domain Domain_001
+
+Allocating 709Kb memory for temporary mesh node arrays...
+Processing mesh nodes for domain...
+Processing cell centre nodes for domain...
+Processing mesh elements for domain...
+...found 20611 cells and 41630 nodes
+
+Mesh statistics for Output Zone 
+  Number 1D WLL Elements:            0
+  Number 1D WLL Nodes:               0
+  Number 2D Cells:               20611
+  Number 2D Mesh Elements:       82444
+  Number 2D Mesh Nodes:          41630
+
+...Finished Writing 2DM File
+
+
+Generating and writing check DEMs...
+
+Calculating grid interpolation factors...
+Element:     10000    20000    30000    40000    50000    60000    70000    80000
+Finished calculating grid interpolation factors.
+Opening GRID Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_DEM_Zmin.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_DEM_M.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\check\EG00\EG00_001_DEM_Z.tif
+GRID Layer assigned ID of 1
+...Finished generating and writing check DEMs.
+
+Calculating grid interpolation factors...
+Element:     10000    20000    30000    40000    50000    60000    70000    80000
+Finished calculating grid interpolation factors.
+
+Committing any changes to open GPKG layers...
+
+Number of WARNINGs:    _messages layer =       1     Total =       1
+Number of CHECKs:      _messages layer =       2     Total =       2
+
+________________________________________________________________________________
+CPU Time:        0:01:50  [0.03073 h]
+Clock Time:      0:01:37  [0.02694 h]
+Closing Time of Startup Summary...
+   Done
+
+......................................... Running TUFLOW HPC Solver
+
+
+Creating and checking 1D HX conditions from 2D SX connections...
+
+Creating and checking 1D QX links from 2D HX connections...
+
+Checking 1D QX boundaries and initialising 2D HX connections...
+
+Allocating 283Kb memory for temporary HPC arrays Stage 1...
+
+Checking boundary data to be sent...
+...Finished checking boundary data to be sent to HPC
+
+Sending HPC .tlf filename...
+
+Identifying HPC solver...
+HPC Solver Build: 3.51.9
+
+Sending HPC time history .hpc.dt.csv filename...
+
+Sending initialisation data to HPC...
+CPU memory initialised.
+Stack Size: 100007936 bytes (~95 MB)
+HPC: Log file = D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001.hpc.tlf
+HPC: HPC version 3.51.9 (Aug 26 2026 09:02:09) - single precision - win64
+HPC: Timestep history file = D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001.hpc.dt.csv
+HPC: Hardware option = CPU, CPU Threads = 2
+HPC: Peer to peer access allowed
+HPC: Initialising model ...
+HPC: Setting units to [m s]
+HPC: Setting ny == 204
+HPC: Padding ny to 208
+HPC: Setting nx == 174
+HPC: Selecting spatial scheme 3
+HPC: HPC Temporal Scheme == 4: fourth order time integration
+HPC: Screen/Log Display Interval == 10
+HPC: Timestep Repeats == 10
+HPC: Solution Scheme == HPC 2nd
+HPC: NaN counting on
+HPC: Adaptive time stepping on (Control Number Factor > 0)
+HPC: Store Maximums and Minimums == ON MAXIMUMS ONLY
+HPC: Number ground water layers = 0
+HPC: Gridded rainfall not requested
+HPC: Hydrograph indexing not requested
+HPC: Hydrograph weighting not requested
+HPC: External stress file not specified
+HPC: SRF/CWF/FLC layer requested
+HPC: Mass balance output == on
+HPC: Material IL/CL not requested
+HPC: Number Time Output Cutoff Thresholds == 0
+HPC: Cumulative rainfall (RFC) not requested
+HPC: Number plot output times == 10807 (Start Time Series Output, Time Series Output Interval)
+HPC: Number tracer fields == 0
+HPC: Viscosity formulation == Wu
+HPC: Allowing for tracking of 2 scalar maximum fields
+HPC: Allowing for tracking of 1 vector maximum fields
+HPC: Time of maximimum not requested for additional map output fields
+HPC: Minimum dt output not requested
+HPC: Number of ESTRY 1D nodes == 1
+HPC: Soil Initial Loss ==  Ignore Material Impervious 
+HPC: SGS == on
+HPC: Viscosity Approach == Method B
+HPC: Boundary Approach == Method B
+HPC: Mannings Depth Approach == Method B
+HPC: SGS Infiltration Approach == Automatic
+HPC: SGS Negative RF Approach == Wetted Area
+HPC: HPC Infiltration Drying Approach == METHOD C
+HPC: GroundWater advection not requested
+HPC: SGS depth approach Average                 (use cell average depth)
+HPC: SGS velocity based output approach Average (use cell average depth)
+HPC: HPC Dry Face Inertia Approach == Method B
+HPC: Settling/decay of tracers not requested
+HPC: HPC Weir Approach == Method B ENERGY
+HPC: SGS Sheet Flow Approach == Method A
+HPC: SGS Gradient Limiter == Method A
+HPC: SGS sheet flow output not requested
+HPC: HPC SX Momentum Approach == Method B
+HPC: Timestep history file write interval == 10
+HPC: Number of TUFLOW Catch cells == 0
+HPC: Atmospheric pressure field not specified
+HPC: SGS Hydraulic Radius Method A selected
+HPC: SGS 2nd Order BC Slope Method A selected
+HPC: HPC Timestepping Approach == Method B
+HPC: Subsurface Vertical Flux Model == Darcy's Law
+HPC: Form Loss Rotational Adjustment == ON Polylines
+HPC: Groundwater Z Flux Normalise == ON
+HPC: Cell Wet/Dry Depth == 0.002 m
+HPC: HPC Infiltration Drying Depth == 0.0019 m
+HPC: Viscosity Coefficients == 7 0
+HPC: Cell Size == 5 x 5 m
+HPC: Start Time =    0:00:00
+HPC: Timestep == 0.1
+HPC: Control Number Factor == 1
+HPC: Timestep Minimum == 0.025 s
+HPC: SA Minimum Depth == 0.002 m
+HPC: Start Time Series Output    ==    0:00:00
+HPC: Time Series Output Interval == 10800.5
+HPC: Boundary Viscosity Factor == 1
+HPC: Density of water == 1025 kg/m^3
+HPC: Wind/Wave Shallow Depths == 0.2 1
+HPC: Control Number Factors == 1 1 0.3
+HPC: SGS Minimum Cell Area Ratio == 0.010000
+HPC: Maximum Velocity Cutoff Depth == 0.100000
+HPC: Timestep Maximum == 2.5 s
+HPC: HPC Weir Factor == 0.3, 0.78
+HPC: HPC has spatially varying weir factors
+HPC: Wu Mannings Limit = 0.100000
+HPC: gridRotation = -13.165796 degrees
+HPC: HQBoundaryFilter = 5
+HPC: velLimit = 30
+HPC: Soil moisture power function exponent for vertical flux = 2
+HPC: Soil moisture power function exponent for horizontal flux = 0
+HPC: Store maximums on
+HPC: Beginning CPU memory allocations for thread 0 ...
+HPC: Beginning CPU memory allocations for thread 1 ...
+HPC:     allocating nan counter ...
+HPCParameters initialised.
+...Finished sending initialisation data
+
+Sending elevation data and initial conditions...
+...Finished sending elevation data and initial conditions
+
+No plot output locations to send.
+
+Sending any Evaluation Group Data...
+Finished sending any Evaluation Group Data
+
+Transferring material parameters...
+...Finished transferring Material Parameters.
+...Finished transferring Material Parameters.
+...Finished transferring Material Parameters.
+...Finished transferring Material Parameters.
+...Finished transferring Material Parameters.
+...Finished transferring Material Parameters.
+
+Transferring Material IDs...
+...Finished transferring Material IDs.
+
+Transferring Storage Reduction Factors (SRF)...
+...Finished transferring Storage Reduction Factors (SRF).
+
+No Cell Width Factors (CWF) to transfer...
+
+No Form Loss Coefficients (FLC) to transfer...
+
+No soils information to be transfered.
+
+No Time Output Cutoff Depth(s) to transfer...
+
+No Layered Flow Constriction data to transfer...
+
+No Variable Z Shapes to transfer...
+
+Transferring tracking scalar maximums settings...
+
+... Finished transferring tracking scalar maximums settings...
+
+... Finished transferring tracking scalar maximums settings...
+
+Transferring tracking vector maximums settings...
+
+... Finished transferring tracking vector maximums settings...
+
+________________________________________________________________________________
+CPU Time:        0:01:50  [0.03073 h]
+Clock Time:      0:01:37  [0.02694 h]
+
+Sending boundary data to HPC...
+
+Allocating 1703Kb memory for temporary HPC arrays Stage 2...
+
+Sending active/inactive cell data to HPC...
+...Finished sending active/inactive cell data to HPC Solver.
+
+No stream order data to send to HPC Solver.
+
+No active GWL to send or GW advection in soil layer not activated...
+
+No global wind shear stress data to send to HPC Solver.
+...Finished sending boundary data to HPC Solver.
+
+Sending SGS data...
+
+Initialising 1D Virtual Pipe data for HPC Solver...
+
+Sending any 1D Virtual Pipe data to HPC Solver...
+Sent 0 virtual pipe pit depth-discharge curves to HPC Solver.
+No HPC virtual pipe pits to send.
+...Finished sending 1D Virtual Pipe data to HPC Solver.
+...Finished initialising 1D Virtual Pipe data for HPC Solver.
+
+Sending SX locations...
+
+...No non-VP SX locations to send.
+
+Sending HX locations...
+
+Allocating memory for temporary HX data arrays...
+
+...Finished sending HX locations.
+
+Setting weir angle at breaklines...
+
+Sending Spatial WrF data...
+:     allocating z, h, u, v, a, matc, matu, matv, streamOrder, hy, rf, sa, nut, phi2, phi4 ...
+HPC:     allocating GPU synchronisation buffers ...
+HPC:     allocating nan counter ...
+HPC:     allocating hydrographType hydrographSource1 hydrographSource2 ...
+HPC:     allocating z, h, u, v, a, matc, matu, matv, streamOrder, hy, rf, sa, nut, phi2, phi4 ...
+HPC:     allocating mnu mnv ...
+HPC:     allocating Lm0, Lm
+HPC:     allocating eMax, tMax ...
+HPC:     allocating scalar maximum fields ...
+HPC:     allocating vector maximum fields ...
+HPC:     allocating area width and form loss factor layers ...
+HPC:     allocating constant shear stress data ...
+HPC:     allocating boundary data vectors ...
+HPC:     allocating SGS data fields ...
+HPC:     allocating hDot, uDot, vDot, h0, u0, v0, h_, u_, v_ ...
+HPC:     allocating wrfu, wrfv ...
+HPC:     allocating wrau, wrav ...
+HPC:     allocating GPU synchronisation buffers ...
+HPC:     allocating hydrographType hydrographSource1 hydrographSource2 ...
+HPC:     ... done memory allocations
+HPC:     allocating mnu mnv ...
+HPC:     allocating Lm0, Lm
+HPC:     allocating eMax, tMax ...
+HPC:     allocating scalar maximum fields ...
+HPC:     allocating vector maximum fields ...
+HPC:     allocating area width and form loss factor layers ...
+HPC:     allocating constant shear stress data ...
+HPC:     allocating boundary data vectors ...
+HPC:     allocating SGS data fields ...
+HPC:     allocating hDot, uDot, vDot, h0, u0, v0, h_, u_, v_ ...
+HPC:     allocating wrfu, wrfv ...
+HPC:     allocating wrau, wrav ...
+HPC:     ... done memory allocations
+HPC:  ... done model initialisation
+HPC: z range = 35.924679 ... 100.000000
+HPC: Input depth data positive (range = 0.001900 ... 0.575321)
+HPC: Copying zc zu zv zh h u v data to device 0 ...
+HPC: Copying zc zu zv zh h u v data to device 1 ...
+HPC: Adding material number   1, fraction impervious = 0.0000, mannings n =  0.060
+HPC: Adding material number   2, fraction impervious = 0.0000, mannings n =  0.022
+HPC: Adding material number   3, fraction impervious = 0.0000, mannings n =  0.400
+HPC: Adding material number   4, fraction impervious = 0.0000, mannings n =  0.030
+HPC: Adding material number   5, fraction impervious = 0.0000, mannings n =  0.080
+HPC: Adding material number   6, fraction impervious = 0.0000, mannings n =  0.040
+HPC: Setting material layer ...
+HPC: Material type   1 referenced by      33914 cells,      33928 uFaces,      33936 vFaces
+HPC: Material type   2 referenced by        743 cells,        717 uFaces,        697 vFaces
+HPC: Material type   3 referenced by        113 cells,        117 uFaces,        114 vFaces
+HPC: Material type   4 referenced by        212 cells,        222 uFaces,        222 vFaces
+HPC: Material type   5 referenced by        514 cells,        512 uFaces,        527 vFaces
+HPC: Material type   6 referenced by          0 cells,          0 uFaces,          0 vFaces
+HPC: Copying material ID layer to device 0 ...
+HPC: Copying material ID layer to device 1 ...
+HPC: Setting cell area factors ...
+HPC: Copying cell area factors to device 0 ...
+HPC: Copying cell area factors to device 1 ...
+HPC: Cell area factors set - minimum value was 1
+HPC: Adding scalar maximum field 0, type 0
+HPC: Adding scalar maximum field 1, type 3
+HPC: Adding vector maximum field 0, type 0
+HPC: Adding boundary level graph number     1, bc_type =  2, interpolationType = 2, nPoints =  102
+HPC: Setting active layer ...
+HPC: Number active cells = 20547
+HPC: Boundary level graph   1 referenced by         64 cells
+HPC: Number sealed wall cells = 14885
+HPC: Copying SGS data to device 0 ...
+HPC: Copying SGS data to device 1 ...
+HPC: Adding 15 Hx connections ...
+HPC: Copying Hx data data to device 0 ...
+HPC: Copying Hx data data to device 1 ...
+HPC: Copying Weir factors to device 0 ...
+HPC: Copying Weir factors to device 1 ...
+HPC: Copying breakline weir angle data to device 0 ...
+HPC: Copying breakline weir angle data to device 1 ...
+HPC: Copying HPC thin weir parameters == 0.577, 1.5, 8.55, 0.556
+HPC: Copying HPC thick weir parameters == 0.577, 1.5, 8
+________________________________________________________________________________
+CPU Time:        0:01:50  [0.03074 h]
+Clock Time:      0:01:37  [0.02694 h]
+
+________________________________________________________________________________
+
+Initialising Run Time Summary == D:\Projects\disaster_management\tools\tuflow\official-examples\TUFLOW_Example_Model_Dataset\TUFLOW\runs\log\EG00_001_hpc_run_stats.txt
+SIM:    0:00:00    -d  0  0    0D100%  1D  0%  2D  0%    CE  0.0%  0.0%  0.0%    Vi     0  Vo     0  dV     0
+Relative device loads:    0.0%   0.0%
+Writing HPC Output at: 0:00:00  Clock: 0:01:37  CPU: 0:01:50
+SIM:    0:05:00    -d  0  0    0D  4%  1D  0%  2D 96%    CE  0.6% -0.0% -0.0%    Vi   125  Vo   117  dV     9
+Relative device loads:  100.0%  85.0%
+Writing HPC Output at: 0:05:00  Clock: 0:01:41  CPU: 0:01:57
+.55, 0.556
+HPC: Zero hydrograph  referenced by      20532 cells
+HPC: Model has 0 evaluation groups
+HPC:     allocating dataReductionBlock ...
+HPC:     allocating dataReductionBlock ...
+HPC: Copying active index layer to device 0 memory ... 
+HPC: Copying active index layer to device 1 memory ... 
+HPC: Copying stream order to 0 ...
+HPC: Copying stream order to 1 ...
+HPC: Copying 0 hydrographTypes to device 0 ...
+HPC: Copying boundaryLevelgraphTypes to device 0 ...
+HPC: Copying 6 material types to device 0 ... 
+HPC: Copying switches1 (0x97880607) to device 0 memory ... 
+HPC: Copying switches2 (0x0000D043) to device 0 memory ... 
+HPC: Copying 0 hydrographTypes to device 1 ...
+HPC: Copying boundaryLevelgraphTypes to device 1 ...
+HPC: Copying 6 material types to device 1 ... 
+HPC: Copying switches1 (0x97880607) to device 1 memory ... 
+HPC: Copying switches2 (0x0000D043) to device 1 memory ... 
+HPC: Prerun completed
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:         10     0:00:01  0.010  0.055  0.001          104  268.260       0.120 100.0%
+HPC:         20     0:00:02  0.011  0.067  0.001          104  266.807       0.147 100.0%
+HPC:         30     0:00:04  0.020  0.081  0.002          104  265.793       0.180 100.0%
+HPC:         40     0:00:06  0.024  0.098  0.003          104  264.348       0.220 100.0%
+HPC:         50     0:00:09  0.028  0.119  0.004          104  262.500       0.269 100.0%
+HPC:         60     0:00:12  0.034  0.144  0.006          104  260.374       0.329 100.0%
+HPC:         70     0:00:15  0.042  0.172  0.007          104  257.809       0.403 100.0%
+HPC:         80     0:00:20  0.051  0.207  0.008          104  254.754       0.493  99.9%
+HPC:         90     0:00:25  0.060  0.248  0.009          104  251.131       0.602  99.9%
+HPC:        100     0:00:32  0.070  0.300  0.011          105  246.966       0.738  99.9%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        110     0:00:40  0.086  0.362  0.013          105  242.200       0.902  99.9%
+HPC:        120     0:00:50  0.103  0.436  0.015          105  236.701       1.105  99.9%
+HPC:        130     0:01:03  0.122  0.525  0.017          107  230.461       1.348  99.8%
+HPC:        140     0:01:18  0.148  0.636  0.020          107  223.384       1.658  99.8%
+HPC:        150     0:01:36  0.173  0.760  0.023          109  215.505       2.017  99.8%
+HPC:        160     0:01:59  0.208  0.930  0.027          111  207.220       2.480  99.7%
+HPC:        170     0:02:24  0.204  0.918  0.025          113  199.808       2.480  99.6%
+HPC:        180     0:02:49  0.206  0.902  0.024          115  194.464       2.480  99.6%
+HPC:        190     0:03:13  0.245  0.888  0.022          118  191.365       2.480  99.5%
+HPC:        200     0:03:38  0.264  0.874  0.025          120  190.570       2.480  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        210     0:04:03  0.293  0.887  0.031          125  192.157       2.480  99.5%
+HPC:        220     0:04:28  0.319  0.930  0.036          128  196.165       2.480  99.4%
+HPC:        230     0:04:53  0.341  0.968  0.041          133  202.602       2.480  99.4%
+HPC:        240     0:05:17  0.364  1.006  0.046          138  211.554       2.479  99.4%
+HPC:        250     0:05:42  0.374  1.001  0.050          144  223.274       2.370  99.4%
+HPC:        260     0:06:05  0.387  1.003  0.054          148  237.988       2.283  99.4%
+HPC:        270     0:06:27  0.396  0.999  0.058          152  255.829       2.194  99.4%
+HPC:        280     0:06:49  0.405  1.000  0.063          157  276.789       2.124  99.5%
+HPC:        290     0:07:10  0.409  0.995  0.067          160  300.758       2.052  99.4%
+HPC:        300     0:07:30  0.415  0.996  0.073          167  327.651       2.000  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        310     0:07:50  0.417  0.991  0.077          171  357.365       1.944  99.4%
+HPC:        320     0:0SIM:    0:10:00    -d  0  0    0D  4%  1D  0%  2D 96%    CE  0.7% -0.0%  0.0%    Vi   620  Vo    50  dV   574
+Relative device loads:  100.0%  81.8%
+Writing HPC Output at: 0:10:00  Clock: 0:01:45  CPU: 0:02:02
+SIM:    0:15:00    -d  0  0    0D  4%  1D  0%  2D 96%    CE  0.3% -0.0% -0.0%    Vi  1187  Vo    28  dV  1159
+Relative device loads:  100.0%  78.6%
+Writing HPC Output at: 0:15:00  Clock: 0:01:49  CPU: 0:02:09
+8:09  0.424  0.997  0.081          175  389.633       1.913  99.4%
+HPC:        330     0:08:28  0.432  0.999  0.085          180  424.288       1.878  99.4%
+HPC:        340     0:08:46  0.438  0.995  0.089          184  461.331       1.839  99.4%
+HPC:        350     0:09:05  0.438  0.984  0.091          190  500.604       1.790  99.4%
+HPC:        360     0:09:22  0.449  0.999  0.096          197  542.329       1.790  99.4%
+HPC:        370     0:09:40  0.435  0.962  0.095          199  585.080       1.700  99.3%
+HPC:        380     0:09:57  0.444  0.974  0.099          204  629.967       1.700  99.2%
+HPC:        390     0:10:14  0.458  1.001  0.104          208  678.068       1.724  99.2%
+HPC:        400     0:10:31  0.458  1.002  0.106          214  728.038       1.703  99.2%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        410     0:10:48  0.457  1.002  0.107          218  779.303       1.681  99.2%
+HPC:        420     0:11:04  0.453  1.002  0.108          219  831.654       1.659  99.2%
+HPC:        430     0:11:21  0.431  1.013  0.104          222  884.049       1.567  99.2%
+HPC:        440     0:11:36  0.409  1.008  0.100          224  934.369       1.480  99.2%
+HPC:        450     0:11:50  0.392  1.005  0.097          226  983.305       1.417  99.3%
+HPC:        460     0:12:04  0.382  1.004  0.095          226     1032       1.374  99.3%
+HPC:        470     0:12:18  0.371  0.998  0.093          226     1079       1.331  99.3%
+HPC:        480     0:12:31  0.363  0.996  0.092          228     1127       1.298  99.3%
+HPC:        490     0:12:44  0.357  0.999  0.091          229     1174       1.275  99.3%
+HPC:        500     0:12:56  0.351  0.999  0.090          230     1221       1.250  99.3%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        510     0:13:09  0.345  0.995  0.089          233     1268       1.224  99.3%
+HPC:        520     0:13:21  0.342  0.999  0.089          233     1315       1.210  99.3%
+HPC:        530     0:13:33  0.339  1.001  0.089          234     1361       1.195  99.3%
+HPC:        540     0:13:45  0.335  1.000  0.088          236     1408       1.179  99.3%
+HPC:        550     0:13:56  0.331  0.996  0.088          237     1455       1.160  99.3%
+HPC:        560     0:14:08  0.325  0.987  0.086          237     1501       1.137  99.3%
+HPC:        570     0:14:19  0.324  0.997  0.087          240     1548       1.137  99.3%
+HPC:        580     0:14:30  0.314  0.975  0.085          240     1595       1.102  99.3%
+HPC:        590     0:14:41  0.314  0.984  0.085          240     1641       1.102  99.3%
+HPC:        600     0:14:52  0.314  0.992  0.086          243     1688       1.102  99.2%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        610     0:15:03  0.314  1.001  0.086          244     1735       1.103  99.2%
+HPC:        620     0:15:14  0.312  1.001  0.086          244     1783       1.095  99.3%
+HPC:        630     0:15:25  0.310  1.000  0.086          245     1831       1.086  99.3%
+HPC:        640     0:15:36  0.307  1.000  0.086          248     1880       1.078  99.3%
+HPC:        650     0:15:47  0.304  0.999  0.086          249     1929       1.069  99.3%
+HPC:        660     0:15:57  0.302  1.001  0.087          249     1978       1.064  99.3%
+HPC:        670     0:16:08  0.293  0.999  0.087          249     2028       1.055  99.3%
+HPC:        680     0:16:18  0.290  1.000  0.087          253     2078       1.050  99.3%
+HPC:        690     0:16:29  0.286  0.996  0.087          255     2129       1.040  99.3%
+HPC:        700     0:16:39  0.276  0.997  0.088          255     2180       1.035  99.3%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        710     0:16:50  0.274  0.998  0.088          257     2232       1.029  99.3%
+HPC:        720     0:17:00  0.272  0.999  0.088          258     2283       1.023  99.3%
+HPC:        730     0:17:10  0.269  0.998  0.088          261     233SIM:    0:20:00    -d  0  0    0D  3%  1D  0%  2D 96%    CE  0.2% -0.0% -0.0%    Vi  1745  Vo    18  dV  1729
+Relative device loads:  100.0%  76.3%
+Writing HPC Output at: 0:20:00  Clock: 0:01:55  CPU: 0:02:19
+6       1.018  99.3%
+HPC:        740     0:17:20  0.266  0.997  0.089          261     2389       1.011  99.3%
+HPC:        750     0:17:30  0.262  0.995  0.089          262     2443       1.005  99.3%
+HPC:        760     0:17:40  0.259  0.994  0.089          264     2497       0.997  99.3%
+HPC:        770     0:17:50  0.258  0.999  0.090          267     2551       0.997  99.3%
+HPC:        780     0:18:00  0.255  0.997  0.090          269     2606       0.990  99.3%
+HPC:        790     0:18:10  0.251  0.993  0.090          272     2662       0.981  99.3%
+HPC:        800     0:18:20  0.250  0.998  0.091          274     2717       0.981  99.3%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        810     0:18:30  0.246  0.993  0.091          277     2774       0.971  99.3%
+HPC:        820     0:18:39  0.245  0.997  0.091          278     2830       0.971  99.3%
+HPC:        830     0:18:49  0.240  0.989  0.091          282     2887       0.958  99.3%
+HPC:        840     0:18:59  0.239  0.993  0.091          283     2945       0.958  99.3%
+HPC:        850     0:19:08  0.237  0.998  0.092          285     3003       0.958  99.3%
+HPC:        860     0:19:18  0.230  0.981  0.090          287     3061       0.938  99.3%
+HPC:        870     0:19:27  0.229  0.985  0.091          289     3119       0.938  99.3%
+HPC:        880     0:19:37  0.227  0.989  0.091          290     3178       0.938  99.3%
+HPC:        890     0:19:46  0.226  0.993  0.092          292     3238       0.938  99.3%
+HPC:        900     0:19:55  0.224  0.997  0.092          293     3298       0.938  99.3%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        910     0:20:05  0.222  1.000  0.092          294     3358       0.938  99.3%
+HPC:        920     0:20:14  0.219  0.998  0.092          295     3420       0.931  99.3%
+HPC:        930     0:20:23  0.216  0.998  0.092          297     3482       0.928  99.3%
+HPC:        940     0:20:33  0.214  0.998  0.093          299     3544       0.925  99.3%
+HPC:        950     0:20:42  0.214  0.999  0.094          300     3608       0.922  99.3%
+HPC:        960     0:20:51  0.213  0.998  0.095          301     3672       0.919  99.3%
+HPC:        970     0:21:00  0.212  0.998  0.096          303     3738       0.915  99.3%
+HPC:        980     0:21:09  0.212  0.998  0.096          304     3805       0.912  99.3%
+HPC:        990     0:21:18  0.211  0.997  0.097          305     3873       0.908  99.4%
+HPC:       1000     0:21:28  0.211  1.001  0.098          307     3943       0.908  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1010     0:21:37  0.210  1.000  0.099          308     4013       0.904  99.4%
+HPC:       1020     0:21:46  0.209  0.999  0.100          309     4085       0.900  99.4%
+HPC:       1030     0:21:55  0.208  0.998  0.100          309     4157       0.896  99.4%
+HPC:       1040     0:22:04  0.207  0.996  0.101          310     4231       0.891  99.4%
+HPC:       1050     0:22:12  0.207  1.000  0.102          315     4306       0.891  99.4%
+HPC:       1060     0:22:21  0.206  0.998  0.103          317     4382       0.886  99.4%
+HPC:       1070     0:22:30  0.205  0.996  0.103          321     4460       0.881  99.4%
+HPC:       1080     0:22:39  0.205  0.999  0.104          323     4538       0.881  99.4%
+HPC:       1090     0:22:48  0.201  0.996  0.104          328     4617       0.876  99.4%
+HPC:       1100     0:22:57  0.199  0.999  0.104          333     4697       0.876  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1110     0:23:05  0.196  0.995  0.104          335     4778       0.869  99.4%
+HPC:       1120     0:23:14  0.199  0.999  0.105          341     4859       0.869  99.4%
+HPC:       1130     0:23:23  0.218  0.993  0.105          342     4942       0.862  99.4%
+HPC:       1140     0:23:31  0.236  0.996  0.106          343     5026       0.862  99.4%
+HPC:       1150     0:23:SIM:    0:25:00    -d  0  0    0D  3%  1D  0%  2D 97%    CE  0.2% -0.0% -0.0%    Vi  2910  Vo    12  dV  2903
+Relative device loads:  100.0%  74.2%
+Writing HPC Output at: 0:25:00  Clock: 0:02:03  CPU: 0:02:30
+40  0.244  0.999  0.107          346     5111       0.862  99.4%
+HPC:       1160     0:23:48  0.251  0.991  0.107          352     5197       0.852  99.4%
+HPC:       1170     0:23:57  0.263  0.994  0.107          356     5285       0.852  99.4%
+HPC:       1180     0:24:05  0.273  0.997  0.108          363     5373       0.852  99.4%
+HPC:       1190     0:24:14  0.284  1.001  0.109          365     5462       0.852  99.4%
+HPC:       1200     0:24:22  0.288  0.985  0.108          368     5552       0.837  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1210     0:24:31  0.297  0.988  0.109          371     5642       0.837  99.4%
+HPC:       1220     0:24:39  0.306  0.991  0.108          375     5734       0.837  99.4%
+HPC:       1230     0:24:47  0.315  0.994  0.109          377     5826       0.837  99.4%
+HPC:       1240     0:24:56  0.323  0.997  0.110          381     5919       0.837  99.4%
+HPC:       1250     0:25:04  0.331  0.998  0.111          383     6015       0.836  99.4%
+HPC:       1260     0:25:13  0.338  0.998  0.112          388     6112       0.833  99.4%
+HPC:       1270     0:25:21  0.345  1.000  0.113          393     6210       0.833  99.4%
+HPC:       1280     0:25:29  0.351  1.000  0.115          398     6310       0.831  99.4%
+HPC:       1290     0:25:37  0.357  1.000  0.116          405     6412       0.828  99.4%
+HPC:       1300     0:25:46  0.363  0.999  0.117          406     6516       0.826  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1310     0:25:54  0.369  0.998  0.118          408     6622       0.823  99.4%
+HPC:       1320     0:26:02  0.374  0.998  0.120          413     6730       0.820  99.4%
+HPC:       1330     0:26:10  0.381  1.000  0.121          424     6840       0.820  99.4%
+HPC:       1340     0:26:19  0.386  0.999  0.123          430     6952       0.817  99.4%
+HPC:       1350     0:26:27  0.391  0.998  0.124          436     7066       0.814  99.4%
+HPC:       1360     0:26:35  0.397  0.997  0.125          442     7183       0.811  99.4%
+HPC:       1370     0:26:43  0.404  0.999  0.127          448     7301       0.811  99.4%
+HPC:       1380     0:26:51  0.408  0.998  0.128          449     7421       0.807  99.4%
+HPC:       1390     0:26:59  0.414  1.000  0.129          456     7543       0.807  99.4%
+HPC:       1400     0:27:07  0.418  0.998  0.130          463     7667       0.804  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1410     0:27:15  0.422  0.996  0.131          470     7793       0.800  99.4%
+HPC:       1420     0:27:23  0.428  0.999  0.132          473     7921       0.800  99.4%
+HPC:       1430     0:27:31  0.432  0.996  0.133          481     8051       0.796  99.4%
+HPC:       1440     0:27:39  0.439  0.999  0.134          487     8182       0.796  99.4%
+HPC:       1450     0:27:47  0.443  0.995  0.135          490     8316       0.791  99.4%
+HPC:       1460     0:27:55  0.451  0.998  0.136          497     8451       0.791  99.4%
+HPC:       1470     0:28:03  0.458  1.000  0.137          505     8588       0.791  99.4%
+HPC:       1480     0:28:11  0.461  0.996  0.138          510     8726       0.786  99.4%
+HPC:       1490     0:28:19  0.469  0.998  0.139          512     8867       0.786  99.4%
+HPC:       1500     0:28:26  0.473  0.992  0.139          516     9009       0.779  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1510     0:28:34  0.480  0.995  0.140          518     9152       0.779  99.4%
+HPC:       1520     0:28:42  0.492  0.997  0.141          524     9298       0.779  99.4%
+HPC:       1530     0:28:50  0.503  0.999  0.141          528     9444       0.779  99.4%
+HPC:       1540     0:28:58  0.502  0.990  0.140          536     9592       0.770  99.4%
+HPC:       1550     0:29:05  0.509  0.992  0.142          544     9741       0.770  99.4%
+HPC:       1560     0:29:13  0.516  0.994  0.144          547     9892 SIM:    0:30:00    -d  0  0    0D  3%  1D  0%  2D 97%    CE  0.2%  0.0% -0.0%    Vi  5242  Vo     9  dV  5242
+Relative device loads:  100.0%  70.6%
+Writing HPC Output at: 0:30:00  Clock: 0:02:11  CPU: 0:02:43
+      0.770  99.4%
+HPC:       1570     0:29:21  0.523  0.997  0.145          550    10046       0.770  99.4%
+HPC:       1580     0:29:28  0.529  0.999  0.146          554    10202       0.770  99.4%
+HPC:       1590     0:29:36  0.464  0.973  0.143          561    10358       0.749  99.4%
+HPC:       1600     0:29:44  0.473  0.975  0.144          567    10514       0.749  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1610     0:29:51  0.480  0.978  0.145          576    10672       0.749  99.4%
+HPC:       1620     0:29:59  0.486  0.980  0.146          583    10831       0.749  99.4%
+HPC:       1630     0:30:06  0.501  0.998  0.150          590    10995       0.761  99.4%
+HPC:       1640     0:30:14  0.472  1.000  0.152          595    11164       0.761  99.4%
+HPC:       1650     0:30:21  0.465  1.000  0.156          604    11336       0.759  99.4%
+HPC:       1660     0:30:29  0.470  0.999  0.160          609    11515       0.757  99.4%
+HPC:       1670     0:30:36  0.474  0.998  0.163          612    11700       0.755  99.4%
+HPC:       1680     0:30:44  0.479  0.998  0.167          617    11890       0.753  99.4%
+HPC:       1690     0:30:52  0.485  1.000  0.171          623    12087       0.753  99.4%
+HPC:       1700     0:30:59  0.490  0.999  0.175          630    12290       0.751  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1710     0:31:07  0.494  0.998  0.178          636    12499       0.748  99.4%
+HPC:       1720     0:31:14  0.500  1.000  0.182          643    12715       0.748  99.4%
+HPC:       1730     0:31:21  0.504  0.999  0.186          650    12936       0.746  99.4%
+HPC:       1740     0:31:29  0.511  0.998  0.189          658    13163       0.743  99.4%
+HPC:       1750     0:31:36  0.518  1.000  0.193          673    13397       0.743  99.4%
+HPC:       1760     0:31:44  0.523  0.999  0.196          682    13636       0.740  99.4%
+HPC:       1770     0:31:51  0.526  0.998  0.199          695    13881       0.738  99.4%
+HPC:       1780     0:31:59  0.532  1.000  0.203          707    14133       0.738  99.4%
+HPC:       1790     0:32:06  0.535  0.999  0.206          727    14390       0.735  99.4%
+HPC:       1800     0:32:13  0.538  0.997  0.208          736    14653       0.731  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1810     0:32:21  0.544  0.999  0.212          748    14922       0.731  99.4%
+HPC:       1820     0:32:28  0.547  0.997  0.214          763    15197       0.728  99.4%
+HPC:       1830     0:32:35  0.551  0.999  0.217          775    15477       0.728  99.4%
+HPC:       1840     0:32:42  0.548  0.996  0.219          796    15763       0.724  99.4%
+HPC:       1850     0:32:50  0.554  0.999  0.222          811    16055       0.724  99.4%
+HPC:       1860     0:32:57  0.555  0.995  0.224          830    16352       0.720  99.4%
+HPC:       1870     0:33:04  0.560  0.998  0.226          846    16653       0.720  99.4%
+HPC:       1880     0:33:11  0.565  1.000  0.229          868    16960       0.720  99.4%
+HPC:       1890     0:33:18  0.565  0.995  0.230          878    17270       0.715  99.4%
+HPC:       1900     0:33:26  0.569  0.998  0.233          897    17586       0.715  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       1910     0:33:33  0.571  1.000  0.236          915    17908       0.715  99.4%
+HPC:       1920     0:33:40  0.571  0.994  0.236          926    18234       0.709  99.4%
+HPC:       1930     0:33:47  0.579  0.996  0.239          947    18565       0.709  99.4%
+HPC:       1940     0:33:54  0.610  0.998  0.242          961    18902       0.709  99.4%
+HPC:       1950     0:34:01  0.613  1.000  0.245          980    19245       0.709  99.4%
+HPC:       1960     0:34:08  0.608  0.990  0.245          995    19591       0.701  99.4%
+HPC:       1970     0:34:15  0.611  0.992  0.248         1011    19943       0.701  99.4%
+HPC:       1980     0:34:22SIM:    0:35:00    -d  0  0    0D  2%  1D  0%  2D 97%    CE  0.2%  0.0%  0.0%    Vi 12104  Vo     6  dV 12121
+Relative device loads:  100.0%  67.2%
+Writing HPC Output at: 0:35:00  Clock: 0:02:21  CPU: 0:02:57
+  0.613  0.994  0.250         1033    20300       0.701  99.4%
+HPC:       1990     0:34:29  0.616  0.996  0.253         1047    20663       0.701  99.4%
+HPC:       2000     0:34:36  0.619  0.998  0.256         1068    21033       0.701  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2010     0:34:43  0.621  0.999  0.259         1082    21408       0.701  99.4%
+HPC:       2020     0:34:50  0.592  0.951  0.248         1104    21780       0.666  99.4%
+HPC:       2030     0:34:57  0.595  0.953  0.251         1129    22147       0.666  99.4%
+HPC:       2040     0:35:03  0.625  1.000  0.265         1143    22529       0.698  99.4%
+HPC:       2050     0:35:10  0.626  1.000  0.267         1158    22924       0.696  99.4%
+HPC:       2060     0:35:17  0.627  0.999  0.268         1180    23323       0.694  99.4%
+HPC:       2070     0:35:24  0.627  0.998  0.269         1193    23724       0.693  99.4%
+HPC:       2080     0:35:31  0.626  1.000  0.270         1208    24129       0.693  99.4%
+HPC:       2090     0:35:38  0.628  0.999  0.271         1223    24537       0.691  99.4%
+HPC:       2100     0:35:45  0.629  0.998  0.271         1249    24947       0.689  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2110     0:35:52  0.632  1.000  0.273         1275    25360       0.689  99.4%
+HPC:       2120     0:35:59  0.632  0.998  0.273         1294    25775       0.687  99.4%
+HPC:       2130     0:36:06  0.634  1.000  0.274         1315    26193       0.687  99.4%
+HPC:       2140     0:36:13  0.635  0.998  0.274         1334    26613       0.685  99.4%
+HPC:       2150     0:36:19  0.636  0.999  0.277         1354    27036       0.685  99.4%
+HPC:       2160     0:36:26  0.636  0.997  0.280         1372    27463       0.683  99.4%
+HPC:       2170     0:36:33  0.638  0.999  0.285         1396    27891       0.683  99.4%
+HPC:       2180     0:36:40  0.583  1.000  0.279         1416    28323       0.683  99.4%
+HPC:       2190     0:36:47  0.582  0.997  0.279         1442    28757       0.681  99.4%
+HPC:       2200     0:36:54  0.582  0.998  0.280         1458    29194       0.681  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2210     0:37:00  0.583  0.999  0.282         1489    29634       0.681  99.4%
+HPC:       2220     0:37:07  0.581  0.997  0.282         1517    30076       0.678  99.4%
+HPC:       2230     0:37:14  0.581  0.997  0.283         1552    30521       0.678  99.4%
+HPC:       2240     0:37:21  0.581  0.998  0.284         1571    30968       0.678  99.4%
+HPC:       2250     0:37:27  0.582  0.999  0.286         1603    31419       0.678  99.4%
+HPC:       2260     0:37:34  0.582  1.000  0.287         1633    31874       0.678  99.4%
+HPC:       2270     0:37:41  0.579  0.996  0.287         1653    32329       0.675  99.4%
+HPC:       2280     0:37:48  0.579  0.997  0.289         1683    32788       0.675  99.4%
+HPC:       2290     0:37:55  0.579  0.998  0.290         1708    33249       0.675  99.4%
+HPC:       2300     0:38:01  0.580  0.998  0.291         1733    33714       0.675  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2310     0:38:08  0.581  0.999  0.293         1767    34182       0.675  99.5%
+HPC:       2320     0:38:15  0.581  0.999  0.294         1800    34654       0.675  99.5%
+HPC:       2330     0:38:21  0.580  1.000  0.296         1834    35128       0.675  99.5%
+HPC:       2340     0:38:28  0.576  0.994  0.295         1880    35602       0.670  99.5%
+HPC:       2350     0:38:35  0.575  0.994  0.296         1913    36079       0.670  99.5%
+HPC:       2360     0:38:42  0.575  0.995  0.297         1945    36559       0.670  99.5%
+HPC:       2370     0:38:48  0.575  0.996  0.299         1981    37042       0.670  99.5%
+HPC:       2380     0:38:55  0.574  0.996  0.300         2007    37529       0.670  99.5%
+HPC:       2390     0:39:02  0.568  0.986  0.299         2044    38013   SIM:    0:40:00    -d  0  0    0D  2%  1D  0%  2D 98%    CE  0.1%  0.0%  0.0%    Vi 20428  Vo     5  dV 20437
+Relative device loads:  100.0%  63.8%
+Writing HPC Output at: 0:40:00  Clock: 0:02:35  CPU: 0:03:16
+    0.663  99.5%
+HPC:       2400     0:39:08  0.574  0.988  0.300         2079    38501       0.663  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2410     0:39:15  0.564  0.975  0.297         2108    38987       0.655  99.5%
+HPC:       2420     0:39:21  0.563  0.975  0.298         2145    39474       0.655  99.5%
+HPC:       2430     0:39:28  0.563  0.976  0.299         2182    39963       0.655  99.5%
+HPC:       2440     0:39:34  0.550  0.954  0.294         2223    40451       0.640  99.5%
+HPC:       2450     0:39:41  0.549  0.954  0.295         2256    40936       0.640  99.4%
+HPC:       2460     0:39:47  0.549  0.955  0.297         2281    41423       0.640  99.4%
+HPC:       2470     0:39:54  0.549  0.955  0.298         2311    41913       0.640  99.4%
+HPC:       2480     0:40:00  0.549  0.955  0.299         2340    42406       0.640  99.4%
+HPC:       2490     0:40:06  0.546  0.953  0.300         2364    42902       0.638  99.4%
+HPC:       2500     0:40:13  0.544  0.951  0.300         2390    43398       0.637  99.4%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2510     0:40:19  0.542  0.949  0.300         2420    43895       0.635  99.4%
+HPC:       2520     0:40:25  0.541  0.948  0.300         2446    44391       0.634  99.5%
+HPC:       2530     0:40:32  0.539  0.946  0.300         2472    44889       0.633  99.5%
+HPC:       2540     0:40:38  0.540  0.944  0.300         2495    45387       0.631  99.5%
+HPC:       2550     0:40:44  0.538  0.942  0.300         2518    45885       0.630  99.5%
+HPC:       2560     0:40:51  0.540  0.943  0.300         2544    46383       0.630  99.5%
+HPC:       2570     0:40:57  0.535  0.940  0.300         2563    46882       0.628  99.5%
+HPC:       2580     0:41:03  0.535  0.938  0.300         2590    47381       0.626  99.5%
+HPC:       2590     0:41:10  0.535  0.936  0.299         2618    47881       0.625  99.5%
+HPC:       2600     0:41:16  0.532  0.936  0.300         2645    48381       0.625  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2610     0:41:22  0.532  0.933  0.300         2679    48881       0.623  99.5%
+HPC:       2620     0:41:28  0.534  0.934  0.300         2715    49382       0.623  99.5%
+HPC:       2630     0:41:34  0.532  0.931  0.300         2754    49883       0.621  99.5%
+HPC:       2640     0:41:41  0.530  0.929  0.299         2780    50385       0.619  99.5%
+HPC:       2650     0:41:47  0.529  0.929  0.300         2818    50886       0.619  99.5%
+HPC:       2660     0:41:53  0.527  0.926  0.299         2850    51388       0.617  99.5%
+HPC:       2670     0:41:59  0.527  0.926  0.300         2893    51891       0.617  99.5%
+HPC:       2680     0:42:05  0.524  0.923  0.299         2921    52393       0.615  99.5%
+HPC:       2690     0:42:11  0.523  0.923  0.300         2949    52896       0.615  99.5%
+HPC:       2700     0:42:18  0.522  0.920  0.299         2983    53399       0.613  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2710     0:42:24  0.520  0.920  0.300         3025    53903       0.613  99.5%
+HPC:       2720     0:42:30  0.522  0.917  0.299         3048    54407       0.610  99.5%
+HPC:       2730     0:42:36  0.520  0.917  0.300         3076    54911       0.610  99.5%
+HPC:       2740     0:42:42  0.517  0.913  0.299         3110    55415       0.608  99.5%
+HPC:       2750     0:42:48  0.517  0.913  0.300         3139    55920       0.608  99.5%
+HPC:       2760     0:42:54  0.514  0.909  0.299         3168    56425       0.605  99.5%
+HPC:       2770     0:43:00  0.514  0.909  0.299         3195    56929       0.605  99.5%
+HPC:       2780     0:43:06  0.514  0.909  0.300         3229    57435       0.605  99.5%
+HPC:       2790     0:43:12  0.511  0.904  0.299         3262    57941       0.601  99.5%
+HPC:       2800     0:43:18  0.511  0.904  0.299         3283    58446       0.601  99.5%
+HPC:      iStep        time  SIM:    0:45:00    -d  0  0    0D  2%  1D  0%  2D 98%    CE  0.1% -0.0% -0.0%    Vi 24880  Vo     4  dV 24877
+Relative device loads:  100.0%  62.4%
+Writing HPC Output at: 0:45:00  Clock: 0:02:47  CPU: 0:03:32
+maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2810     0:43:24  0.510  0.904  0.300         3319    58952       0.601  99.5%
+HPC:       2820     0:43:30  0.507  0.899  0.298         3355    59459       0.598  99.5%
+HPC:       2830     0:43:36  0.507  0.899  0.299         3377    59964       0.598  99.5%
+HPC:       2840     0:43:42  0.507  0.899  0.299         3406    60470       0.598  99.5%
+HPC:       2850     0:43:48  0.507  0.899  0.300         3440    60978       0.598  99.5%
+HPC:       2860     0:43:54  0.502  0.891  0.298         3471    61485       0.592  99.5%
+HPC:       2870     0:44:00  0.502  0.891  0.298         3502    61990       0.592  99.5%
+HPC:       2880     0:44:06  0.502  0.892  0.299         3531    62497       0.592  99.5%
+HPC:       2890     0:44:12  0.502  0.892  0.299         3560    63004       0.592  99.5%
+HPC:       2900     0:44:18  0.502  0.892  0.300         3588    63513       0.592  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       2910     0:44:24  0.494  0.878  0.295         3613    64021       0.583  99.5%
+HPC:       2920     0:44:30  0.494  0.878  0.296         3649    64524       0.583  99.5%
+HPC:       2930     0:44:36  0.494  0.878  0.296         3678    65028       0.583  99.5%
+HPC:       2940     0:44:41  0.494  0.878  0.297         3714    65533       0.583  99.5%
+HPC:       2950     0:44:47  0.494  0.878  0.297         3745    66039       0.583  99.5%
+HPC:       2960     0:44:53  0.494  0.878  0.298         3766    66547       0.583  99.5%
+HPC:       2970     0:44:59  0.494  0.878  0.298         3796    67055       0.583  99.5%
+HPC:       2980     0:45:05  0.495  0.881  0.300         3825    67566       0.585  99.5%
+HPC:       2990     0:45:11  0.495  0.881  0.300         3854    68078       0.585  99.5%
+HPC:       3000     0:45:16  0.494  0.879  0.300         3881    68589       0.584  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       3010     0:45:22  0.494  0.879  0.300         3908    69101       0.584  99.5%
+HPC:       3020     0:45:28  0.493  0.878  0.299         3936    69613       0.582  99.5%
+HPC:       3030     0:45:34  0.493  0.878  0.300         3961    70125       0.582  99.5%
+HPC:       3040     0:45:40  0.493  0.878  0.300         3993    70637       0.582  99.5%
+HPC:       3050     0:45:46  0.493  0.878  0.300         4017    71150       0.582  99.5%
+HPC:       3060     0:45:51  0.492  0.876  0.299         4043    71662       0.581  99.5%
+HPC:       3070     0:45:57  0.492  0.876  0.300         4065    72174       0.581  99.5%
+HPC:       3080     0:46:03  0.492  0.876  0.300         4102    72687       0.581  99.5%
+HPC:       3090     0:46:09  0.492  0.876  0.300         4122    73200       0.581  99.5%
+HPC:       3100     0:46:15  0.490  0.874  0.299         4149    73713       0.580  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       3110     0:46:20  0.490  0.874  0.299         4178    74225       0.580  99.5%
+HPC:       3120     0:46:26  0.490  0.874  0.300         4200    74738       0.580  99.5%
+HPC:       3130     0:46:32  0.490  0.874  0.300         4226    75251       0.580  99.5%
+HPC:       3140     0:46:38  0.490  0.874  0.300         4247    75765       0.580  99.5%
+HPC:       3150     0:46:44  0.489  0.872  0.299         4261    76278       0.578  99.5%
+HPC:       3160     0:46:49  0.489  0.872  0.299         4283    76791       0.578  99.5%
+HPC:       3170     0:46:55  0.488  0.872  0.300         4299    77304       0.578  99.5%
+HPC:       3180     0:47:01  0.488  0.872  0.300         4320    77818       0.578  99.5%
+HPC:       3190     0:47:07  0.488  0.872  0.300         4339    78332       0.578  99.5%
+HPC:       3200     0:47:12  0.487  0.869  0.299         4357    78845       0.576  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       3210     0:47:18  0.487  0.869  0.299         4381    79358     SIM:    0:50:00    -d  0  0    0D  2%  1D  0%  2D 98%    CE  0.1% -0.0% -0.0%    Vi 26824  Vo     3  dV 26821
+Relative device loads:  100.0%  62.7%
+Writing HPC Output at: 0:50:00  Clock: 0:02:59  CPU: 0:03:50
+  0.576  99.5%
+HPC:       3220     0:47:24  0.487  0.869  0.299         4399    79872       0.576  99.5%
+HPC:       3230     0:47:30  0.487  0.869  0.300         4425    80386       0.576  99.5%
+HPC:       3240     0:47:35  0.487  0.869  0.300         4441    80900       0.576  99.5%
+HPC:       3250     0:47:41  0.486  0.869  0.300         4457    81415       0.576  99.5%
+HPC:       3260     0:47:47  0.484  0.865  0.299         4479    81928       0.574  99.5%
+HPC:       3270     0:47:53  0.485  0.865  0.299         4492    82441       0.574  99.5%
+HPC:       3280     0:47:58  0.485  0.865  0.299         4507    82955       0.574  99.5%
+HPC:       3290     0:48:04  0.485  0.866  0.299         4525    83469       0.574  99.5%
+HPC:       3300     0:48:10  0.485  0.866  0.300         4545    83984       0.574  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       3310     0:48:16  0.485  0.866  0.300         4562    84498       0.574  99.5%
+HPC:       3320     0:48:21  0.485  0.866  0.300         4576    85014       0.574  99.5%
+HPC:       3330     0:48:27  0.482  0.860  0.298         4587    85528       0.570  99.5%
+HPC:       3340     0:48:33  0.482  0.860  0.298         4605    86041       0.570  99.5%
+HPC:       3350     0:48:38  0.482  0.860  0.299         4617    86554       0.570  99.5%
+HPC:       3360     0:48:44  0.482  0.861  0.299         4631    87068       0.570  99.5%
+HPC:       3370     0:48:50  0.482  0.861  0.299         4646    87582       0.570  99.5%
+HPC:       3380     0:48:56  0.482  0.861  0.299         4665    88096       0.570  99.5%
+HPC:       3390     0:49:01  0.482  0.861  0.299         4682    88611       0.570  99.5%
+HPC:       3400     0:49:07  0.482  0.861  0.299         4691    89126       0.570  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       3410     0:49:13  0.482  0.861  0.300         4709    89642       0.570  99.5%
+HPC:       3420     0:49:18  0.482  0.861  0.300         4722    90158       0.570  99.5%
+HPC:       3430     0:49:24  0.482  0.861  0.300         4741    90674       0.570  99.5%
+HPC:       3440     0:49:30  0.474  0.846  0.295         4759    91185       0.561  99.5%
+HPC:       3450     0:49:35  0.474  0.846  0.295         4773    91694       0.561  99.5%
+HPC:       3460     0:49:41  0.474  0.846  0.295         4787    92202       0.561  99.5%
+HPC:       3470     0:49:47  0.473  0.846  0.296         4804    92711       0.561  99.5%
+HPC:       3480     0:49:52  0.473  0.847  0.296         4814    93221       0.561  99.5%
+HPC:       3490     0:49:58  0.473  0.847  0.296         4831    93731       0.561  99.5%
+HPC:       3500     0:50:03  0.479  0.856  0.300         4850    94245       0.567  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       3510     0:50:09  0.479  0.856  0.300         4863    94761       0.567  99.5%
+HPC:       3520     0:50:15  0.479  0.856  0.300         4880    95278       0.567  99.5%
+HPC:       3530     0:50:20  0.479  0.856  0.300         4892    95794       0.567  99.5%
+HPC:       3540     0:50:26  0.479  0.856  0.300         4908    96312       0.567  99.5%
+HPC:       3550     0:50:32  0.479  0.856  0.300         4930    96829       0.567  99.5%
+HPC:       3560     0:50:37  0.479  0.857  0.300         4947    97346       0.567  99.5%
+HPC:       3570     0:50:43  0.479  0.857  0.300         4961    97863       0.567  99.5%
+HPC:       3580     0:50:49  0.477  0.855  0.299         4976    98380       0.566  99.5%
+HPC:       3590     0:50:54  0.477  0.855  0.299         4996    98896       0.566  99.5%
+HPC:       3600     0:51:00  0.477  0.855  0.300         5009    99413       0.566  99.5%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:       3610     0:51:06  0.477  0.855  0.300         5023    99929       0.566  99.5%
+HPC:       3620     0:51:11  0.477  0.855  0.300         5032   100446       0.566  99.5%
+HPC:       3630     0:51:17  0.

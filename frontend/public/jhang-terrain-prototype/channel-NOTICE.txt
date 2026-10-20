@@ -1,0 +1,3 @@
+© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium
+CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+Class 80 water mask and skeleton are derived from 2021 data; not live channel positions.

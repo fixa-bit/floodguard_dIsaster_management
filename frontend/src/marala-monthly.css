@@ -1,0 +1,108 @@
+.marala-monthly { display: grid; gap: 16px; min-width: 0; padding: 20px; color: var(--ink); background: rgba(7, 25, 29, .64); border: 1px solid var(--line); border-radius: 8px; }
+.marala-monthly-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+.marala-monthly-heading h2 { margin: 6px 0 4px; font-size: 22px; }
+.marala-monthly-heading p, .marala-panel header p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.marala-monthly-eyebrow { display: inline-flex; align-items: center; gap: 7px; color: #69e9d0; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.marala-monthly-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.marala-monthly-actions a, .marala-monthly-actions button, .marala-monthly-state button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 12px; color: var(--ink); background: #113a36; border: 1px solid #34746a; border-radius: 5px; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; }
+.marala-monthly-actions a:hover, .marala-monthly-actions button:hover, .marala-monthly-state button:hover { background: #185047; }
+.marala-data-notice { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; color: #e1d1a2; background: rgba(224, 177, 77, .075); border: 1px solid rgba(224, 177, 77, .3); border-radius: 5px; }
+.marala-data-notice svg { flex: 0 0 auto; margin-top: 1px; color: #edc66c; }
+.marala-data-notice p { margin: 0; font-size: 11px; line-height: 1.55; }
+.marala-data-notice strong { color: #f5d689; }
+.marala-monthly-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.marala-monthly-stats article { min-width: 0; padding: 14px; background: rgba(13, 43, 47, .72); border: 1px solid var(--line); border-radius: 6px; }
+.marala-monthly-stats article > span { color: var(--muted); font-size: 11px; }
+.marala-monthly-stats article > strong { display: block; margin: 7px 0 3px; color: #eafff8; font-size: 22px; font-variant-numeric: tabular-nums; }
+.marala-monthly-stats article > strong small, .marala-hindcast-cards strong small { color: var(--muted); font-size: 11px; font-weight: 500; }
+.marala-monthly-stats article p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.marala-panel { min-width: 0; overflow: hidden; background: rgba(5, 19, 22, .68); border: 1px solid var(--line); border-radius: 6px; }
+.marala-panel > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid rgba(71, 115, 113, .28); }
+.marala-panel > header h3 { display: flex; align-items: center; gap: 7px; margin: 0 0 4px; font-size: 13px; }
+.marala-panel > header h3 svg { color: #61e5cd; }
+.marala-panel > header > span { flex: 0 0 auto; color: #8daeb0; font-size: 10px; }
+.marala-flow-chart { padding: 10px 16px 8px; }
+.marala-flow-chart svg { display: block; width: 100%; height: 180px; overflow: visible; }
+.marala-flow-chart svg line { stroke: #34514f; stroke-width: 1; }
+.marala-flow-chart svg polyline { fill: none; stroke: #39e0c1; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.marala-flow-chart > div { display: flex; justify-content: space-between; gap: 8px; color: #89a7aa; font-size: 10px; }
+.marala-flow-chart > div span:nth-child(2) { text-align: center; }
+.marala-dataset-details { border-top: 1px solid rgba(71, 115, 113, .28); }
+.marala-dataset-details summary { padding: 12px 16px; color: #b3d5d0; font-size: 11px; font-weight: 600; cursor: pointer; }
+.marala-table-scroll { width: 100%; overflow: auto; scrollbar-color: #39756c #0a1b1e; }
+.marala-table-scroll table { width: 100%; border-collapse: collapse; font-size: 10px; white-space: nowrap; }
+.marala-table-scroll th { position: sticky; top: 0; z-index: 1; color: #8fb6b2; background: #102729; text-align: left; }
+.marala-table-scroll th, .marala-table-scroll td { padding: 8px 11px; border-bottom: 1px solid rgba(68, 108, 106, .2); font-variant-numeric: tabular-nums; }
+.marala-table-scroll td { color: #d5e8e3; }
+.marala-table-scroll tbody tr:hover { background: rgba(56, 209, 181, .055); }
+.marala-dataset-details .marala-table-scroll { max-height: 380px; }
+.marala-forecast-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.marala-forecast-table { padding: 0 12px; }
+.marala-panel-footnote { margin: 9px 14px 13px; color: #8da7a8; font-size: 10px; line-height: 1.5; }
+.marala-hindcast-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; }
+.marala-hindcast-cards article { display: grid; gap: 4px; padding: 10px; background: rgba(28, 65, 61, .35); border: 1px solid rgba(70, 132, 119, .25); border-radius: 4px; }
+.marala-hindcast-cards article > span, .marala-hindcast-cards article > small { color: #91b4b0; font-size: 9px; }
+.marala-hindcast-cards strong { color: #e6fff8; font-size: 17px; font-variant-numeric: tabular-nums; }
+.marala-refresh-error { margin: 0; color: #e8c378; font-size: 11px; }
+.marala-sources { padding-top: 12px; border-top: 1px solid rgba(71, 115, 113, .28); color: #91acad; font-size: 10px; line-height: 1.6; }
+.marala-sources strong { color: #c0d9d3; }
+.marala-sources a { color: #63dbc4; }
+.marala-monthly-state { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; min-height: 200px; color: #cce6e0; }
+.marala-monthly-state > span { flex-basis: 100%; text-align: center; color: var(--muted); font-size: 12px; }
+.marala-monthly-error { flex-direction: column; color: #f1c0a9; }
+.marala-monthly-details { display: grid; gap: 14px; min-width: 0; padding-top: 14px; border-top: 1px solid var(--line); }
+.marala-prediction-chart { min-width: 0; margin: 0; }
+.marala-prediction-chart figcaption { color: var(--ink); font-size: 12px; font-weight: 600; }
+.marala-prediction-chart svg { display: block; width: 100%; height: auto; margin-top: 8px; }
+.marala-prediction-chart text { fill: #a6c7c4; font-size: 13px; }
+.marala-prediction-chart .marala-prediction-value { fill: #e4fff8; font-size: 14px; font-weight: 700; }
+.marala-prediction-grid { stroke: #34514f; stroke-width: 1; stroke-dasharray: 3 5; }
+.marala-prediction-line { fill: none; stroke: #39e0c1; stroke-width: 3; vector-effect: non-scaling-stroke; }
+.marala-prediction-chart circle { fill: #39e0c1; stroke: #0a2525; stroke-width: 2; }
+.marala-prediction-caption { margin: 4px 0 0; color: var(--muted); font-size: 10px; }
+.marala-chart-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; color: #b7d3d0; font-size: 10px; }
+.marala-chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.marala-chart-legend i { display: inline-block; width: 18px; border-top: 2px solid #7db9ff; }
+.marala-chart-legend .marala-forecast-key { border-color: #39e0c1; border-top-style: dashed; }
+.marala-prediction-chart .marala-history-line { stroke: #7db9ff; }
+.marala-prediction-chart .marala-forecast-line { stroke-dasharray: 5 4; }
+.marala-prediction-chart .marala-history-point { fill: #7db9ff; }
+.marala-prediction-chart .marala-partial-point { fill: #092126; stroke: #7db9ff; stroke-width: 2; }
+.marala-prediction-chart circle { cursor: pointer; }
+.marala-prediction-chart circle:focus { outline: none; stroke: #fff; stroke-width: 3; }
+.marala-forecast-region { fill: rgba(57, 224, 193, .045); }
+.marala-chart-point-value { min-height: 16px; margin: 4px 0; color: #d5eee8; font-size: 11px; }
+.marala-resolution-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid #345952; padding-bottom: 8px; }
+.marala-resolution-tabs button { padding: 8px 12px; border: 1px solid transparent; border-radius: 4px; color: #aaccc5; background: transparent; font: inherit; font-size: 11px; cursor: pointer; }
+.marala-resolution-tabs button[aria-selected="true"] { background: #135247; border-color: #41cbb1; color: #d8fff5; }
+.marala-resolution-tabs button:focus-visible { outline: 2px solid #53e6cb; outline-offset: 2px; }
+.marala-hydrograph-paper { min-width: 0; margin-top: 10px; padding: 14px 10px 10px; border: 1px solid #d8e0e7; border-radius: 6px; background: #fff; color: #263442; }
+.marala-hydrograph-paper figcaption { display: grid; gap: 4px; text-align: center; color: #273440; }
+.marala-hydrograph-paper figcaption strong { font-size: 16px; letter-spacing: .02em; }
+.marala-hydrograph-paper figcaption span { font-size: 11px; font-weight: 500; }
+.marala-hydrograph-paper figcaption small { font-size: 10px; font-weight: 400; color: #6b7480; }
+.marala-hydrograph-paper svg text { fill: #5a646f; font-size: 13px; }
+.marala-hydrograph-paper .marala-prediction-grid { stroke: #e2e6ea; stroke-dasharray: none; }
+.marala-hydrograph-paper .marala-history-line { stroke: #254edb; stroke-width: 1.8; }
+.marala-hydrograph-paper .marala-forecast-line { stroke: #e33235; stroke-width: 1.8; stroke-dasharray: 4 3; }
+.marala-hydrograph .marala-history-point { fill: #fff; stroke: #2446ab; stroke-width: 1.3; }
+.marala-hydrograph .marala-forecast-point { fill: #e33235; stroke: #e33235; stroke-width: 1; cursor: pointer; }
+.marala-hydrograph .marala-forecast-point:focus { outline: none; stroke: #29364a; stroke-width: 2; }
+.marala-hydrograph-paper .marala-forecast-region { fill: #fff5f4; }
+.marala-forecast-boundary { stroke: #e8b8b7; stroke-dasharray: 3 4; }
+.marala-hydrograph-paper .marala-forecast-area-label { fill: #bc4545; font-size: 12px; }
+.marala-highest-line { stroke: #159244; stroke-width: 1.4; }
+.marala-hydrograph-paper .marala-chart-legend { justify-content: center; gap: 8px 12px; border: 1px solid #d5dce2; border-radius: 5px; padding: 8px; color: #34404b; font-size: 10px; }
+.marala-hydrograph-paper .marala-history-key { border-color: #254edb; }
+.marala-hydrograph-paper .marala-forecast-key { border-color: #e33235; }
+.marala-hydrograph-paper .marala-highest-key { border-color: #159244; }
+.marala-hydrograph-paper .marala-chart-point-value { margin: 10px 2px 0; color: #455360; font-size: 10px; }
+.marala-date-cursor { stroke: #a5adb7; stroke-width: 1; }
+.marala-hydrograph-paper .marala-active-point { fill: #fff; stroke: #243755; stroke-width: 2; }
+.marala-hydrograph-tooltip rect { fill: #fff; stroke: #7185d9; stroke-width: 1; filter: drop-shadow(0 2px 3px #1c2a3b30); }
+.marala-hydrograph-paper .marala-tooltip-date { fill: #2e3943; font-size: 13px; font-weight: 700; }
+.marala-hydrograph-paper .marala-tooltip-history { fill: #254edb; font-size: 13px; }
+.marala-hydrograph-paper .marala-tooltip-forecast { fill: #cd3030; font-size: 13px; }
+.marala-hydrograph-paper .marala-tooltip-highest { fill: #15753a; font-size: 13px; }
+@media (max-width: 900px) { .marala-forecast-grid { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .marala-monthly { padding: 12px; } .marala-monthly-stats { grid-template-columns: 1fr; } .marala-panel > header { flex-wrap: wrap; } .marala-flow-chart svg { height: 135px; } }

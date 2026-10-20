@@ -17,6 +17,40 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Keep scrollable panels consistent with the command dashboard's dark palette. */
+@media (forced-colors: none) {
+  :root {
+    --scrollbar-track: #0b2023;
+    --scrollbar-thumb: #426b68;
+    --scrollbar-thumb-hover: #69aaa0;
+    --scrollbar-thumb-active: #50d8bd;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    /* Use custom thumbs in Chromium/Safari so hover and rounded ends work. */
+    * { scrollbar-width: auto; scrollbar-color: auto; }
+    *::-webkit-scrollbar { width: 8px; height: 8px; }
+    *::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 8px; }
+    *::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border: 2px solid var(--scrollbar-track);
+      border-radius: 8px;
+      min-height: 32px;
+      min-width: 32px;
+    }
+    *::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+    *::-webkit-scrollbar-thumb:active { background: var(--scrollbar-thumb-active); }
+    *::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+    *::-webkit-scrollbar-corner { background: var(--scrollbar-track); }
+  }
+}
+
 body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--canvas); }
 button, select { font: inherit; }
 button { cursor: pointer; }
@@ -98,6 +132,13 @@ svg { flex: 0 0 auto; }
 .maplibregl-ctrl-group { border-radius: 4px !important; box-shadow: 0 1px 4px rgba(20, 37, 41, .24) !important; }
 .map-layer-control, .map-legend, .district-inspector, .map-simulation-label, .water-intelligence-summary, .map-water-notice, .map-boundary-notice, .map-home-button { position: absolute; z-index: 2; background: rgba(255, 255, 255, .96); border: 1px solid #cbd7d5; box-shadow: 0 2px 9px rgba(20, 37, 41, .14); }
 .map-layer-control { top: 12px; left: 12px; display: grid; width: 214px; max-height: calc(100% - 120px); overflow-y: auto; padding: 10px; border-radius: 5px; }
+.map-basemap-control { padding: 8px 0 12px; margin-bottom: 10px; border-bottom: 1px solid rgba(125, 232, 219, .22); }
+.map-basemap-options { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.map-basemap-options button { min-height: 34px; padding: 6px 10px; color: #bdd7d5; background: #102b2e; border: 1px solid #426b68; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.map-basemap-options button:hover { border-color: #50f5d0; }
+.map-basemap-options button[aria-pressed="true"] { color: #05201e; background: #50f5d0; border-color: #50f5d0; }
+.map-basemap-options button:focus-visible { outline: 2px solid #f8d96a; outline-offset: 2px; }
+.map-basemap-control small { display: block; margin-top: 6px; color: #9fc2c3; font-size: 9px; line-height: 1.4; }
 .map-layer-control strong { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; color: #263e44; font-size: 11px; }
 .map-layer-control label { display: flex; min-height: 28px; align-items: center; gap: 7px; color: #43575c; font-size: 11px; cursor: pointer; }
 .map-layer-control input { width: 14px; height: 14px; margin: 0; accent-color: var(--teal); }
@@ -108,7 +149,7 @@ svg { flex: 0 0 auto; }
 .map-legend span { display: flex; align-items: center; gap: 4px; color: #53666b; font-size: 8px; }
 .map-legend i { width: 9px; height: 9px; border: 1px solid rgba(0,0,0,.12); border-radius: 2px; }
 .map-legend .legend-district-names { height: 0; background: transparent; border: 0; border-top: 2px solid #c084fc; border-radius: 0; }
-.legend-low { background: #2fd07e; }.legend-medium { background: #ffd02f; }.legend-high { background: #ff7a1a; }.legend-critical { background: #ff244f; }.legend-operational { height: 0 !important; background: transparent; border: 0 !important; border-top: 1.5px solid #166534 !important; }.legend-district { height: 0 !important; background: transparent; border-top: 2px solid #e8fff8 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-loc { height: 0 !important; background: transparent; border-top: 1.5px solid #6faeb9 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-special-boundary { height: 0 !important; background: transparent; border-top: 1.5px solid #166534 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-catchment { background: #38bdf8; border: 1px dashed #f8fafc !important; }.legend-floodhub-watch { background: #22d3ee; border-color: #cffafe !important; }.legend-floodhub-warning { background: #f97316; border-color: #fed7aa !important; }.legend-floodhub-severe { background: #d946ef; border-color: #f5d0fe !important; }.legend-gauge { background: #e0f7ff; border: 2px solid #38d5ff !important; border-radius: 50% !important; }.legend-model { background: #8b5cf6; transform: rotate(45deg); }.legend-water { background: #4de7ff; border-radius: 50% !important; }.legend-river-normal { background: #2fd07e; }.legend-river-rising { background: #ffd02f; }.legend-river-danger { background: #ff244f; }
+.legend-low { background: #2fd07e; }.legend-medium { background: #ffd02f; }.legend-high { background: #ff7a1a; }.legend-critical { background: #ff244f; }.legend-operational { height: 0 !important; background: transparent; border: 0 !important; border-top: 2px solid #0b4f2f !important; }.legend-district { height: 0 !important; background: transparent; border-top: 2px solid #e8fff8 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-loc { height: 0 !important; background: transparent; border-top: 1.5px solid #6faeb9 !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-special-boundary { height: 0 !important; background: transparent; border-top: 2px solid #0b4f2f !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; }.legend-catchment { background: #38bdf8; border: 1px dashed #f8fafc !important; }.legend-floodhub-watch { background: #22d3ee; border-color: #cffafe !important; }.legend-floodhub-warning { background: #f97316; border-color: #fed7aa !important; }.legend-floodhub-severe { background: #d946ef; border-color: #f5d0fe !important; }.legend-gauge { background: #e0f7ff; border: 2px solid #38d5ff !important; border-radius: 50% !important; }.legend-model { background: #8b5cf6; transform: rotate(45deg); }.legend-water { background: #4de7ff; border-radius: 50% !important; }.legend-river-normal { background: #2fd07e; }.legend-river-rising { background: #ffd02f; }.legend-river-danger { background: #ff244f; }
 .feature-visualization-control { display: grid; gap: 6px; margin: 0 0 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(67, 87, 92, .22); }
 .feature-visualization-control strong { margin-bottom: 0; }
 .rainfall-window-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
@@ -891,9 +932,9 @@ body { color: var(--ink); background: #071114; }
 .main-overview .topbar {
   position: absolute;
   z-index: 44;
-  top: 8px;
-  right: 14px;
-  left: 14px;
+  top: 0;
+  right: 0;
+  left: 0;
   min-height: 42px;
   padding: 5px 10px;
   background: rgba(5, 17, 20, .72);
@@ -967,7 +1008,7 @@ body { color: var(--ink); background: #071114; }
   min-height: 100vh;
 }
 .overview-command-canvas .map-command-overlay {
-  top: 82px;
+  top: 60px;
   right: 70px;
   left: 14px;
 }
@@ -1250,9 +1291,16 @@ body { color: var(--ink); background: #071114; }
 }
 .forecast-graph svg {
   width: 100%;
-  height: 62px;
+  height: auto;
   overflow: visible;
 }
+.forecast-graph svg text { fill: #a8c8c6; font-size: 12px; }
+.forecast-graph svg .forecast-axis-title { fill: #d4eae5; font-weight: 600; }
+.forecast-graph svg .forecast-grid-line { stroke: #355653; stroke-width: 1; stroke-dasharray: 3 5; }
+.multiview-card-head .screening-score-badge { text-align: right; }
+.multiview-card-head .screening-score-badge span { display: block; font-size: 9px; font-weight: 500; }
+.screening-score-explanation, .screening-score-details { color: #b0cdca; font-size: 11px; line-height: 1.6; }
+.screening-score-details summary { cursor: pointer; }
 .forecast-graph svg path {
   fill: none;
   stroke: #50f5d0;
@@ -1887,6 +1935,23 @@ body { color: var(--ink); background: #071114; }
 .flood-risk-page .multiview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: none; overflow: visible; padding: 0; gap: 16px; }
 .flood-risk-page .multiview-card { padding: 14px; }
 .flood-risk-page .multiview-card-head strong { font-size: 13px; }
+.flood-risk-page .multiview-card.riverine-monthly-card { grid-column: auto; }
+.riverine-case-tabs { display: flex; gap: 6px; margin: 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.riverine-case-tabs button { padding: 7px 10px; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; }
+.riverine-case-tabs button:hover { color: var(--ink); background: rgba(125, 232, 219, .06); }
+.riverine-case-tabs button[aria-selected="true"] { color: #70f0d4; background: rgba(0, 191, 166, .11); border-color: rgba(0, 191, 166, .38); }
+.riverine-case-tabs button:focus-visible { outline: 2px solid #79f5d7; outline-offset: 2px; }
+.riverine-case-panel { min-width: 0; }
+.riverine-monthly-card .riverine-case-panel { max-height: 610px; overflow: auto; overscroll-behavior: contain; scrollbar-color: #39756c #0a1b1e; }
+.riverine-monthly-card .marala-monthly { margin-top: 4px; padding: 10px; border: 0; border-radius: 0; }
+.riverine-monthly-card .marala-monthly-heading h2 { font-size: 17px; }
+.riverine-monthly-card .marala-monthly-stats { grid-template-columns: 1fr; gap: 6px; }
+.riverine-monthly-card .marala-monthly-stats article { padding: 8px 10px; }
+.riverine-monthly-card .marala-monthly-stats article > strong { margin: 3px 0 1px; font-size: 16px; }
+.riverine-monthly-card .marala-forecast-grid { grid-template-columns: 1fr; gap: 8px; }
+.riverine-monthly-card .marala-flow-chart svg { height: 105px; }
+.riverine-monthly-card .marala-monthly-actions a,
+.riverine-monthly-card .marala-monthly-actions button { padding: 7px 9px; font-size: 10px; }
 .source-forecast-page { width: 100%; min-width: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; backdrop-filter: none; }
 .source-forecast-page .source-station-selector { padding: 0 0 12px; background: transparent; }
 .source-forecast-page .source-tab-body { padding: 14px 0 0; gap: 14px; }
@@ -2042,6 +2107,50 @@ body { color: var(--ink); background: #071114; }
 .sar-water-result { display: grid; grid-template-columns: minmax(0, 1fr) 22px; align-items: center; gap: 2px; margin-top: 8px; }
 .sar-water-result button { display: grid; place-items: center; width: 22px; height: 22px; color: #c0d4d5; background: transparent; border: 0; cursor: pointer; }
 .sar-water-result small { grid-column: 1 / -1; }
+.sar-summary { grid-column: 1 / -1; min-width: 0; margin-top: 8px; }
+.sar-summary > strong { display: block; color: #e0fff7; font-size: 12px; line-height: 1.5; }
+.sar-area-highlight { margin: 8px 0; padding: 9px; background: rgba(0, 202, 225, .08); border: 1px solid rgba(0, 202, 225, .25); border-radius: 5px; }
+.sar-area-highlight b { font-size: 23px; color: #6ef3f7; }
+.sar-area-highlight b span { font-size: 12px; }
+.sar-summary dl { margin: 8px 0; font-size: 11px; }
+.sar-summary dl > div { display: flex; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(125, 232, 219, .12); }
+.sar-summary dt { color: #a8c6c5; }
+.sar-summary dd { margin: 0; color: #effffa; white-space: nowrap; }
+.sar-summary details { margin-top: 8px; font-size: 11px; }
+.sar-summary small.sar-result-warning { color: #ffdf79; }
+.sar-example-selection { display: grid !important; gap: 5px; margin-top: 9px; font-size: 11px; }
+.sar-example-selection select { width: 100%; min-width: 0; padding: 7px 4px; color: #e0fff7; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 11px; }
+.sar-historical-notice { margin-bottom: 9px; padding: 8px; color: #ffdf79; background: rgba(255, 223, 121, .08); border: 1px solid rgba(255, 223, 121, .3); border-radius: 4px; font-size: 10px; }
+.sar-layer-options { grid-column: 1 / -1; display: grid; gap: 7px; margin: 8px 0; }
+.sar-layer-options > label:first-child { display: grid; gap: 5px; }
+.sar-layer-options select { width: 100%; min-width: 0; padding: 6px 3px; background: #0b2429; border: 1px solid #38605e; border-radius: 4px; color: #e0fff7; font-size: 11px; }
+.sar-water-result button.sar-compare-button { display: block; width: 100%; height: auto; padding: 8px; background: #173e42; border: 1px solid #4fb8bb; border-radius: 4px; color: #e0fff7; text-align: left; font-size: 11px; }
+.sar-validation-backdrop { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: 24px; background: rgba(0, 8, 13, .85); }
+.sar-validation-dialog { max-width: 1350px; width: 100%; max-height: calc(100dvh - 48px); overflow: auto; padding: 22px; border: 1px solid #387877; border-radius: 12px; background: #0b2024; color: #e0fff7; }
+.sar-validation-dialog > header { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
+.sar-validation-dialog > header small { color: #ffdf79; }
+.sar-validation-dialog h2 { margin: 7px 0; font-size: 24px; }
+.sar-validation-dialog p { color: #afc9c8; font-size: 13px; line-height: 1.6; }
+.sar-validation-dialog button { padding: 7px; color: #e0fff7; background: #14383d; border: 1px solid #38605e; border-radius: 5px; cursor: pointer; }
+.sar-validation-panels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.sar-validation-score-strip { display: flex; flex-wrap: wrap; gap: 12px 24px; margin: 12px 0 18px; padding: 12px; background: #173a3e; border: 1px solid #38605e; border-radius: 6px; font-size: 13px; }
+.sar-validation-score-strip strong { color: #75f5dc; }
+.sar-validation-panels figure { margin: 0; padding: 10px; background: #102c30; border: 1px solid #2c5053; border-radius: 7px; }
+.sar-validation-panels figcaption { display: grid; gap: 4px; min-height: 65px; font-size: 13px; }
+.sar-validation-panels figcaption small { font-size: 11px; line-height: 1.4; color: #afc9c8; }
+.sar-validation-image { position: relative; width: 100%; aspect-ratio: 1; background: #050e14; }
+.sar-validation-image img { display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.sar-validation-image img.sar-validation-mask { position: absolute; inset: 0; }
+.sar-validation-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
+.sar-validation-metrics h3 { font-size: 16px; }
+.sar-validation-metrics table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sar-validation-metrics th, .sar-validation-metrics td { padding: 9px; text-align: left; border-bottom: 1px solid #2c5053; }
+.sar-validation-dialog .sar-validation-warning { padding: 10px; border: 1px solid #a78a46; color: #ffdf79; }
+.sar-validation-experiments { overflow-x: auto; }
+.sar-validation-experiments table { width: 100%; min-width: 540px; border-collapse: collapse; font-size: 12px; }
+.sar-validation-experiments th, .sar-validation-experiments td { padding: 8px; text-align: left; border-bottom: 1px solid #2c5053; }
+@media (max-width: 850px) { .sar-validation-panels { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sar-validation-metrics { grid-template-columns: 1fr; } }
+@media (max-width: 550px) { .sar-validation-backdrop { padding: 8px; } .sar-validation-dialog { padding: 12px; max-height: calc(100dvh - 16px); } .sar-validation-panels { grid-template-columns: 1fr; } }
 .map-layer-toggle > svg:last-child { margin-left: auto; }
 .map-layer-toggle[aria-expanded="true"] { margin-bottom: 10px; }
 .map-layer-control > [hidden] { display: none; }

@@ -2,17 +2,73 @@ export type Severity = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 export type SarInputRole = "during_sar" | "pre_sar" | "elevation" | "slope" | "permanent_water";
 
 export interface SarWaterOverlay {
+  evaluation?: {
+    baseline_test: SarValidationMetrics;
+    current_test: SarValidationMetrics & { events: Record<string, SarValidationMetrics> };
+    baseline_test_events: Record<string, SarValidationMetrics>;
+    selection: string;
+    experiments?: { name: string; validation_iou: number; test_iou: number; pakistan_test_iou: number; accepted: boolean }[];
+  };
+  permanent_water_image_data_url?: string;
+  permanent_water_reference_area_km2?: number;
+  permanent_water_reference_pixels?: number;
+  validation?: {
+    event_image_data_url: string;
+    reference_water_image_data_url: string;
+    reference_non_permanent_image_data_url: string;
+    error_image_data_url: string;
+    metrics: SarValidationMetrics;
+    baseline_metrics: SarValidationMetrics;
+    outside_permanent_metrics: SarValidationMetrics;
+    baseline_outside_permanent_metrics: SarValidationMetrics;
+    imagery_description: string;
+    permanent_water_source: string;
+    label_definition: string;
+    split: string;
+    supervised_pixels: number;
+    reference_water_pixels: number;
+  };
+  is_historical_example?: boolean;
+  example_title?: string;
+  example_note?: string;
+  sample_id?: string;
+  response_version: number;
+  status: "potential_flooding_detected" | "permanent_water_only" | "no_water_detected";
+  analysis_area_km2: number;
+  valid_area_km2: number;
+  water_area_km2: number;
+  potential_flood_area_km2: number;
+  excluded_permanent_water_area_km2: number;
+  valid_coverage_percent: number;
+  total_pixels: number;
   model: string;
   label: string;
   threshold: number;
   water_pixels: number;
   valid_pixels: number;
   water_percent: number;
+  potential_flood_pixels: number;
+  potential_flood_percent: number;
+  excluded_permanent_water_pixels: number;
+  method: string;
+  limitation: string;
+  all_water_image_data_url: string;
   coordinates: [[number, number], [number, number], [number, number], [number, number]];
   image_data_url: string;
   during_date?: string;
   pre_date?: string;
   source?: string;
+}
+export interface SarValidationMetrics {
+  iou: number | null;
+  dice: number | null;
+  precision: number | null;
+  recall: number | null;
+  tp: number;
+  fp: number;
+  fn: number;
+  tn: number;
+  evaluated_pixels: number;
 }
 export type Trend = "FALLING" | "STABLE" | "RISING" | "RAPIDLY_RISING";
 
@@ -502,5 +558,83 @@ export interface GoogleFloodCollection {
     source: string;
     license: string;
     source_url: string;
+  };
+}
+
+export interface MaralaMonthlyRecord {
+  station_id: string;
+  river: string;
+  month: string;
+  flow_mean_cumecs: number;
+  flow_max_daily_mean_cumecs: number;
+  rainfall_mm: number;
+  temperature_c: number;
+  snowfall_cm: number;
+  discharge_source: string;
+  weather_source: string;
+}
+
+export interface MaralaMonthlyModelData {
+  station_id: string;
+  river: string;
+  target: string;
+  input_period: string;
+  monthly_records: number;
+  features: string[];
+  trained_at: string;
+  status: string;
+  sources: { documentation: string[]; attribution: string; weather_definition: string };
+  leads: Record<string, {
+    selected_candidate: string;
+    model_type: string;
+    test: { rows: number; mae_cumecs: number; rmse_cumecs: number };
+    ridge_vs_xgboost_test: Record<string, {
+      candidate: string;
+      rows: number;
+      mae_cumecs: number;
+      rmse_cumecs: number;
+    }>;
+  }>;
+  dataset: MaralaMonthlyRecord[];
+  recent_history?: {
+    kind: string;
+    station_observation: boolean;
+    source: string;
+    source_url: string;
+    retrieved_at: string;
+    period_start: string;
+    period_end: string;
+    aggregation: string;
+    limitations: string;
+    monthly_records: number;
+    daily_records: number;
+    daily: Array<{ date: string; observed_at: string; inflow_cumecs: number; outflow_cumecs: number; source_url: string; measurement_kind: string }>;
+    monthly: Array<{ month: string; days: number; calendar_days: number; coverage: "complete" | "partial" | "missing"; flow_mean_cumecs: number | null; source_urls: string[] }>;
+  };
+  historical_model_hindcast: {
+    input_through_month: string;
+    issued_at: string;
+    current_forecast: boolean;
+    outlook: Array<{
+      horizon_months: number;
+      target_month: string;
+      predicted_monthly_mean_discharge_cumecs: number;
+      model_type: string;
+      selected_candidate: string;
+    }>;
+  };
+  current_provider_outlook: {
+    retrieved_at: string;
+    forecast_source: string;
+    forecast_issue_start: string;
+    forecast_available_through: string;
+    daily_time_basis: string;
+    daily_forecast: Array<{ date: string; mean_cumecs: number; median_cumecs: number; p25_cumecs: number; p75_cumecs: number }>;
+    forecast: Array<{
+      target_month: string;
+      days: number;
+      monthly_mean_discharge_cumecs: { mean: number; median: number; p25: number; p75: number };
+      uncertainty_note: string;
+    }>;
   };
 }

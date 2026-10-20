@@ -1,0 +1,181 @@
+{
+  "criterion": "validation RMSE in m3/s; MAE breaks ties",
+  "test_used_for_selection": false,
+  "selections": {
+    "1": {
+      "champion": {
+        "spec": {
+          "id": "ridge_log_return_100.0",
+          "family": "ridge",
+          "target": "log_return",
+          "penalty": 100.0
+        },
+        "validation": {
+          "rows": 96,
+          "mae_cumecs": 626.464663634839,
+          "rmse_cumecs": 2093.7710125012054,
+          "bias_cumecs": -221.7135600810433,
+          "nse": 0.10457922686325272,
+          "peak_actual_cumecs": 21789.813453,
+          "prediction_at_peak_cumecs": 2666.2098389798653,
+          "peak_error_percent": -87.76396207002504,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 16,
+          "hits": 5,
+          "false_alarms": 6,
+          "misses": 11,
+          "flood_recall": 0.3125,
+          "flood_precision": 0.45454545454545453,
+          "peak_target_date": "2025-08-27",
+          "predicted_peak_target_date": "2025-09-05",
+          "peak_timing_error_days": 9
+        }
+      },
+      "best_learned": {
+        "spec": {
+          "id": "ridge_log_return_100.0",
+          "family": "ridge",
+          "target": "log_return",
+          "penalty": 100.0
+        },
+        "validation": {
+          "rows": 96,
+          "mae_cumecs": 626.464663634839,
+          "rmse_cumecs": 2093.7710125012054,
+          "bias_cumecs": -221.7135600810433,
+          "nse": 0.10457922686325272,
+          "peak_actual_cumecs": 21789.813453,
+          "prediction_at_peak_cumecs": 2666.2098389798653,
+          "peak_error_percent": -87.76396207002504,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 16,
+          "hits": 5,
+          "false_alarms": 6,
+          "misses": 11,
+          "flood_recall": 0.3125,
+          "flood_precision": 0.45454545454545453,
+          "peak_target_date": "2025-08-27",
+          "predicted_peak_target_date": "2025-09-05",
+          "peak_timing_error_days": 9
+        }
+      },
+      "candidates_scored": 48
+    },
+    "3": {
+      "champion": {
+        "spec": {
+          "id": "training_median",
+          "family": "median"
+        },
+        "validation": {
+          "rows": 95,
+          "mae_cumecs": 1019.8535853789474,
+          "rmse_cumecs": 2482.426802095623,
+          "bias_cumecs": -707.6528998421052,
+          "nse": -0.08844962861965344,
+          "peak_actual_cumecs": 21789.813453,
+          "prediction_at_peak_cumecs": 1563.089932,
+          "peak_error_percent": -92.82651072083964,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 16,
+          "hits": 0,
+          "false_alarms": 0,
+          "misses": 16,
+          "flood_recall": 0.0,
+          "flood_precision": null,
+          "peak_target_date": "2025-08-27",
+          "predicted_peak_target_date": "2025-06-19",
+          "peak_timing_error_days": -69
+        }
+      },
+      "best_learned": {
+        "spec": {
+          "id": "ridge_log_return_1000.0",
+          "family": "ridge",
+          "target": "log_return",
+          "penalty": 1000.0
+        },
+        "validation": {
+          "rows": 95,
+          "mae_cumecs": 1035.7721197694066,
+          "rmse_cumecs": 2620.784482237075,
+          "bias_cumecs": -187.61657354896,
+          "nse": -0.21315990835897858,
+          "peak_actual_cumecs": 21789.813453,
+          "prediction_at_peak_cumecs": 1782.5193020745635,
+          "peak_error_percent": -91.81948342091405,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 16,
+          "hits": 4,
+          "false_alarms": 10,
+          "misses": 12,
+          "flood_recall": 0.25,
+          "flood_precision": 0.2857142857142857,
+          "peak_target_date": "2025-08-27",
+          "predicted_peak_target_date": "2025-08-30",
+          "peak_timing_error_days": 3
+        }
+      },
+      "candidates_scored": 48
+    },
+    "7": {
+      "champion": {
+        "spec": {
+          "id": "ridge_log_return_1000.0",
+          "family": "ridge",
+          "target": "log_return",
+          "penalty": 1000.0
+        },
+        "validation": {
+          "rows": 93,
+          "mae_cumecs": 966.8628808964459,
+          "rmse_cumecs": 2378.9097928588767,
+          "bias_cumecs": -385.4519631307368,
+          "nse": 0.06556539364117786,
+          "peak_actual_cumecs": 21789.813453,
+          "prediction_at_peak_cumecs": 1714.422503776246,
+          "peak_error_percent": -92.13200008584651,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 17,
+          "hits": 4,
+          "false_alarms": 5,
+          "misses": 13,
+          "flood_recall": 0.23529411764705882,
+          "flood_precision": 0.4444444444444444,
+          "peak_target_date": "2025-08-27",
+          "predicted_peak_target_date": "2025-09-03",
+          "peak_timing_error_days": 7
+        }
+      },
+      "best_learned": {
+        "spec": {
+          "id": "ridge_log_return_1000.0",
+          "family": "ridge",
+          "target": "log_return",
+          "penalty": 1000.0
+        },
+        "validation": {
+          "rows": 93,
+          "mae_cumecs": 966.8628808964459,
+          "rmse_cumecs": 2378.9097928588767,
+          "bias_cumecs": -385.4519631307368,
+          "nse": 0.06556539364117786,
+          "peak_actual_cumecs": 21789.813453,
+          "prediction_at_peak_cumecs": 1714.422503776246,
+          "peak_error_percent": -92.13200008584651,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 17,
+          "hits": 4,
+          "false_alarms": 5,
+          "misses": 13,
+          "flood_recall": 0.23529411764705882,
+          "flood_precision": 0.4444444444444444,
+          "peak_target_date": "2025-08-27",
+          "predicted_peak_target_date": "2025-09-03",
+          "peak_timing_error_days": 7
+        }
+      },
+      "candidates_scored": 48
+    }
+  }
+}

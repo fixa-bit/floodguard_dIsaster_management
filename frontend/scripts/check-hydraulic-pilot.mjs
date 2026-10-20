@@ -1,0 +1,64 @@
+import assert from "node:assert/strict";
+import { mkdir } from "node:fs/promises";
+import { chromium } from "playwright";
+
+const browser = await chromium.launch({ executablePath: process.env.EDGE_PATH ?? "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe", headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1500, height: 1100 } });
+  const errors = [], writes = [];
+  page.on("pageerror", error => errors.push(error.message));
+  page.on("request", request => { if (!["GET", "OPTIONS"].includes(request.method())) writes.push(request.url()); });
+  await page.route("**/api/v1/**", route => new URL(route.request().url()).pathname.endsWith("/simulation/monitoring/stations")
+    ? route.fulfill({ json: [{ code: "TAUNSA", name: "Taunsa", river: "Indus", thresholds: [] }] })
+    : route.fulfill({ status: 503, json: { error: { code: "TRIAL_CHECK", message: "Operational feeds excluded" } } }));
+  await page.route("**/World_Imagery/MapServer/tile/**", route => route.abort());
+  let fail = true;
+  await page.route("**/hydraulic-pilot/results.json", route => fail ? route.fulfill({ status: 503, body: "trial unavailable" }) : route.continue());
+  await page.goto(process.env.FRONTEND_URL ?? "http://127.0.0.1:3000/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar nav").getByRole("button", { name: "Simulation", exact: true }).click();
+  const monitoring = page.getByRole("tab", { name: "Monitoring scenario", exact: true });
+  await page.getByRole("slider", { name: "Reading 1 value", exact: true }).fill("321000");
+  await page.getByRole("tab", { name: "Storm replay", exact: true }).click();
+  await page.getByRole("button", { name: "2D hydraulic trial", exact: false }).click();
+  const root = page.locator(".hydraulic-pilot");
+  await root.getByRole("button", { name: "Retry hydraulic trial" }).waitFor();
+  fail = false;
+  await root.getByRole("button", { name: "Retry hydraulic trial" }).click();
+  const slider = root.getByRole("slider", { name: "Hydraulic scenario time", exact: true });
+  await slider.waitFor();
+  assert.equal(await root.locator(".hydraulic-details").count(), 0);
+  await slider.fill("12");
+  await page.waitForFunction(() => document.querySelector(".hydraulic-pilot")?.dataset.frame === "12");
+  assert.match(await root.locator(".hydraulic-metrics").innerText(), /3\.98/);
+  await root.getByRole("button", { name: "Play hydraulic trial", exact: true }).click();
+  await page.waitForFunction(() => Number(document.querySelector(".hydraulic-pilot")?.dataset.frame) > 12);
+  await root.getByRole("button", { name: "Pause hydraulic trial", exact: true }).click();
+  const paused = await slider.inputValue();
+  await page.waitForTimeout(900);
+  assert.equal(await slider.inputValue(), paused);
+  await root.getByRole("button", { name: "View details", exact: true }).click();
+  await root.getByRole("link", { name: "Maximum sampled depth GeoTIFF" }).waitFor();
+  const response = await page.request.get("http://127.0.0.1:3000/hydraulic-pilot/maximum-depth.tif");
+  assert.equal(response.status(), 200);
+  await root.getByRole("button", { name: "Reset hydraulic trial", exact: true }).click();
+  assert.equal(await slider.inputValue(), "0");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.waitForFunction(() => [...document.querySelectorAll('.hydraulic-pilot button')].find(b => b.textContent === 'Play hydraulic trial')?.disabled);
+  await slider.fill("24");
+  assert.equal(await root.getAttribute("data-frame"), "24");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await root.scrollIntoViewIfNeeded();
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 2), "No mobile horizontal overflow");
+  await mkdir(new URL("../screenshots/", import.meta.url), { recursive: true });
+  await page.screenshot({ path: new URL("../screenshots/hydraulic-pilot-mobile.png", import.meta.url).pathname.replace(/^\/(\w:)/, "$1"), fullPage: true });
+  await page.setViewportSize({ width: 1500, height: 1100 });
+  await root.getByRole("button", { name: "Hide details", exact: true }).click();
+  await root.screenshot({ path: new URL("../screenshots/hydraulic-pilot-desktop.png", import.meta.url).pathname.replace(/^\/(\w:)/, "$1") });
+  await page.getByRole("button", { name: "District storm replay", exact: false }).click();
+  await page.locator(".storm-replay:not(.terrain-pilot)").waitFor();
+  await monitoring.click();
+  assert.equal(await page.getByRole("slider", { name: "Reading 1 value", exact: true }).inputValue(), "321000");
+  assert.deepEqual(writes, [], "Trial playback must not create readings, alerts or incidents");
+  assert.deepEqual(errors, []);
+  console.log("Hydraulic trial: retry, frames, metrics, play/pause/reset, details/downloads, reduced motion, mobile layout and monitoring draft passed.");
+} finally { await browser.close(); }

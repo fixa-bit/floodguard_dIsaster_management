@@ -1,0 +1,15 @@
+{
+  "source_url": "https://irsa.nespak.co/Home/DailyData",
+  "retrieved_at": "2026-10-16T11:14:12.436612+00:00",
+  "request_method": "POST date-selection form, ReadingDateString=YYYYMMDD; cookies and verification token are session-only",
+  "sampling": "15th of each month plus window endpoints; not a complete daily coverage audit",
+  "window_start": "2024-10-16",
+  "window_end": "2026-10-15",
+  "sampled_reports": 25,
+  "reports_with_values": 24,
+  "no_marala_card": 1,
+  "errors": 0,
+  "time_basis": "Unconfirmed: do not label these values 06:00 observations or daily means",
+  "training_or_dashboard_changed": false,
+  "cross_source_values_reconciled": false
+}

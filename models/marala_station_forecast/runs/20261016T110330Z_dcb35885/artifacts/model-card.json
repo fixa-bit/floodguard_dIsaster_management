@@ -1,0 +1,605 @@
+{
+  "model_name": "marala_station_gauge_forecast_v1",
+  "trained_at": "2026-10-16T11:03:36.994886+00:00",
+  "target": "Direct future instantaneous FFD-reported Marala inflow at 06:00 PKT, in m3/s",
+  "horizons_days": [
+    1,
+    3,
+    7
+  ],
+  "features": [
+    "log_flow",
+    "log_lag_1d",
+    "log_lag_2d",
+    "log_lag_3d",
+    "log_lag_7d",
+    "log_change_1d",
+    "log_change_3d",
+    "log_change_7d",
+    "log_outflow",
+    "outflow_inflow_ratio",
+    "log_retained_flow",
+    "log_mean_3d",
+    "relative_std_3d",
+    "log_mean_7d",
+    "relative_std_7d",
+    "log_max_7d",
+    "available_days_7d",
+    "season_sin",
+    "season_cos",
+    "flow_cumecs",
+    "change_1d_cumecs"
+  ],
+  "data": {
+    "station_id": "MARALA",
+    "measured_days": 322,
+    "years": {
+      "2024": 87,
+      "2025": 114,
+      "2026": 121
+    },
+    "first_day": "2024-07-18",
+    "last_day": "2026-10-15",
+    "sources": [
+      {
+        "path": "D:\\Projects\\disaster_management\\models\\marala_station_forecast\\runs\\20261016T110330Z_dcb35885\\data\\sources\\01_ffd_observations.json",
+        "sha256": "6d3a06871e385f20952dce0a847d5a96ec232d314bfcb7baba4614b82c264078",
+        "rows": 166
+      },
+      {
+        "path": "D:\\Projects\\disaster_management\\models\\marala_station_forecast\\runs\\20261016T110330Z_dcb35885\\data\\sources\\02_gauge_history_observations.json",
+        "sha256": "0fafbb131c851726c014f0d7a30c4e34fdb5c8e77f795c030b07d256dfc41d19",
+        "rows": 322
+      }
+    ],
+    "snapshot_sha256": "a3911104a4a33c0139601b6124018f4af21cfdb1790675d68561bb9e2bfdcb4b",
+    "config": {
+      "station_id": "MARALA",
+      "target": "instantaneous reported inflow at 06:00 PKT",
+      "horizons_days": [
+        1,
+        3,
+        7
+      ],
+      "training_years": [
+        2024
+      ],
+      "validation_years": [
+        2025
+      ],
+      "test_years": [
+        2026
+      ],
+      "selection_metric": "validation RMSE in m3/s; MAE breaks ties",
+      "seed": 42,
+      "thresholds_cusecs": {
+        "Low": 100000,
+        "Medium": 150000,
+        "High": 200000,
+        "Very High": 400000,
+        "Exceptional": 600000
+      },
+      "threshold_source": "https://ffd.pmd.gov.pk/flood-limits"
+    },
+    "code_sha256": {
+      "core.py": "965006db38cf933786dfdf82791f257462407125037909ca947a7fd846e26cbb",
+      "train.py": "4479d5c7e14f6ae4713edb3a959a41641b50eecb3e5c158b5fd176f7554bded2",
+      "config.json": "fcc5c97a042da83f09295494e7173cd3373cf3ba33bb81bf059aecc3bad63e75"
+    },
+    "numpy_version": "2.1.3",
+    "xgboost_version": "2.1.3"
+  },
+  "model_selection": "2024 fits evaluated on 2025; every horizon frozen before looking at 2026 scores",
+  "evaluation": "Frozen candidates refit on 2024+2025, evaluated on rolling 2026 origins using only measurements at or before each origin",
+  "production_refit": "Same frozen candidates refit on all eligible 2024-2026 pairs only after evaluation; no fresh independent test for that final refit",
+  "deployment_eligible": false,
+  "status": "research_only_independent_validation_required",
+  "results": {
+    "1": {
+      "selection": {
+        "champion": {
+          "spec": {
+            "id": "ridge_log_return_100.0",
+            "family": "ridge",
+            "target": "log_return",
+            "penalty": 100.0
+          },
+          "validation": {
+            "rows": 96,
+            "mae_cumecs": 626.464663634839,
+            "rmse_cumecs": 2093.7710125012054,
+            "bias_cumecs": -221.7135600810433,
+            "nse": 0.10457922686325272,
+            "peak_actual_cumecs": 21789.813453,
+            "prediction_at_peak_cumecs": 2666.2098389798653,
+            "peak_error_percent": -87.76396207002504,
+            "low_flood_threshold_cumecs": 2831.6846592,
+            "flood_events_days": 16,
+            "hits": 5,
+            "false_alarms": 6,
+            "misses": 11,
+            "flood_recall": 0.3125,
+            "flood_precision": 0.45454545454545453,
+            "peak_target_date": "2025-08-27",
+            "predicted_peak_target_date": "2025-09-05",
+            "peak_timing_error_days": 9
+          }
+        },
+        "best_learned": {
+          "spec": {
+            "id": "ridge_log_return_100.0",
+            "family": "ridge",
+            "target": "log_return",
+            "penalty": 100.0
+          },
+          "validation": {
+            "rows": 96,
+            "mae_cumecs": 626.464663634839,
+            "rmse_cumecs": 2093.7710125012054,
+            "bias_cumecs": -221.7135600810433,
+            "nse": 0.10457922686325272,
+            "peak_actual_cumecs": 21789.813453,
+            "prediction_at_peak_cumecs": 2666.2098389798653,
+            "peak_error_percent": -87.76396207002504,
+            "low_flood_threshold_cumecs": 2831.6846592,
+            "flood_events_days": 16,
+            "hits": 5,
+            "false_alarms": 6,
+            "misses": 11,
+            "flood_recall": 0.3125,
+            "flood_precision": 0.45454545454545453,
+            "peak_target_date": "2025-08-27",
+            "predicted_peak_target_date": "2025-09-05",
+            "peak_timing_error_days": 9
+          }
+        },
+        "candidates_scored": 48
+      },
+      "splits": {
+        "train": {
+          "rows": 80,
+          "first_origin": "2024-07-19T06:00:00+05:00",
+          "last_target": "2024-10-13T06:00:00+05:00"
+        },
+        "validation": {
+          "rows": 96,
+          "first_origin": "2025-06-16T06:00:00+05:00",
+          "last_target": "2025-10-15T06:00:00+05:00"
+        },
+        "test": {
+          "rows": 117,
+          "first_origin": "2026-06-17T06:00:00+05:00",
+          "last_target": "2026-10-15T06:00:00+05:00"
+        }
+      },
+      "skipped": {
+        "missing_previous_day": 15,
+        "missing_target_day": 14
+      },
+      "test": {
+        "champion": {
+          "rows": 117,
+          "mae_cumecs": 222.25536086444518,
+          "rmse_cumecs": 423.9776447157464,
+          "bias_cumecs": -21.67361189802187,
+          "nse": 0.7876774097769981,
+          "peak_actual_cumecs": 5524.61677,
+          "prediction_at_peak_cumecs": 2876.649756954629,
+          "peak_error_percent": -47.93032934744849,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 5,
+          "hits": 4,
+          "false_alarms": 2,
+          "misses": 1,
+          "flood_recall": 0.8,
+          "flood_precision": 0.6666666666666666,
+          "peak_target_date": "2026-07-23",
+          "predicted_peak_target_date": "2026-07-24",
+          "peak_timing_error_days": 1
+        },
+        "best_learned": {
+          "rows": 117,
+          "mae_cumecs": 222.25536086444518,
+          "rmse_cumecs": 423.9776447157464,
+          "bias_cumecs": -21.67361189802187,
+          "nse": 0.7876774097769981,
+          "peak_actual_cumecs": 5524.61677,
+          "prediction_at_peak_cumecs": 2876.649756954629,
+          "peak_error_percent": -47.93032934744849,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 5,
+          "hits": 4,
+          "false_alarms": 2,
+          "misses": 1,
+          "flood_recall": 0.8,
+          "flood_precision": 0.6666666666666666,
+          "peak_target_date": "2026-07-23",
+          "predicted_peak_target_date": "2026-07-24",
+          "peak_timing_error_days": 1
+        },
+        "persistence": {
+          "rows": 117,
+          "mae_cumecs": 225.34885344444444,
+          "rmse_cumecs": 423.8194766175731,
+          "bias_cumecs": 16.433451991452984,
+          "nse": 0.7878357973551138,
+          "peak_actual_cumecs": 5524.61677,
+          "prediction_at_peak_cumecs": 3627.388048,
+          "peak_error_percent": -34.341363410081385,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 5,
+          "hits": 4,
+          "false_alarms": 2,
+          "misses": 1,
+          "flood_recall": 0.8,
+          "flood_precision": 0.6666666666666666,
+          "peak_target_date": "2026-07-23",
+          "predicted_peak_target_date": "2026-07-24",
+          "peak_timing_error_days": 1
+        },
+        "linear_trend": {
+          "rows": 117,
+          "mae_cumecs": 372.8868849145299,
+          "rmse_cumecs": 643.3651310189568,
+          "bias_cumecs": 8.930697769230777,
+          "nse": 0.5110940455328532,
+          "peak_actual_cumecs": 5524.61677,
+          "prediction_at_peak_cumecs": 4850.6758199999995,
+          "peak_error_percent": -12.198872393460157,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 5,
+          "hits": 4,
+          "false_alarms": 5,
+          "misses": 1,
+          "flood_recall": 0.8,
+          "flood_precision": 0.4444444444444444,
+          "peak_target_date": "2026-07-23",
+          "predicted_peak_target_date": "2026-07-24",
+          "peak_timing_error_days": 1
+        }
+      },
+      "test_rmse_improvement_over_persistence_percent": -0.03731968606907891,
+      "test_beats_persistence": false
+    },
+    "3": {
+      "selection": {
+        "champion": {
+          "spec": {
+            "id": "training_median",
+            "family": "median"
+          },
+          "validation": {
+            "rows": 95,
+            "mae_cumecs": 1019.8535853789474,
+            "rmse_cumecs": 2482.426802095623,
+            "bias_cumecs": -707.6528998421052,
+            "nse": -0.08844962861965344,
+            "peak_actual_cumecs": 21789.813453,
+            "prediction_at_peak_cumecs": 1563.089932,
+            "peak_error_percent": -92.82651072083964,
+            "low_flood_threshold_cumecs": 2831.6846592,
+            "flood_events_days": 16,
+            "hits": 0,
+            "false_alarms": 0,
+            "misses": 16,
+            "flood_recall": 0.0,
+            "flood_precision": null,
+            "peak_target_date": "2025-08-27",
+            "predicted_peak_target_date": "2025-06-19",
+            "peak_timing_error_days": -69
+          }
+        },
+        "best_learned": {
+          "spec": {
+            "id": "ridge_log_return_1000.0",
+            "family": "ridge",
+            "target": "log_return",
+            "penalty": 1000.0
+          },
+          "validation": {
+            "rows": 95,
+            "mae_cumecs": 1035.7721197694066,
+            "rmse_cumecs": 2620.784482237075,
+            "bias_cumecs": -187.61657354896,
+            "nse": -0.21315990835897858,
+            "peak_actual_cumecs": 21789.813453,
+            "prediction_at_peak_cumecs": 1782.5193020745635,
+            "peak_error_percent": -91.81948342091405,
+            "low_flood_threshold_cumecs": 2831.6846592,
+            "flood_events_days": 16,
+            "hits": 4,
+            "false_alarms": 10,
+            "misses": 12,
+            "flood_recall": 0.25,
+            "flood_precision": 0.2857142857142857,
+            "peak_target_date": "2025-08-27",
+            "predicted_peak_target_date": "2025-08-30",
+            "peak_timing_error_days": 3
+          }
+        },
+        "candidates_scored": 48
+      },
+      "splits": {
+        "train": {
+          "rows": 79,
+          "first_origin": "2024-07-19T06:00:00+05:00",
+          "last_target": "2024-10-15T06:00:00+05:00"
+        },
+        "validation": {
+          "rows": 95,
+          "first_origin": "2025-06-16T06:00:00+05:00",
+          "last_target": "2025-10-14T06:00:00+05:00"
+        },
+        "test": {
+          "rows": 115,
+          "first_origin": "2026-06-17T06:00:00+05:00",
+          "last_target": "2026-10-15T06:00:00+05:00"
+        }
+      },
+      "skipped": {
+        "missing_previous_day": 15,
+        "missing_target_day": 18
+      },
+      "test": {
+        "champion": {
+          "rows": 115,
+          "mae_cumecs": 645.8580241347828,
+          "rmse_cumecs": 834.2477893235022,
+          "bias_cumecs": 252.69707685652187,
+          "nse": -0.10101952648592682,
+          "peak_actual_cumecs": 4162.576449,
+          "prediction_at_peak_cumecs": 1779.7138085000001,
+          "peak_error_percent": -57.244897954305415,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 4,
+          "hits": 0,
+          "false_alarms": 0,
+          "misses": 4,
+          "flood_recall": 0.0,
+          "flood_precision": null,
+          "peak_target_date": "2026-07-25",
+          "predicted_peak_target_date": "2026-06-20",
+          "peak_timing_error_days": -35
+        },
+        "best_learned": {
+          "rows": 115,
+          "mae_cumecs": 299.1100522412958,
+          "rmse_cumecs": 483.27968936883207,
+          "bias_cumecs": 15.843784550810762,
+          "nse": 0.6305106037251117,
+          "peak_actual_cumecs": 4162.576449,
+          "prediction_at_peak_cumecs": 3146.6571460204204,
+          "peak_error_percent": -24.40602149718211,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 4,
+          "hits": 2,
+          "false_alarms": 4,
+          "misses": 2,
+          "flood_recall": 0.5,
+          "flood_precision": 0.3333333333333333,
+          "peak_target_date": "2026-07-25",
+          "predicted_peak_target_date": "2026-07-26",
+          "peak_timing_error_days": 1
+        },
+        "persistence": {
+          "rows": 115,
+          "mae_cumecs": 340.14688592173917,
+          "rmse_cumecs": 584.9881847441444,
+          "bias_cumecs": 69.93029940000001,
+          "nse": 0.45862389731811226,
+          "peak_actual_cumecs": 4162.576449,
+          "prediction_at_peak_cumecs": 3627.388048,
+          "peak_error_percent": -12.857142867095492,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 4,
+          "hits": 2,
+          "false_alarms": 4,
+          "misses": 2,
+          "flood_recall": 0.5,
+          "flood_precision": 0.3333333333333333,
+          "peak_target_date": "2026-07-25",
+          "predicted_peak_target_date": "2026-07-26",
+          "peak_timing_error_days": 1
+        },
+        "linear_trend": {
+          "rows": 115,
+          "mae_cumecs": 759.7779288434783,
+          "rmse_cumecs": 1375.5531166823796,
+          "bias_cumecs": 114.15382672173912,
+          "nse": -1.993364630250197,
+          "peak_actual_cumecs": 4162.576449,
+          "prediction_at_peak_cumecs": 7297.251363999999,
+          "peak_error_percent": 75.30612238372366,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 4,
+          "hits": 3,
+          "false_alarms": 11,
+          "misses": 1,
+          "flood_recall": 0.75,
+          "flood_precision": 0.21428571428571427,
+          "peak_target_date": "2026-07-25",
+          "predicted_peak_target_date": "2026-07-26",
+          "peak_timing_error_days": 1
+        }
+      },
+      "test_rmse_improvement_over_persistence_percent": -42.60933999690543,
+      "test_beats_persistence": false
+    },
+    "7": {
+      "selection": {
+        "champion": {
+          "spec": {
+            "id": "ridge_log_return_1000.0",
+            "family": "ridge",
+            "target": "log_return",
+            "penalty": 1000.0
+          },
+          "validation": {
+            "rows": 93,
+            "mae_cumecs": 966.8628808964459,
+            "rmse_cumecs": 2378.9097928588767,
+            "bias_cumecs": -385.4519631307368,
+            "nse": 0.06556539364117786,
+            "peak_actual_cumecs": 21789.813453,
+            "prediction_at_peak_cumecs": 1714.422503776246,
+            "peak_error_percent": -92.13200008584651,
+            "low_flood_threshold_cumecs": 2831.6846592,
+            "flood_events_days": 17,
+            "hits": 4,
+            "false_alarms": 5,
+            "misses": 13,
+            "flood_recall": 0.23529411764705882,
+            "flood_precision": 0.4444444444444444,
+            "peak_target_date": "2025-08-27",
+            "predicted_peak_target_date": "2025-09-03",
+            "peak_timing_error_days": 7
+          }
+        },
+        "best_learned": {
+          "spec": {
+            "id": "ridge_log_return_1000.0",
+            "family": "ridge",
+            "target": "log_return",
+            "penalty": 1000.0
+          },
+          "validation": {
+            "rows": 93,
+            "mae_cumecs": 966.8628808964459,
+            "rmse_cumecs": 2378.9097928588767,
+            "bias_cumecs": -385.4519631307368,
+            "nse": 0.06556539364117786,
+            "peak_actual_cumecs": 21789.813453,
+            "prediction_at_peak_cumecs": 1714.422503776246,
+            "peak_error_percent": -92.13200008584651,
+            "low_flood_threshold_cumecs": 2831.6846592,
+            "flood_events_days": 17,
+            "hits": 4,
+            "false_alarms": 5,
+            "misses": 13,
+            "flood_recall": 0.23529411764705882,
+            "flood_precision": 0.4444444444444444,
+            "peak_target_date": "2025-08-27",
+            "predicted_peak_target_date": "2025-09-03",
+            "peak_timing_error_days": 7
+          }
+        },
+        "candidates_scored": 48
+      },
+      "splits": {
+        "train": {
+          "rows": 75,
+          "first_origin": "2024-07-19T06:00:00+05:00",
+          "last_target": "2024-10-15T06:00:00+05:00"
+        },
+        "validation": {
+          "rows": 93,
+          "first_origin": "2025-06-16T06:00:00+05:00",
+          "last_target": "2025-10-15T06:00:00+05:00"
+        },
+        "test": {
+          "rows": 111,
+          "first_origin": "2026-06-17T06:00:00+05:00",
+          "last_target": "2026-10-15T06:00:00+05:00"
+        }
+      },
+      "skipped": {
+        "missing_previous_day": 15,
+        "missing_target_day": 28
+      },
+      "test": {
+        "champion": {
+          "rows": 111,
+          "mae_cumecs": 502.1789320479439,
+          "rmse_cumecs": 871.1088711802995,
+          "bias_cumecs": -57.97628602462402,
+          "nse": 0.1477965001726742,
+          "peak_actual_cumecs": 5524.61677,
+          "prediction_at_peak_cumecs": 1496.3153339192665,
+          "peak_error_percent": -72.91549086183463,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 6,
+          "hits": 0,
+          "false_alarms": 6,
+          "misses": 6,
+          "flood_recall": 0.0,
+          "flood_precision": 0.0,
+          "peak_target_date": "2026-07-23",
+          "predicted_peak_target_date": "2026-07-30",
+          "peak_timing_error_days": 7
+        },
+        "best_learned": {
+          "rows": 111,
+          "mae_cumecs": 502.1789320479439,
+          "rmse_cumecs": 871.1088711802995,
+          "bias_cumecs": -57.97628602462402,
+          "nse": 0.1477965001726742,
+          "peak_actual_cumecs": 5524.61677,
+          "prediction_at_peak_cumecs": 1496.3153339192665,
+          "peak_error_percent": -72.91549086183463,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 6,
+          "hits": 0,
+          "false_alarms": 6,
+          "misses": 6,
+          "flood_recall": 0.0,
+          "flood_precision": 0.0,
+          "peak_target_date": "2026-07-23",
+          "predicted_peak_target_date": "2026-07-30",
+          "peak_timing_error_days": 7
+        },
+        "persistence": {
+          "rows": 111,
+          "mae_cumecs": 561.3623506846847,
+          "rmse_cumecs": 962.66829721382,
+          "bias_cumecs": 27.985207837837837,
+          "nse": -0.04076284578064726,
+          "peak_actual_cumecs": 5524.61677,
+          "prediction_at_peak_cumecs": 1441.327492,
+          "peak_error_percent": -73.91081495775859,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 6,
+          "hits": 0,
+          "false_alarms": 6,
+          "misses": 6,
+          "flood_recall": 0.0,
+          "flood_precision": 0.0,
+          "peak_target_date": "2026-07-23",
+          "predicted_peak_target_date": "2026-07-30",
+          "peak_timing_error_days": 7
+        },
+        "linear_trend": {
+          "rows": 111,
+          "mae_cumecs": 1539.3905164684686,
+          "rmse_cumecs": 2955.0236439498776,
+          "bias_cumecs": 338.4500934774776,
+          "nse": -8.806642889086039,
+          "peak_actual_cumecs": 5524.61677,
+          "prediction_at_peak_cumecs": 727.742962999999,
+          "peak_error_percent": -86.82726796631727,
+          "low_flood_threshold_cumecs": 2831.6846592,
+          "flood_events_days": 6,
+          "hits": 4,
+          "false_alarms": 21,
+          "misses": 2,
+          "flood_recall": 0.6666666666666666,
+          "flood_precision": 0.16,
+          "peak_target_date": "2026-07-23",
+          "predicted_peak_target_date": "2026-08-27",
+          "peak_timing_error_days": 35
+        }
+      },
+      "test_rmse_improvement_over_persistence_percent": 9.511004600287992,
+      "test_beats_persistence": true
+    }
+  },
+  "limitations": [
+    "Only 322 measured days across three short, incomplete flood seasons at training time; no year-round coverage.",
+    "No observed upstream Akhnur flow, rainfall forecasts, snowmelt, reservoir releases, or subdaily gauge series.",
+    "One extreme 2025 flood is in validation; a single held-out 2026 season does not establish rare-event skill.",
+    "06:00 is the measurement time, not guaranteed publication time; bulletin latency reduces operational lead time.",
+    "Missing gauge dates are never interpolated; older optional feature gaps use training-only imputation for ridge.",
+    "Outputs are discharge estimates, not calibrated flood probabilities, inundation, or damage estimates.",
+    "1-, 3-, 7-day direct targets do not justify recursive seven-month instantaneous predictions.",
+    "The existing dashboard GloFAS feed has not been replaced."
+  ]
+}

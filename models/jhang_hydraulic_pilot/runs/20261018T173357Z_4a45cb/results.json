@@ -1,0 +1,395 @@
+{
+  "id": "jhang_anuga_trial",
+  "run_id": "20261018T173357Z_4a45cb",
+  "solver": "ANUGA 4.0.1, serial CPU, DE0 finite-volume shallow-water equations",
+  "calibrated": false,
+  "bounds_utm43n": [
+    236960.0,
+    3463940.0,
+    242960.0,
+    3469940.0
+  ],
+  "crs": "EPSG:32643",
+  "triangle_count": 10000,
+  "mesh_spacing_m": 120.0,
+  "source_dem_spacing_m": 30,
+  "duration_seconds": 21600,
+  "runtime_seconds": 92.7356191999861,
+  "scenario": "Hypothetical inflow pulse on real Jhang surface terrain; not a historical replay or forecast",
+  "config": {
+    "solver": "ANUGA 4.0.1, serial CPU, DE0 finite-volume shallow-water equations",
+    "study": "6 km square around the mapped Chenab near Jhang",
+    "centre_utm43n": [
+      239960,
+      3466940
+    ],
+    "side_m": 6000,
+    "mesh_spacing_m": 120,
+    "duration_seconds": 21600,
+    "output_interval_seconds": 900,
+    "manning_n": 0.04,
+    "wet_depth_threshold_m": 0.1,
+    "inlet_radius_m": 240,
+    "hydrograph_seconds_cumecs": [
+      [
+        0,
+        100
+      ],
+      [
+        3600,
+        1200
+      ],
+      [
+        7200,
+        1200
+      ],
+      [
+        10800,
+        100
+      ],
+      [
+        21600,
+        100
+      ]
+    ],
+    "hydrograph_kind": "hypothetical_test_input_not_observed_or_forecast",
+    "initial_condition": "dry surface; no surveyed initial river water level",
+    "boundary_condition": "transmissive on every outer boundary; artificial study-window truncation",
+    "rainfall": "none",
+    "infiltration": "none",
+    "calibrated": false
+  },
+  "numerical_checks": {
+    "lake_at_rest": {
+      "max_stage_error_m": 1.1102230246251565e-15,
+      "max_speed_m_s": 2.99538648199371e-15,
+      "relative_volume_error": 3.172323843109543e-16
+    },
+    "ritter_dam_break": {
+      "time_seconds": 20,
+      "depth_l1_error_m": 0.009725601072175277,
+      "relative_volume_error": 1.520046855330799e-16,
+      "depth_l1_acceptance_m": 0.12
+    },
+    "passed": true,
+    "scope": "Numerical setup checks only, not validation of Jhang flood prediction"
+  },
+  "max_relative_mass_error": 2.3177901473041036e-14,
+  "frames": [
+    {
+      "elapsed_seconds": 0.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 0.0,
+      "source_volume_m3": 0.0,
+      "net_boundary_volume_m3": 0.0,
+      "mass_residual_m3": 0.0,
+      "relative_mass_error": 0.0,
+      "wet_area_km2": 0.0,
+      "maximum_depth_m": 0.0,
+      "maximum_speed_m_s": 0.0
+    },
+    {
+      "elapsed_seconds": 900.0,
+      "inflow_cumecs": 375.0,
+      "water_volume_m3": 213749.9999999997,
+      "source_volume_m3": 213750.0,
+      "net_boundary_volume_m3": 0.0,
+      "mass_residual_m3": -2.9103830456733704e-10,
+      "relative_mass_error": 1.3615827114261383e-15,
+      "wet_area_km2": 0.1548,
+      "maximum_depth_m": 2.801533670136422,
+      "maximum_speed_m_s": 0.0
+    },
+    {
+      "elapsed_seconds": 1800.0,
+      "inflow_cumecs": 650.0,
+      "water_volume_m3": 543666.2649651009,
+      "source_volume_m3": 675000.0,
+      "net_boundary_volume_m3": -131333.73503490962,
+      "mass_residual_m3": 1.05355866253376e-08,
+      "relative_mass_error": 1.560827648198163e-14,
+      "wet_area_km2": 0.4392,
+      "maximum_depth_m": 2.5891531705273394,
+      "maximum_speed_m_s": 0.90722177644438
+    },
+    {
+      "elapsed_seconds": 2700.0,
+      "inflow_cumecs": 925.0000000000001,
+      "water_volume_m3": 989875.9617707538,
+      "source_volume_m3": 1383750.0000000002,
+      "net_boundary_volume_m3": -393874.03822927846,
+      "mass_residual_m3": 3.207242116332054e-08,
+      "relative_mass_error": 2.3177901473041036e-14,
+      "wet_area_km2": 0.774,
+      "maximum_depth_m": 3.1311969787281555,
+      "maximum_speed_m_s": 1.8055134221770828
+    },
+    {
+      "elapsed_seconds": 3600.0,
+      "inflow_cumecs": 1200.0,
+      "water_volume_m3": 1509554.1815638018,
+      "source_volume_m3": 2340000.0000000033,
+      "net_boundary_volume_m3": -830445.8184362405,
+      "mass_residual_m3": 3.91155481338501e-08,
+      "relative_mass_error": 1.6716046211047027e-14,
+      "wet_area_km2": 1.1268,
+      "maximum_depth_m": 3.38455814106959,
+      "maximum_speed_m_s": 1.5642461630443432
+    },
+    {
+      "elapsed_seconds": 4500.0,
+      "inflow_cumecs": 1200.0,
+      "water_volume_m3": 2055833.9934327789,
+      "source_volume_m3": 3420000.0000000056,
+      "net_boundary_volume_m3": -1364166.0065672435,
+      "mass_residual_m3": 1.6763806343078613e-08,
+      "relative_mass_error": 4.90169776113409e-15,
+      "wet_area_km2": 1.5372,
+      "maximum_depth_m": 3.461201116845757,
+      "maximum_speed_m_s": 1.2610362284883117
+    },
+    {
+      "elapsed_seconds": 5400.0,
+      "inflow_cumecs": 1200.0,
+      "water_volume_m3": 2573545.0836531427,
+      "source_volume_m3": 4500000.000000009,
+      "net_boundary_volume_m3": -1926454.9163468857,
+      "mass_residual_m3": 1.909211277961731e-08,
+      "relative_mass_error": 4.2426917288038376e-15,
+      "wet_area_km2": 1.9476,
+      "maximum_depth_m": 3.5101617814154906,
+      "maximum_speed_m_s": 1.4075736306952216
+    },
+    {
+      "elapsed_seconds": 6300.0,
+      "inflow_cumecs": 1200.0,
+      "water_volume_m3": 3066686.8003912615,
+      "source_volume_m3": 5580000.000000007,
+      "net_boundary_volume_m3": -2513313.1996087483,
+      "mass_residual_m3": 2.3283064365386963e-09,
+      "relative_mass_error": 4.1725921801768695e-16,
+      "wet_area_km2": 2.4624,
+      "maximum_depth_m": 3.5498489155169466,
+      "maximum_speed_m_s": 1.3666029819019705
+    },
+    {
+      "elapsed_seconds": 7200.0,
+      "inflow_cumecs": 1200.0,
+      "water_volume_m3": 3542201.837664802,
+      "source_volume_m3": 6660000.000000005,
+      "net_boundary_volume_m3": -3117798.1623351285,
+      "mass_residual_m3": -7.404014468193054e-08,
+      "relative_mass_error": 1.1117138841130704e-14,
+      "wet_area_km2": 3.0996,
+      "maximum_depth_m": 3.579053782244614,
+      "maximum_speed_m_s": 1.3505804626705211
+    },
+    {
+      "elapsed_seconds": 8100.0,
+      "inflow_cumecs": 925.0,
+      "water_volume_m3": 3902409.0260994127,
+      "source_volume_m3": 7616250.000000015,
+      "net_boundary_volume_m3": -3713840.9739005407,
+      "mass_residual_m3": -6.146728992462158e-08,
+      "relative_mass_error": 8.070545205924368e-15,
+      "wet_area_km2": 3.6324,
+      "maximum_depth_m": 3.5583238976803955,
+      "maximum_speed_m_s": 1.3890253049977723
+    },
+    {
+      "elapsed_seconds": 9000.0,
+      "inflow_cumecs": 650.0,
+      "water_volume_m3": 4077900.9697731063,
+      "source_volume_m3": 8325000.000000001,
+      "net_boundary_volume_m3": -4247099.030226833,
+      "mass_residual_m3": -6.146728992462158e-08,
+      "relative_mass_error": 7.383458249203793e-15,
+      "wet_area_km2": 3.9348,
+      "maximum_depth_m": 3.5194172042978096,
+      "maximum_speed_m_s": 1.3980593871460254
+    },
+    {
+      "elapsed_seconds": 9900.0,
+      "inflow_cumecs": 374.9999999999999,
+      "water_volume_m3": 4100825.919845136,
+      "source_volume_m3": 8786250.00000001,
+      "net_boundary_volume_m3": -4685424.080154782,
+      "mass_residual_m3": -9.12696123123169e-08,
+      "relative_mass_error": 1.0387777756416765e-14,
+      "wet_area_km2": 4.0284,
+      "maximum_depth_m": 3.4120725119524593,
+      "maximum_speed_m_s": 1.3592677571099767
+    },
+    {
+      "elapsed_seconds": 10800.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3989879.79603028,
+      "source_volume_m3": 9000000.000000007,
+      "net_boundary_volume_m3": -5010120.203969618,
+      "mass_residual_m3": -1.0896474123001099e-07,
+      "relative_mass_error": 1.210719347000121e-14,
+      "wet_area_km2": 3.978,
+      "maximum_depth_m": 3.2443478403750987,
+      "maximum_speed_m_s": 1.2801078598241715
+    },
+    {
+      "elapsed_seconds": 11700.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3871263.0205958523,
+      "source_volume_m3": 9090000.000000007,
+      "net_boundary_volume_m3": -5218736.979404019,
+      "mass_residual_m3": -1.3597309589385986e-07,
+      "relative_mass_error": 1.495853640196477e-14,
+      "wet_area_km2": 3.9384,
+      "maximum_depth_m": 3.041714136567947,
+      "maximum_speed_m_s": 1.1496235652449707
+    },
+    {
+      "elapsed_seconds": 12600.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3838127.529965303,
+      "source_volume_m3": 9180000.000000011,
+      "net_boundary_volume_m3": -5341872.47003454,
+      "mass_residual_m3": -1.685693860054016e-07,
+      "relative_mass_error": 1.8362678214096014e-14,
+      "wet_area_km2": 3.8772,
+      "maximum_depth_m": 2.9089187868817135,
+      "maximum_speed_m_s": 1.021013411136904
+    },
+    {
+      "elapsed_seconds": 13500.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3815570.3597555733,
+      "source_volume_m3": 9270000.000000019,
+      "net_boundary_volume_m3": -5454429.640244303,
+      "mass_residual_m3": -1.4156103134155273e-07,
+      "relative_mass_error": 1.5270877167373512e-14,
+      "wet_area_km2": 3.8772,
+      "maximum_depth_m": 2.821469442134429,
+      "maximum_speed_m_s": 0.9885713378283844
+    },
+    {
+      "elapsed_seconds": 14400.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3809562.530408404,
+      "source_volume_m3": 9360000.00000002,
+      "net_boundary_volume_m3": -5550437.469591499,
+      "mass_residual_m3": -1.1734664440155029e-07,
+      "relative_mass_error": 1.2537034658285261e-14,
+      "wet_area_km2": 3.87,
+      "maximum_depth_m": 2.761441761420059,
+      "maximum_speed_m_s": 0.9364336903979503
+    },
+    {
+      "elapsed_seconds": 15300.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3813837.574871348,
+      "source_volume_m3": 9450000.000000032,
+      "net_boundary_volume_m3": -5636162.42512856,
+      "mass_residual_m3": -1.2386590242385864e-07,
+      "relative_mass_error": 1.310750290199558e-14,
+      "wet_area_km2": 3.8916,
+      "maximum_depth_m": 2.716708973656438,
+      "maximum_speed_m_s": 0.8963356927632365
+    },
+    {
+      "elapsed_seconds": 16200.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3822455.51592716,
+      "source_volume_m3": 9540000.000000026,
+      "net_boundary_volume_m3": -5717544.484072739,
+      "mass_residual_m3": -1.2665987014770508e-07,
+      "relative_mass_error": 1.3276715948396723e-14,
+      "wet_area_km2": 3.9204,
+      "maximum_depth_m": 2.6835185818859486,
+      "maximum_speed_m_s": 0.8430071116490311
+    },
+    {
+      "elapsed_seconds": 17100.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3833892.393581947,
+      "source_volume_m3": 9630000.000000019,
+      "net_boundary_volume_m3": -5796107.6064179875,
+      "mass_residual_m3": -8.381903171539307e-08,
+      "relative_mass_error": 8.703949295471745e-15,
+      "wet_area_km2": 3.9204,
+      "maximum_depth_m": 2.658800176466457,
+      "maximum_speed_m_s": 0.8014342396201657
+    },
+    {
+      "elapsed_seconds": 18000.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3847422.268352179,
+      "source_volume_m3": 9720000.000000028,
+      "net_boundary_volume_m3": -5872577.731647775,
+      "mass_residual_m3": -7.450580596923828e-08,
+      "relative_mass_error": 7.665206375436016e-15,
+      "wet_area_km2": 3.9348,
+      "maximum_depth_m": 2.6400468346826926,
+      "maximum_speed_m_s": 0.7739352180376597
+    },
+    {
+      "elapsed_seconds": 18900.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3862452.619322296,
+      "source_volume_m3": 9810000.000000026,
+      "net_boundary_volume_m3": -5947547.380677624,
+      "mass_residual_m3": -1.0617077350616455e-07,
+      "relative_mass_error": 1.0822708818161495e-14,
+      "wet_area_km2": 3.9168,
+      "maximum_depth_m": 2.6255339340465866,
+      "maximum_speed_m_s": 0.7751160342134893
+    },
+    {
+      "elapsed_seconds": 19800.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3878329.518550393,
+      "source_volume_m3": 9900000.000000017,
+      "net_boundary_volume_m3": -6021670.481449516,
+      "mass_residual_m3": -1.0803341865539551e-07,
+      "relative_mass_error": 1.0912466530848013e-14,
+      "wet_area_km2": 3.9348,
+      "maximum_depth_m": 2.6142990606150818,
+      "maximum_speed_m_s": 0.7760039307801638
+    },
+    {
+      "elapsed_seconds": 20700.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3894387.5822210647,
+      "source_volume_m3": 9990000.000000024,
+      "net_boundary_volume_m3": -6095612.417778879,
+      "mass_residual_m3": -8.009374141693115e-08,
+      "relative_mass_error": 8.017391533226322e-15,
+      "wet_area_km2": 3.9384,
+      "maximum_depth_m": 2.6056085831387747,
+      "maximum_speed_m_s": 0.7766665138121425
+    },
+    {
+      "elapsed_seconds": 21600.0,
+      "inflow_cumecs": 100.0,
+      "water_volume_m3": 3910300.8854656606,
+      "source_volume_m3": 10080000.000000022,
+      "net_boundary_volume_m3": -6169699.11453429,
+      "mass_residual_m3": -7.171183824539185e-08,
+      "relative_mass_error": 7.114269667201556e-15,
+      "wet_area_km2": 3.9276,
+      "maximum_depth_m": 2.5988804103631367,
+      "maximum_speed_m_s": 0.7776868884752833
+    }
+  ],
+  "source_inlet_utm43n": [
+    239787.1440620756,
+    3469340.0
+  ],
+  "limitations": [
+    "No surveyed channel bathymetry, embankments, gates, bridges or culverts.",
+    "Copernicus surface elevations are not surveyed riverbed elevations; no channel was burned into the terrain.",
+    "Hypothetical inflow and assumed Manning n; no station-matched boundary hydrograph or outlet-stage calibration.",
+    "Dry initial surface omits existing river storage; open study edges truncate flow paths.",
+    "120m-scale mesh cannot resolve buildings or small drainage branches.",
+    "Numerical benchmarks and mass balance do not establish Jhang flood accuracy.",
+    "Not a rainfall-runoff model or a 6-12-month discharge forecasting model."
+  ],
+  "dem_credit": "produced using Copernicus WorldDEM-30 \u00a9 DLR e.V. 2010-2014 and \u00a9 Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved",
+  "source_licence_notice": "produced using Copernicus WorldDEM-30 \u00a9 DLR e.V. 2010-2014 and \u00a9 Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved\n\nThe organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30\n\nOSM: \u00a9 OpenStreetMap contributors, ODbL 1.0.\nPopulation: WorldPop 2025, CC BY 4.0.\nExperimental derivative; no official endorsement.\n"
+}

@@ -1,0 +1,16 @@
+{
+  "original_prepared_model_sha256": "49ef1afd62c82ea981873af1615d3ea1cfc11f5ea4b38ebc67b5d06df16d8d9c",
+  "baseflow_input_sha256": "21940989d71e3edf6df82b4999d6f28dd641b2a6797e420b90feaedac9ad2f3b",
+  "baseflow_result_sha256": "85f63e4f88a52decba50c789dba8d5b123cdd09e8417008e95cfd8ebb560923d",
+  "initialized_flood_input_sha256": "2a5322db1171b769800186f1c353bfe7ecf61ba98f64eb55cda669db21f4cc0c",
+  "initialized_flood_result_sha256": "6c06cc8acad99447b5a6fca26061a144fbd51afe64b8760393e26587e05c6050",
+  "wet_cells_at_restart": 970,
+  "baseflow_duration_hours": 24,
+  "baseflow_cfs": 1000,
+  "final_hour_relative_volume_drift": 6.216300363348637e-08,
+  "changes": [
+    "Baseflow copy holds original boundary time series at their first values.",
+    "Flood copy uses final native baseflow cell depths and signed face velocities as initial conditions.",
+    "Flood boundary conditions, geometry, roughness and terrain match original USACE inputs."
+  ]
+}

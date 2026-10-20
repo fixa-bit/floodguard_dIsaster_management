@@ -1,0 +1,44 @@
+{
+  "solver_result": "models\\river_channel_hydraulics\\white-river-initialized.h5",
+  "solver_result_sha256": "6c06cc8acad99447b5a6fca26061a144fbd51afe64b8760393e26587e05c6050",
+  "source_record": "models/hec_ras_2d/muncie-inputs.json",
+  "prepared_model_sha256": "49ef1afd62c82ea981873af1615d3ea1cfc11f5ea4b38ebc67b5d06df16d8d9c",
+  "files": {
+    "frames.bin.gz": "b17223a45a70d49f6e4f391175854047c37d5f7917d5b9fa826d8f606e849851",
+    "results.json": "2f70cf462ad231743c23d65f20bc063947c8c15127f7b6b892a9ffb30a05ec75",
+    "terrain.png": "9f14247aa0b29dd08102e10dba466c87b89889e009098fd2fc7fa3ba7eec21b3"
+  },
+  "native_depth_maps": {
+    "depth-00.tif": "a53210ed00dca6d0158d2a4efad96672c92c304ecb9904038074847ae06b6c42",
+    "depth-01.tif": "f7bdc89c5a3597d585b496021af836c76cdac077bd4cec767704853decafaf40",
+    "depth-02.tif": "3a37581c6aad6afd10d4e47b02ff371c2e40a105157cb11cccad854fd5c3ee7d",
+    "depth-03.tif": "ba31846afc411561f9a38165b0198627ed631be701b8ef2226d47824e31893ef",
+    "depth-04.tif": "ea86e0c522c2b165257742e805502dc5fd785616f05dcfdacb3cb4bbde21d7ad",
+    "depth-05.tif": "edadf585505c9592199def74c8a8a73fa5f8df84d053c5b79c31e09a4554b435",
+    "depth-06.tif": "8364ecbca2e541df09e467faaff4dd0cde41296bdbe27c97bd3184eb32030f0a",
+    "depth-07.tif": "bdaba7b0d23a1b294e1adacd07e6fd7d3d81970e3380946fcdc1012b402c5a45",
+    "depth-08.tif": "1d452e26c4bc822a29477068fedfb38f00166e8454c1bde9adc919ba67b6ffd5",
+    "depth-09.tif": "fe76ffb208488b33da391ea777815eafd15b122b45ac4255d5ee9c7acd20b0b8",
+    "depth-10.tif": "136d7e80dd3d447b1b33d648257aca3fe64b52f6ab6bdedb8062b33b990e5ca5",
+    "depth-11.tif": "1786ff2b3873125f5d2212e7aeb7a380abda7c0941a7b69a680d9f1d3eb9e3ec",
+    "depth-12.tif": "c7f96d562b83a268d65642405bea2076bd462af1eb3c96437cfd703e12ce6537",
+    "depth-13.tif": "a659875c683987c4a3be37a87ce5e00fd38adebc4a20d7a4f4773cb48a629238",
+    "depth-14.tif": "eeafff9f2be25f0c5fc9a57c281b03c5de4468c5d6554720ba58bdc3c48006c9",
+    "depth-15.tif": "2fdb0a453eed1b50a66ae652ef8ee6d54bf43d45809af02f942f6d5fe6db8296",
+    "depth-16.tif": "e0782ee9a19a3cd3ea38e5c1a6327e6984e78aeeb93576282ac3abee47584b14",
+    "depth-17.tif": "dc46d6c41997149c5eecc7e9f11dbbed289c288377e4e6706efcd7cfa19666b3",
+    "depth-18.tif": "bc9f1efbef9edfc40b68016797d8b1ed938503912bc3a5980f00d46f4d324301",
+    "depth-19.tif": "8dcf963200e85836e5677aa5caae605485db891146f4eb5a276daecf2f36962e",
+    "depth-20.tif": "8e8afdbf8fe97d67d2477df08f2ab0aa96b7fb9429c6e837dcd5690ca0cf4de1",
+    "depth-21.tif": "5d138fa4b08c06367e77fc47918a738f8f2c1d4ed74e9dd680fd0c2bd0011e5d",
+    "depth-22.tif": "0e7a5478ae12426fa2f3e50f815390ece1bf716d9cfea32448351442aedf63ed",
+    "depth-23.tif": "36db33227852d1e2b35ff8c182324a2abf645a31cdecaf01536dd0a52963b49f",
+    "depth-24.tif": "b989b11d2fd6a4471219e0fe89390667158fe1331f11da2feb534f5050278f83"
+  },
+  "checks": {
+    "solver_completed": true,
+    "nonnegative_depth_passed": true,
+    "source_verified": true,
+    "initial_wet_cells": 970
+  }
+}

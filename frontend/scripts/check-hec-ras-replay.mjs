@@ -1,0 +1,67 @@
+import assert from "node:assert/strict";
+import { mkdir } from "node:fs/promises";
+import { chromium } from "playwright";
+
+const url = process.env.FRONTEND_URL ?? "http://127.0.0.1:3000/";
+const browser = await chromium.launch({ executablePath: process.env.EDGE_PATH ?? "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe", headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1480, height: 1050 } });
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.route("**/api/v1/**", route => new URL(route.request().url()).pathname.endsWith("/simulation/monitoring/stations")
+    ? route.fulfill({ json: [{ code: "TAUNSA", name: "Taunsa", river: "Indus", thresholds: [] }] })
+    : route.fulfill({ status: 503, json: { error: { code: "TEST", message: "Unrelated operational data excluded" } } }));
+  await page.goto(url, { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar nav").getByRole("button", { name: "Simulation", exact: true }).click();
+  await page.getByRole("tab", { name: "Storm replay", exact: true }).click();
+  await page.getByRole("button", { name: "HEC-RAS 2D", exact: false }).click();
+  const root = page.locator(".hec-replay");
+  await root.getByRole("slider", { name: "HEC-RAS scenario time" }).waitFor();
+  await root.locator(".maplibregl-canvas").waitFor();
+  assert.equal(await root.getAttribute("data-scenario"), "mainstem");
+  assert.equal(await root.getAttribute("data-frame"), "4");
+  assert.match(await root.innerText(), /River and tributary flood simulation/);
+  assert.match(await root.innerText(), /not a Pakistan flood forecast/);
+  const metadata = await page.request.get(`${url}hec-ras-2d/escondida-results.json`);
+  assert.equal(metadata.status(), 200);
+  const data = await metadata.json();
+  assert.equal(data.status, "computed");
+  assert.equal(data.cell_count, 906);
+  assert.equal(data.terrain_resolution_ft, 5);
+  assert.deepEqual(data.scenarios.map(scenario => scenario.id), ["mainstem", "tributary", "tributary_rain"]);
+  assert(data.scenarios.every(scenario => scenario.frames.length === 25 && scenario.frames.at(-1).hour === 48 && scenario.result_sha256));
+  const lastAreas = data.scenarios.map(scenario => scenario.frames.at(-1).wet_area_km2);
+  assert(lastAreas[0] < lastAreas[1] && lastAreas[1] < lastAreas[2], "Solved branch and rain cases should change inundation");
+  assert.equal((await page.request.get(`${url}hec-ras-2d/${data.scenarios[2].frames.at(-1).image}`)).status(), 200);
+  await root.getByRole("slider", { name: "HEC-RAS flow and rain scenario" }).fill("2");
+  assert.equal(await root.getAttribute("data-scenario"), "tributary_rain");
+  assert.match(await root.innerText(), /rain 0.02 in\/hr/);
+  await root.getByRole("slider", { name: "HEC-RAS scenario time" }).fill("14");
+  assert.equal(await root.getAttribute("data-frame"), "14");
+  await root.getByRole("button", { name: "Play HEC-RAS replay" }).click();
+  await page.waitForFunction(() => Number(document.querySelector(".hec-replay")?.dataset.frame) > 14);
+  await root.getByRole("button", { name: "Pause HEC-RAS replay" }).click();
+  const paused = await root.getAttribute("data-frame");
+  await page.waitForTimeout(850);
+  assert.equal(await root.getAttribute("data-frame"), paused);
+  await root.getByRole("button", { name: "Reset HEC-RAS replay" }).click();
+  assert.equal(await root.getAttribute("data-frame"), "0");
+  await root.getByRole("button", { name: "View details" }).click();
+  assert.match(await root.locator(".hec-details").innerText(), /5 ft terrain raster/);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.waitForFunction(() => document.querySelector('.hec-play-buttons button')?.disabled);
+  await root.getByRole("slider", { name: "HEC-RAS scenario time" }).fill("24");
+  assert.equal(await root.getAttribute("data-frame"), "24");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await root.scrollIntoViewIfNeeded();
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 2), "No mobile overflow");
+  await mkdir(new URL("../screenshots/", import.meta.url), { recursive: true });
+  await page.screenshot({ path: new URL("../screenshots/hec-ras-2d-mobile.png", import.meta.url).pathname.replace(/^\/(\w:)/, "$1"), fullPage: true });
+  await page.setViewportSize({ width: 1480, height: 1050 });
+  await root.getByRole("button", { name: "Hide details" }).click();
+  await root.getByRole("slider", { name: "HEC-RAS scenario time" }).fill("8");
+  await page.waitForTimeout(1200);
+  await root.screenshot({ path: new URL("../screenshots/hec-ras-2d-desktop.png", import.meta.url).pathname.replace(/^\/(\w:)/, "$1") });
+  assert.deepEqual(errors, []);
+  console.log("HEC-RAS 2D replay: 3 verified native cases, 25 frames each, distinct branch/rain effects, play/pause/reset, details, reduced motion and mobile layout passed.");
+} finally { await browser.close(); }

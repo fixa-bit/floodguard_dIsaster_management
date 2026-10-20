@@ -1,0 +1,24 @@
+{
+  "source": "USACE HEC-RAS 2025 sample: Muncie 2025",
+  "source_manifest_url": "https://s3.hecdev.net/ras-public-examples/Muncie%202025-2024-Sep-30%2010-37-23.json",
+  "sample_command": "ras sample pull 'Muncie 2025' tools/hec_ras/samples/muncie",
+  "source_files_sha256": {
+    "Muncie 2025.ras": "6936f6eb140e352e521645bba3c83af186c909eb478f2c888545bdbeb61c9a83",
+    "Muncie 2025.thumbnail.png": "28d57645868d21565c8cb7561ee4b183779bd1a15cece24b6c04adf39ba7d206",
+    "Muncie 2025.vis": "8c42f6002cf19e6804fd0b97fc24cf26e38ee0e33e2b9696c69139c16f413221",
+    "Boundary Conditions/Base BC.h5": "a73e46875d382bc4866992c81d7dbeefddc26e6b43f1409030c4731e8d469ee9",
+    "Geometries/Base Geometry.h5": "d45f7454389553b52e75717a68f714e0e4e90ef8296d83a8bcf755e9b58cd80d",
+    "Plans/Base Plan.h5": "48257f9fae95ee8c6f2a8cdbc04b73b085009d28bfff97bf63859adeec838a39",
+    "Results/Base Plan.h5": "6ded572fbc2e94f59d0a0dfdacbd72b9721a9951999c9e29258e6f16d499fb94",
+    "Surface Layers/N Values.h5": "b346914895137f2aeb4261d52c446d09dd77e58bc82ecdc21a1aae384e698874",
+    "Surface Layers/NLCD.h5": "1f9ef1814d9ef18401de15d0c79a3887d8842a2846db96ce1177f5b57b32f3ce",
+    "Surface Layers/nlcd_clipped.tif": "d1a328f65696fee6dbd2a3243d62d1c4736ad9db23b96d924b0b1cdcaaeb8a7c",
+    "Terrains/Terrain.h5": "fcb75c9963c4f7f37da0044f70549df06c164e43958e5d570a7d0c3bdbadc1f8",
+    "Terrains/Terrain.TerrainWithChannel.ChannelOnly.tif": "e5ebcb85aa8a51ed71e2d29a3d2099143bccc40dafb9b899b55f236522fc1464",
+    "Terrains/Terrain.TerrainWithChannel.muncie_clip.tif": "88b037f25ea08832e8e73489008d5d77e30d2fb276f147de12ec81e40bbfbf77"
+  },
+  "solver_override": "CPU implicit diffusion-wave, 2 cores; native project copied without changing its hydraulic inputs",
+  "prepared_geometry_sha256": "d09beb39e9ac80815abf81e359c5baf6eefd575524902f948491e6f08056a4c5",
+  "ready_to_run_sha256": "49ef1afd62c82ea981873af1615d3ea1cfc11f5ea4b38ebc67b5d06df16d8d9c",
+  "computed_result_sha256": "bcd770b82a78e8738eec9c893f74ccddc67690db49f80b7d3e41ccc6acb5ab1e"
+}

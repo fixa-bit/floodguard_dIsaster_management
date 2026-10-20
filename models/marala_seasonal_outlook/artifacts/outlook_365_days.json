@@ -1,0 +1,1931 @@
+{
+  "origin": "2026-10-15",
+  "maximum_horizon_days": 365,
+  "target_kind": "modeled_reach_daily_mean_NOT_instantaneous_gauge_inflow",
+  "research_only": true,
+  "model": {
+    "id": "seasonal_climatology",
+    "family": "seasonal_climatology"
+  },
+  "daily": [
+    {
+      "date": "2026-10-16",
+      "lead_days": 1,
+      "predicted_daily_mean_cumecs": 369.76299878552766
+    },
+    {
+      "date": "2026-10-17",
+      "lead_days": 2,
+      "predicted_daily_mean_cumecs": 361.3807151938341
+    },
+    {
+      "date": "2026-10-18",
+      "lead_days": 3,
+      "predicted_daily_mean_cumecs": 353.361947860061
+    },
+    {
+      "date": "2026-10-19",
+      "lead_days": 4,
+      "predicted_daily_mean_cumecs": 345.70485241877174
+    },
+    {
+      "date": "2026-10-20",
+      "lead_days": 5,
+      "predicted_daily_mean_cumecs": 338.4067641144727
+    },
+    {
+      "date": "2026-10-21",
+      "lead_days": 6,
+      "predicted_daily_mean_cumecs": 331.46421904243186
+    },
+    {
+      "date": "2026-10-22",
+      "lead_days": 7,
+      "predicted_daily_mean_cumecs": 324.87297726232987
+    },
+    {
+      "date": "2026-10-23",
+      "lead_days": 8,
+      "predicted_daily_mean_cumecs": 318.62804771061553
+    },
+    {
+      "date": "2026-10-24",
+      "lead_days": 9,
+      "predicted_daily_mean_cumecs": 312.72371483295666
+    },
+    {
+      "date": "2026-10-25",
+      "lead_days": 10,
+      "predicted_daily_mean_cumecs": 307.1535668539778
+    },
+    {
+      "date": "2026-10-26",
+      "lead_days": 11,
+      "predicted_daily_mean_cumecs": 301.9105255974391
+    },
+    {
+      "date": "2026-10-27",
+      "lead_days": 12,
+      "predicted_daily_mean_cumecs": 296.9868777662916
+    },
+    {
+      "date": "2026-10-28",
+      "lead_days": 13,
+      "predicted_daily_mean_cumecs": 292.3743075885116
+    },
+    {
+      "date": "2026-10-29",
+      "lead_days": 14,
+      "predicted_daily_mean_cumecs": 288.06393073140225
+    },
+    {
+      "date": "2026-10-30",
+      "lead_days": 15,
+      "predicted_daily_mean_cumecs": 284.04632938406104
+    },
+    {
+      "date": "2026-10-31",
+      "lead_days": 16,
+      "predicted_daily_mean_cumecs": 280.3115884050389
+    },
+    {
+      "date": "2026-11-01",
+      "lead_days": 17,
+      "predicted_daily_mean_cumecs": 276.8493324297925
+    },
+    {
+      "date": "2026-11-02",
+      "lead_days": 18,
+      "predicted_daily_mean_cumecs": 273.6487638304332
+    },
+    {
+      "date": "2026-11-03",
+      "lead_days": 19,
+      "predicted_daily_mean_cumecs": 270.6987014184379
+    },
+    {
+      "date": "2026-11-04",
+      "lead_days": 20,
+      "predicted_daily_mean_cumecs": 267.9876197794823
+    },
+    {
+      "date": "2026-11-05",
+      "lead_days": 21,
+      "predicted_daily_mean_cumecs": 265.50368912832823
+    },
+    {
+      "date": "2026-11-06",
+      "lead_days": 22,
+      "predicted_daily_mean_cumecs": 263.2348155707937
+    },
+    {
+      "date": "2026-11-07",
+      "lead_days": 23,
+      "predicted_daily_mean_cumecs": 261.1686816592227
+    },
+    {
+      "date": "2026-11-08",
+      "lead_days": 24,
+      "predicted_daily_mean_cumecs": 259.29278712759054
+    },
+    {
+      "date": "2026-11-09",
+      "lead_days": 25,
+      "predicted_daily_mean_cumecs": 257.59448969237985
+    },
+    {
+      "date": "2026-11-10",
+      "lead_days": 26,
+      "predicted_daily_mean_cumecs": 256.0610458057004
+    },
+    {
+      "date": "2026-11-11",
+      "lead_days": 27,
+      "predicted_daily_mean_cumecs": 254.67965124774673
+    },
+    {
+      "date": "2026-11-12",
+      "lead_days": 28,
+      "predicted_daily_mean_cumecs": 253.43748144662874
+    },
+    {
+      "date": "2026-11-13",
+      "lead_days": 29,
+      "predicted_daily_mean_cumecs": 252.321731414846
+    },
+    {
+      "date": "2026-11-14",
+      "lead_days": 30,
+      "predicted_daily_mean_cumecs": 251.3196551932122
+    },
+    {
+      "date": "2026-11-15",
+      "lead_days": 31,
+      "predicted_daily_mean_cumecs": 250.41860469486204
+    },
+    {
+      "date": "2026-11-16",
+      "lead_days": 32,
+      "predicted_daily_mean_cumecs": 249.6060678440948
+    },
+    {
+      "date": "2026-11-17",
+      "lead_days": 33,
+      "predicted_daily_mean_cumecs": 248.8697059072005
+    },
+    {
+      "date": "2026-11-18",
+      "lead_days": 34,
+      "predicted_daily_mean_cumecs": 248.19738991508927
+    },
+    {
+      "date": "2026-11-19",
+      "lead_days": 35,
+      "predicted_daily_mean_cumecs": 247.57723608048292
+    },
+    {
+      "date": "2026-11-20",
+      "lead_days": 36,
+      "predicted_daily_mean_cumecs": 246.99764011562314
+    },
+    {
+      "date": "2026-11-21",
+      "lead_days": 37,
+      "predicted_daily_mean_cumecs": 246.44731035990037
+    },
+    {
+      "date": "2026-11-22",
+      "lead_days": 38,
+      "predicted_daily_mean_cumecs": 245.91529963048532
+    },
+    {
+      "date": "2026-11-23",
+      "lead_days": 39,
+      "predicted_daily_mean_cumecs": 245.39103571296943
+    },
+    {
+      "date": "2026-11-24",
+      "lead_days": 40,
+      "predicted_daily_mean_cumecs": 244.86435041314274
+    },
+    {
+      "date": "2026-11-25",
+      "lead_days": 41,
+      "predicted_daily_mean_cumecs": 244.3255070953819
+    },
+    {
+      "date": "2026-11-26",
+      "lead_days": 42,
+      "predicted_daily_mean_cumecs": 243.76522663765078
+    },
+    {
+      "date": "2026-11-27",
+      "lead_days": 43,
+      "predicted_daily_mean_cumecs": 243.1747117378303
+    },
+    {
+      "date": "2026-11-28",
+      "lead_days": 44,
+      "predicted_daily_mean_cumecs": 242.54566951097718
+    },
+    {
+      "date": "2026-11-29",
+      "lead_days": 45,
+      "predicted_daily_mean_cumecs": 241.87033232214435
+    },
+    {
+      "date": "2026-11-30",
+      "lead_days": 46,
+      "predicted_daily_mean_cumecs": 241.14147680457836
+    },
+    {
+      "date": "2026-12-01",
+      "lead_days": 47,
+      "predicted_daily_mean_cumecs": 240.35244101840783
+    },
+    {
+      "date": "2026-12-02",
+      "lead_days": 48,
+      "predicted_daily_mean_cumecs": 239.49713971035476
+    },
+    {
+      "date": "2026-12-03",
+      "lead_days": 49,
+      "predicted_daily_mean_cumecs": 238.5700776405119
+    },
+    {
+      "date": "2026-12-04",
+      "lead_days": 50,
+      "predicted_daily_mean_cumecs": 237.56636094782294
+    },
+    {
+      "date": "2026-12-05",
+      "lead_days": 51,
+      "predicted_daily_mean_cumecs": 236.48170653156006
+    },
+    {
+      "date": "2026-12-06",
+      "lead_days": 52,
+      "predicted_daily_mean_cumecs": 235.31244943180687
+    },
+    {
+      "date": "2026-12-07",
+      "lead_days": 53,
+      "predicted_daily_mean_cumecs": 234.05554819769384
+    },
+    {
+      "date": "2026-12-08",
+      "lead_days": 54,
+      "predicted_daily_mean_cumecs": 232.7085882379033
+    },
+    {
+      "date": "2026-12-09",
+      "lead_days": 55,
+      "predicted_daily_mean_cumecs": 231.26978315372043
+    },
+    {
+      "date": "2026-12-10",
+      "lead_days": 56,
+      "predicted_daily_mean_cumecs": 229.7379740606671
+    },
+    {
+      "date": "2026-12-11",
+      "lead_days": 57,
+      "predicted_daily_mean_cumecs": 228.11262691047736
+    },
+    {
+      "date": "2026-12-12",
+      "lead_days": 58,
+      "predicted_daily_mean_cumecs": 226.39382783085262
+    },
+    {
+      "date": "2026-12-13",
+      "lead_days": 59,
+      "predicted_daily_mean_cumecs": 224.58227650606227
+    },
+    {
+      "date": "2026-12-14",
+      "lead_days": 60,
+      "predicted_daily_mean_cumecs": 222.6792776269936
+    },
+    {
+      "date": "2026-12-15",
+      "lead_days": 61,
+      "predicted_daily_mean_cumecs": 220.68673044471902
+    },
+    {
+      "date": "2026-12-16",
+      "lead_days": 62,
+      "predicted_daily_mean_cumecs": 218.607116466992
+    },
+    {
+      "date": "2026-12-17",
+      "lead_days": 63,
+      "predicted_daily_mean_cumecs": 216.4434853423208
+    },
+    {
+      "date": "2026-12-18",
+      "lead_days": 64,
+      "predicted_daily_mean_cumecs": 214.19943898136032
+    },
+    {
+      "date": "2026-12-19",
+      "lead_days": 65,
+      "predicted_daily_mean_cumecs": 211.87911397031655
+    },
+    {
+      "date": "2026-12-20",
+      "lead_days": 66,
+      "predicted_daily_mean_cumecs": 209.48716233584017
+    },
+    {
+      "date": "2026-12-21",
+      "lead_days": 67,
+      "predicted_daily_mean_cumecs": 207.02873072550875
+    },
+    {
+      "date": "2026-12-22",
+      "lead_days": 68,
+      "predicted_daily_mean_cumecs": 204.50943807240583
+    },
+    {
+      "date": "2026-12-23",
+      "lead_days": 69,
+      "predicted_daily_mean_cumecs": 201.93535181655727
+    },
+    {
+      "date": "2026-12-24",
+      "lead_days": 70,
+      "predicted_daily_mean_cumecs": 199.31296275997425
+    },
+    {
+      "date": "2026-12-25",
+      "lead_days": 71,
+      "predicted_daily_mean_cumecs": 196.64915863587282
+    },
+    {
+      "date": "2026-12-26",
+      "lead_days": 72,
+      "predicted_daily_mean_cumecs": 193.9511964761864
+    },
+    {
+      "date": "2026-12-27",
+      "lead_days": 73,
+      "predicted_daily_mean_cumecs": 191.22667386481504
+    },
+    {
+      "date": "2026-12-28",
+      "lead_days": 74,
+      "predicted_daily_mean_cumecs": 188.48349916713403
+    },
+    {
+      "date": "2026-12-29",
+      "lead_days": 75,
+      "predicted_daily_mean_cumecs": 185.72986082908483
+    },
+    {
+      "date": "2026-12-30",
+      "lead_days": 76,
+      "predicted_daily_mean_cumecs": 182.97419584173304
+    },
+    {
+      "date": "2026-12-31",
+      "lead_days": 77,
+      "predicted_daily_mean_cumecs": 180.22515746943805
+    },
+    {
+      "date": "2027-01-01",
+      "lead_days": 78,
+      "predicted_daily_mean_cumecs": 177.49158234178827
+    },
+    {
+      "date": "2027-01-02",
+      "lead_days": 79,
+      "predicted_daily_mean_cumecs": 174.78245701115532
+    },
+    {
+      "date": "2027-01-03",
+      "lead_days": 80,
+      "predicted_daily_mean_cumecs": 172.1068840791462
+    },
+    {
+      "date": "2027-01-04",
+      "lead_days": 81,
+      "predicted_daily_mean_cumecs": 169.47404799636416
+    },
+    {
+      "date": "2027-01-05",
+      "lead_days": 82,
+      "predicted_daily_mean_cumecs": 166.89318064071756
+    },
+    {
+      "date": "2027-01-06",
+      "lead_days": 83,
+      "predicted_daily_mean_cumecs": 164.3735267800522
+    },
+    {
+      "date": "2027-01-07",
+      "lead_days": 84,
+      "predicted_daily_mean_cumecs": 161.92430952512137
+    },
+    {
+      "date": "2027-01-08",
+      "lead_days": 85,
+      "predicted_daily_mean_cumecs": 159.55469587883815
+    },
+    {
+      "date": "2027-01-09",
+      "lead_days": 86,
+      "predicted_daily_mean_cumecs": 157.27376248739756
+    },
+    {
+      "date": "2027-01-10",
+      "lead_days": 87,
+      "predicted_daily_mean_cumecs": 155.0904616981886
+    },
+    {
+      "date": "2027-01-11",
+      "lead_days": 88,
+      "predicted_daily_mean_cumecs": 153.01358802846087
+    },
+    {
+      "date": "2027-01-12",
+      "lead_days": 89,
+      "predicted_daily_mean_cumecs": 151.0517451474584
+    },
+    {
+      "date": "2027-01-13",
+      "lead_days": 90,
+      "predicted_daily_mean_cumecs": 149.21331347318846
+    },
+    {
+      "date": "2027-01-14",
+      "lead_days": 91,
+      "predicted_daily_mean_cumecs": 147.5064184831684
+    },
+    {
+      "date": "2027-01-15",
+      "lead_days": 92,
+      "predicted_daily_mean_cumecs": 145.93889983638172
+    },
+    {
+      "date": "2027-01-16",
+      "lead_days": 93,
+      "predicted_daily_mean_cumecs": 144.5182814012927
+    },
+    {
+      "date": "2027-01-17",
+      "lead_days": 94,
+      "predicted_daily_mean_cumecs": 143.25174228211603
+    },
+    {
+      "date": "2027-01-18",
+      "lead_days": 95,
+      "predicted_daily_mean_cumecs": 142.1460889326251
+    },
+    {
+      "date": "2027-01-19",
+      "lead_days": 96,
+      "predicted_daily_mean_cumecs": 141.20772844361815
+    },
+    {
+      "date": "2027-01-20",
+      "lead_days": 97,
+      "predicted_daily_mean_cumecs": 140.44264308674963
+    },
+    {
+      "date": "2027-01-21",
+      "lead_days": 98,
+      "predicted_daily_mean_cumecs": 139.8563661937933
+    },
+    {
+      "date": "2027-01-22",
+      "lead_days": 99,
+      "predicted_daily_mean_cumecs": 139.45395944653188
+    },
+    {
+      "date": "2027-01-23",
+      "lead_days": 100,
+      "predicted_daily_mean_cumecs": 139.23999164838725
+    },
+    {
+      "date": "2027-01-24",
+      "lead_days": 101,
+      "predicted_daily_mean_cumecs": 139.2185190446217
+    },
+    {
+      "date": "2027-01-25",
+      "lead_days": 102,
+      "predicted_daily_mean_cumecs": 139.39306725346256
+    },
+    {
+      "date": "2027-01-26",
+      "lead_days": 103,
+      "predicted_daily_mean_cumecs": 139.7666148658508
+    },
+    {
+      "date": "2027-01-27",
+      "lead_days": 104,
+      "predicted_daily_mean_cumecs": 140.34157876669573
+    },
+    {
+      "date": "2027-01-28",
+      "lead_days": 105,
+      "predicted_daily_mean_cumecs": 141.1198012255437
+    },
+    {
+      "date": "2027-01-29",
+      "lead_days": 106,
+      "predicted_daily_mean_cumecs": 142.10253879946384
+    },
+    {
+      "date": "2027-01-30",
+      "lead_days": 107,
+      "predicted_daily_mean_cumecs": 143.2904530857155
+    },
+    {
+      "date": "2027-01-31",
+      "lead_days": 108,
+      "predicted_daily_mean_cumecs": 144.68360335642123
+    },
+    {
+      "date": "2027-02-01",
+      "lead_days": 109,
+      "predicted_daily_mean_cumecs": 146.28144110203021
+    },
+    {
+      "date": "2027-02-02",
+      "lead_days": 110,
+      "predicted_daily_mean_cumecs": 148.08280650483692
+    },
+    {
+      "date": "2027-02-03",
+      "lead_days": 111,
+      "predicted_daily_mean_cumecs": 150.08592685823788
+    },
+    {
+      "date": "2027-02-04",
+      "lead_days": 112,
+      "predicted_daily_mean_cumecs": 152.28841694177615
+    },
+    {
+      "date": "2027-02-05",
+      "lead_days": 113,
+      "predicted_daily_mean_cumecs": 154.68728135635553
+    },
+    {
+      "date": "2027-02-06",
+      "lead_days": 114,
+      "predicted_daily_mean_cumecs": 157.27891881832295
+    },
+    {
+      "date": "2027-02-07",
+      "lead_days": 115,
+      "predicted_daily_mean_cumecs": 160.0591284054306
+    },
+    {
+      "date": "2027-02-08",
+      "lead_days": 116,
+      "predicted_daily_mean_cumecs": 163.02311774201263
+    },
+    {
+      "date": "2027-02-09",
+      "lead_days": 117,
+      "predicted_daily_mean_cumecs": 166.16551310507046
+    },
+    {
+      "date": "2027-02-10",
+      "lead_days": 118,
+      "predicted_daily_mean_cumecs": 169.48037142735893
+    },
+    {
+      "date": "2027-02-11",
+      "lead_days": 119,
+      "predicted_daily_mean_cumecs": 172.9611941680222
+    },
+    {
+      "date": "2027-02-12",
+      "lead_days": 120,
+      "predicted_daily_mean_cumecs": 176.60094301587077
+    },
+    {
+      "date": "2027-02-13",
+      "lead_days": 121,
+      "predicted_daily_mean_cumecs": 180.39205738501096
+    },
+    {
+      "date": "2027-02-14",
+      "lead_days": 122,
+      "predicted_daily_mean_cumecs": 184.3264736572731
+    },
+    {
+      "date": "2027-02-15",
+      "lead_days": 123,
+      "predicted_daily_mean_cumecs": 188.3956461207362
+    },
+    {
+      "date": "2027-02-16",
+      "lead_days": 124,
+      "predicted_daily_mean_cumecs": 192.59056954863433
+    },
+    {
+      "date": "2027-02-17",
+      "lead_days": 125,
+      "predicted_daily_mean_cumecs": 196.90180335806525
+    },
+    {
+      "date": "2027-02-18",
+      "lead_days": 126,
+      "predicted_daily_mean_cumecs": 201.3194972832161
+    },
+    {
+      "date": "2027-02-19",
+      "lead_days": 127,
+      "predicted_daily_mean_cumecs": 205.83341849330134
+    },
+    {
+      "date": "2027-02-20",
+      "lead_days": 128,
+      "predicted_daily_mean_cumecs": 210.43298008106024
+    },
+    {
+      "date": "2027-02-21",
+      "lead_days": 129,
+      "predicted_daily_mean_cumecs": 215.10727084352794
+    },
+    {
+      "date": "2027-02-22",
+      "lead_days": 130,
+      "predicted_daily_mean_cumecs": 219.84508627286607
+    },
+    {
+      "date": "2027-02-23",
+      "lead_days": 131,
+      "predicted_daily_mean_cumecs": 224.6349606713313
+    },
+    {
+      "date": "2027-02-24",
+      "lead_days": 132,
+      "predicted_daily_mean_cumecs": 229.46520030099327
+    },
+    {
+      "date": "2027-02-25",
+      "lead_days": 133,
+      "predicted_daily_mean_cumecs": 234.3239174755834
+    },
+    {
+      "date": "2027-02-26",
+      "lead_days": 134,
+      "predicted_daily_mean_cumecs": 239.19906549887787
+    },
+    {
+      "date": "2027-02-27",
+      "lead_days": 135,
+      "predicted_daily_mean_cumecs": 244.07847435130967
+    },
+    {
+      "date": "2027-02-28",
+      "lead_days": 136,
+      "predicted_daily_mean_cumecs": 248.94988702405118
+    },
+    {
+      "date": "2027-03-01",
+      "lead_days": 137,
+      "predicted_daily_mean_cumecs": 253.80099639764268
+    },
+    {
+      "date": "2027-03-02",
+      "lead_days": 138,
+      "predicted_daily_mean_cumecs": 258.61948256035265
+    },
+    {
+      "date": "2027-03-03",
+      "lead_days": 139,
+      "predicted_daily_mean_cumecs": 263.3930504598541
+    },
+    {
+      "date": "2027-03-04",
+      "lead_days": 140,
+      "predicted_daily_mean_cumecs": 268.1094677804932
+    },
+    {
+      "date": "2027-03-05",
+      "lead_days": 141,
+      "predicted_daily_mean_cumecs": 272.75660293741385
+    },
+    {
+      "date": "2027-03-06",
+      "lead_days": 142,
+      "predicted_daily_mean_cumecs": 277.32246307809146
+    },
+    {
+      "date": "2027-03-07",
+      "lead_days": 143,
+      "predicted_daily_mean_cumecs": 281.7952319814149
+    },
+    {
+      "date": "2027-03-08",
+      "lead_days": 144,
+      "predicted_daily_mean_cumecs": 286.16330774435085
+    },
+    {
+      "date": "2027-03-09",
+      "lead_days": 145,
+      "predicted_daily_mean_cumecs": 290.4153401464249
+    },
+    {
+      "date": "2027-03-10",
+      "lead_days": 146,
+      "predicted_daily_mean_cumecs": 294.5402675827488
+    },
+    {
+      "date": "2027-03-11",
+      "lead_days": 147,
+      "predicted_daily_mean_cumecs": 298.5273534571347
+    },
+    {
+      "date": "2027-03-12",
+      "lead_days": 148,
+      "predicted_daily_mean_cumecs": 302.3662219279407
+    },
+    {
+      "date": "2027-03-13",
+      "lead_days": 149,
+      "predicted_daily_mean_cumecs": 306.0468929006978
+    },
+    {
+      "date": "2027-03-14",
+      "lead_days": 150,
+      "predicted_daily_mean_cumecs": 309.5598161632724
+    },
+    {
+      "date": "2027-03-15",
+      "lead_days": 151,
+      "predicted_daily_mean_cumecs": 312.8959045613065
+    },
+    {
+      "date": "2027-03-16",
+      "lead_days": 152,
+      "predicted_daily_mean_cumecs": 316.0465661139655
+    },
+    {
+      "date": "2027-03-17",
+      "lead_days": 153,
+      "predicted_daily_mean_cumecs": 319.0037349725758
+    },
+    {
+      "date": "2027-03-18",
+      "lead_days": 154,
+      "predicted_daily_mean_cumecs": 321.75990112757466
+    },
+    {
+      "date": "2027-03-19",
+      "lead_days": 155,
+      "predicted_daily_mean_cumecs": 324.3081387722977
+    },
+    {
+      "date": "2027-03-20",
+      "lead_days": 156,
+      "predicted_daily_mean_cumecs": 326.64213323548574
+    },
+    {
+      "date": "2027-03-21",
+      "lead_days": 157,
+      "predicted_daily_mean_cumecs": 328.7562063980116
+    },
+    {
+      "date": "2027-03-22",
+      "lead_days": 158,
+      "predicted_daily_mean_cumecs": 330.64534051317537
+    },
+    {
+      "date": "2027-03-23",
+      "lead_days": 159,
+      "predicted_daily_mean_cumecs": 332.3052003540026
+    },
+    {
+      "date": "2027-03-24",
+      "lead_days": 160,
+      "predicted_daily_mean_cumecs": 333.73215361528787
+    },
+    {
+      "date": "2027-03-25",
+      "lead_days": 161,
+      "predicted_daily_mean_cumecs": 334.9232895026323
+    },
+    {
+      "date": "2027-03-26",
+      "lead_days": 162,
+      "predicted_daily_mean_cumecs": 335.8764354454445
+    },
+    {
+      "date": "2027-03-27",
+      "lead_days": 163,
+      "predicted_daily_mean_cumecs": 336.59017187576353
+    },
+    {
+      "date": "2027-03-28",
+      "lead_days": 164,
+      "predicted_daily_mean_cumecs": 337.0638450198321
+    },
+    {
+      "date": "2027-03-29",
+      "lead_days": 165,
+      "predicted_daily_mean_cumecs": 337.2975776545775
+    },
+    {
+      "date": "2027-03-30",
+      "lead_days": 166,
+      "predicted_daily_mean_cumecs": 337.2922777865261
+    },
+    {
+      "date": "2027-03-31",
+      "lead_days": 167,
+      "predicted_daily_mean_cumecs": 337.04964521618155
+    },
+    {
+      "date": "2027-04-01",
+      "lead_days": 168,
+      "predicted_daily_mean_cumecs": 336.5721759565129
+    },
+    {
+      "date": "2027-04-02",
+      "lead_days": 169,
+      "predicted_daily_mean_cumecs": 335.86316447991874
+    },
+    {
+      "date": "2027-04-03",
+      "lead_days": 170,
+      "predicted_daily_mean_cumecs": 334.9267037738382
+    },
+    {
+      "date": "2027-04-04",
+      "lead_days": 171,
+      "predicted_daily_mean_cumecs": 333.76768319105423
+    },
+    {
+      "date": "2027-04-05",
+      "lead_days": 172,
+      "predicted_daily_mean_cumecs": 332.3917840866631
+    },
+    {
+      "date": "2027-04-06",
+      "lead_days": 173,
+      "predicted_daily_mean_cumecs": 330.80547323965413
+    },
+    {
+      "date": "2027-04-07",
+      "lead_days": 174,
+      "predicted_daily_mean_cumecs": 329.0159940630321
+    },
+    {
+      "date": "2027-04-08",
+      "lead_days": 175,
+      "predicted_daily_mean_cumecs": 327.0313556124148
+    },
+    {
+      "date": "2027-04-09",
+      "lead_days": 176,
+      "predicted_daily_mean_cumecs": 324.86031940902353
+    },
+    {
+      "date": "2027-04-10",
+      "lead_days": 177,
+      "predicted_daily_mean_cumecs": 322.51238409894944
+    },
+    {
+      "date": "2027-04-11",
+      "lead_days": 178,
+      "predicted_daily_mean_cumecs": 319.9977679764976
+    },
+    {
+      "date": "2027-04-12",
+      "lead_days": 179,
+      "predicted_daily_mean_cumecs": 317.3273894052753
+    },
+    {
+      "date": "2027-04-13",
+      "lead_days": 180,
+      "predicted_daily_mean_cumecs": 314.51284517648025
+    },
+    {
+      "date": "2027-04-14",
+      "lead_days": 181,
+      "predicted_daily_mean_cumecs": 311.5663868495454
+    },
+    {
+      "date": "2027-04-15",
+      "lead_days": 182,
+      "predicted_daily_mean_cumecs": 308.50089512589534
+    },
+    {
+      "date": "2027-04-16",
+      "lead_days": 183,
+      "predicted_daily_mean_cumecs": 305.3298523120439
+    },
+    {
+      "date": "2027-04-17",
+      "lead_days": 184,
+      "predicted_daily_mean_cumecs": 302.0673129336049
+    },
+    {
+      "date": "2027-04-18",
+      "lead_days": 185,
+      "predicted_daily_mean_cumecs": 298.72787256698587
+    },
+    {
+      "date": "2027-04-19",
+      "lead_days": 186,
+      "predicted_daily_mean_cumecs": 295.3266349605577
+    },
+    {
+      "date": "2027-04-20",
+      "lead_days": 187,
+      "predicted_daily_mean_cumecs": 291.87917752195375
+    },
+    {
+      "date": "2027-04-21",
+      "lead_days": 188,
+      "predicted_daily_mean_cumecs": 288.40151525280953
+    },
+    {
+      "date": "2027-04-22",
+      "lead_days": 189,
+      "predicted_daily_mean_cumecs": 284.9100632167196
+    },
+    {
+      "date": "2027-04-23",
+      "lead_days": 190,
+      "predicted_daily_mean_cumecs": 281.4215976304257
+    },
+    {
+      "date": "2027-04-24",
+      "lead_days": 191,
+      "predicted_daily_mean_cumecs": 277.95321567227944
+    },
+    {
+      "date": "2027-04-25",
+      "lead_days": 192,
+      "predicted_daily_mean_cumecs": 274.5222941057906
+    },
+    {
+      "date": "2027-04-26",
+      "lead_days": 193,
+      "predicted_daily_mean_cumecs": 271.14644681961374
+    },
+    {
+      "date": "2027-04-27",
+      "lead_days": 194,
+      "predicted_daily_mean_cumecs": 267.8434813885917
+    },
+    {
+      "date": "2027-04-28",
+      "lead_days": 195,
+      "predicted_daily_mean_cumecs": 264.63135476348486
+    },
+    {
+      "date": "2027-04-29",
+      "lead_days": 196,
+      "predicted_daily_mean_cumecs": 261.5281281997427
+    },
+    {
+      "date": "2027-04-30",
+      "lead_days": 197,
+      "predicted_daily_mean_cumecs": 258.5519215381161
+    },
+    {
+      "date": "2027-05-01",
+      "lead_days": 198,
+      "predicted_daily_mean_cumecs": 255.72086695207298
+    },
+    {
+      "date": "2027-05-02",
+      "lead_days": 199,
+      "predicted_daily_mean_cumecs": 253.05306227882676
+    },
+    {
+      "date": "2027-05-03",
+      "lead_days": 200,
+      "predicted_daily_mean_cumecs": 250.56652405234942
+    },
+    {
+      "date": "2027-05-04",
+      "lead_days": 201,
+      "predicted_daily_mean_cumecs": 248.27914035798537
+    },
+    {
+      "date": "2027-05-05",
+      "lead_days": 202,
+      "predicted_daily_mean_cumecs": 246.20862362922298
+    },
+    {
+      "date": "2027-05-06",
+      "lead_days": 203,
+      "predicted_daily_mean_cumecs": 244.3724635077963
+    },
+    {
+      "date": "2027-05-07",
+      "lead_days": 204,
+      "predicted_daily_mean_cumecs": 242.78787988860506
+    },
+    {
+      "date": "2027-05-08",
+      "lead_days": 205,
+      "predicted_daily_mean_cumecs": 241.4717762709212
+    },
+    {
+      "date": "2027-05-09",
+      "lead_days": 206,
+      "predicted_daily_mean_cumecs": 240.4406935370275
+    },
+    {
+      "date": "2027-05-10",
+      "lead_days": 207,
+      "predicted_daily_mean_cumecs": 239.71076427877975
+    },
+    {
+      "date": "2027-05-11",
+      "lead_days": 208,
+      "predicted_daily_mean_cumecs": 239.29766779162577
+    },
+    {
+      "date": "2027-05-12",
+      "lead_days": 209,
+      "predicted_daily_mean_cumecs": 239.21658585433238
+    },
+    {
+      "date": "2027-05-13",
+      "lead_days": 210,
+      "predicted_daily_mean_cumecs": 239.48215941107742
+    },
+    {
+      "date": "2027-05-14",
+      "lead_days": 211,
+      "predicted_daily_mean_cumecs": 240.10844627067158
+    },
+    {
+      "date": "2027-05-15",
+      "lead_days": 212,
+      "predicted_daily_mean_cumecs": 241.10887993546456
+    },
+    {
+      "date": "2027-05-16",
+      "lead_days": 213,
+      "predicted_daily_mean_cumecs": 242.49622966999104
+    },
+    {
+      "date": "2027-05-17",
+      "lead_days": 214,
+      "predicted_daily_mean_cumecs": 244.28256191661663
+    },
+    {
+      "date": "2027-05-18",
+      "lead_days": 215,
+      "predicted_daily_mean_cumecs": 246.47920316236576
+    },
+    {
+      "date": "2027-05-19",
+      "lead_days": 216,
+      "predicted_daily_mean_cumecs": 249.09670435775018
+    },
+    {
+      "date": "2027-05-20",
+      "lead_days": 217,
+      "predicted_daily_mean_cumecs": 252.1448069847924
+    },
+    {
+      "date": "2027-05-21",
+      "lead_days": 218,
+      "predicted_daily_mean_cumecs": 255.6324108675504
+    },
+    {
+      "date": "2027-05-22",
+      "lead_days": 219,
+      "predicted_daily_mean_cumecs": 259.567543814305
+    },
+    {
+      "date": "2027-05-23",
+      "lead_days": 220,
+      "predicted_daily_mean_cumecs": 263.95733317619585
+    },
+    {
+      "date": "2027-05-24",
+      "lead_days": 221,
+      "predicted_daily_mean_cumecs": 268.8079794024803
+    },
+    {
+      "date": "2027-05-25",
+      "lead_days": 222,
+      "predicted_daily_mean_cumecs": 274.1247316677604
+    },
+    {
+      "date": "2027-05-26",
+      "lead_days": 223,
+      "predicted_daily_mean_cumecs": 279.9118656414937
+    },
+    {
+      "date": "2027-05-27",
+      "lead_days": 224,
+      "predicted_daily_mean_cumecs": 286.17266346487395
+    },
+    {
+      "date": "2027-05-28",
+      "lead_days": 225,
+      "predicted_daily_mean_cumecs": 292.909395994768
+    },
+    {
+      "date": "2027-05-29",
+      "lead_days": 226,
+      "predicted_daily_mean_cumecs": 300.1233073688161
+    },
+    {
+      "date": "2027-05-30",
+      "lead_days": 227,
+      "predicted_daily_mean_cumecs": 307.8146019400949
+    },
+    {
+      "date": "2027-05-31",
+      "lead_days": 228,
+      "predicted_daily_mean_cumecs": 315.9824336238685
+    },
+    {
+      "date": "2027-06-01",
+      "lead_days": 229,
+      "predicted_daily_mean_cumecs": 324.62489769298827
+    },
+    {
+      "date": "2027-06-02",
+      "lead_days": 230,
+      "predicted_daily_mean_cumecs": 333.73902505240534
+    },
+    {
+      "date": "2027-06-03",
+      "lead_days": 231,
+      "predicted_daily_mean_cumecs": 343.32077901709334
+    },
+    {
+      "date": "2027-06-04",
+      "lead_days": 232,
+      "predicted_daily_mean_cumecs": 353.3650546114196
+    },
+    {
+      "date": "2027-06-05",
+      "lead_days": 233,
+      "predicted_daily_mean_cumecs": 363.86568040170636
+    },
+    {
+      "date": "2027-06-06",
+      "lead_days": 234,
+      "predicted_daily_mean_cumecs": 374.81542286736
+    },
+    {
+      "date": "2027-06-07",
+      "lead_days": 235,
+      "predicted_daily_mean_cumecs": 386.2059933095839
+    },
+    {
+      "date": "2027-06-08",
+      "lead_days": 236,
+      "predicted_daily_mean_cumecs": 398.0280572902969
+    },
+    {
+      "date": "2027-06-09",
+      "lead_days": 237,
+      "predicted_daily_mean_cumecs": 410.2712465875036
+    },
+    {
+      "date": "2027-06-10",
+      "lead_days": 238,
+      "predicted_daily_mean_cumecs": 422.92417364702106
+    },
+    {
+      "date": "2027-06-11",
+      "lead_days": 239,
+      "predicted_daily_mean_cumecs": 435.97444850413484
+    },
+    {
+      "date": "2027-06-12",
+      "lead_days": 240,
+      "predicted_daily_mean_cumecs": 449.4086981425209
+    },
+    {
+      "date": "2027-06-13",
+      "lead_days": 241,
+      "predicted_daily_mean_cumecs": 463.21258825158026
+    },
+    {
+      "date": "2027-06-14",
+      "lead_days": 242,
+      "predicted_daily_mean_cumecs": 477.3708473372392
+    },
+    {
+      "date": "2027-06-15",
+      "lead_days": 243,
+      "predicted_daily_mean_cumecs": 491.86729313528963
+    },
+    {
+      "date": "2027-06-16",
+      "lead_days": 244,
+      "predicted_daily_mean_cumecs": 506.68486127047095
+    },
+    {
+      "date": "2027-06-17",
+      "lead_days": 245,
+      "predicted_daily_mean_cumecs": 521.8056360987625
+    },
+    {
+      "date": "2027-06-18",
+      "lead_days": 246,
+      "predicted_daily_mean_cumecs": 537.2108836648009
+    },
+    {
+      "date": "2027-06-19",
+      "lead_days": 247,
+      "predicted_daily_mean_cumecs": 552.8810867008838
+    },
+    {
+      "date": "2027-06-20",
+      "lead_days": 248,
+      "predicted_daily_mean_cumecs": 568.7959815888288
+    },
+    {
+      "date": "2027-06-21",
+      "lead_days": 249,
+      "predicted_daily_mean_cumecs": 584.9345972008953
+    },
+    {
+      "date": "2027-06-22",
+      "lead_days": 250,
+      "predicted_daily_mean_cumecs": 601.2752955311512
+    },
+    {
+      "date": "2027-06-23",
+      "lead_days": 251,
+      "predicted_daily_mean_cumecs": 617.7958140240542
+    },
+    {
+      "date": "2027-06-24",
+      "lead_days": 252,
+      "predicted_daily_mean_cumecs": 634.4733095026352
+    },
+    {
+      "date": "2027-06-25",
+      "lead_days": 253,
+      "predicted_daily_mean_cumecs": 651.2844035945377
+    },
+    {
+      "date": "2027-06-26",
+      "lead_days": 254,
+      "predicted_daily_mean_cumecs": 668.2052295502743
+    },
+    {
+      "date": "2027-06-27",
+      "lead_days": 255,
+      "predicted_daily_mean_cumecs": 685.2114803444582
+    },
+    {
+      "date": "2027-06-28",
+      "lead_days": 256,
+      "predicted_daily_mean_cumecs": 702.2784579473926
+    },
+    {
+      "date": "2027-06-29",
+      "lead_days": 257,
+      "predicted_daily_mean_cumecs": 719.3811236513826
+    },
+    {
+      "date": "2027-06-30",
+      "lead_days": 258,
+      "predicted_daily_mean_cumecs": 736.4941493333084
+    },
+    {
+      "date": "2027-07-01",
+      "lead_days": 259,
+      "predicted_daily_mean_cumecs": 753.5919695325645
+    },
+    {
+      "date": "2027-07-02",
+      "lead_days": 260,
+      "predicted_daily_mean_cumecs": 770.6488342212822
+    },
+    {
+      "date": "2027-07-03",
+      "lead_days": 261,
+      "predicted_daily_mean_cumecs": 787.6388621418928
+    },
+    {
+      "date": "2027-07-04",
+      "lead_days": 262,
+      "predicted_daily_mean_cumecs": 804.5360945855448
+    },
+    {
+      "date": "2027-07-05",
+      "lead_days": 263,
+      "predicted_daily_mean_cumecs": 821.3145494836667
+    },
+    {
+      "date": "2027-07-06",
+      "lead_days": 264,
+      "predicted_daily_mean_cumecs": 837.9482756840564
+    },
+    {
+      "date": "2027-07-07",
+      "lead_days": 265,
+      "predicted_daily_mean_cumecs": 854.4114072823099
+    },
+    {
+      "date": "2027-07-08",
+      "lead_days": 266,
+      "predicted_daily_mean_cumecs": 870.6782178791354
+    },
+    {
+      "date": "2027-07-09",
+      "lead_days": 267,
+      "predicted_daily_mean_cumecs": 886.7231746342002
+    },
+    {
+      "date": "2027-07-10",
+      "lead_days": 268,
+      "predicted_daily_mean_cumecs": 902.5209919875279
+    },
+    {
+      "date": "2027-07-11",
+      "lead_days": 269,
+      "predicted_daily_mean_cumecs": 918.0466849202268
+    },
+    {
+      "date": "2027-07-12",
+      "lead_days": 270,
+      "predicted_daily_mean_cumecs": 933.2756216273629
+    },
+    {
+      "date": "2027-07-13",
+      "lead_days": 271,
+      "predicted_daily_mean_cumecs": 948.1835754771759
+    },
+    {
+      "date": "2027-07-14",
+      "lead_days": 272,
+      "predicted_daily_mean_cumecs": 962.7467761325319
+    },
+    {
+      "date": "2027-07-15",
+      "lead_days": 273,
+      "predicted_daily_mean_cumecs": 976.9419597125216
+    },
+    {
+      "date": "2027-07-16",
+      "lead_days": 274,
+      "predicted_daily_mean_cumecs": 990.7464178744169
+    },
+    {
+      "date": "2027-07-17",
+      "lead_days": 275,
+      "predicted_daily_mean_cumecs": 1004.1380456988372
+    },
+    {
+      "date": "2027-07-18",
+      "lead_days": 276,
+      "predicted_daily_mean_cumecs": 1017.095388263892
+    },
+    {
+      "date": "2027-07-19",
+      "lead_days": 277,
+      "predicted_daily_mean_cumecs": 1029.5976857972644
+    },
+    {
+      "date": "2027-07-20",
+      "lead_days": 278,
+      "predicted_daily_mean_cumecs": 1041.624917298707
+    },
+    {
+      "date": "2027-07-21",
+      "lead_days": 279,
+      "predicted_daily_mean_cumecs": 1053.1578425291646
+    },
+    {
+      "date": "2027-07-22",
+      "lead_days": 280,
+      "predicted_daily_mean_cumecs": 1064.1780422667741
+    },
+    {
+      "date": "2027-07-23",
+      "lead_days": 281,
+      "predicted_daily_mean_cumecs": 1074.6679567342642
+    },
+    {
+      "date": "2027-07-24",
+      "lead_days": 282,
+      "predicted_daily_mean_cumecs": 1084.6109221067893
+    },
+    {
+      "date": "2027-07-25",
+      "lead_days": 283,
+      "predicted_daily_mean_cumecs": 1093.991205013981
+    },
+    {
+      "date": "2027-07-26",
+      "lead_days": 284,
+      "predicted_daily_mean_cumecs": 1102.7940349549672
+    },
+    {
+      "date": "2027-07-27",
+      "lead_days": 285,
+      "predicted_daily_mean_cumecs": 1111.0056345502608
+    },
+    {
+      "date": "2027-07-28",
+      "lead_days": 286,
+      "predicted_daily_mean_cumecs": 1118.6132475598015
+    },
+    {
+      "date": "2027-07-29",
+      "lead_days": 287,
+      "predicted_daily_mean_cumecs": 1125.6051646019407
+    },
+    {
+      "date": "2027-07-30",
+      "lead_days": 288,
+      "predicted_daily_mean_cumecs": 1131.970746513882
+    },
+    {
+      "date": "2027-07-31",
+      "lead_days": 289,
+      "predicted_daily_mean_cumecs": 1137.7004452999188
+    },
+    {
+      "date": "2027-08-01",
+      "lead_days": 290,
+      "predicted_daily_mean_cumecs": 1142.7858226197955
+    },
+    {
+      "date": "2027-08-02",
+      "lead_days": 291,
+      "predicted_daily_mean_cumecs": 1147.2195657756154
+    },
+    {
+      "date": "2027-08-03",
+      "lead_days": 292,
+      "predicted_daily_mean_cumecs": 1150.9955011619152
+    },
+    {
+      "date": "2027-08-04",
+      "lead_days": 293,
+      "predicted_daily_mean_cumecs": 1154.1086051498096
+    },
+    {
+      "date": "2027-08-05",
+      "lead_days": 294,
+      "predicted_daily_mean_cumecs": 1156.5550123824623
+    },
+    {
+      "date": "2027-08-06",
+      "lead_days": 295,
+      "predicted_daily_mean_cumecs": 1158.3320214655496
+    },
+    {
+      "date": "2027-08-07",
+      "lead_days": 296,
+      "predicted_daily_mean_cumecs": 1159.4380980428264
+    },
+    {
+      "date": "2027-08-08",
+      "lead_days": 297,
+      "predicted_daily_mean_cumecs": 1159.872875253361
+    },
+    {
+      "date": "2027-08-09",
+      "lead_days": 298,
+      "predicted_daily_mean_cumecs": 1159.6371515734818
+    },
+    {
+      "date": "2027-08-10",
+      "lead_days": 299,
+      "predicted_daily_mean_cumecs": 1158.732886052934
+    },
+    {
+      "date": "2027-08-11",
+      "lead_days": 300,
+      "predicted_daily_mean_cumecs": 1157.1631909611526
+    },
+    {
+      "date": "2027-08-12",
+      "lead_days": 301,
+      "predicted_daily_mean_cumecs": 1154.9323218659613
+    },
+    {
+      "date": "2027-08-13",
+      "lead_days": 302,
+      "predicted_daily_mean_cumecs": 1152.0456651732982
+    },
+    {
+      "date": "2027-08-14",
+      "lead_days": 303,
+      "predicted_daily_mean_cumecs": 1148.5097231628245
+    },
+    {
+      "date": "2027-08-15",
+      "lead_days": 304,
+      "predicted_daily_mean_cumecs": 1144.3320965604041
+    },
+    {
+      "date": "2027-08-16",
+      "lead_days": 305,
+      "predicted_daily_mean_cumecs": 1139.5214646944705
+    },
+    {
+      "date": "2027-08-17",
+      "lead_days": 306,
+      "predicted_daily_mean_cumecs": 1134.0875632892173
+    },
+    {
+      "date": "2027-08-18",
+      "lead_days": 307,
+      "predicted_daily_mean_cumecs": 1128.0411599532883
+    },
+    {
+      "date": "2027-08-19",
+      "lead_days": 308,
+      "predicted_daily_mean_cumecs": 1121.3940274282763
+    },
+    {
+      "date": "2027-08-20",
+      "lead_days": 309,
+      "predicted_daily_mean_cumecs": 1114.1589146667607
+    },
+    {
+      "date": "2027-08-21",
+      "lead_days": 310,
+      "predicted_daily_mean_cumecs": 1106.3495158148648
+    },
+    {
+      "date": "2027-08-22",
+      "lead_days": 311,
+      "predicted_daily_mean_cumecs": 1097.9804371793837
+    },
+    {
+      "date": "2027-08-23",
+      "lead_days": 312,
+      "predicted_daily_mean_cumecs": 1089.0671622643663
+    },
+    {
+      "date": "2027-08-24",
+      "lead_days": 313,
+      "predicted_daily_mean_cumecs": 1079.6260149666548
+    },
+    {
+      "date": "2027-08-25",
+      "lead_days": 314,
+      "predicted_daily_mean_cumecs": 1069.6741210242901
+    },
+    {
+      "date": "2027-08-26",
+      "lead_days": 315,
+      "predicted_daily_mean_cumecs": 1059.229367815803
+    },
+    {
+      "date": "2027-08-27",
+      "lead_days": 316,
+      "predicted_daily_mean_cumecs": 1048.310362612334
+    },
+    {
+      "date": "2027-08-28",
+      "lead_days": 317,
+      "predicted_daily_mean_cumecs": 1036.936389388104
+    },
+    {
+      "date": "2027-08-29",
+      "lead_days": 318,
+      "predicted_daily_mean_cumecs": 1025.1273642981448
+    },
+    {
+      "date": "2027-08-30",
+      "lead_days": 319,
+      "predicted_daily_mean_cumecs": 1012.9037899352128
+    },
+    {
+      "date": "2027-08-31",
+      "lead_days": 320,
+      "predicted_daily_mean_cumecs": 1000.2867084806359
+    },
+    {
+      "date": "2027-09-01",
+      "lead_days": 321,
+      "predicted_daily_mean_cumecs": 987.2976538662496
+    },
+    {
+      "date": "2027-09-02",
+      "lead_days": 322,
+      "predicted_daily_mean_cumecs": 973.9586030668202
+    },
+    {
+      "date": "2027-09-03",
+      "lead_days": 323,
+      "predicted_daily_mean_cumecs": 960.2919266441431
+    },
+    {
+      "date": "2027-09-04",
+      "lead_days": 324,
+      "predicted_daily_mean_cumecs": 946.3203386656116
+    },
+    {
+      "date": "2027-09-05",
+      "lead_days": 325,
+      "predicted_daily_mean_cumecs": 932.0668461212267
+    },
+    {
+      "date": "2027-09-06",
+      "lead_days": 326,
+      "predicted_daily_mean_cumecs": 917.5546979639795
+    },
+    {
+      "date": "2027-09-07",
+      "lead_days": 327,
+      "predicted_daily_mean_cumecs": 902.8073338990778
+    },
+    {
+      "date": "2027-09-08",
+      "lead_days": 328,
+      "predicted_daily_mean_cumecs": 887.8483330477958
+    },
+    {
+      "date": "2027-09-09",
+      "lead_days": 329,
+      "predicted_daily_mean_cumecs": 872.7013626116279
+    },
+    {
+      "date": "2027-09-10",
+      "lead_days": 330,
+      "predicted_daily_mean_cumecs": 857.3901266620912
+    },
+    {
+      "date": "2027-09-11",
+      "lead_days": 331,
+      "predicted_daily_mean_cumecs": 841.9383151807618
+    },
+    {
+      "date": "2027-09-12",
+      "lead_days": 332,
+      "predicted_daily_mean_cumecs": 826.3695534731819
+    },
+    {
+      "date": "2027-09-13",
+      "lead_days": 333,
+      "predicted_daily_mean_cumecs": 810.707352078861
+    },
+    {
+      "date": "2027-09-14",
+      "lead_days": 334,
+      "predicted_daily_mean_cumecs": 794.9750572980184
+    },
+    {
+      "date": "2027-09-15",
+      "lead_days": 335,
+      "predicted_daily_mean_cumecs": 779.1958024536946
+    },
+    {
+      "date": "2027-09-16",
+      "lead_days": 336,
+      "predicted_daily_mean_cumecs": 763.3924600056624
+    },
+    {
+      "date": "2027-09-17",
+      "lead_days": 337,
+      "predicted_daily_mean_cumecs": 747.587594629963
+    },
+    {
+      "date": "2027-09-18",
+      "lead_days": 338,
+      "predicted_daily_mean_cumecs": 731.8034173751021
+    },
+    {
+      "date": "2027-09-19",
+      "lead_days": 339,
+      "predicted_daily_mean_cumecs": 716.0617410027747
+    },
+    {
+      "date": "2027-09-20",
+      "lead_days": 340,
+      "predicted_daily_mean_cumecs": 700.3839366176446
+    },
+    {
+      "date": "2027-09-21",
+      "lead_days": 341,
+      "predicted_daily_mean_cumecs": 684.790891687004
+    },
+    {
+      "date": "2027-09-22",
+      "lead_days": 342,
+      "predicted_daily_mean_cumecs": 669.3029695472736
+    },
+    {
+      "date": "2027-09-23",
+      "lead_days": 343,
+      "predicted_daily_mean_cumecs": 653.9399704901283
+    },
+    {
+      "date": "2027-09-24",
+      "lead_days": 344,
+      "predicted_daily_mean_cumecs": 638.7210945166819
+    },
+    {
+      "date": "2027-09-25",
+      "lead_days": 345,
+      "predicted_daily_mean_cumecs": 623.6649058435337
+    },
+    {
+      "date": "2027-09-26",
+      "lead_days": 346,
+      "predicted_daily_mean_cumecs": 608.7892992397268
+    },
+    {
+      "date": "2027-09-27",
+      "lead_days": 347,
+      "predicted_daily_mean_cumecs": 594.1114682686193
+    },
+    {
+      "date": "2027-09-28",
+      "lead_days": 348,
+      "predicted_daily_mean_cumecs": 579.6478755035466
+    },
+    {
+      "date": "2027-09-29",
+      "lead_days": 349,
+      "predicted_daily_mean_cumecs": 565.4142247807707
+    },
+    {
+      "date": "2027-09-30",
+      "lead_days": 350,
+      "predicted_daily_mean_cumecs": 551.4254355477486
+    },
+    {
+      "date": "2027-10-01",
+      "lead_days": 351,
+      "predicted_daily_mean_cumecs": 537.6956193591178
+    },
+    {
+      "date": "2027-10-02",
+      "lead_days": 352,
+      "predicted_daily_mean_cumecs": 524.2380585670332
+    },
+    {
+      "date": "2027-10-03",
+      "lead_days": 353,
+      "predicted_daily_mean_cumecs": 511.0651872466516
+    },
+    {
+      "date": "2027-10-04",
+      "lead_days": 354,
+      "predicted_daily_mean_cumecs": 498.1885743916109
+    },
+    {
+      "date": "2027-10-05",
+      "lead_days": 355,
+      "predicted_daily_mean_cumecs": 485.6189094083086
+    },
+    {
+      "date": "2027-10-06",
+      "lead_days": 356,
+      "predicted_daily_mean_cumecs": 473.36598993174016
+    },
+    {
+      "date": "2027-10-07",
+      "lead_days": 357,
+      "predicted_daily_mean_cumecs": 461.4387119794944
+    },
+    {
+      "date": "2027-10-08",
+      "lead_days": 358,
+      "predicted_daily_mean_cumecs": 449.84506245438206
+    },
+    {
+      "date": "2027-10-09",
+      "lead_days": 359,
+      "predicted_daily_mean_cumecs": 438.59211400000817
+    },
+    {
+      "date": "2027-10-10",
+      "lead_days": 360,
+      "predicted_daily_mean_cumecs": 427.68602220742525
+    },
+    {
+      "date": "2027-10-11",
+      "lead_days": 361,
+      "predicted_daily_mean_cumecs": 417.1320251649055
+    },
+    {
+      "date": "2027-10-12",
+      "lead_days": 362,
+      "predicted_daily_mean_cumecs": 406.9344453367444
+    },
+    {
+      "date": "2027-10-13",
+      "lead_days": 363,
+      "predicted_daily_mean_cumecs": 397.0966937509906
+    },
+    {
+      "date": "2027-10-14",
+      "lead_days": 364,
+      "predicted_daily_mean_cumecs": 387.621276470025
+    },
+    {
+      "date": "2027-10-15",
+      "lead_days": 365,
+      "predicted_daily_mean_cumecs": 378.5098033120181
+    }
+  ],
+  "monthly": [
+    {
+      "month": "2026-10",
+      "mean_of_forecast_daily_means_cumecs": 319.1970852217327,
+      "forecast_days": 16,
+      "calendar_days": 31,
+      "complete_calendar_month": false
+    },
+    {
+      "month": "2026-11",
+      "mean_of_forecast_daily_means_cumecs": 253.16353368423358,
+      "forecast_days": 30,
+      "calendar_days": 30,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2026-12",
+      "mean_of_forecast_daily_means_cumecs": 215.50481777435783,
+      "forecast_days": 31,
+      "calendar_days": 31,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-01",
+      "mean_of_forecast_daily_means_cumecs": 150.50715649162316,
+      "forecast_days": 31,
+      "calendar_days": 31,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-02",
+      "mean_of_forecast_daily_means_cumecs": 190.4568345646844,
+      "forecast_days": 28,
+      "calendar_days": 28,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-03",
+      "mean_of_forecast_daily_means_cumecs": 308.56790378330567,
+      "forecast_days": 31,
+      "calendar_days": 31,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-04",
+      "mean_of_forecast_daily_means_cumecs": 303.4631063775825,
+      "forecast_days": 30,
+      "calendar_days": 30,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-05",
+      "mean_of_forecast_daily_means_cumecs": 258.1073970022736,
+      "forecast_days": 31,
+      "calendar_days": 31,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-06",
+      "mean_of_forecast_daily_means_cumecs": 510.590217195066,
+      "forecast_days": 30,
+      "calendar_days": 30,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-07",
+      "mean_of_forecast_daily_means_cumecs": 974.5388610440923,
+      "forecast_days": 31,
+      "calendar_days": 31,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-08",
+      "mean_of_forecast_daily_means_cumecs": 1115.0759645488129,
+      "forecast_days": 31,
+      "calendar_days": 31,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-09",
+      "mean_of_forecast_daily_means_cumecs": 770.6820196029773,
+      "forecast_days": 30,
+      "calendar_days": 30,
+      "complete_calendar_month": true
+    },
+    {
+      "month": "2027-10",
+      "mean_of_forecast_daily_means_cumecs": 453.00189957203037,
+      "forecast_days": 15,
+      "calendar_days": 31,
+      "complete_calendar_month": false
+    }
+  ],
+  "limitation": "Statistical seasonal outlook without future rainfall, upstream releases or event timing. Not a calibrated flood warning."
+}

@@ -1,0 +1,6 @@
+!Workspace
+!Version 600
+!Charset WindowsLatin1
+!Contains GIS input layers from TUFLOW simulation Jhang_HPC_Demo
+! Non-MapInfo .tab Layer "..\..\model\gis\2d_bc_outlet_L.shp"
+! Non-MapInfo .tab Layer "..\..\model\gis\2d_sa_inflow_R.shp"

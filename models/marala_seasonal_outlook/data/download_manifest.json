@@ -1,0 +1,7 @@
+{
+  "source_url": "https://flood-api.open-meteo.com/v1/flood?latitude=32.675&longitude=74.425&start_date=1984-01-01&end_date=2026-09-30&daily=river_discharge&cell_selection=nearest&timezone=GMT",
+  "response_sha256": "5ef4196c7ad66d3011bb7b3a2e5c1aa9b4c30cacf5651bb3e350bbf49c8c23a2",
+  "retrieved_at": "2026-10-16T10:53:53.534283+00:00",
+  "target_kind": "modeled_reach_discharge_not_gauge_measurements",
+  "documentation": "https://open-meteo.com/en/docs/flood-api"
+}

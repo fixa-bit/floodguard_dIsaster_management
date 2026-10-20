@@ -1,0 +1,14 @@
+{
+  "version": "2026.3.0",
+  "installed_at": "2026-10-18T18:06:24.565797+00:00",
+  "official_download_page": "https://tuflow.com/downloads/",
+  "archive_url": "https://downloads.tuflow.com/TUFLOW/Releases/2026/tuflow-2026.3-2026.3.0-1.zip",
+  "archive_sha256": "c3c611d77a59500ad2aa24e7d8a5f046168d983a282240ea44bd935c6ca2a7f0",
+  "archive_bytes": 55664655,
+  "engine_relative_path": "tools/tuflow/2026.3.0/tuflow-2026.3/TUFLOW_iSP_w64.exe",
+  "engine_sha256": "fd896c804717f1de94ea33fef7b7d2f559c87a22bdc03235757c613fbf486b47",
+  "eula_url": "https://downloads.tuflow.com/Licensing/TUFLOW%20Products%20Licence%20Agreement.pdf",
+  "eula_sha256": "4e336242ce023165d755b25c1f48306f9795825ed67db81e5309bd2345795eeb",
+  "installation": "Official portable package; installed under the workspace, no global PATH or backend environment changes",
+  "licence": "No licence purchased or activated by this installer; demo and licensed mode are separate engine capabilities"
+}

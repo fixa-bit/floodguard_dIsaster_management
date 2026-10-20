@@ -1,0 +1,10 @@
+{
+  "maximum_horizon_days": 365,
+  "origin_sampling": "calendar_month_end_for_training_and_evaluation",
+  "training_last_year": 2013,
+  "validation_years": [2014, 2015, 2016, 2017],
+  "test_years": [2018, 2019, 2020, 2021],
+  "target": "GloFAS modeled reach daily mean discharge; NOT measured Marala gauge inflow",
+  "selection": "validation RMSE, then MAE",
+  "random_seed": 42
+}

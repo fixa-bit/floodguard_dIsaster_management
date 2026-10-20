@@ -1,0 +1,9 @@
+! Real terrain; no channel carving or invented structures
+Origin == 237560.0, 3464540.0
+Orientation Angle == 0
+Cell Size == 30
+Grid Size (X,Y) == 4800.0, 4800.0
+Set Code == 1
+Set Zpts == 99999
+Read GRID Zpts == grid\dem.tif
+Set Mat == 1

@@ -4,6 +4,8 @@ import type { GeoJSONSource, ImageSource, Map as MapLibreMap, MapLayerMouseEvent
 import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePopulationLayers } from './usePopulationLayers';
+import { useMapBasemap, type MapBasemap } from "./useMapBasemap";
+import { StationTerrainStudio } from "./StationTerrainStudio";
 import type { PopulationOverlay } from '../services/population';
 import { bbox } from "@turf/bbox";
 import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
@@ -22,6 +24,8 @@ import glaciersUrl from "../data/pakistan/glaciers.geojson?compressed";
 import glacierIndusBasinRaw from "../data/pakistan/glacier_indus_basin.geojson?raw";
 import type { CitizenReport, DistrictRiskFeature, Incident, NationalRiskCollection, ResourceGroups, RiverResponse, RiverMonitoringResponse, SarWaterOverlay, WaterIntelligenceCollection, WaterIntelligenceFeature, WeatherResponse } from "../types/api";
 import { StatusBadge } from "./StatusBadge";
+import { SarWaterSummary } from "./SarWaterSummary";
+import { SarValidationView } from "./SarValidationView";
 import { api } from "../services/api";
 import type { GoogleFloodCollection, GoogleFloodFeature, RegionalRainfallCollection } from "../types/api";
 import { RiverStationInspector } from "./RiverStationInspector";
@@ -80,9 +84,18 @@ const baseStyle: StyleSpecification = {
 };
 
 const boundaryLinePaint: maplibregl.LineLayerSpecification["paint"] = {
-  "line-color": "#166534",
-  "line-width": ["interpolate", ["linear"], ["zoom"], 3, 1.25, 7, 1.75, 10, 2.25],
-  "line-opacity": 0.9,
+  "line-color": "#034326",
+  "line-width": ["interpolate", ["linear"], ["zoom"], 3, 2.6, 7, 3.2, 10, 3.8],
+  "line-opacity": 1,
+  "line-blur": 0,
+};
+
+// A narrow casing keeps the dark boundary legible over imagery and rainfall.
+const boundaryCasingPaint: maplibregl.LineLayerSpecification["paint"] = {
+  "line-color": "#e5f3e9",
+  "line-width": ["interpolate", ["linear"], ["zoom"], 3, 4.4, 7, 5, 10, 5.6],
+  "line-opacity": 0.85,
+  "line-blur": 0,
 };
 
 const emptyCollection: FeatureCollection = { type: "FeatureCollection", features: [] };
@@ -404,6 +417,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const containerRef = useRef<HTMLDivElement>(null);
   const coordinateReadoutRef = useRef<HTMLOutputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const [basemap, setBasemap] = useState<MapBasemap>("satellite");
   const populationOverlayRef = useRef(populationOverlay);
   populationOverlayRef.current = populationOverlay;
   const stationInteractionRef = useRef<StationInteraction | null>(null);
@@ -436,6 +450,11 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const sarRequestRef = useRef(0);
   const [sarOverlay, setSarOverlay] = useState<SarWaterOverlay | null>(null);
   const [sarOverlayVisible, setSarOverlayVisible] = useState(true);
+  const [sarSelection, setSarSelection] = useState("historical");
+  const [sarView, setSarView] = useState<"potential" | "water" | "reference" | "errors" | "event">("potential");
+  const [sarPermanentVisible, setSarPermanentVisible] = useState(true);
+  const [sarEventBackground, setSarEventBackground] = useState(true);
+  const [sarValidationOpen, setSarValidationOpen] = useState(false);
   const [sarBusy, setSarBusy] = useState(false);
   const [sarError, setSarError] = useState<string | null>(null);
   const [monitoringCategoriesOn, setMonitoringCategoriesOn] = useState<MonitoringCategory[]>([]);
@@ -869,7 +888,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       center: [69.35, 30.45],
       zoom: expanded ? 3.45 : 3.25,
       minZoom: 0,
-      maxZoom: 12,
+      maxZoom: 15,
+      maxPitch: 70,
       attributionControl: false,
     });
     // A picked click must not also open an overlapping layer's feature inspector.
@@ -899,7 +919,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       if (coordinateReadoutRef.current) coordinateReadoutRef.current.hidden = true;
     };
     map.getCanvas().addEventListener("mouseleave", hideCoordinates);
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    map.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), "top-right");
     map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
     let cancelWarmup = () => {};
     const warmAfterFirstPaint = () => {
@@ -911,12 +931,11 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       const fitOverview = () => selectedCoordinateRef.current ? fitCoordinate(map, selectedCoordinateRef.current, 0)
         : (rainfallEnabledRef.current ? fitRainfallExtent : glacierEnabledRef.current ? fitGlacierExtent : fitPakistanExtent)(map, 0);
       requestAnimationFrame(fitOverview);
-      window.setTimeout(fitOverview, 250);
+      window.setTimeout(() => {if(!map.getContainer().dataset.terrainStation)fitOverview();}, 250);
       addWaterIcons(map);
       map.addSource("pakistan-political-labels", { type: "geojson", data: pakistanPoliticalLabels });
       map.addSource("jammu-kashmir-context", { type: "geojson", data: kashmirBoundaryRef.current, tolerance: 0 });
       map.addLayer({ id: "jammu-kashmir-context-fill", type: "fill", source: "jammu-kashmir-context", paint: { "fill-color": "#afc0bd", "fill-opacity": 0.055 } });
-      map.addLayer({ id: "jammu-kashmir-context-line", type: "line", source: "jammu-kashmir-context", layout: { "line-cap": "round", "line-join": "round" }, paint: boundaryLinePaint });
       map.addSource("pakistan-operational-base", { type: "geojson", data: pakistanOperationalBase, tolerance: 0 });
       map.addLayer({
         id: "ndma-operational-fill",
@@ -996,6 +1015,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         filter: namedDistrictFilter,
         paint: { "line-color": "#c084fc", "line-width": ["interpolate", ["linear"], ["zoom"], 2, 0.9, 6, 1.5, 10, 2.3], "line-opacity": 0.95 },
       });
+      for (const [id, source] of [["ndma-operational-casing", "pakistan-operational-base"], ["jammu-kashmir-context-casing", "jammu-kashmir-context"]]) {
+        map.addLayer({ id, type: "line", source, layout: { "line-cap": "round", "line-join": "round" }, paint: boundaryCasingPaint });
+      }
+      map.addLayer({ id: "jammu-kashmir-context-line", type: "line", source: "jammu-kashmir-context", layout: { "line-cap": "round", "line-join": "round" }, paint: boundaryLinePaint });
       map.addLayer({ id: "ndma-operational-line", type: "line", source: "pakistan-operational-base", layout: { "line-cap": "round", "line-join": "round" }, paint: boundaryLinePaint });
       map.addSource("pakistan-loc-overlay", { type: "geojson", data: pakistanLocOverlay });
       map.addLayer({ id: "pakistan-loc-line", type: "line", source: "pakistan-loc-overlay", layout: { "line-cap": "round", "line-join": "round" }, paint: { ...boundaryLinePaint, "line-color": "#6faeb9" } });
@@ -1306,6 +1329,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     });
     map.once("style.load", () => map.once("render", warmAfterFirstPaint));
     const resizeObserver = new ResizeObserver(() => {
+      if (map.getContainer().dataset.terrainStation) {map.resize();return;}
       if (selectedCoordinateRef.current) fitCoordinate(map, selectedCoordinateRef.current, 0);
       else if (populationOverlayRef.current) {
         const [w,s,e,n] = populationOverlayRef.current.summary.bounds;
@@ -1466,10 +1490,11 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     }
     for (const id of ["district-risk-fill", "district-risk-line"]) map.setLayoutProperty(id, "visibility", visibility(layers.risk));
     const boundaryVisibility = visibility(layers.boundary);
-    for (const id of ["jammu-kashmir-context-fill", "jammu-kashmir-context-line", "pakistan-loc-line"]) map.setLayoutProperty(id, "visibility", boundaryVisibility);
+    for (const id of ["jammu-kashmir-context-fill", "jammu-kashmir-context-casing", "jammu-kashmir-context-line", "pakistan-loc-line"]) map.setLayoutProperty(id, "visibility", boundaryVisibility);
     if (containerRef.current) containerRef.current.dataset.kashmirBoundaryVisibility = boundaryVisibility;
     const admin1Visibility = visibility(layers.boundary);
     map.setLayoutProperty("ndma-operational-fill", "visibility", "none");
+    map.setLayoutProperty("ndma-operational-casing", "visibility", admin1Visibility);
     map.setLayoutProperty("ndma-operational-line", "visibility", admin1Visibility);
     map.setLayoutProperty("pakistan-region-labels", "visibility", visibility(!studyActive && (layers.risk || layers.districts || layers.glaciers)));
     if (containerRef.current) containerRef.current.dataset.admin1BoundaryVisibility = admin1Visibility;
@@ -1509,45 +1534,79 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     return () => { map.off("style.load", updateVisibility); };
   }, [layers, rainfallHeatmapEnabled, catchmentId, waterQuantity, showNormalFloodHub, glacierView, studyActive]);
 
+  useMapBasemap(mapRef, basemap);
   usePopulationLayers(mapRef, populationOverlay);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
+    let applied = false;
     const updateOverlay = () => {
-      if (map.getLayer("sar-water-extent")) map.removeLayer("sar-water-extent");
-      if (map.getSource("sar-water-extent")) map.removeSource("sar-water-extent");
-      if (!sarOverlay) return;
-      map.addSource("sar-water-extent", { type: "image", url: sarOverlay.image_data_url, coordinates: sarOverlay.coordinates });
+      if (applied && (!sarOverlay || map.getSource("sar-water-extent"))) {
+        if (mapDiagnosticsEnabled && containerRef.current && sarOverlay) {
+          containerRef.current.dataset.sarOverlayReady = String(map.isSourceLoaded("sar-water-extent"));
+        }
+        return;
+      }
+      if (!map.isStyleLoaded()) return;
+      for (const id of ["sar-analysis-boundary", "sar-permanent-water", "sar-water-extent", "sar-event-imagery"]) {
+        if (map.getLayer(id)) map.removeLayer(id);
+        if (map.getSource(id)) map.removeSource(id);
+      }
+      if (!sarOverlay) { applied = true; return; }
+      const addRaster = (id: string, url: string, visible: boolean) => {
+        map.addSource(id, { type: "image", url, coordinates: sarOverlay.coordinates });
+        map.addLayer({ id, type: "raster", source: id,
+          layout: { visibility: visible && sarOverlayVisible ? "visible" : "none" },
+          paint: { "raster-opacity": 1, "raster-fade-duration": 0, "raster-resampling": "nearest" } });
+      };
+      if (sarOverlay.validation) addRaster("sar-event-imagery", sarOverlay.validation.event_image_data_url, sarEventBackground);
+      const selectedImage = sarView === "water" ? sarOverlay.all_water_image_data_url
+        : sarView === "reference" ? sarOverlay.validation?.reference_water_image_data_url
+        : sarView === "errors" ? sarOverlay.validation?.error_image_data_url
+        : sarView === "event" ? sarOverlay.validation?.event_image_data_url : sarOverlay.image_data_url;
+      map.addSource("sar-water-extent", { type: "image", url: selectedImage ?? sarOverlay.image_data_url, coordinates: sarOverlay.coordinates });
       map.addLayer({ id: "sar-water-extent", type: "raster", source: "sar-water-extent",
         layout: { visibility: sarOverlayVisible ? "visible" : "none" },
         paint: { "raster-opacity": 0.9, "raster-fade-duration": 0, "raster-resampling": "nearest" } },
       map.getLayer("google-flood-hub-points") ? "google-flood-hub-points" : undefined);
+      if (sarOverlay.permanent_water_image_data_url) addRaster("sar-permanent-water", sarOverlay.permanent_water_image_data_url, sarPermanentVisible);
+      map.addSource("sar-analysis-boundary", { type: "geojson", data: {
+        type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [[...sarOverlay.coordinates, sarOverlay.coordinates[0]]] },
+      } });
+      map.addLayer({ id: "sar-analysis-boundary", type: "line", source: "sar-analysis-boundary",
+        layout: { visibility: sarOverlayVisible ? "visible" : "none" },
+        paint: { "line-color": "#ffdf79", "line-width": 2, "line-dasharray": [3, 2] } });
+      applied = true;
     };
     map.on("style.load", updateOverlay);
+    map.on("idle", updateOverlay);
     if (map.isStyleLoaded()) updateOverlay();
-    return () => { map.off("style.load", updateOverlay); };
-  }, [sarOverlay, expanded]);
+    return () => { map.off("style.load", updateOverlay); map.off("idle", updateOverlay); };
+  }, [sarOverlay, expanded, sarView, sarPermanentVisible, sarEventBackground, sarOverlayVisible]);
 
-  useEffect(() => {
-    const map = mapRef.current;
-    if (map?.getLayer("sar-water-extent")) map.setLayoutProperty("sar-water-extent", "visibility", sarOverlayVisible ? "visible" : "none");
-  }, [sarOverlayVisible, sarOverlay, expanded]);
-
-  async function runSarInference(point: MapCoordinate) {
+  async function runSarInference(point?: MapCoordinate) {
     const request = ++sarRequestRef.current;
     setSarBusy(true);
     setSarError(null);
     setSarOverlay(null);
+    setSarValidationOpen(false);
     try {
-      const overlay = await api.sarWaterExtentAtLocation(point.latitude, point.longitude);
+      const overlay = point
+        ? await api.sarWaterExtentAtLocation(point.latitude, point.longitude)
+        : await api.sarWaterExample(sarSelection === "permanent" ? "permanent" : "historical");
       if (request !== sarRequestRef.current) return;
+      if (overlay.response_version !== 2 || !Number.isFinite(overlay.potential_flood_area_km2)) {
+        throw new Error("The backend is running an older satellite analysis version. Restart the backend, refresh this page, and select the location again.");
+      }
       setSarOverlay(overlay);
+      setSarView("potential");
+      setSarEventBackground(true);
       setSarOverlayVisible(true);
       const longitude = overlay.coordinates.map(([lon]) => lon);
       const latitude = overlay.coordinates.map(([, lat]) => lat);
       mapRef.current?.fitBounds([[Math.min(...longitude), Math.min(...latitude)], [Math.max(...longitude), Math.max(...latitude)]],
-        { padding: 45, duration: 500, maxZoom: 12 });
+        { padding: { left: window.innerWidth > 900 ? 300 : 45, right: 45, top: 80, bottom: 70 }, duration: 500, maxZoom: 14 });
     } catch (error) {
       if (request === sarRequestRef.current) setSarError(error instanceof Error ? error.message : "Water extent inference failed.");
     } finally {
@@ -1587,10 +1646,18 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         </div>}
         <output ref={coordinateReadoutRef} className="map-coordinate-readout" aria-label="Map cursor coordinates" aria-live="off" hidden />
         {mapOverlay && <div className="map-command-overlay">{mapOverlay}</div>}
+        <StationTerrainStudio mapRef={mapRef} selectedStationId={selectedStationId} onSelectStation={selectStation} onEnter={()=>{setMapControlsOpen(false);setLayers(current=>({...current,water:true}));}}/>
         <div className="map-layer-control">
-          <button className="map-layer-toggle" type="button" aria-label="Toggle map layers" title="Map layers" aria-expanded={mapControlsOpen} onClick={() => setMapControlsOpen((current) => !current)}><Layers3 size={14} /><span>Map layers</span>{mapControlsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</button>
+          <button className="map-layer-toggle" data-tour-target="gis-map-layers-toggle" type="button" aria-label="Toggle map layers" title="Map layers" aria-expanded={mapControlsOpen} onClick={() => setMapControlsOpen((current) => !current)}><Layers3 size={14} /><span>Map layers</span>{mapControlsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</button>
           {coordinatePicking && <div className="coordinate-pick-status"><span role="status"><MousePointer2 size={14} /> Coordinate selection</span><button type="button" title="Cancel coordinate selection" aria-label="Cancel coordinate selection" onClick={() => setPickingMode(false)}><X size={14} /></button></div>}
           <div hidden={!mapControlsOpen}>
+          <div className="map-basemap-control" role="group" aria-label="Map background">
+            <strong>Map background</strong>
+            <div className="map-basemap-options">
+              {(["satellite", "vector"] as const).map((value) => <button key={value} type="button" aria-pressed={basemap === value} onClick={() => setBasemap(value)}>{value === "satellite" ? "Satellite" : "Vector"}</button>)}
+            </div>
+            <small>Vector gives rainfall colors a clearer background.</small>
+          </div>
           <form className="coordinate-search" aria-label="Locate coordinates" onSubmit={(event) => { event.preventDefault(); locateCoordinate(); }}>
             <div className="coordinate-search-heading"><strong>Coordinates</strong>{(selectedCoordinate || coordinatePicking) && <button type="button" title="Deselect location" aria-label="Deselect location" onClick={() => clearCoordinate()}><X size={14} /></button>}</div>
             <div className="coordinate-inputs">
@@ -1603,12 +1670,12 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
             {selectedCoordinate && <label className="coordinate-study-toggle"><input type="checkbox" aria-label="Enable corresponding layers" checked={studyEnabled} onChange={(event) => toggleStudyLayers(event.target.checked)} /><span>Enable corresponding layers</span></label>}
             {selectedCoordinate && studyEnabled && <small className="coordinate-study-status" role="status">{studyCatchment ? `${studyCatchment.properties.name} / ${Object.keys(activeStudyLayers).length} layers` : "No catchment covers this coordinate"}</small>}
           </form>
-          <details className="operational-layer-options" data-layer-category="static" open>
+          <details className="operational-layer-options" data-layer-category="static" data-tour-target="gis-static-layers" open>
           <summary><strong><MapPinned size={14} /> Static layers</strong></summary>
           {([
             ["boundary", "Pakistan boundary"], ["glaciers", "Glaciers & upstream drainage"], ["borderTest", "Boundary alignment test"], ["districts", "District names & boundaries"], ["catchments", "Catchment areas"], ["water", "Rivers, lakes & dams"], ["stations", "Risk locations"],
           ] as const).map(([id, label]) => <div key={id}>
-            <label><input type="checkbox" checked={layers[id]} disabled={studyActive && id !== "boundary"} title={studyActive && id !== "boundary" ? "Controlled by corresponding catchment" : undefined} onChange={() => setLayers((current) => ({ ...current, [id]: !current[id] }))} /><span>{label}</span></label>
+            <label data-tour-target={`gis-layer-${id}`}><input type="checkbox" checked={layers[id]} disabled={studyActive && id !== "boundary"} title={studyActive && id !== "boundary" ? "Controlled by corresponding catchment" : undefined} onChange={() => setLayers((current) => ({ ...current, [id]: !current[id] }))} /><span>{label}</span></label>
             {id === "boundary" && <>
               <label className="kashmir-boundary-source"><span>Kashmir boundary source</span><select aria-label="Kashmir boundary source" disabled={!layers.boundary} value={kashmirBoundarySource} onChange={(event) => setKashmirBoundarySource(event.target.value as "districts" | "previous")}>
                 <option value="districts">District-aligned (2021)</option><option value="previous">Previous outline (Parallax)</option>
@@ -1620,7 +1687,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
             <legend>Priority monitoring points</legend>
             {monitoringCategories.map((category) => {
               const count = scopedMonitoringSites.features.filter((feature) => feature.properties.category === category.id).length;
-              return <label key={category.id}><input type="checkbox" aria-label={category.label} checked={enabledMonitoringCategories.includes(category.id)}
+              return <label key={category.id} data-tour-target={`gis-monitoring-${category.id}`}><input type="checkbox" aria-label={category.label} checked={enabledMonitoringCategories.includes(category.id)}
                 onChange={(event) => {
                   if (studyActive) setStudyMonitoringHidden((current) => event.target.checked ? current.filter((id) => id !== category.id) : [...current, category.id]);
                   else setMonitoringCategoriesOn((current) => event.target.checked ? [...current, category.id] : current.filter((id) => id !== category.id));
@@ -1647,30 +1714,51 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           <label className="river-network-select"><span>Basin</span><select aria-label="Catchment area" disabled={studyActive} value={catchmentId} onChange={(event) => selectCatchment(event.target.value)}><option value="">All catchments</option>{catchmentAreas.features.map((feature) => <option value={feature.properties.basin_id} key={feature.id}>{feature.properties.name}</option>)}</select></label>
           {layers.catchments && <span className="rainfall-source-note">HydroBASINS level 5 / {catchmentAreas.features.length} sub-basins</span>}
           </details>
-          <details className="operational-layer-options" data-layer-category="dynamic" open>
+          <details className="operational-layer-options" data-layer-category="dynamic" data-tour-target="gis-dynamic-layers" open>
           <summary><strong><RadioTower size={14} /> Dynamic layers</strong></summary>
           {([
             ["risk", "District screening"], ["waterForecasts", "River status & model forecasts"], ["gauges", "River monitoring"], ["floodHub", "Google Flood Hub"], ["incidents", "Incidents"], ["reports", "Citizen reports"], ["resources", "Response resources"],
-          ] as const).map(([id, label]) => <label key={id}><input type="checkbox" checked={layers[id]} disabled={studyActive} title={studyActive ? "Controlled by corresponding catchment" : undefined} onChange={() => setLayers((current) => ({ ...current, [id]: !current[id] }))} /><span>{label}</span></label>)}
+          ] as const).map(([id, label]) => <label key={id} data-tour-target={`gis-layer-${id}`}><input type="checkbox" checked={layers[id]} disabled={studyActive} title={studyActive ? "Controlled by corresponding catchment" : undefined} onChange={() => setLayers((current) => ({ ...current, [id]: !current[id] }))} /><span>{label}</span></label>)}
           <details className="sar-water-control">
             <summary><strong><Waves size={14} /> Satellite water extent</strong></summary>
+            <label className="sar-example-selection"><span>Suggested location</span><select aria-label="Satellite analysis location" value={sarSelection} disabled={sarBusy} onChange={(event) => { sarPickRef.current = false; setPickingMode(false); setSarSelection(event.target.value); }}>
+              <option value="historical">Pakistan · 28 Jun 2017 (example)</option>
+              <option value="permanent">Pakistan · permanent-water comparison</option>
+              <option value="map">Recent imagery · choose on map</option>
+            </select></label>
+            {sarSelection !== "map" ? <>
+              <small>Historical example with a visible model prediction. No imagery download needed.</small>
+              <button className="sar-select-location" type="button" disabled={sarBusy} onClick={() => { sarPickRef.current = false; setPickingMode(false); void runSarInference(); }}><Waves size={14} />{sarBusy ? "Loading analysis..." : "View flood example"}</button>
+            </> : <>
             <button className="sar-select-location" type="button" disabled={sarBusy} onClick={() => {
               sarPickRef.current = true;
               setPickingMode(true);
             }}><MousePointer2 size={14} />{sarBusy ? "Processing satellite imagery..." : "Select place on map"}</button>
-            {sarBusy && <small role="status">Fetching and aligning satellite data. This may take a minute.</small>}
+            </>}
+            {sarBusy && <small role="status">{sarSelection !== "map" ? "Loading recorded historical prediction..." : "Fetching and aligning satellite data. This may take a minute."}</small>}
             {sarError && <small role="alert">{sarError}</small>}
             {sarOverlay && <div className="sar-water-result">
-              <label><input type="checkbox" checked={sarOverlayVisible} onChange={(event) => setSarOverlayVisible(event.target.checked)} /><span>Show water extent</span></label>
+              <label><input type="checkbox" checked={sarOverlayVisible} onChange={(event) => setSarOverlayVisible(event.target.checked)} /><span>Show analysis layers</span></label>
               <button type="button" title="Remove water extent overlay" aria-label="Remove water extent overlay" onClick={() => setSarOverlay(null)}><X size={14} /></button>
-              <small>{sarOverlay.water_percent}% of valid pixels / {sarOverlay.label}</small>
-              {sarOverlay.during_date && <small>Radar: {new Date(sarOverlay.during_date).toLocaleDateString()} / previous: {new Date(sarOverlay.pre_date!).toLocaleDateString()}</small>}
-              {sarOverlay.source && <small>{sarOverlay.source}</small>}
+              <div className="sar-layer-options">
+                <label><span>Display</span><select aria-label="Satellite result layer" value={sarView} onChange={event => setSarView(event.target.value as typeof sarView)}>
+                  <option value="potential">Potential flooding (cyan)</option><option value="water">All predicted water (cyan)</option>
+                  {sarOverlay.validation && <><option value="reference">Reference water labels (green)</option><option value="errors">Missed / false detections</option><option value="event">Event radar only</option></>}
+                </select></label>
+                {sarOverlay.permanent_water_image_data_url && <label><input type="checkbox" checked={sarPermanentVisible} onChange={event => setSarPermanentVisible(event.target.checked)} /><span>Permanent-water reference (blue)</span></label>}
+                {sarOverlay.validation && <>
+                  <label><input type="checkbox" checked={sarEventBackground} onChange={event => setSarEventBackground(event.target.checked)} /><span>Use event-date radar background</span></label>
+                  <button className="sar-compare-button" type="button" onClick={() => setSarValidationOpen(true)}>Compare imagery, labels & accuracy</button>
+                </>}
+                {sarView === "errors" && <small>Cyan: correct water · Pink: missed water · Orange: false detection · Gray: excluded</small>}
+                {sarOverlay.validation && <small>{sarEventBackground ? `Inside the box: event radar from ${sarOverlay.during_date}.` : "Context basemap may show a different date."}</small>}
+              </div>
+              <SarWaterSummary result={sarOverlay} />
             </div>}
           </details>
           <div className="feature-visualization-control">
             <strong><CloudRain size={14} /> Rainfall</strong>
-            <label><input type="checkbox" checked={rainfallHeatmapEnabled} disabled={studyActive} title={studyActive ? "Controlled by corresponding catchment" : undefined} onChange={() => setRainfallHeatmapEnabled((current) => !current)} /><span>Rainfall heatmap</span></label>
+            <label data-tour-target="gis-layer-rainfall"><input type="checkbox" checked={rainfallHeatmapEnabled} disabled={studyActive} title={studyActive ? "Controlled by corresponding catchment" : undefined} onChange={() => setRainfallHeatmapEnabled((current) => !current)} /><span>Rainfall heatmap</span></label>
             <div className="rainfall-window-grid" aria-label="Rainfall heatmap time window">
               {rainfallWindowOptions.map((option) => (
                 <button key={option.id} type="button" aria-pressed={rainfallHeatmapEnabled && rainfallWindow === option.id} className={rainfallHeatmapEnabled && rainfallWindow === option.id ? "active" : ""} onClick={() => { setRainfallWindow(option.id); setRainfallHeatmapEnabled(true); }}>
@@ -1731,7 +1819,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           {layers.catchments && <span><i className="legend-catchment" /> HydroBASINS catchments</span>}
           {layers.glaciers && <>{Object.entries(glacierColors).map(([id, color]) => <span key={id}><i style={{ background: color }} />{id === "external_contributor" ? "External glacier contributor" : id === "pakistan_contributor" ? "Pakistan glacier contributor" : id === "divide_uncertain" ? "Drainage uncertain" : "Other glacier basin"}</span>)}</>}
           {layers.floodHub && floodHubLegend.filter((item) => showNormalFloodHub || item.severity !== "NO_FLOODING").map((item) => <span key={item.severity}><i className="legend-floodhub-point" style={{ background: item.color }} />Google: {item.label}</span>)}
-          {sarOverlay && sarOverlayVisible && <span><i style={{ background: "#00cae1" }} /> Satellite water extent</span>}
+          {sarOverlay && sarOverlayVisible && <>
+            <span><i style={{ background: sarView === "reference" ? "#45e083" : "#00cae1" }} /> {sarOverlay.is_historical_example ? "Historical: " : ""}{sarView === "reference" ? "Reference water" : sarView === "errors" ? "Detection errors" : sarView === "event" ? "Event radar" : sarView === "water" ? "All predicted water" : "Potential flooding"}</span>
+            {sarPermanentVisible && sarOverlay.permanent_water_image_data_url && <span><i style={{ background: "#4c73ff" }} /> Permanent-water reference</span>}
+          </>}
           {layers.districts && <span><i className="legend-district-names" /> District names &amp; boundaries</span>}
           {layers.borderTest && <><span><i style={{ background: "#ff2020" }} /> 3 border checkpoints</span><span><i className="legend-district-names" style={{ borderTopColor: "#a855f7" }} /> Pakistan / province outline</span></>}
           {layers.gauges && waterQuantity !== "status" && <div className="water-quantity-legend">
@@ -1836,6 +1927,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       </aside>}
       {selectedStationId && <RiverStationInspector stationId={selectedStationId} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => setSelectedStationId(null)} onSelect={selectStation} flowUnit={flowUnit} />}
       </div>
+      {sarValidationOpen && sarOverlay?.validation && <SarValidationView result={sarOverlay} onClose={() => setSarValidationOpen(false)} />}
       <footer className="map-provenance">
         <span><RadioTower size={14} /> Weather screening: Open-Meteo</span><span><CloudRain size={14} /> Rainfall heatmap: {selectedRainfallWindow.sourceLabel}</span><span><Waves size={14} /> Google Flood Forecasting / CC BY 4.0</span><span><Waves size={14} /> Water: GIS features, station metadata, and modeled points are separated</span><span><Building2 size={14} /> Boundaries: Pakistan boundary adapter + OCHA/WFP ITOS LoC overlay</span><span><MessageSquareText size={14} /> Click a district or water point for evidence</span>
       </footer>

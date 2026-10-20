@@ -1,0 +1,205 @@
+{
+  "retrieved_at": "2026-10-16T05:24:43.684041+00:00",
+  "station_id": "MARALA",
+  "archive": "https://ffd.pmd.gov.pk/bulletins/archive",
+  "weather_documentation": "https://open-meteo.com/en/docs/historical-weather-api",
+  "observations": 166,
+  "weather_rows": 594,
+  "weather_requests": [
+    {
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.9&longitude=74.75&start_date=2024-06-24&end_date=2024-09-30&hourly=precipitation%2Ctemperature_2m%2Csoil_moisture_0_to_7cm%2Csnow_depth&models=era5_land&timezone=UTC",
+      "sha256": "5ab313ac045544670358a58ae6fc73ef263a3fee26cc845bc3b8dbe1edb44cd6",
+      "grid_latitude": 32.9,
+      "grid_longitude": 74.8
+    },
+    {
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=33.3&longitude=75.75&start_date=2024-06-24&end_date=2024-09-30&hourly=precipitation%2Ctemperature_2m%2Csoil_moisture_0_to_7cm%2Csnow_depth&models=era5_land&timezone=UTC",
+      "sha256": "2c54ae6659a7541ece380bacc946714589e01b1e140952d46b5fc6c2fd0b3a2c",
+      "grid_latitude": 33.200005,
+      "grid_longitude": 75.7
+    },
+    {
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.6&longitude=76.9&start_date=2024-06-24&end_date=2024-09-30&hourly=precipitation%2Ctemperature_2m%2Csoil_moisture_0_to_7cm%2Csnow_depth&models=era5_land&timezone=UTC",
+      "sha256": "c31cfcaf6f82fffe4e896455a45afe24baf8a8d3a551541f893b0c99f77d79f6",
+      "grid_latitude": 32.6,
+      "grid_longitude": 76.899994
+    },
+    {
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.9&longitude=74.75&start_date=2025-06-24&end_date=2025-09-30&hourly=precipitation%2Ctemperature_2m%2Csoil_moisture_0_to_7cm%2Csnow_depth&models=era5_land&timezone=UTC",
+      "sha256": "c05cd8dbf6df96768e21404fdbf24d1ea32e1bf3f0ded808ae289f96811ac231",
+      "grid_latitude": 32.9,
+      "grid_longitude": 74.8
+    },
+    {
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=33.3&longitude=75.75&start_date=2025-06-24&end_date=2025-09-30&hourly=precipitation%2Ctemperature_2m%2Csoil_moisture_0_to_7cm%2Csnow_depth&models=era5_land&timezone=UTC",
+      "sha256": "4a25e41ffac66d27d8828c7806f7fda2a800de733e828d4aa4cea1884c5a24fc",
+      "grid_latitude": 33.200005,
+      "grid_longitude": 75.7
+    },
+    {
+      "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.6&longitude=76.9&start_date=2025-06-24&end_date=2025-09-30&hourly=precipitation%2Ctemperature_2m%2Csoil_moisture_0_to_7cm%2Csnow_depth&models=era5_land&timezone=UTC",
+      "sha256": "afd78776db944c70e1a4c04096b2b847175100b83facbe54daa7bd3ea6fc4eef",
+      "grid_latitude": 32.6,
+      "grid_longitude": 76.899994
+    }
+  ],
+  "rejected_documents": [
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/1/view",
+      "date": "2024-07-01",
+      "error": "Bulletin date mismatch: set() != 2024-07-01"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/102/view",
+      "date": "2024-06-24",
+      "error": "Unrecognized discharge units"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/107/view",
+      "date": "2024-06-25",
+      "error": "Bulletin date mismatch: set() != 2024-06-25"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/111/view",
+      "date": "2024-06-26",
+      "error": "Bulletin date mismatch: set() != 2024-06-26"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/115/view",
+      "date": "2024-06-27",
+      "error": "Bulletin date mismatch: set() != 2024-06-27"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/119/view",
+      "date": "2024-06-28",
+      "error": "Bulletin date mismatch: set() != 2024-06-28"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/123/view",
+      "date": "2024-06-29",
+      "error": "Bulletin date mismatch: set() != 2024-06-29"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/127/view",
+      "date": "2024-06-30",
+      "error": "Bulletin date mismatch: set() != 2024-06-30"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/13/view",
+      "date": "2024-07-04",
+      "error": "Bulletin date mismatch: set() != 2024-07-04"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/135/view",
+      "date": "2025-09-01",
+      "error": "Unrecognized discharge units"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/139/view",
+      "date": "2025-09-02",
+      "error": "Unrecognized discharge units"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/145/view",
+      "date": "2025-07-04",
+      "error": "Bulletin date mismatch: {datetime.date(2025, 7, 4), datetime.date(2025, 7, 1)} != 2025-07-04"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/17/view",
+      "date": "2024-07-05",
+      "error": "Bulletin date mismatch: set() != 2024-07-05"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/170/view",
+      "date": "2025-09-10",
+      "error": "Bulletin date mismatch: {datetime.date(2025, 9, 10), datetime.date(2025, 9, 1)} != 2025-09-10"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/21/view",
+      "date": "2024-07-06",
+      "error": "Bulletin date mismatch: set() != 2024-07-06"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/211/view",
+      "date": "2025-09-20",
+      "error": "Bulletin date mismatch: {datetime.date(2025, 9, 2), datetime.date(2025, 9, 20)} != 2025-09-20"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/248/view",
+      "date": "2025-06-30",
+      "error": "Bulletin date mismatch: {datetime.date(2025, 7, 1), datetime.date(2025, 6, 30)} != 2025-06-30"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/25/view",
+      "date": "2024-07-07",
+      "error": "Bulletin date mismatch: set() != 2024-07-07"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/29/view",
+      "date": "2024-07-08",
+      "error": "Bulletin date mismatch: set() != 2024-07-08"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/33/view",
+      "date": "2024-07-09",
+      "error": "Bulletin date mismatch: set() != 2024-07-09"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/37/view",
+      "date": "2024-07-10",
+      "error": "Bulletin date mismatch: set() != 2024-07-10"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/41/view",
+      "date": "2024-07-11",
+      "error": "Bulletin date mismatch: set() != 2024-07-11"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/45/view",
+      "date": "2024-07-12",
+      "error": "Bulletin date mismatch: set() != 2024-07-12"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/49/view",
+      "date": "2024-07-13",
+      "error": "Bulletin date mismatch: set() != 2024-07-13"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/5/view",
+      "date": "2024-07-02",
+      "error": "Bulletin date mismatch: set() != 2024-07-02"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/53/view",
+      "date": "2024-07-14",
+      "error": "Bulletin date mismatch: set() != 2024-07-14"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/58/view",
+      "date": "2024-07-15",
+      "error": "Bulletin date mismatch: set() != 2024-07-15"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/63/view",
+      "date": "2024-07-16",
+      "error": "Bulletin date mismatch: set() != 2024-07-16"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/68/view",
+      "date": "2024-07-17",
+      "error": "Bulletin date mismatch: set() != 2024-07-17"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/7/view",
+      "date": "2024-09-02",
+      "error": "Bulletin date mismatch: {datetime.date(2024, 9, 19), datetime.date(2024, 9, 2)} != 2024-09-02"
+    },
+    {
+      "source_url": "https://ffd.pmd.gov.pk/bulletins/archive/9/view",
+      "date": "2024-07-03",
+      "error": "Bulletin date mismatch: set() != 2024-07-03"
+    }
+  ],
+  "data_policy": "Measured FFD inflow/outflow; weather is modeled reanalysis; no simulated rows or filled gauge gaps.",
+  "weather_license": "Open-Meteo data CC BY 4.0; ERA5-Land / Copernicus attribution required."
+}

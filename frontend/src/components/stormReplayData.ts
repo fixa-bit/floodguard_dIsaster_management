@@ -33,7 +33,7 @@ export function polygonParts(geometry: Geometry | null): Polygon[] {
   return [];
 }
 
-export function waterPolygons(data: FloodExposurePreview | null, level: number): Polygon[] {
+export function waterPolygons(data: Pick<FloodExposurePreview, "supported" | "water"> | null, level: number): Polygon[] {
   if (!data?.supported || level <= 0) return [];
   return data.water.features.filter((feature) => Number(feature.properties?.min_level) <= level).flatMap((feature) => polygonParts(feature.geometry));
 }
@@ -72,7 +72,7 @@ function lineParts(geometry: Geometry | null): Position[][] {
 }
 
 export type CurrentRoute = { points: Coordinate[]; distances: number[]; length: number };
-export function currentRoutes(data: FloodExposurePreview): CurrentRoute[] {
+export function currentRoutes(data: Pick<FloodExposurePreview, "river_lines">): CurrentRoute[] {
   return data.river_lines.features.flatMap((feature) => lineParts(feature.geometry)).filter((points) => points.length > 1).flatMap((line) => {
     const points = line.map((point) => [point[0], point[1]] as Coordinate);
     const distances = [0];

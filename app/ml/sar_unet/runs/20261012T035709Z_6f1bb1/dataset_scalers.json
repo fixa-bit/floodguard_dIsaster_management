@@ -1,0 +1,86 @@
+{
+  "version": "prepare-v1",
+  "fit_split": "train",
+  "fit_pixels": "joint valid supervised training pixels",
+  "channels": [
+    {
+      "name": "during_vv",
+      "method": "train_zscore",
+      "mean": -10.403066762902828,
+      "std": 3.9312181963297683,
+      "constant_training_channel": false,
+      "clip": [
+        -25.64999999999999,
+        -0.8100000000000023
+      ],
+      "training_pixel_count": 55686204
+    },
+    {
+      "name": "during_vh",
+      "method": "train_zscore",
+      "mean": -17.255183360952554,
+      "std": 4.583361682331804,
+      "constant_training_channel": false,
+      "clip": [
+        -37.959999999999994,
+        -8.450000000000003
+      ],
+      "training_pixel_count": 55686204
+    },
+    {
+      "name": "pre_vv",
+      "method": "train_zscore",
+      "mean": -10.680153729156842,
+      "std": 3.5957906596503326,
+      "constant_training_channel": false,
+      "clip": [
+        -24.22,
+        -0.9599999999999937
+      ],
+      "training_pixel_count": 55686204
+    },
+    {
+      "name": "pre_vh",
+      "method": "train_zscore",
+      "mean": -17.453166801161174,
+      "std": 4.264886484394276,
+      "constant_training_channel": false,
+      "clip": [
+        -34.870000000000005,
+        -8.349999999999994
+      ],
+      "training_pixel_count": 55686204
+    },
+    {
+      "name": "elevation",
+      "method": "train_zscore",
+      "mean": 153.04506380779267,
+      "std": 138.79610517482703,
+      "constant_training_channel": false,
+      "clip": null,
+      "training_pixel_count": 55686204
+    },
+    {
+      "name": "slope",
+      "method": "train_zscore",
+      "mean": 2.8384491586087437,
+      "std": 4.855992583668026,
+      "constant_training_channel": false,
+      "clip": null,
+      "training_pixel_count": 55686204
+    },
+    {
+      "name": "permanent_water",
+      "method": "binary_passthrough",
+      "mean": 0.0,
+      "std": 1.0,
+      "clip": null
+    }
+  ],
+  "training_class_balance": {
+    "water": 4910357,
+    "nonwater": 50775847
+  },
+  "suggested_bce_pos_weight": 10.340561185266163,
+  "note": "Optional loss weight, not a trained model. SAR clips are approximate train percentiles using 0.01 dB bins; z-score moments are exact on clipped values."
+}

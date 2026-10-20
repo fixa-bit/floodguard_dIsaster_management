@@ -1,0 +1,34 @@
+{
+  "state": "completed",
+  "best_epoch": 7,
+  "epochs_run": 13,
+  "validation": {
+    "iou": 0.6178688608061552,
+    "dice": 0.7638058631010206,
+    "precision": 0.7800013811934574,
+    "recall": 0.7482692142066872,
+    "tp": 1468298,
+    "fp": 414132,
+    "fn": 493961,
+    "tn": 17143179,
+    "mean_chip_loss": 0.7285809030374849,
+    "mean_chip_iou": 0.3996215099666381
+  },
+  "test": {
+    "iou": 0.653561260079782,
+    "dice": 0.7904893224799528,
+    "precision": 0.7936017497991023,
+    "recall": 0.7874012130506947,
+    "tp": 1885270,
+    "fp": 490317,
+    "fn": 509024,
+    "tn": 17081509,
+    "mean_chip_loss": 0.7503830675295619,
+    "mean_chip_iou": 0.3981635971949809
+  },
+  "session_seconds": 643.2,
+  "limitations": [
+    "Official chip splits share flood events; unseen-event generalization unverified",
+    "Labels include permanent water; this is not a newly flooded classifier"
+  ]
+}

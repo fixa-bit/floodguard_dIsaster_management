@@ -1,0 +1,12 @@
+{
+  "station_id": "MARALA",
+  "target": "instantaneous reported inflow at 06:00 PKT",
+  "horizons_days": [1, 3, 7],
+  "training_years": [2024],
+  "validation_years": [2025],
+  "test_years": [2026],
+  "selection_metric": "validation RMSE in m3/s; MAE breaks ties",
+  "seed": 42,
+  "thresholds_cusecs": {"Low": 100000, "Medium": 150000, "High": 200000, "Very High": 400000, "Exceptional": 600000},
+  "threshold_source": "https://ffd.pmd.gov.pk/flood-limits"
+}

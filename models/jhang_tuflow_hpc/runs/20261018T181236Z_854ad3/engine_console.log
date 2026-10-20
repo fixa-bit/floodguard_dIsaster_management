@@ -1,0 +1,1557 @@
+
+Max CPU threads available = 4
+
+Executable: D:\Projects\disaster_management\tools\tuflow\2026.3.0\tuflow-2026.3\TUFLOW_iSP_w64.exe
+Input argument switches = -/–
+ 
+
+Build: 2026.3.0-iSP-w64
+
+
+            *=========================///========================*
+            |                                                    |
+            |         TTTTT U   U FFFF L     OOO  W   W          |
+            |           T   U   U F    L    O   O W   W          |
+            |           T   U   U FFF  L    O   O W W W          |
+            |           T   U   U F    L    O   O W W W          |
+            |           T    UUU  F    LLLL  OOO   W W           |
+            |                                                    |
+            |              Build: 2026.3.0-iSP-w64             |
+            |                                                    |
+            |     Copyright BMT Commercial Australia Pty Ltd     |
+            |                   www.tuflow.com                   |
+            |                 support@tuflow.com                 |
+            |                                                    |
+            *=========================///========================*
+ 
+
+Trying to open (I) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\Jhang_HPC_Demo.tcf...OK.  File Unit: 901
+
+Full input file name is "D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\Jhang_HPC_Demo.tcf"
+
+Searching for any Set Variable == commands...
+Searching for SQLITE Pragma Commands...
+GIS Projection being extracted from D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\projection.prj
+
+Trying to open (I) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\projection.prj...OK.  File Unit: 902
+
+SHP Projection: PROJCS["WGS_1984_UTM_Zone_43N",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",75.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Meter",1.0]]
+Extracting GeoTIFF projection from D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\grid\dem.tif
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\grid\dem.tif
+GRID Layer assigned ID of 1
+
+Trying to open (SI) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\grid\dem.tif...OK.  File Unit: 903
+...Closed File Unit: 903
+
+Trying to open (O) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo.tlf...OK.  File Unit: 903
+
+Executable: D:\Projects\disaster_management\tools\tuflow\2026.3.0\tuflow-2026.3\TUFLOW_iSP_w64.exe (Copyright BMT Commercial Australia Pty Ltd)
+
+Licence maintenance period: July 2026 - June 2027
+
+Computer Name: DESKTOP-C7JQO0C
+
+Simulation Started: 2026-Oct-18 23:12
+
+
+Compiler: IntelLLVM 2025.3.0
+
+Hazard Routines ID in TUFLOW_USER_DEFINED.dll: Default Hazard Routines
+
+No Specified Events.
+
+No Specified Scenarios.
+
+No variables defined using Set Variable ==
+
+Initialising Time of Startup Summary == D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_start_stats.txt
+
+Trying to open (O) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_start_stats.txt...OK.  File Unit: 904
+
+Initialising TUFLOW Licence Settings...
+Looking for "D:\Projects\disaster_management\tools\tuflow\2026.3.0\tuflow-2026.3\TUFLOW_Licence_Settings.lcf"...not found.
+Looking for "C:\ProgramData\TUFLOW\TUFLOW_Licence_Settings.lcf"...not found.
+Looking for "C:\BMT_WBM\TUFLOW_Licence_Settings.lcf"...not found.
+Looking for "C:\BMT_WBM\TUFLOW_Dongle_Settings.dcf"...not found.
+
+No TUFLOW licence Settings files found.  Default settings applied.
+WIBU Retry Time == 60
+WIBU Retry Count == 0
+WIBU Dongles Only == OFF  ! If set to ON, searches for WIBU dongles only.
+
+Simulations Log Folder == C:\ProgramData\TUFLOW\log\ALLAH\
+
+Trying to open (A) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\_ TUFLOW Simulations.log...OK.  File Unit: 905
+...Closed File Unit: 905
+
+Detected 4 CPUs.
+CPU limiting not activated for standalone dongle.
+
+Setting up dynamic arrays...
+
+Reading .tcf File .. D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\Jhang_HPC_Demo.tcf
+
+Trying to open (O) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo.wor...OK.  File Unit: 905
+
+Trying to open (O) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo.qgs...OK.  File Unit: 906
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_messages.shp
+GIS Layer assigned ID of 1
+
+Trying to open (BO) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_messages_P.shp...OK.  File Unit: 907
+
+Trying to open (BO) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_messages_P.shx...OK.  File Unit: 908
+
+Trying to open (O) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_messages_P.prj...OK.  File Unit: 909
+
+Trying to open (BO) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_messages_P.dbf...OK.  File Unit: 910
+...Closed File Unit: 909
+
+Trying to open (O) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_messages.csv...OK.  File Unit: 909
+
+Trying to open (I) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_messages.csv...OK.  File Unit: 911
+...Closed File Unit: 911
+
+Home Folder: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\
+
+Free-Form Input Assumed...
+
+
+tcf>> Demo Model == ON
+   << Demo Model...
+tcf>> Solution Scheme == HPC
+   << Solution Scheme...HPC 2
+
+tcf>> Hardware == CPU
+   << Hardware...
+NoXY: CHECK 2592 - Ignoring "Hardware ==" command due to -hw command line option.
+
+tcf>> CPU Threads == 2
+   << CPU Threads...set to 2
+
+tcf>> GIS Format == SHP
+   << GIS Format...processed elsewhere
+
+tcf>> SHP Projection == ..\model\gis\projection.prj
+   << SHP Projection...processed elsewhere
+
+tcf>> Use GDAL == OFF
+   << Use GDAL...processed elsewhere
+
+tcf>> TIF Projection == ..\model\grid\dem.tif
+   << TIF Projection...processed elsewhere
+
+tcf>> Geometry Control File == ..\model\jhang.tgc
+   << Geometry Control File...set to  ..\model\jhang.tgc
+
+tcf>> BC Control File == ..\model\jhang.tbc
+   << BC Control File...set to  ..\model\jhang.tbc
+
+tcf>> BC Database == ..\bc_dbase\bc_dbase.csv
+   << BC Database...set as D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\bc_dbase\bc_dbase.csv
+
+tcf>> Read Materials File == ..\model\materials.csv
+   << Read Materials File...setting bed resistance to Manning's n and reading n values...
+
+Trying to open (I) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\materials.csv...OK.  File Unit: 911
+
+  1...Processing: 1,0.04,,
+...Closed File Unit: 911
+
+tcf>> Timestep == 1
+   << Timestep...set to     1.000 seconds
+
+tcf>> Start Time == 0
+   << Start Time...set to       0.000 hours
+
+tcf>> End Time == 0.16666666666667
+   << End Time...set to       0.167 hours
+
+tcf>> Log Folder == log
+   << Log Folder...processed elsewhere
+
+tcf>> Output Folder == ..\results
+   << Output Folder...set as D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results
+
+tcf>> Write Check Files == ..\check
+   << Write Check Files...
+tcf>> Map Output Format == TIF
+   << Map Output Format... using TIF format
+
+tcf>> Map Output Data Types == h d V
+   << Map Output Data Types...set to  h d V
+
+tcf>> Map Output Interval == 20
+   << Map Output Interval...set to    20.000 seconds
+
+tcf>> Grid Output Cell Size == 30
+   << Grid Output Cell Size...set to 30.
+
+tcf>> Grid Output Origin == Model Origin
+   << Grid Output Origin...set to model origin
+
+tcf>> Time Series Output Interval == 10
+   << Time Series Output Interval...set to    10.000 seconds
+
+No Event Sources found.
+
+Start Time (h):.......     0.000
+Finish Time (h):......     0.167
+
+Primary 2D timestep (the largest) set to 1. secs
+Domain: Domain_001    Original Timestep:    1.00  Iterations:   1  Adopted Timestep:    1.00
+
+Start Output (h):.....     0.000
+Output Interval (s):..    20.000
+Maximums Start Track Time:      0.000
+
+Material Values:
+
+#1 - Material 1:
+Fixed Manning's n = 0.040
+IL/CL values not set.
+SRF (Storage Reduction Factor) = 0.
+Fraction Impervious = 0.
+
+
+Output Files to be Pre-fixed by: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\Jhang_HPC_Demo
+Log and message files to be pre-fixed by: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo
+
+Writing summary of .tcf commands to .tlf file...
+
+NoXY: CHECK 2251 - HPC Infiltration Drying Depth not specified, set to Cell Wet/Dry Depth - 0.0001.
+...Finished writing summary of .tcf commands.
+
+
+Found 0 User Defined Output Zone(s)
+
+
+Found 1 2D domain(s)
+
+
+Projection output: use simulation name.
+
+Scanning .tgc for:
+    Number of groundwater layers...
+Number of groundwater layers: 1
+
+Found a total of 0 hazard map outputs.
+
+Allocating 1600 Kb of temporary memory (RAM)
+
+Opening BC Control File "D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\jhang.tbc" for 2D Domain Domain_001
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_bc_outlet_L.shp
+GIS Layer assigned ID of 2
+ShapefileX Code: 9994  Length: 54
+ShapefileX Version: 1000  Type: 3
+Shapefile Code: 9994  Length: 94
+Shapefile Version: 1000  Type: 3
+DBF file contains 1 records.
+8 DBF Fields (Name [#/Type/Length]): Type [1/C/2]  Flags [2/C/3]  Name [3/C/100]  f [4/N/19]  d [5/N/19]  td [6/N/19]  a [7/N/19]  b [8/N/19]  
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_bc_outlet_L.shp]...
+
+Deallocating temporary memory (RAM)
+
+Allocating 0 Kb of temporary 1D domain memory (RAM)
+
+No ESTRY 1D link specified.
+
+
+Found a total of 0 1D nodes.  0 ESTRY nodes and 0 external 1D scheme nodes.
+
+
+Allocating space for output zones based on a resolution factor of 2
+
+tgc>> Origin == 237560.0, 3464540.0
+out > Origin...bottom left corner set to       237560.00000,     3464540.00000
+
+tgc>> Orientation Angle == 0
+out > Orientation Angle...see below for calculated angle
+
+tgc>> Cell Size == 30
+out > Cell Size...set to  30.000
+
+tgc>> Grid Size (X,Y) == 4800.0, 4800.0
+out > Grid Size (X,Y)...see below for calculated size
+
+Domain_001  : Grid Dimensions (N,M): 160,160
+Domain_001  : Geographic Origin:      237560.000     3464540.000
+Domain_001  : Geographic Rotation Angle:   0.000000
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_dom_check.shp
+GIS Layer assigned ID of 2
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_dom_check.shp]...
+
+Counting any Variable Zpt, SGS Zpt, FC and/or Layered FC Shapes...
+
+...Found total of 0 Variable Z Shape Zpts in 2D Domain Domain_001.
+
+...Found total of 0 FC Shape Cell Sides in 2D Domain Domain_001.
+
+...Found total of 0 Layered FC Shape Cell Sides in 2D Domain Domain_001.
+
+Allocated space for 0 Time Series Plot Outputs including Reporting Locations
+
+Allocated space for 0 Time Series Plot Output flow lines including Reporting Locations
+   with a maximum of 1 cell sides plus cell centres along longest line
+
+Allocated space for 0 Longitudinal Plot Line Segments
+   with a maximum of 1 cells along a segment
+
+Allocating 13 Mb of temporary 2D domain memory (RAM)
+FINDING Boundary Conditions:
+
+Allocating additional 53 Kb of temporary processing of boundary regions.
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_sa_inflow_R.shp
+GIS Layer assigned ID of 2
+ShapefileX Code: 9994  Length: 54
+ShapefileX Version: 1000  Type: 5
+Shapefile Code: 9994  Length: 598
+Shapefile Version: 1000  Type: 5
+DBF file contains 1 records.
+1 DBF Fields (Name [#/Type/Length]): Name [1/C/100]  
+Reading: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_sa_inflow_R.shp
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_sa_inflow_R.shp]...
+...Allocating space for   1 new SA time-series boundaries. Total =   1
+Opening Database...
+.Found database line: JHANG_TEST,inflow.csv,time_hr,flow_m3s
+
+Looking for data in columns 1, 2 after line starting with:
+time_hr,flow_m3s
+Converting .csv file to xf: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\bc_dbase\inflow.csv
+Scanning number of lines of lines in .csv file.
+Number of lines in .csv file: 3
+Found 2 columns based on header line.
+Found 2 rows of data
+Column    1: with name "time_hr" has 2 rows of data
+Column    2: with name "flow_m3s" has 2 rows of data
+Finished reading data
+Writing xf data...
+Finished writing xf file.
+...Array size from xf file: 2
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_bc_outlet_L.shp
+GIS Layer assigned ID of 2
+ShapefileX Code: 9994  Length: 54
+ShapefileX Version: 1000  Type: 3
+Shapefile Code: 9994  Length: 94
+Shapefile Version: 1000  Type: 3
+DBF file contains 1 records.
+8 DBF Fields (Name [#/Type/Length]): Type [1/C/2]  Flags [2/C/3]  Name [3/C/100]  f [4/N/19]  d [5/N/19]  td [6/N/19]  a [7/N/19]  b [8/N/19]  
+Number of Input Layers: 1
+Input Layer 1: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_bc_outlet_L.shp
+
+Found TUFLOW "HQ" BC with name ""...
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_bc_outlet_L.shp]...
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt    ngt
+
+Just Read:      0    159      0      0    158      0      0      0      0      0      1      0      0      0      0
+Just Read:      0
+
+Found 0 possible pit SX connections inside 2D Domain Domain_001
+Ignoring 0 pit SX connections outside 2D Domain Domain_001
+
+Found a total of 1 different SA(ST) inputs
+...with a maximum number of cells per input of 116
+
+De-allocating temporary processing of boundary regions.
+
+Deallocating temporary 2D domain memory (RAM)
+
+Domain_001  : Allocating Memory Pointers:
+Domain_001  : Grid data memory ...............          1 Mb
+Domain_001  : No infiltration data memory required. 
+Domain_001  : Variable Z and Layered FC memory          0 Mb
+Domain_001  : Sub-domain linking memory ......          0 Mb
+Domain_001  : Flow constrictions memory ......          0 Mb
+Domain_001  : Weirs and viscosity factor memory         0 Mb
+Domain_001  : Pressure, wind and waves memory           0 Mb
+Domain_001  : General Memory .................          0 Mb
+Domain_001  : Boundary conditions memory .....          0 Mb
+Domain_001  : Wind & waves boundary memory ...          0 Mb
+Domain_001  : Hydraulic results memory .......          2 Mb
+Domain_001  : Maximums results memory ........          1 Mb
+Domain_001  : Mass balance tracking memory ...          0 Mb
+Domain_001  : Minimums results memory ........          0 Mb
+Domain_001  : 2D grid indexing memory ........          0 Mb
+Domain_001  : SMS High Res format memory .....          0 Mb
+Domain_001  : Plot output (PO) memory ........          0 Mb
+Domain_001  : Longitudinal output (LP) memory           0 Mb
+ 
+Memory requested for 2D domain Domain_001     = 7 Mb
+Total Memory requested thus far               = 7 Mb
+
+Licence free mode requested.
+
+No sub-domains found
+External 1D Scheme arrays memory ..............          0 Mb
+Cyclone track array memory ....................          0 Mb
+Tri-diagonal matrix memory ....................          0 Mb
+
+Outside extent of model output: 237560., 3464540., 242360., 3469340.
+
+Grid output dimensions: 160 rows by 160 columns
+Grid output memory ............................          0 Mb
+TIN and output mesh memory ....................          3 Mb
+Mass balance tracking memory ..................          0 Mb
+
+No (evacuation) routes found.
+Route array memory ............................          0 Mb
+
+Number of Gauges ... 0
+
+Number of GIS Objects/Receptors ... 0
+Output Gauge array memory .....................          0 Mb
+Miscellaneous array memory ....................          0 Mb
+Maximum boundary table size ... 102
+Temporary arrays memory .......................          0 Mb
+
+Total 2D Domain(s) Real SP Memory requested ...          5 Mb
+Total 2D Domain(s) Real DP Memory requested ...          0 Mb
+Total 2D Domain(s) Integer Memory requested ...          2 Mb
+Total 2D Domain(s) Logical Memory requested ...          1 Mb
+Total 2D Domain(s) Character Memory requested .           0 Mb
+
+
+________________________________________________________________________________
+2D Domain Cell Sizes:        30.00, 
+2D Domain Timesteps:         1.000, 
+
+________________________________________________________________________________
+
+
+Deallocating temporary 1D domain memory (RAM)
+mmc  =                 1449183
+mmci =                  672843
+mmcl =                  296043
+mmc8 =                  107737
+mmcc =                    1289
+
+Allocating                      10 Mb of dynamic memory (RAM)
+
+Allocation successful.
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\plot\gis\Jhang_HPC_Demo_PLOT.shp
+GIS Layer assigned ID of 2
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\plot\gis\Jhang_HPC_Demo_PLOT.shp
+GIS Layer assigned ID of 3
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\plot\gis\Jhang_HPC_Demo_PLOT.shp
+GIS Layer assigned ID of 4
+
+________________________________________________________________________________
+CPU Time:        0:00:00  [0.000061 h]
+Clock Time:      0:00:00  [0. h]
+
+Domain_001: Reading Geometry File ... D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\jhang.tgc
+
+tgc>> Set Code == 1
+out>> Set Code...global value of     1.000 being applied
+
+tgc>> Set Zpts == 99999
+out>> Set Zpts...global value of 99999.000 being applied
+
+tgc>> Read GRID Zpts == grid\dem.tif
+out>> Read GRID Zpts...Allocating temporary memory for XF zpt array, memory required 2194kB.
+
+Processing GRID File: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\grid\dem.tif
+
+Using Grid Approach == METHOD B
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\grid\dem.tif
+GRID Layer assigned ID of 1
+
+Reading GeoTIFF grid...
+    0....10....20....30....40....50....60....70....80....90....100
+      60     160
+
+Processing 103684 temporary points...
+Assigned 103684 Zpts an elevation.
+...103684 Zpts read
+
+tgc>> Set Mat == 1
+out>> Set Mat...global value of     1.000 being applied
+...Finished Reading Geometry File
+ 
+
+Domain_001: Searching .tcf file for data ... 
+...Finished Searching .tcf File
+Identifying cells within user defined output zones...
+...Finished identifying cells within user defined output zones...
+
+Setting instability water level...
+...Instability water level limit set to   169.202
+
+Pre-processing breakline ZH points for depth interpolation
+
+... Finished processing breakline ZH points for depth interpolation
+
+Assigning any Variable Z Shape 1D Trigger Nodes...
+...Finished
+
+
+________________________________________________________________________________
+CPU Time:        0:00:00  [0.000082 h]
+Clock Time:      0:00:00  [0. h]
+
+Domain_001: Reading Boundary File: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\jhang.tbc
+
+READING Boundary Conditions:
+
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt
+Requested:           159      0      0    158      0      0      0      0      0      1      0      0      0      0
+
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_bcc_check.shp
+GIS Layer assigned ID of 5
+
+Creating D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_2d_bc_tables_check.csv
+
+Allocating additional 53 Kb of temporary processing of boundary regions.
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_sa_inflow_R.shp
+GIS Layer assigned ID of 6
+ShapefileX Code: 9994  Length: 54
+ShapefileX Version: 1000  Type: 5
+Shapefile Code: 9994  Length: 598
+Shapefile Version: 1000  Type: 5
+DBF file contains 1 records.
+1 DBF Fields (Name [#/Type/Length]): Name [1/C/100]  
+     116
+
+Closing GIS Layer 6 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_sa_inflow_R.shp]...
+...Found     1 new SA/RF time-series boundaries. Total =      1
+Opening Database...
+.Found database line: JHANG_TEST,inflow.csv,time_hr,flow_m3s
+
+Checking if D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\bc_dbase\xf\inflow.csv.xf4 file is newer...it isn't
+
+Looking for data in columns 1, 2 after line starting with:
+time_hr,flow_m3s
+Converting .csv file to xf: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\bc_dbase\inflow.csv
+Scanning number of lines of lines in .csv file.
+Number of lines in .csv file: 3
+Found 2 columns based on header line.
+Found 2 rows of data
+Column    1: with name "time_hr" has 2 rows of data
+Column    2: with name "flow_m3s" has 2 rows of data
+Finished reading data
+Writing xf data...
+Finished writing xf file.
+Extracting Data...
+...Finished Extracting Data
+Checking ascending order of Column 1...OK
+Applying time shift of ...................:       0.000
+Applying value addition factor of ........:       0.000
+Applying value multiplication factor of ..:       1.000
+Column 1 ranges from        0.000 to        0.167
+Column 2 ranges from      100.000 to      283.333
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt
+     Read:      0      1      0      0      0      0      0      0      0      0      1      0      0      0      0
+Requested:           159      0      0    158      0      0      0      0      0      1      0      0      0      0
+
+Checking all connection objects are used...
+...Finished.
+
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_bc_outlet_L.shp
+GIS Layer assigned ID of 6
+ShapefileX Code: 9994  Length: 54
+ShapefileX Version: 1000  Type: 3
+Shapefile Code: 9994  Length: 94
+Shapefile Version: 1000  Type: 3
+DBF file contains 1 records.
+8 DBF Fields (Name [#/Type/Length]): Type [1/C/2]  Flags [2/C/3]  Name [3/C/100]  f [4/N/19]  d [5/N/19]  td [6/N/19]  a [7/N/19]  b [8/N/19]  
+Number of Input Layers: 1
+Input Layer 1: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_bc_outlet_L.shp
+...Reading coordinates of any 1D connections from Layer 1
+Found     0 1D connections
+
+Rewinding GIS Layer 6...
+DBF file contains 1 records.
+8 DBF Fields (Name [#/Type/Length]): Type [1/C/2]  Flags [2/C/3]  Name [3/C/100]  f [4/N/19]  d [5/N/19]  td [6/N/19]  a [7/N/19]  b [8/N/19]  
+
+Processing TUFLOW "HQ" BC with name ""...
+
+Closing GIS Layer 6 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\model\gis\2d_bc_outlet_L.shp]...
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt
+     Read:      0    159      0      0    158      0      0      0      0      0      1      0      0      0      0
+Requested:           159      0      0    158      0      0      0      0      0      1      0      0      0      0
+
+Checking all connection objects are used...
+...Finished.
+
+
+    Final:           159      0      0    158      0      0      0      0      0      1      0      0      0      0
+            BC ID    nbc    nht    nhs    nhq    nqt    nqc    nvt    nvc    nwp    nst    nsh    nsx    nhx   nvgt
+
+
+De-allocating temporary processing of boundary regions.
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_bcc_check.shp]...
+
+...Finished Reading Boundary File for Domain Domain_001
+
+Indexing HX and SX cells connectivity to 1D nodes...
+Maximum number HX cells linked to a 1D node = 0
+Maximum number SX cells linked to a 1D node = 0
+Allocating memory for HX and SX 1D/2D link indexing...
+Domain_001: Indexing HX and SX cells...
+Finished indexing HX and SX cells connectivity to 1D nodes.
+
+________________________________________________________________________________
+CPU Time:        0:00:00  [0.0001 h]
+Clock Time:      0:00:00  [0. h]
+
+Domain_001: Initialising 2D Data (Stage 1)...
+
+Completing unit conversions...
+
+Setting up linear and spline interpolation tables...
+   HT Boundaries...    0
+   HQ Boundaries...  158
+   QT Boundaries...    0
+   QTA Boundaries...    0
+   ST Boundaries...    1
+   SH and SD Boundaries...    0
+   VG Boundaries...    0
+   VT Boundaries...    0
+   WT Boundaries...    0
+
+Checking Material and Manning's n values...
+
+Initialising any layered FC coefficients...
+
+Setting default computational array values...
+
+...Finished Initialising Data (Stage 1) for Domain Domain_001
+
+________________________________________________________________________________
+CPU Time:        0:00:00  [0.0001 h]
+Clock Time:      0:00:00  [0. h]
+
+Domain_001: Initialising 2D Data (Stage 2)...
+
+Assigning 2D cell codes...
+
+Pre-processing any SA regions...
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_sac_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_sac_check.shp]...
+
+Setting invert levels for distributing SX flows...
+
+Setting flow constriction lids...
+
+Initialising any tgc FC obverts...
+
+Checking storage reduction factors...
+
+Setting initial wet/dry flags...
+
+Pre-processing bed resistance values...
+
+Checking for any uninitialised Zpt values...
+
+Setting groundwater base levels for distributing SX flows...
+
+Checking all cells have active faces...
+
+...Finished Initialising Data (Stage 2) for Domain Domain_001
+
+________________________________________________________________________________
+
+Domain_001: Checking 2D Input Data...
+
+Calculating any automatic HQ boundaries in Domain Domain_001
+
+...Finished calculating any automatic HQ boundaries in Domain Domain_001
+...Finished Checking Input Data for Domain Domain_001
+
+Checking any 1D/2D and 2D/2D Link Elevations...
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_1d_to_2d_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_1d_to_2d_check.shp]...
+...Finished.
+
+________________________________________________________________________________
+
+Domain_001: Setting up any 2D structure flow group and reporting location links... 
+...Finished setting up any 2D structure flow group and reporting location links
+
+Found a total of 0 structure groups.
+
+________________________________________________________________________________
+
+1D Initial water levels (IWL) globally set to a default of 0.
+2D Initial water levels (IWL) globally set to a default of 0.
+
+________________________________________________________________________________
+
+Writing any remaining check files...
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_grd_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_grd_check.shp]...
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_zpt_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_zpt_check.shp]...
+Opening GIS Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_uvpt_check.shp
+GIS Layer assigned ID of 5
+
+Closing GIS Layer 5 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_uvpt_check.shp]...
+...Finished writing any remaining check files
+
+Checking Zpt values are within Zpt Range Check values of -9998.000 and 99998.000...
+
+Zpts range from 152.000 to 159.565 m.
+
+...Finished.  All active Zpt values are within Zpt Range Check.
+
+Isolating redundant perimeter sections of 2D domain Domain_001...
+...Reduced computational grid by 0%.  Now extends from [1,1] to [160,160].
+...Reduced output grid by 0%.  Now extends from [1,1] to [160,160].
+
+________________________________________________________________________________
+CPU Time:        0:00:26  [0.007287 h]
+Clock Time:      0:00:31  [0.008611 h]
+
+Processing 1D/2D mesh and writing mesh file(s) where applicable...
+...Processing 2D Domain Domain_001
+
+Allocating 537Kb memory for temporary mesh node arrays...
+Processing mesh nodes for domain...
+Processing cell centre nodes for domain...
+Processing mesh elements for domain...
+...found 25600 cells and 51521 nodes
+
+Mesh statistics for Output Zone 
+  Number 1D WLL Elements:            0
+  Number 1D WLL Nodes:               0
+  Number 2D Cells:               25600
+  Number 2D Mesh Elements:      102400
+  Number 2D Mesh Nodes:          51521
+
+...Finished Writing 2DM File
+
+
+Generating and writing check DEMs...
+
+Calculating grid interpolation factors...
+Element:     10000    20000    30000    40000    50000    60000    70000    80000    90000   100000
+Finished calculating grid interpolation factors.
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_DEM_Z.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\check_DEM_M.tif
+GRID Layer assigned ID of 1
+...Finished generating and writing check DEMs.
+
+Calculating grid interpolation factors...
+Element:     10000    20000    30000    40000    50000    60000    70000    80000    90000   100000
+Finished calculating grid interpolation factors.
+
+Committing any changes to open GPKG layers...
+
+Number of WARNINGs:    _messages layer =       0     Total =       0
+Number of CHECKs:      _messages layer =       2     Total =       2
+
+________________________________________________________________________________
+CPU Time:        0:00:26  [0.007296 h]
+Clock Time:      0:00:31  [0.008611 h]
+Closing Time of Startup Summary...
+   Done
+
+......................................... Running TUFLOW HPC Solver
+
+
+Allocating 215Kb memory for temporary HPC arrays Stage 1...
+
+Checking boundary data to be sent...
+...Finished checking boundary data to be sent to HPC
+
+Sending HPC .tlf filename...
+
+Identifying HPC solver...
+HPC Solver Build: 3.51.9
+
+Sending HPC time history .hpc.dt.csv filename...
+
+Sending initialisation data to HPC...
+CPU memory initialised.
+Stack Size: 100007936 bytes (~95 MB)
+HPC: Log file = D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo.hpc.tlf
+HPC: HPC version 3.51.9 (Aug 26 2026 09:02:09) - single precision - win64
+HPC: Timestep history file = D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo.hpc.dt.csv
+HPC: Hardware option = CPU, CPU Threads = 2
+HPC: Peer to peer access allowed
+HPC: Initialising model ...
+HPC: Setting units to [m s]
+HPC: Setting ny == 164
+HPC: Padding ny to 168
+HPC: Setting nx == 164
+HPC: Selecting spatial scheme 3
+HPC: HPC Temporal Scheme == 4: fourth order time integration
+HPC: Screen/Log Display Interval == 10
+HPC: Timestep Repeats == 10
+HPC: Solution Scheme == HPC 2nd
+HPC: NaN counting on
+HPC: Adaptive time stepping on (Control Number Factor > 0)
+HPC: Store Maximums and Minimums == ON MAXIMUMS ONLY
+HPC: Number ground water layers = 0
+HPC: Gridded rainfall not requested
+HPC: Hydrograph indexing requested
+HPC: Hydrograph weighting not requested
+HPC: External stress file not specified
+HPC: SRF/CWF/FLC layer requested
+HPC: Mass balance output == on
+HPC: Material IL/CL not requested
+HPC: Number Time Output Cutoff Thresholds == 0
+HPC: Cumulative rainfall (RFC) not requested
+HPC: Number plot output times == 67 (Start Time Series Output, Time Series Output Interval)
+HPC: Number tracer fields == 0
+HPC: Viscosity formulation == Wu
+HPC: Allowing for tracking of 1 scalar maximum fields
+HPC: Allowing for tracking of 1 vector maximum fields
+HPC: Time of maximimum not requested for additional map output fields
+HPC: Minimum dt output not requested
+HPC: Number of ESTRY 1D nodes == 0
+HPC: Soil Initial Loss ==  Ignore Material Impervious 
+HPC: SGS == off
+HPC: Viscosity Approach == Method B
+HPC: Boundary Approach == Method B
+HPC: Mannings Depth Approach == Method B
+HPC: SGS Infiltration Approach == Automatic
+HPC: SGS Negative RF Approach == Wetted Area
+HPC: HPC Infiltration Drying Approach == METHOD C
+HPC: GroundWater advection not requested
+HPC: SGS depth approach Average                 (use cell average depth)
+HPC: SGS velocity based output approach Average (use cell average depth)
+HPC: HPC Dry Face Inertia Approach == Method B
+HPC: Settling/decay of tracers not requested
+HPC: HPC Weir Approach == Method B ENERGY
+HPC: SGS Sheet Flow Approach == Method A
+HPC: SGS Gradient Limiter == Method A
+HPC: SGS sheet flow output not requested
+HPC: HPC SX Momentum Approach == Method B
+HPC: Timestep history file write interval == 10
+HPC: Number of TUFLOW Catch cells == 0
+HPC: Atmospheric pressure field not specified
+HPC: HPC Timestepping Approach == Method B
+HPC: Subsurface Vertical Flux Model == Darcy's Law
+HPC: Form Loss Rotational Adjustment == ON Polylines
+HPC: Groundwater Z Flux Normalise == ON
+HPC: Cell Wet/Dry Depth == 0.002 m
+HPC: HPC Infiltration Drying Depth == 0.0019 m
+HPC: Viscosity Coefficients == 7 0
+HPC: Cell Size == 30 x 30 m
+HPC: Start Time =    0:00:00
+HPC: Timestep == 0.1
+HPC: Control Number Factor == 1
+HPC: Timestep Minimum == 0.1 s
+HPC: SA Minimum Depth == 0.002 m
+HPC: Start Time Series Output    ==    0:00:00
+HPC: Time Series Output Interval == 600.5
+HPC: Boundary Viscosity Factor == 1
+HPC: Density of water == 1025 kg/m^3
+HPC: Wind/Wave Shallow Depths == 0.2 1
+HPC: Control Number Factors == 1 1 0.3
+HPC: SGS Minimum Cell Area Ratio == 0.010000
+HPC: Maximum Velocity Cutoff Depth == 0.100000
+HPC: Timestep Maximum == 214.176 s
+HPC: HPC Weir Factor == 0.3, 0.78
+HPC: HPC has spatially varying weir factors
+HPC: Wu Mannings Limit = 0.100000
+HPC: gridRotation = 0.000000 degrees
+HPC: HQBoundaryFilter = 5
+HPC: velLimit = 30
+HPC: Soil moisture power function exponent for vertical flux = 2
+HPC: Soil moisture power function exponent for horizontal flux = 0
+HPC: Store maximums on
+HPC: Beginning CPU memory allocations for thread 0 ...
+HPC:     allocating nan counter ...
+HPC:     allocating z, h, u, v, a, matc, matu, matv, streamOrder, hy, rf, sa, nut, phi2, phi4 ...
+HPC:     allocating GPU synchronisation buffers ...
+HPC:     allocating Parameters initialised.
+...Finished sending initialisation data
+
+Sending elevation data and initial conditions...
+...Finished sending elevation data and initial conditions
+
+No plot output locations to send.
+
+Sending any Evaluation Group Data...
+Finished sending any Evaluation Group Data
+
+Transferring material parameters...
+...Finished transferring Material Parameters.
+
+Transferring Material IDs...
+...Finished transferring Material IDs.
+
+Transferring Storage Reduction Factors (SRF)...
+...Finished transferring Storage Reduction Factors (SRF).
+
+No Cell Width Factors (CWF) to transfer...
+
+No Form Loss Coefficients (FLC) to transfer...
+
+No soils information to be transfered.
+
+No Time Output Cutoff Depth(s) to transfer...
+
+No Layered Flow Constriction data to transfer...
+
+No Variable Z Shapes to transfer...
+
+Transferring tracking scalar maximums settings...
+
+... Finished transferring tracking scalar maximums settings...
+
+Transferring tracking vector maximums settings...
+
+... Finished transferring tracking vector maximums settings...
+
+________________________________________________________________________________
+CPU Time:        0:00:26  [0.0073 h]
+Clock Time:      0:00:31  [0.008611 h]
+
+Sending boundary data to HPC...
+
+Allocating 1291Kb memory for temporary HPC arrays Stage 2...
+
+Sending active/inactive cell data to HPC...
+...Finished sending active/inactive cell data to HPC Solver.
+
+No stream order data to send to HPC Solver.
+
+No active GWL to send or GW advection in soil layer not activated...
+
+No global wind shear stress data to send to HPC Solver.
+...Finished sending boundary data to HPC Solver.
+
+Initialising 1D Virtual Pipe data for HPC Solver...
+
+Sending any 1D Virtual Pipe data to HPC Solver...
+Sent 0 virtual pipe pit depth-discharge curves to HPC Solver.
+No HPC virtual pipe pits to send.
+...Finished sending 1D Virtual Pipe data to HPC Solver.
+...Finished initialising 1D Virtual Pipe data for HPC Solver.
+
+Setting weir angle at breaklines...
+
+Sending Spatial WrF data...
+
+________________________________________________________________________________
+CPU Time:        0:00:26  [0.0073 h]
+Clock Time:      0:00:31  [0.008611 h]
+
+________________________________________________________________________________
+
+Initialising Run Time Summary == D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_hpc_run_stats.txt
+hydrographType hydrographSource1 hydrographSource2 ...
+HPC:     allocating mnu mnv ...
+HPC:     allocating Lm0, Lm
+HPC:     allocating eMax, tMax ...
+HPC:     allocating scalar maximum fields ...
+HPC:     allocating vector maximum fields ...
+HPC:     allocating hydrographIndexLayer ...
+HPC:     allocating area width and form loss factor layers ...
+HPC:     allocating constant shear stress data ...
+HPC:     allocating boundary data vectors ...
+HPC:     allocating hDot, uDot, vDot, h0, u0, v0, h_, u_, v_ ...
+HPC:     allocating wrfu, wrfv ...
+HPC:     allocating wrau, wrav ...
+HPC:     ... done memory allocations
+HPC: Beginning CPU memory allocations for thread 1 ...
+HPC:     allocating nan counter ...
+HPC:     allocating z, h, u, v, a, matc, matu, matv, streamOrder, hy, rf, sa, nut, phi2, phi4 ...
+HPC:     allocating GPU synchronisation buffers ...
+HPC:     allocating hydrographType hydrographSource1 hydrographSource2 ...
+HPC:     allocating mnu mnv ...
+HPC:     allocating Lm0, Lm
+HPC:     allocating eMax, tMax ...
+HPC:     allocating scalar maximum fields ...
+HPC:     allocating vector maximum fields ...
+HPC:     allocating hydrographIndexLayer ...
+HPC:     allocating area width and form loss factor layers ...
+HPC:     allocating constant shear stress data ...
+HPC:     allocating boundary data vectors ...
+HPC:     allocating hDot, uDot, vDot, h0, u0, v0, h_, u_, v_ ...
+HPC:     allocating wrfu, wrfv ...
+HPC:     allocating wrau, wrav ...
+HPC:     ... done memory allocations
+HPC:  ... done model initialisation
+HPC: z range = 152.000000 ... 159.564911
+HPC: Input depth data positive (range = 0.001900 ... 0.001900)
+HPC: Copying zc zu zv zh h u v data to device 0 ...
+HPC: Copying zc zu zv zh h u v data to device 1 ...
+HPC: Adding material number   1, fraction impervious = 0.0000, mannings n =  0.040
+HPC: Setting material layer ...
+HPC: Material type   1 referenced by      26896 cells,      26896 uFaces,      26896 vFaces
+HPC: Copying material ID layer to device 0 ...
+HPC: Copying material ID layer to device 1 ...
+HPC: Setting cell area factors ...
+HPC: Copying cell area factors to device 0 ...
+HPC: Copying cell area factors to device 1 ...
+HPC: Cell area factors set - minimum value was 1
+HPC: Adding scalar maximum field 0, type 0
+HPC: Adding vector maximum field 0, type 0
+HPC: Adding boundary level graph number     1, bc_type =  2, interpolationType = 2, nPoints =  102
+HPC: Adding hydrograph number     1, bc_type = 32, interpolationType = 2, nPoints =    2
+HPC:                               triggerIndex =   0, triggerDirection = 0, triggerValue = 0
+HPC: Setting active layer ...
+HPC: Number active cells = 25442
+HPC: Boundary level graph   1 referenced by        158 cells
+HPC: Number sealed wall cells = 1296
+HPC: Adding hydrograph index layer 1 ...
+HPC: Hydrograph     1 type 32 referenced by        116 cells
+HPC: Zero hydrograph referenced by      26780 cells
+HPC: Copying Weir factors to device 1 ...
+HPC: Copying Weir factors to device 0 ...
+HPC: Copying breakline weir angle data to device 0 ...
+HPC: Copying breakline weir angle data to device 1 ...
+HPC: Copying HPC thin weir parameters == 0.577, 1.5, 8.55, 0.556
+HPC: Copying HPC thick weir parameters == 0.577, 1.5, 8.55, 0.556
+HPC: Hydrograph     1 type 32 referenced by        116 cells
+HPC: Zero hydrograph  referenced by      25326 cells
+HPC: Model has 0 evaluation groups
+HPC:     allocating dataReductionBlock ...
+HPC:     allocating dataReductionBlock ...
+HPC: Copying active index layer to device 0 memory ... 
+HPC: Copying active index layer to device 1 memory ... 
+HPC: Copying stream order to 0 ...
+HPC: Copying stream order to 1 ...
+HPC: Copying 1 hydrographTypes to device 0 ...
+HPC: Copying boundaryLevelgraphTypes to device 0 ...
+HPC: Copying 1 hydrograph index layers to device 0 ...
+HPC: Copying 1 hydrographTypes to device 1 ...
+HPC: Copying boundaryLevelgraphTypes to device 1 ...
+HPC: Copying 1 hydrograph index layers to device 1 ...
+HPC: Copying 1 material types to device 0 ... 
+HPC: Copying switches1 (0x97000647) to device 0 memory ... 
+HPC: Copying switches2 (0x0000D0SIM:    0:00:00    -d  0  0    0D100%  1D  0%  2D  0%    CE  0.0%  0.0%  0.0%    Vi     0  Vo     0  dV     0
+Relative device loads:    0.0%   0.0%
+Writing HPC Output at: 0:00:00  Clock: 0:00:31  CPU: 0:00:26
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_00_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_00_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_00_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_00_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.000
+SIM:    0:00:20    -d  0  0    0D  9%  1D  0%  2D 91%    CE -0.0%  0.0% -0.0%    Vi  2061  Vo     0  dV  2061
+Relative device loads:   98.1% 100.0%
+Writing HPC Output at: 0:00:20  Clock: 0:00:32  CPU: 0:00:27
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_00_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_00_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_00_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_00_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.006
+SIM:    0:00:40    -d  0  0    0D 12%  1D  0%  2D 88%    CE -0.0%  0.0% -0.0%    Vi  2183  Vo     0  dV  2183
+Relative device loads:   98.1% 100.0%
+Writing HPC Output at: 0:00:40  Clock: 0:00:32  CPU: 0:00:28
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_00_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_00_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_00_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_00_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.011
+SIM:    0:01:00    -d  0  0    0D 15%  1D  0%  2D 85%    CE -0.0%  0.0% -0.0%    Vi  2306  Vo     0  dV  2306
+Relative device loads:   96.8% 100.0%
+Writing HPC Output at: 0:01:00  Clock: 0:00:32  CPU: 0:00:28
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_01_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_01_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_01_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_01_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.017
+SIM:    0:01:20    -d  0  0    0D 18%  1D  0%  2D 82%    CE -0.0%  0.0% -0.0%    Vi  2428  Vo     0  dV  2428
+Relative device loads:   94.0% 100.0%
+Writing HPC Output at: 0:01:20  Clock: 0:00:32  CPU: 0:00:29
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_01_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_01_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_01_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_01_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.022
+SIM:    0:01:40    -d  0  0    0D 21%  1D  0%  2D 79%    CE -0.0%  0.0% -0.0%    Vi  2550  Vo     0  dV  2550
+Relative device loads:   95.0% 100.0%
+Writing HPC Output at: 0:01:40  Clock: 0:00:33  CPU: 0:00:29
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_01_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_01_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_01_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_01_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.028
+SIM:    0:02:00    -d  0  0    0D 24%  1D  0%  2D 76%    CE -0.0%  0.0% -0.0%    Vi  2672  Vo     0  dV  2672
+Relative device loads:   94.9% 100.0%
+Writing HPC Output at: 0:02:00  Clock: 0:00:33  CPU: 0:00:29
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_02_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_02_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_02_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_02_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.033
+SIM:    0:02:20    -d  0  0    0D 26%  1D  0%  2D 74%    CE  0.0%  0.0%  0.0%    Vi  2794  Vo     0  dV  2794
+Relative device loads:   95.2% 100.0%
+Writing HPC Output at: 0:02:20  Clock: 0:00:33  CPU: 0:00:30
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_02_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_02_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_02_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_02_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.039
+SIM:    0:02:40    -d  0  0    0D 28%  1D  0%  2D 72%    CE -0.0%  0.0% -0.0%    Vi  2917  Vo     0  dV  2917
+Relative device loads:   95.7% 100.0%
+Writing HPC Output at: 0:02:40  Clock: 0:00:33  CPU: 0:00:30
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_02_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_02_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_02_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_02_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.044
+SIM:    0:03:00    -d  0  0    0D 30%  1D  0%  2D 70%    CE -0.0%  0.0% -0.0%    Vi  3039  Vo     0  dV  3039
+Relative device loads:   96.1% 100.0%
+Writing HPC Output at: 0:03:00  Clock: 0:00:33  CPU: 0:00:30
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_03_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_03_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_03_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_03_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.050
+SIM:    0:03:20    -d  0  0    0D 31%  1D  0%  2D 69%    CE -0.0%  0.0% -0.0%    Vi  3161  Vo     0  dV  3161
+Relative device loads:   96.4% 100.0%
+Writing HPC Output at: 0:03:20  Clock: 0:00:33  CPU: 0:00:30
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_03_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_03_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_03_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_03_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.056
+SIM:    0:03:40    -d  0  0    0D 33%  1D  0%  2D 67%    CE  0.0%  0.0%  0.0%    Vi  3283  Vo     0  dV  3283
+Relative device loads:   96.5% 100.0%
+Writing HPC Output at: 0:03:40  Clock: 0:00:33  CPU: 0:00:31
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_03_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_03_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_03_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_03_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.061
+SIM:    0:04:00    -d  0  0    0D 35%  1D  0%  2D 65%    CE  0.0%  0.0%  0.0%    Vi  3406  Vo     0  dV  3406
+Relative device loads:   95.9% 100.0%
+Writing HPC Output at: 0:04:00  Clock: 0:00:34  CPU: 0:00:31
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_04_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_04_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_04_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_04_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.067
+SIM:    0:04:20    -d  0  0    0D 36%  1D  0%  2D 64%    CE -0.0%  0.0% -0.0%    Vi  3528  Vo     0  dV  3528
+Relative device loads:   95.8% 100.0%
+Writing HPC Output at: 0:04:20  Clock: 0:00:34  CPU: 0:00:31
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_04_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_04_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_04_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_04_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.072
+SIM:    0:04:40    -d  0  0    0D 37%  1D  0%  2D 63%    CE -0.0%  0.0% -0.0%    Vi  3650  Vo     0  dV  3650
+Relative device loads:   95.8% 100.0%
+Writing HPC Output at: 0:04:40  Clock: 0:00:34  CPU: 0:00:31
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_04_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_04_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_04_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_04_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.078
+SIM:    0:05:00    -d  0  0    0D 39%  1D  0%  2D 61%    CE  0.0%  0.0%  0.0%    Vi  3772  Vo     0  dV  3772
+Relative device loads:   96.0% 100.0%
+Writing HPC Output at: 0:05:00  Clock: 0:00:34  CPU: 0:00:32
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_05_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_05_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_05_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_05_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.083
+SIM:    0:05:20    -d  0  0    0D 40%  1D  0%  2D 60%    CE -0.0%  0.0% -0.0%    Vi  3894  Vo     0  dV  3894
+Relative device loads:   96.3% 100.0%
+Writing HPC Output at: 0:05:20  Clock: 0:00:34  CPU: 0:00:32
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_05_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_05_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_05_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_05_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.089
+SIM:    0:05:40    -d  0  0    0D 41%  1D  0%  2D 59%    CE -0.0%  0.0% -0.0%    Vi  4017  Vo     0  dV  4017
+Relative device loads:   95.8% 100.0%
+Writing HPC Output at: 0:05:40  Clock: 0:00:34  CPU: 0:00:32
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_05_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_05_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_05_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_05_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.094
+SIM:    0:06:00    -d  0  0    0D 42%  1D  0%  2D 58%    CE -0.0%  0.0% -0.0%    Vi  4139  Vo     0  dV  4139
+Relative device loads:   96.3% 100.0%
+Writing HPC Output at: 0:06:00  Clock: 0:00:34  CPU: 0:00:32
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_06_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_06_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_06_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_06_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.100
+SIM:    0:06:20    -d  0  0    0D 43%  1D  0%  2D 57%    CE -0.0%  0.0% -0.0%    Vi  4261  Vo     0  dV  4261
+Relative device loads:   96.1% 100.0%
+Writing HPC Output at: 0:06:20  Clock: 0:00:34  CPU: 0:00:33
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_06_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_06_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_06_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_06_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.106
+SIM:    0:06:40    -d  0  0    0D 44%  1D  0%  2D 56%    CE  0.0%  0.0%  0.0%    Vi  4383  Vo     0  dV  4383
+Relative device loads:   96.2% 100.0%
+Writing HPC Output at: 0:06:40  Clock: 0:00:35  CPU: 0:00:33
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_06_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_06_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_06_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_06_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.111
+SIM:    0:07:00    -d  0  0    0D 44%  1D  0%  2D 56%    CE  0.0%  0.0%  0.0%    Vi  4506  Vo     0  dV  4506
+Relative device loads:   96.2% 100.0%
+Writing HPC Output at: 0:07:00  Clock: 0:00:35  CPU: 0:00:33
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_07_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_07_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_07_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_07_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.117
+SIM:    0:07:20    -d  0  0    0D 45%  1D  0%  2D 55%    CE -0.0%  0.0% -0.0%    Vi  4628  Vo     0  dV  4628
+Relative device loads:   96.1% 100.0%
+Writing HPC Output at: 0:07:20  Clock: 0:00:35  CPU: 0:00:33
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_07_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_07_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_07_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_07_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.122
+SIM:    0:07:40    -d  0  0    0D 46%  1D  0%  2D 54%    CE -0.0%  0.0% -0.0%    Vi  4750  Vo     0  dV  4750
+Relative device loads:   96.4% 100.0%
+Writing HPC Output at: 0:07:40  Clock: 0:00:35  CPU: 0:00:33
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_07_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_07_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_07_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_07_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.128
+SIM:    0:08:00    -d  0  0    0D 47%  1D  0%  2D 53%    CE -0.0%  0.0% -0.0%    Vi  4872  Vo     0  dV  4872
+Relative device loads:   96.5% 100.0%
+Writing HPC Output at: 0:08:00  Clock: 0:00:35  CPU: 0:00:34
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_08_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_08_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_08_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_08_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.133
+SIM:    0:08:20    -d  0  0    0D 47%  1D  0%  2D 53%    CE -0.0%  0.0% -0.0%    Vi  4994  Vo     0  dV  4994
+Relative device loads:   96.2% 100.0%
+Writing HPC Output at: 0:08:20  Clock: 0:00:35  CPU: 0:00:34
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_08_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_08_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_08_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_08_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.139
+SIM:    0:08:40    -d  0  0    0D 48%  1D  0%  2D 52%    CE -0.0%  0.0% -0.0%    Vi  5117  Vo     0  dV  5117
+Relative device loads:   96.6% 100.0%
+Writing HPC Output at: 0:08:40  Clock: 0:00:35  CPU: 0:00:34
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_08_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_08_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_08_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_08_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.144
+SIM:    0:09:00    -d  0  0    0D 49%  1D  0%  2D 51%    CE  0.0%  0.0%  0.0%    Vi  5239  Vo     0  dV  5239
+Relative device loads:   96.4% 100.0%
+Writing HPC Output at: 0:09:00  Clock: 0:00:35  CPU: 0:00:34
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_09_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_09_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_09_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_09_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.150
+SIM:    0:09:20    -d  0  0    0D 49%  1D  0%  2D 51%    CE -0.0%  0.0% -0.0%    Vi  5361  Vo     0  dV  5361
+Relative device loads:   96.7% 100.0%
+Writing HPC Output at: 0:09:20  Clock: 0:00:36  CPU: 0:00:35
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_09_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_09_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_09_20.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_09_20.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.156
+SIM:    0:09:40    -d  0  0    0D 50%  1D  0%  2D 50%    CE -0.0%  0.0% -0.0%    Vi  5483  Vo     0  dV  5483
+Relative device loads:   96.9% 100.0%
+Writing HPC Output at: 0:09:40  Clock: 0:00:36  CPU: 0:00:35
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_09_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_09_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_09_40.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_09_40.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.161
+SIM:    0:10:00    -d  0  0    0D 51%  1D  0%  2D 49%    CE -0.0%  0.0% -0.0%    Vi  5606  Vo     0  dV  5606
+Relative device loads:   97.1% 100.0%
+Writing HPC Output at: 0:10:00  Clock: 0:00:36  CPU: 0:00:35
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_000_10_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_000_10_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_10_00.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_000_10_00.tif
+GRID Layer assigned ID of 1
+HPC Solver at time       0.167
+
+________________________________________________________________________________
+CPU Time:        0:00:35  [0.009865 h]
+Clock Time:      0:00:36  [0.01 h]
+
+Finished HPC Solution.
+
+HPC Suggested workload balance HPC Device Split == 1.015, 0.9856, 
+
+Closing Computational Time Summary.
+
+Receiving tracked maximums from HPC Solver.
+
+Allocating 107Kb memory for temporary HPC array containing any NaN locations...
+
+Total number of High Control Numbers or NaNs (instabilities) causing a timestep correction was 0.
+
+Receiving Maximum Water Levels and Times of Peak Levels from HPC Solver...
+Finished.
+
+Receiving tracked scalar maximums...
+
+Receiving tracked vector maximums...
+
+Processing maximums from HPC Solver...
+
+Finished processing of HPC results.
+
+Run Finished ..... Steps completed: 31
+   Total Negative Depths: 0
+Simulation took 0.009865 CPU hours
+One hour of model time takes 0.059 CPU hours
+
+________________________________________________________________________________
+
+________________________________________________________________________________
+
+Writing maximums...
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_h_Max.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_d_Max.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_Max.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_V_Max.tif
+GRID Layer assigned ID of 1
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\grids\Jhang_HPC_Demo_TMax_h.tif
+GRID Layer assigned ID of 1
+
+No minimums to write.
+
+Closing map output files...
+
+No TUFLOW 1D output to write.
+
+No PO output to write.
+
+Closing GIS Layer 2 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\plot\gis\Jhang_HPC_Demo_PLOT.shp]...
+
+Closing GIS Layer 3 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\plot\gis\Jhang_HPC_Demo_PLOT.shp]...
+
+Closing GIS Layer 4 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\results\plot\gis\Jhang_HPC_Demo_PLOT.shp]...
+
+Closing GIS Layer 1 [D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo_messages.shp]...
+
+Closing any unclosed GIS layers...
+
+Deallocating memory for 1D/2D link indexing...
+
+-------------------------------
+--    Simulation FINISHED    --
+-------------------------------
+
+                         PRIOR TO SIMULATION
+  Number of WARNINGs:    _messages layer =       0     Total =       0
+  Number of CHECKs:      _messages layer =       2     Total =       2
+
+                          DURING SIMULATION
+  Number of WARNINGs:    _messages layer =       0     Total =       0
+  Number of CHECKs:      _messages layer =       0     Total =       0
+
+
+Initialisation Times
+Clock Time:          0:00:31  [0.008611 h]
+Processor Time:      0:00:26  [0.007296 h]
+Final Times
+Clock Time:          0:00:36  [0.01 h]
+Processor Time:      0:00:35  [0.009878 h]
+
+Releasing HPC Memory...
+
+Closing all file units...
+
+_____________________________________________________________________________________________________________
+_____________________________________________________________________________________________________________
+
+SIMULATION SUMMARY
+
+Input File: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\Jhang_HPC_Demo.tcf
+Log File:   D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181236Z_854ad3\runs\log\Jhang_HPC_Demo.tlf
+
+Start Time (h): 0.
+End Time (h):   0.1668
+
+Simulation FINISHED
+
+HPC HCN Repeated Timesteps: 0  ! HCN is High Control Numbers, eg. Courant Number exceedance
+HPC NaN Repeated Timesteps: 0  ! NaN - Not a Number means an instability occurred
+HPC NaN WARNING 2550: 0
+
+WARNINGs prior to simulation:     0  [0 not in _messages layer]
+WARNINGs during simulation:       0  [0 not in _messages layer]
+CHECKs prior to simulation:       2  [0 not in _messages layer]
+CHECKs during simulation:         0  [0 not in _messages layer]
+
+Volume at Start (m3):  0
+Volume at End (m3):    115000
+Total Volume In (m3):  115000
+Total Volume Out (m3): 0
+Volume Error (m3):     0 or -0.0% of Volume In + Out
+Final Cumulative ME:   -0.00%
+_____________________________________________________________________________________________________________
+43) to device 0 memory ... 
+HPC: Copying 1 material types to device 1 ... 
+HPC: Copying switches1 (0x97000647) to device 1 memory ... 
+HPC: Copying switches2 (0x0000D043) to device 1 memory ... 
+HPC: Prerun completed
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:         10     0:00:01  0.000  0.001  0.000          116  109.554       0.120  99.7%
+HPC:         20     0:00:02  0.001  0.001  0.000          116  244.067       0.146  99.7%
+HPC:         30     0:00:04  0.001  0.001  0.000          116  409.220       0.179  99.6%
+HPC:         40     0:00:06  0.002  0.002  0.000          118  612.129       0.218  99.5%
+HPC:         50     0:00:09  0.002  0.003  0.000          122  861.630       0.267  99.4%
+HPC:         60     0:00:11  0.003  0.004  0.000          128     1168       0.328  99.3%
+HPC:         70     0:00:15  0.005  0.005  0.000          130     1540       0.381  98.7%
+HPC:         80     0:00:19  0.006  0.007  0.000          132     1973       0.415  97.1%
+HPC:         90     0:00:24  0.010  0.012  0.000          133     2535       0.599  96.9%
+HPC:        100     0:00:31  0.013  0.016  0.000          135     3248       0.692  96.9%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        110     0:00:39  0.015  0.021  0.000          137     4077       0.749  95.8%
+HPC:        120     0:00:48  0.024  0.037  0.000          142     5150       1.092  95.4%
+HPC:        130     0:00:59  0.026  0.046  0.000          144     6421       1.092  94.1%
+HPC:        140     0:01:13  0.037  0.075  0.000          148     8092       1.436  93.8%
+HPC:        150     0:01:29  0.051  0.119  0.000          156    10122       1.818  92.7%
+HPC:        160     0:01:49  0.067  0.185  0.001          162    12700       2.222  91.8%
+HPC:        170     0:02:12  0.081  0.220  0.001          167    15932       2.500  90.6%
+HPC:        180     0:02:40  0.101  0.286  0.002          174    19911       2.857  88.9%
+HPC:        190     0:03:16  0.179  0.423  0.004          193    25469       4.000  88.5%
+HPC:        200     0:04:00  0.272  0.562  0.007          209    32800       5.000  88.2%
+HPC:      iStep        time  maxNu  maxNc  maxNd         nWet      vol          dt    Eff
+HPC:        210     0:04:53  0.394  0.782  0.012          227    42479       6.667  87.8%
+HPC:        220     0:06:00  0.440  0.832  0.014          260    55800       6.667  87.9%
+HPC:        230     0:07:07  0.471  0.858  0.016          284    70479       6.667  87.3%
+HPC:        240     0:08:13  0.491  0.877  0.018          307    86516       6.667  87.2%
+HPC:        250     0:09:20  0.505  0.896  0.019          343   103911       6.667  87.3%
+HPC: Memory released

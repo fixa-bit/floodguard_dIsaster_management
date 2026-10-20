@@ -1,0 +1,9 @@
+{
+  "centre_utm43n": [
+    239787.1440620756,
+    3469340.0
+  ],
+  "radius_m": 240,
+  "basis": "Most northerly mapped Chenab point within a 600m interior domain buffer; not a surveyed inflow section",
+  "operator": "ANUGA volumetric inlet; no imposed velocity or artificial channel lowering"
+}

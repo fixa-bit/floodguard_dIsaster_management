@@ -1,0 +1,275 @@
+{
+  "model_name": "marala_daily_riverine_pilot_v1",
+  "schema_version": 1,
+  "trained_at": "2026-10-16T05:24:54.517818+00:00",
+  "station": {
+    "schema_version": 1,
+    "station_id": "MARALA",
+    "station_name": "Marala",
+    "river": "Chenab",
+    "latitude": 32.660583,
+    "longitude": 74.41125,
+    "horizon_hours": 24,
+    "seasons": [
+      2024,
+      2025
+    ],
+    "start_month_day": "06-24",
+    "end_month_day": "09-30",
+    "training_end": "2024-08-31",
+    "validation_end": "2024-09-30",
+    "weather_points": [
+      {
+        "name": "lower_upper_chenab",
+        "latitude": 32.9,
+        "longitude": 74.75
+      },
+      {
+        "name": "middle_upper_chenab",
+        "latitude": 33.3,
+        "longitude": 75.75
+      },
+      {
+        "name": "headwaters_chenab",
+        "latitude": 32.6,
+        "longitude": 76.9
+      }
+    ],
+    "weather_aggregation": "Equal-weight three-point proxy; not an area-weighted delineated catchment",
+    "weather_model": "era5_land",
+    "threshold_source": "https://ffd.pmd.gov.pk/flood-limits",
+    "thresholds_cusecs": {
+      "Low": 100000,
+      "Medium": 150000,
+      "High": 200000,
+      "Very High": 400000,
+      "Exceptionally High": 600000
+    },
+    "optional_unavailable_features": [
+      "upstream_observed_discharge_cumecs",
+      "reservoir_release_cumecs",
+      "archived_forecast_rainfall_mm",
+      "observed_gauge_height_m"
+    ]
+  },
+  "purpose": "24-hour-ahead measured station inflow regression, followed by FFD discharge class; not inundation mapping",
+  "dataset_type": "real_FFD_gauge_observations_with_ERA5_Land_reanalysis_covariates",
+  "features": [
+    "q_t_cumecs",
+    "q_lag_1d_cumecs",
+    "q_lag_2d_cumecs",
+    "q_lag_3d_cumecs",
+    "q_lag_7d_cumecs",
+    "q_change_1d_cumecs",
+    "q_change_3d_cumecs",
+    "inflow_minus_outflow_cumecs",
+    "rainfall_previous_1d_mm",
+    "rainfall_previous_3d_mm",
+    "rainfall_previous_7d_mm",
+    "soil_moisture_m3_m3",
+    "temperature_c",
+    "snow_depth_m",
+    "snow_depth_change_3d_m",
+    "day_of_year_sin",
+    "day_of_year_cos"
+  ],
+  "optional_features_not_trained": [
+    "upstream_observed_discharge_cumecs",
+    "reservoir_release_cumecs",
+    "archived_forecast_rainfall_mm",
+    "observed_gauge_height_m"
+  ],
+  "feature_missing_counts": {
+    "q_t_cumecs": 0,
+    "q_lag_1d_cumecs": 0,
+    "q_lag_2d_cumecs": 0,
+    "q_lag_3d_cumecs": 0,
+    "q_lag_7d_cumecs": 0,
+    "q_change_1d_cumecs": 0,
+    "q_change_3d_cumecs": 0,
+    "inflow_minus_outflow_cumecs": 0,
+    "rainfall_previous_1d_mm": 119,
+    "rainfall_previous_3d_mm": 119,
+    "rainfall_previous_7d_mm": 119,
+    "soil_moisture_m3_m3": 0,
+    "temperature_c": 0,
+    "snow_depth_m": 0,
+    "snow_depth_change_3d_m": 0,
+    "day_of_year_sin": 0,
+    "day_of_year_cos": 0
+  },
+  "feature_availability": "All weather windows end yesterday UTC, before issue time. Reanalysis has retrospective latency; hindcast research only.",
+  "splits": {
+    "train": {
+      "rows": 37,
+      "first_issue": "2024-07-25T06:00:00+05:00",
+      "last_issue": "2024-08-30T06:00:00+05:00",
+      "last_target": "2024-08-31T06:00:00+05:00",
+      "target_classes": {
+        "Below Low": 36,
+        "Low": 1
+      }
+    },
+    "validation": {
+      "rows": 23,
+      "first_issue": "2024-09-06T06:00:00+05:00",
+      "last_issue": "2024-09-29T06:00:00+05:00",
+      "last_target": "2024-09-30T06:00:00+05:00",
+      "target_classes": {
+        "Below Low": 23
+      }
+    },
+    "test": {
+      "rows": 58,
+      "first_issue": "2025-07-08T06:00:00+05:00",
+      "last_issue": "2025-09-29T06:00:00+05:00",
+      "last_target": "2025-09-30T06:00:00+05:00",
+      "target_classes": {
+        "Below Low": 43,
+        "Low": 11,
+        "Medium": 3,
+        "Exceptionally High": 1
+      }
+    }
+  },
+  "skipped_rows": {
+    "missing_daily_gauge_history_or_target": 41,
+    "warmup_or_nonseason": 6
+  },
+  "boundary_rows_purged": 1,
+  "metrics": {
+    "validation": {
+      "xgboost": {
+        "rows": 23,
+        "mae_cumecs": 91.4529410006369,
+        "rmse_cumecs": 118.32259624293933,
+        "bias_cumecs": 31.3350091576087,
+        "nash_sutcliffe_efficiency": 0.7031387408148451,
+        "flood_threshold_confusion": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 23
+        },
+        "flood_precision": null,
+        "flood_recall": null,
+        "flood_class_accuracy": 1.0
+      },
+      "persistence": {
+        "rows": 23,
+        "mae_cumecs": 85.56612343478263,
+        "rmse_cumecs": 120.04966518238417,
+        "bias_cumecs": 42.96773673913044,
+        "nash_sutcliffe_efficiency": 0.6944093580921389,
+        "flood_threshold_confusion": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 23
+        },
+        "flood_precision": null,
+        "flood_recall": null,
+        "flood_class_accuracy": 1.0
+      },
+      "linear_trend": {
+        "rows": 23,
+        "mae_cumecs": 107.85025030434782,
+        "rmse_cumecs": 152.31245598681286,
+        "bias_cumecs": 38.658651347826094,
+        "nash_sutcliffe_efficiency": 0.5080862224388332,
+        "flood_threshold_confusion": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 23
+        },
+        "flood_precision": null,
+        "flood_recall": null,
+        "flood_class_accuracy": 1.0
+      }
+    },
+    "test": {
+      "xgboost": {
+        "rows": 58,
+        "mae_cumecs": 1118.9321668740045,
+        "rmse_cumecs": 3368.9857280194824,
+        "bias_cumecs": -25.12607416629344,
+        "nash_sutcliffe_efficiency": -0.5289472495382241,
+        "flood_threshold_confusion": {
+          "tp": 9,
+          "fp": 5,
+          "fn": 6,
+          "tn": 38
+        },
+        "flood_precision": 0.6428571428571429,
+        "flood_recall": 0.6,
+        "flood_class_accuracy": 0.7413793103448276
+      },
+      "persistence": {
+        "rows": 58,
+        "mae_cumecs": 1125.8875849482758,
+        "rmse_cumecs": 3371.4379158637025,
+        "bias_cumecs": -28.951534534482764,
+        "nash_sutcliffe_efficiency": -0.53117381305257,
+        "flood_threshold_confusion": {
+          "tp": 9,
+          "fp": 5,
+          "fn": 6,
+          "tn": 38
+        },
+        "flood_precision": 0.6428571428571429,
+        "flood_recall": 0.6,
+        "flood_class_accuracy": 0.7413793103448276
+      },
+      "linear_trend": {
+        "rows": 58,
+        "mae_cumecs": 1821.7496789310344,
+        "rmse_cumecs": 5432.6301975786355,
+        "bias_cumecs": 188.453496275862,
+        "nash_sutcliffe_efficiency": -2.9757076946171126,
+        "flood_threshold_confusion": {
+          "tp": 6,
+          "fp": 6,
+          "fn": 9,
+          "tn": 37
+        },
+        "flood_precision": 0.5,
+        "flood_recall": 0.4,
+        "flood_class_accuracy": 0.6379310344827587
+      }
+    }
+  },
+  "test_beats_persistence_rmse": true,
+  "deployment_eligible": false,
+  "status": "research_candidate_requires_external_validation",
+  "parameters": {
+    "objective": "reg:squarederror",
+    "eval_metric": "rmse",
+    "max_depth": 2,
+    "eta": 0.03,
+    "min_child_weight": 5,
+    "lambda": 10,
+    "subsample": 1,
+    "colsample_bytree": 1,
+    "seed": 42,
+    "nthread": 2,
+    "tree_method": "hist"
+  },
+  "boosting_rounds": 11,
+  "xgboost_version": "2.1.3",
+  "feature_gain": {
+    "q_change_3d_cumecs": 649985.5,
+    "temperature_c": 231302.015625
+  },
+  "dataset_sha256": "21d884bc1362e703e289bd08cfb4de556664176aeaa49396d43caf7c9b1103d7",
+  "model_sha256": "487e99eb6b4be8d624eb5bbb7c250a3a4f8c132c451f4ac6e553b0e1a6e5207c",
+  "limitations": [
+    "Only two short monsoon seasons; one station; observations rounded to 0.1 thousand cusecs.",
+    "ERA5-Land is modeled reanalysis, not local rain-gauge observations or archived issued forecasts.",
+    "Three weather points are a sparse upstream proxy, not a delineated basin mean.",
+    "No measured Akhnur discharge, reservoir releases, gauge heights, or subdaily hydrographs are supplied.",
+    "Gauge gaps are not interpolated; source/parser exclusions are recorded in data/sources.json.",
+    "Flood classes describe discharge thresholds, not calibrated flood probabilities or mapped flood extent.",
+    "No operational feed replacement; live predictions require availability-aligned weather and independent validation."
+  ]
+}

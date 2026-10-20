@@ -1,0 +1,54 @@
+
+Max CPU threads available = 4
+
+Executable: D:\Projects\disaster_management\tools\tuflow\2026.3.0\tuflow-2026.3\TUFLOW_iSP_w64.exe
+Input argument switches = -/–
+ 
+
+Build: 2026.3.0-iSP-w64
+
+
+            *=========================///========================*
+            |                                                    |
+            |         TTTTT U   U FFFF L     OOO  W   W          |
+            |           T   U   U F    L    O   O W   W          |
+            |           T   U   U FFF  L    O   O W W W          |
+            |           T   U   U F    L    O   O W W W          |
+            |           T    UUU  F    LLLL  OOO   W W           |
+            |                                                    |
+            |              Build: 2026.3.0-iSP-w64             |
+            |                                                    |
+            |     Copyright BMT Commercial Australia Pty Ltd     |
+            |                   www.tuflow.com                   |
+            |                 support@tuflow.com                 |
+            |                                                    |
+            *=========================///========================*
+ 
+
+Trying to open (I) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\runs\Jhang_HPC_Demo.tcf...OK.  File Unit: 901
+
+Full input file name is "D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\runs\Jhang_HPC_Demo.tcf"
+
+Searching for any Set Variable == commands...
+Searching for SQLITE Pragma Commands...
+GIS Projection being extracted from D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\model\gis\projection.prj
+
+Trying to open (I) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\model\gis\projection.prj...OK.  File Unit: 902
+
+SHP Projection: PROJCS["WGS_1984_UTM_Zone_43N",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",75.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Meter",1.0]]
+Extracting GeoTIFF projection from D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\model\grid\dem.tif
+Opening GRID Layer: D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\model\grid\dem.tif
+GRID Layer assigned ID of 1
+
+Trying to open (SI) file D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\model\grid\dem.tif...OK.  File Unit: 903
+ERROR 0635 - TUFLOW currently only supports horizontal difference predictors or no predictor. Predictor found: 3
+
+NoXY: ERROR 2575 - extracting projection from D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\model\grid\dem.tif
+NoXY: ERROR 2575 - extracting projection from D:\Projects\disaster_management\models\jhang_tuflow_hpc\runs\20261018T181045Z_6b26a5\model\grid\dem.tif
+
+Closing any unclosed GIS layers...
+
+
+PROCESS EXITING WITHOUT PROMPT
+
+Stack Size: 100007936 bytes (~95 MB)
