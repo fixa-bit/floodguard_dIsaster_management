@@ -26,7 +26,7 @@ const guides: CaseGuide[] = [
     ],
     engineered: ["Maximum current and next-24-hour modeled discharge across available locations.", "Whether any river has a rising or warning status."],
     method: "Rule score = maximum of current risk × 100, river-status floor (24 or 68), next-day discharge / 35, and current discharge / 38; clipped to 0–100. No XGBoost model runs for this card.",
-    output: "A 0–100 screening score. The Trimmu and Balloki interval graph is a separate example series, not a forecast calculated from these inputs.",
+    output: "A 0–100 screening score. The Chenab — Marala and Ravi — Jassar interval graph is a separate example series, not a forecast calculated from these inputs.",
     future: ["Collect hourly station discharge, rainfall forecasts, and verified flood thresholds with timestamps.", "Train and test a simple persistence or regression baseline, then compare the experimental XGBoost discharge model against it on real held-out station data.", "Add upstream release and lagged-flow features only when those histories are reliable."],
   },
   {

@@ -75,7 +75,14 @@ function ForecastIntervalGraph({
   selectedTarget: string | undefined;
   onTargetChange: (targetId: string) => void;
 }) {
-  const targets = Array.from(new Map(points.map((point) => [point.target_id, point.target_name])).entries());
+  const targetLabel = (point: ModelForecastPoint) => {
+    if (point.model_case === "riverine") {
+      if (point.target_id === "trimmu") return "Chenab — Marala";
+      if (point.target_id === "balloki") return "Ravi — Jassar";
+    }
+    return point.target_name;
+  };
+  const targets = Array.from(new Map(points.map((point) => [point.target_id, targetLabel(point)])).entries());
   const series = pointsForTarget(points, selectedTarget);
   if (!series.length) {
     return (
@@ -123,7 +130,7 @@ function ForecastIntervalGraph({
           </button>
         ))}
       </div>
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${latest.target_name} forecast interval graph`}>
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${targetLabel(latest)} forecast interval graph`}>
         <text x={left} y="16" className="forecast-axis-title">{axisLabel}</text>
         {[0, 1, 2, 3, 4].map(step => {
           const value = maxValue * step / 4;
@@ -166,8 +173,8 @@ function RiverineModelFlow({ score }: { score: number }) {
       <details className="screening-score-details"><summary>How this score is calculated</summary><p>Take the highest of: current risk summary × 100; river-status score (68 if rising or in warning, otherwise 24); next-day discharge ÷ 35; and current discharge ÷ 38. Round and limit to 0–100. Bands: Low 0–39, Medium 40–69, High 70–100. These are screening rules, not calibrated flood thresholds.</p></details>
       <div className="riverine-station-table">
         <div><span>Example target</span><span>Horizon</span><span>Graph</span></div>
-        <div><strong>Trimmu</strong><span>+24h</span><span>Demo series</span></div>
-        <div><strong>Balloki</strong><span>+48h</span><span>Demo series</span></div>
+        <div><strong>Chenab — Marala</strong><span>+24h</span><span>Demo series</span></div>
+        <div><strong>Ravi — Jassar</strong><span>+48h</span><span>Demo series</span></div>
       </div>
     </div>
   );
@@ -264,13 +271,13 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         id: "riverine",
         title: "Riverine Short-Term",
         horizon: "Current signal",
-        scope: "Regional river screening; example graphs for Trimmu and Balloki",
+        scope: "Regional river screening; example graphs for Chenab — Marala and Ravi — Jassar",
         predicts: "River risk screening score",
         model: "Dashboard rule score; graph uses example data",
         score: data.locationRivers.length || data.summary || data.risk ? clamp(Math.max(highestRisk, hasRisingRiver ? 68 : 24, maxForecastDischarge / 35, maxDischarge / 38)) : 0,
         detail: `Max discharge ${Math.round(maxDischarge).toLocaleString()} cumecs; forecast ${Math.round(maxForecastDischarge).toLocaleString()} cumecs.`,
         issuedAt: riverIssuedAt,
-        target: "Stations: Trimmu +24h; Balloki +48h",
+        target: "Stations: Chenab — Marala +24h; Ravi — Jassar +48h",
         Icon: Waves,
       },
       {
