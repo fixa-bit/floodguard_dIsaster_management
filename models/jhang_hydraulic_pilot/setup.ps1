@@ -2,10 +2,9 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $basePython = Join-Path $projectRoot '.venv/Scripts/python.exe'
 $pilotPython = Join-Path $PSScriptRoot '.venv/Scripts/python.exe'
-if (-not (Test-Path -LiteralPath $pilotPython)) {
-    & $basePython -m venv (Join-Path $PSScriptRoot '.venv')
-    if ($LASTEXITCODE -ne 0) { throw 'Could not create the hydraulic trial environment' }
-}
+# Refresh interpreter paths even when a transferred environment already exists.
+& $basePython -m venv (Join-Path $PSScriptRoot '.venv')
+if ($LASTEXITCODE -ne 0) { throw 'Could not create the hydraulic trial environment' }
 # Read existing application libraries without installing into that environment.
 $sharedPackages = Join-Path $projectRoot '.venv/Lib/site-packages'
 $pathFile = Join-Path $PSScriptRoot '.venv/Lib/site-packages/floodguard_existing_environment.pth'

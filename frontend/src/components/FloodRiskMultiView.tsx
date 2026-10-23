@@ -1,7 +1,6 @@
 import { Activity, AlertTriangle, CloudRain, Info, Mountain, Waves } from "lucide-react";
 import { useMemo, useRef, useState, type KeyboardEvent } from "react";
 
-import { LOCATIONS } from "../config";
 import type { DashboardData } from "../hooks/useDashboardData";
 import type { ModelForecastPoint } from "../types/api";
 import { formatDateTime } from "../utils/format";
@@ -20,16 +19,11 @@ interface RiskView {
   scope: string;
   predicts: string;
   model: string;
-  score: number;
   detail: string;
   issuedAt: string | null;
   target: string;
   outputPoints?: string[];
   Icon: typeof Waves;
-}
-
-function clamp(value: number) {
-  return Math.max(0, Math.min(100, Math.round(value)));
 }
 
 function maxNumber(values: Array<number | null | undefined>) {
@@ -40,12 +34,6 @@ function maxNumber(values: Array<number | null | undefined>) {
 function average(values: Array<number | null | undefined>) {
   const numbers = values.filter((value): value is number => value !== null && value !== undefined && !Number.isNaN(value));
   return numbers.length > 0 ? numbers.reduce((sum, value) => sum + value, 0) / numbers.length : 0;
-}
-
-function riskBand(score: number) {
-  if (score >= 70) return "high";
-  if (score >= 40) return "medium";
-  return "low";
 }
 
 function formatIssuedAt(value: string | null) {
@@ -156,21 +144,17 @@ function ForecastIntervalGraph({
   );
 }
 
-function RiverineModelFlow({ score }: { score: number }) {
+function RiverineModelFlow() {
   return (
     <div className="riverine-model-flow" aria-label="Riverine model flow">
       <div className="riverine-flow-header">
-        <span>Current screening inputs</span>
-        <strong>Rule score</strong>
-        <b>{score}/100</b>
+        <span>Current inputs</span>
       </div>
       <div className="riverine-feature-groups">
         <span>Current risk summary</span>
         <span>Current + next-day discharge</span>
         <span>Rising or warning river status</span>
       </div>
-      <p className="screening-score-explanation">{score}/100 = {riskBand(score)} screening level. This rule score is separate from the graph; it is not a flood probability.</p>
-      <details className="screening-score-details"><summary>How this score is calculated</summary><p>Take the highest of: current risk summary × 100; river-status score (68 if rising or in warning, otherwise 24); next-day discharge ÷ 35; and current discharge ÷ 38. Round and limit to 0–100. Bands: Low 0–39, Medium 40–69, High 70–100. These are screening rules, not calibrated flood thresholds.</p></details>
       <div className="riverine-station-table">
         <div><span>Example target</span><span>Horizon</span><span>Graph</span></div>
         <div><strong>Chenab — Marala</strong><span>+24h</span><span>Demo series</span></div>
@@ -180,48 +164,31 @@ function RiverineModelFlow({ score }: { score: number }) {
   );
 }
 
-function FlashFloodModelFlow({ score }: { score: number }) {
+function FlashFloodModelFlow() {
   return (
     <div className="flash-flood-model-flow" aria-label="Flash-flood model flow">
       <div className="flash-flow-header">
-        <span>Current screening inputs</span>
-        <strong>Rule score</strong>
-        <b>{score}/100</b>
+        <span>Current inputs</span>
       </div>
       <div className="flash-feature-grid">
         <span>Current rainfall</span>
         <span>Forecast rain 6h + 24h</span>
         <span>Mean soil moisture</span>
-        <span>Weighted screening rule</span>
-      </div>
-      <div className="flash-target-row">
-        <span>Target</span>
-        <strong>Screening score</strong>
-        <b>0–100</b>
       </div>
     </div>
   );
 }
 
-function UrbanFloodModelFlow({ score }: { score: number }) {
+function UrbanFloodModelFlow() {
   return (
     <div className="urban-flood-model-flow" aria-label="Urban flooding model flow">
       <div className="urban-flow-header">
-        <span>Current screening inputs</span>
-        <strong>Rule score</strong>
-        <b>{score}/100</b>
+        <span>Current inputs</span>
       </div>
       <div className="urban-feature-grid">
         <span>Forecast rain 6h + 24h</span>
         <span>Mean soil moisture</span>
         <span>Any citizen report</span>
-        <span>Weighted screening rule</span>
-      </div>
-      <div className="urban-class-row">
-        <span>Score bands</span>
-        <strong>Low</strong>
-        <strong>Medium</strong>
-        <strong>High</strong>
       </div>
       <p>Example grid curves are for illustration.</p>
     </div>
@@ -252,7 +219,6 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
     modeTabs.current?.querySelector<HTMLButtonElement>(`#risk-mode-${nextMode}`)?.focus();
   }
   const views = useMemo<RiskView[]>(() => {
-    const highestRisk = (data.summary?.highest_risk_probability ?? data.risk?.flood_probability ?? 0) * 100;
     const maxRain24 = maxNumber(data.locationWeather.map((weather) => weather.forecast_rainfall_next_24h_mm));
     const maxRain6 = maxNumber(data.locationWeather.map((weather) => weather.forecast_rainfall_next_6h_mm));
     const maxRainCurrent = maxNumber(data.locationWeather.map((weather) => weather.rainfall_current_mm));
@@ -260,7 +226,6 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
     const maxDischarge = maxNumber(data.locationRivers.map((river) => river.discharge_cumecs));
     const maxForecastDischarge = maxNumber(data.locationRivers.map((river) => river.forecast_discharge_next_24h_cumecs));
     const maxPositiveChange = maxNumber(data.locationRivers.map((river) => Math.max(river.discharge_change_cumecs_per_day ?? 0, 0)));
-    const hasRisingRiver = data.locationRivers.some((river) => ["RISING", "WARNING", "DANGER", "FLOOD", "CRITICAL", "ALERT"].includes(river.status.toUpperCase()));
     const driestRainSignal = data.locationWeather.length > 0 && maxRain24 <= 2 && maxRain6 <= 1;
     const riverIssuedAt = data.locationRivers[0]?.official_recording_time ?? data.river?.official_recording_time ?? data.locationRivers[0]?.timestamp ?? data.river?.timestamp ?? null;
     const weatherIssuedAt = data.locationWeather[0]?.timestamp ?? data.weather?.timestamp ?? null;
@@ -272,9 +237,8 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         title: "Riverine Short-Term",
         horizon: "Current signal",
         scope: "Regional river screening; example graphs for Chenab — Marala and Ravi — Jassar",
-        predicts: "River risk screening score",
-        model: "Dashboard rule score; graph uses example data",
-        score: data.locationRivers.length || data.summary || data.risk ? clamp(Math.max(highestRisk, hasRisingRiver ? 68 : 24, maxForecastDischarge / 35, maxDischarge / 38)) : 0,
+        predicts: "Current and next-day discharge summary",
+        model: "Dashboard river inputs; graph uses example data",
         detail: `Max discharge ${Math.round(maxDischarge).toLocaleString()} cumecs; forecast ${Math.round(maxForecastDischarge).toLocaleString()} cumecs.`,
         issuedAt: riverIssuedAt,
         target: "Stations: Chenab — Marala +24h; Ravi — Jassar +48h",
@@ -285,9 +249,8 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         title: "Flash Flood",
         horizon: "Current signal",
         scope: "Regional rainfall screening; example catchment graphs",
-        predicts: "Flash-flood screening score",
-        model: "Dashboard rainfall rule; graph uses example data",
-        score: data.locationWeather.length ? clamp(maxRainCurrent * 6 + maxRain6 * 2.2 + maxRain24 * 1.1 + soil * 0.25) : 0,
+        predicts: "Rainfall and soil moisture summary",
+        model: "Dashboard weather inputs; graph uses example data",
         detail: `Rain now ${maxRainCurrent.toFixed(1)} mm; 6h rain ${maxRain6.toFixed(1)} mm; soil moisture avg ${soil.toFixed(0)}%.`,
         issuedAt: weatherIssuedAt,
         target: "Catchments: hill torrents, streams, urban drains",
@@ -298,9 +261,8 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         title: "Urban Flooding",
         horizon: "Current signal",
         scope: "Regional urban screening; example city grids",
-        predicts: "Urban flood screening score",
-        model: "Dashboard rain and reports rule; graph uses example data",
-        score: data.locationWeather.length || data.reports.length ? clamp(maxRain6 * 2.3 + maxRain24 * 0.7 + soil * 0.18 + (data.reports.length > 0 ? 12 : 0)) : 0,
+        predicts: "Forecast rainfall and citizen report summary",
+        model: "Dashboard rain and reports; graph uses example data",
         detail: `Forecast rain ${maxRain6.toFixed(1)} mm in 6h; ${data.reports.length} citizen reports in system.`,
         issuedAt: weatherIssuedAt,
         target: urbanTargetLabel,
@@ -311,10 +273,9 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         title: "Seasonal Basin Risk",
         horizon: "Current signal",
         scope: "National screening; example basin graph",
-        predicts: "Current national screening score",
-        model: "Dashboard rule score; weeks-ahead graph is example data",
-        score: data.summary || data.risk || data.locationWeather.length ? clamp(highestRisk * 0.35 + soil * 0.38 + maxRain24 * 0.9) : 0,
-        detail: "Uses current risk, soil moisture, and next-day forecast rain; no seasonal data in score.",
+        predicts: "Current national risk and weather context",
+        model: "Dashboard context; weeks-ahead graph is example data",
+        detail: "Current dashboard context only; the example graph is not a seasonal forecast.",
         issuedAt: data.nationalRisk?.metadata.generated_at ?? data.risk?.timestamp ?? null,
         target: "National basin summary",
         Icon: Mountain,
@@ -324,9 +285,8 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         title: "Upstream / Transboundary",
         horizon: "Current signal",
         scope: "Regional discharge-change screening; example downstream graph",
-        predicts: "Flow-change watch score",
-        model: "Dashboard anomaly rule; graph uses example data",
-        score: data.locationRivers.length ? clamp((driestRainSignal ? 18 : 6) + maxPositiveChange / 16 + (hasRisingRiver ? 34 : 0)) : 0,
+        predicts: "Discharge change and local rainfall context",
+        model: "Dashboard flow and rain inputs; graph uses example data",
         detail: `Positive modeled discharge change ${Math.round(maxPositiveChange).toLocaleString()} cumecs/day while local forecast rain signal is ${driestRainSignal ? "low" : "active"}.`,
         issuedAt: riverIssuedAt,
         target: "Downstream river reaches",
@@ -360,17 +320,16 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         ))}
       </div>
       <div role="tabpanel" id="risk-panel-near-term" aria-labelledby="risk-mode-near-term" hidden={mode !== "near-term"} tabIndex={0}>
-        <div className="predictive-risk-toolbar"><p>Early-stage screening scores and example interval series.</p><button type="button" onClick={() => setShowInputs(true)}><Info size={15} /> Inputs & model</button></div>
+        <div className="predictive-risk-toolbar"><p>Current flood-related inputs and example interval series.</p><button type="button" onClick={() => setShowInputs(true)}><Info size={15} /> Inputs & model</button></div>
         {showInputs && <PredictiveInputsDialog data={data} onClose={() => setShowInputs(false)} />}
         <div className="multiview-shell">
           <div className="multiview-grid">
-          {views.map(({ id, title, horizon, scope, predicts, model, score, detail, issuedAt, target, outputPoints, Icon }) => {
+          {views.map(({ id, title, horizon, scope, predicts, model, detail, issuedAt, target, outputPoints, Icon }) => {
             const isRiverineMonthly = id === "riverine" && riverineMode === "monthly-marala";
-            return <article className={`multiview-card risk-${riskBand(score)}${isRiverineMonthly ? " riverine-monthly-card" : ""}`} key={id}>
+            return <article className={`multiview-card${isRiverineMonthly ? " riverine-monthly-card" : ""}`} key={id}>
               <div className="multiview-card-head">
                 <Icon size={15} />
                 <div><strong>{isRiverineMonthly ? "Marala Monthly River Flow" : title}</strong><span>{isRiverineMonthly ? "Monthly dataset and outlook" : horizon}</span></div>
-                {!isRiverineMonthly && <b className="screening-score-badge"><span>Screening score</span>{score}/100</b>}
               </div>
               {id === "riverine" && <div className="riverine-case-tabs" role="tablist" aria-label="Riverine forecast view">
                 {([ ["short-term", "Short-term screening"], ["monthly-marala", "Monthly Marala"] ] as const).map(([tab, label]) => (
@@ -388,23 +347,12 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
                 onTargetChange={(targetId) => setSelectedTargets((current) => ({ ...current, [id]: targetId }))}
               />
               {id === "riverine" ? (
-                <RiverineModelFlow score={score} />
+                <RiverineModelFlow />
               ) : id === "flash" ? (
-                <FlashFloodModelFlow score={score} />
+                <FlashFloodModelFlow />
               ) : id === "urban" ? (
-                <UrbanFloodModelFlow score={score} />
-              ) : (
-                <div className="mini-risk-map" aria-hidden="true">
-                  <div className="mini-risk-river" />
-                  {LOCATIONS.map((location, index) => (
-                    <i
-                      key={`${id}-${location.id}`}
-                      style={{ left: `${34 + index * 13}%`, top: `${58 - index * 11}%` }}
-                    />
-                  ))}
-                  <span style={{ width: `${Math.max(16, score)}%` }} />
-                </div>
-              )}
+                <UrbanFloodModelFlow />
+              ) : null}
               <div className="multiview-scope"><span>Scope</span><strong>{scope}</strong></div>
               <div className="multiview-predicts"><span>Shows</span><strong>{predicts}</strong></div>
               {outputPoints && (

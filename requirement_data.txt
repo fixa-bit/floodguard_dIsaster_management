@@ -1,0 +1,173 @@
+FLOODGUARD: DATA, DEPENDENCIES AND TRANSFER GUIDE
+Captured: 22 October 2026. Paths below are relative to the extracted projects folder.
+
+1. WHAT TO SEND
+Run from disaster_management:
+  .\.venv\Scripts\python.exe scripts\build_portable_bundle.py
+This creates transfer/floodguard-portable-2026-10-22.tar.gz, its SHA-256 sidecar,
+and a packaging summary. The archive contains three sibling projects:
+  projects/disaster_management/
+  projects/flood_model/
+  projects/NDMA_tasks/NDMA_tasks/
+It also contains MANIFEST.json with the SHA-256 and size of every archived file,
+and environment inventories for the available local Python environments.
+The script includes untracked data, databases, model weights and tools; a Git
+clone alone does not include all of these. It skips virtual environments,
+node_modules, Git history, Python/tool caches, and previous transfer output.
+Existing frontend/dist files, if present, are included as a convenience; rebuild
+after installing dependencies to use the transferred source and settings.
+The .tar.gz IS already a compressed tar archive; send it and its .sha256 file.
+
+2. SOFTWARE TO INSTALL ON THE DESTINATION
+For the closest reproduction use Windows x64, Python 3.11.9, Node.js v24.19.0
+and npm 11.17.0, matching the inspected machine. Native hydraulic executables
+are Windows programs. Other OS/CPU combinations need compatible builds and
+cannot be guaranteed to run unchanged. No CUDA installation is required for
+the captured CPU PyTorch environment. Allow space for extracted data plus new
+Python/Node environments, not just the compressed archive.
+
+requirements.txt records the installed main Python environment, including
+transitive dependencies. torch==2.14.1+cpu and torchvision==0.29.1+cpu use the
+PyTorch CPU wheel index specified in that file. The previous project's
+LightGBM and psycopg declarations are retained as ranges because neither is
+installed in the inspected main environment; those two are not exact locks.
+Python packaging tools themselves are recreated with the new virtualenv.
+frontend/package-lock.json is the exact npm dependency record. Use npm ci,
+which preserves locked versions; do not replace it with npm update.
+Installation needs internet access to the package indexes. Wheel/npm packages
+are not cached in this archive; it is not an offline software installer.
+
+3. RESTORE AND START (PowerShell)
+Copy the archive and .sha256 into a folder on the other computer.
+  Get-FileHash .\floodguard-portable-2026-10-22.tar.gz -Algorithm SHA256
+Compare with the .sha256 sidecar before extracting.
+  tar -xzf .\floodguard-portable-2026-10-22.tar.gz
+  cd .\projects\disaster_management
+  py -3.11 -m venv .venv
+  .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+  .\.venv\Scripts\python.exe scripts\build_portable_bundle.py --verify ..\..
+
+The verification command checks the extracted archive's MANIFEST.json; it does
+not contact providers or retrain anything. Run it before editing transferred
+files or starting the server, since those actions can change their hashes.
+If you extracted into a different layout, --verify must point at the directory
+that contains MANIFEST.json and projects/.
+
+Open a terminal in projects/disaster_management for the backend:
+  .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+Open a second terminal in projects/disaster_management/frontend:
+  npm ci
+  npm run build
+  npm run dev -- --host 127.0.0.1 --port 3000
+API docs: http://127.0.0.1:8000/docs
+Application: http://127.0.0.1:3000
+Optional browser checks: npx playwright install chromium (from frontend).
+Backend checks: .\.venv\Scripts\python.exe -m pytest tests monitoring/tests
+External services and data availability can affect tests/features that use them.
+
+4. CONFIGURATION AND DATABASES
+The archive preserves existing .env and frontend/.env if present. If absent,
+it supplies copies of their .env.example files. Values are not printed in logs.
+EXPOSURE_DATASET_ROOT=../flood_model/exposure_infrastructure/datasets/exposure
+works unchanged when you retain the sibling layout and launch from the app root.
+Leave EXPOSURE_OUTPUT_ROOT blank to retain analyses under that dataset root.
+SAR_UNET_MODEL_DIR defaults to the bundled app/ml/sar_unet directory.
+ML_MODEL_PATH defaults to app/ml/artifacts/flood_risk_xgboost.json.
+Review any custom absolute paths or nonlocal URLs in your actual configuration
+on the destination. Secrets in an existing .env travel with the private archive.
+
+floodguard.db stores application state, reports and saved forecasts.
+monitoring/data/monitoring.db stores monitoring readings and thresholds.
+All existing .db/.sqlite/.sqlite3 files are included using SQLite's backup API;
+this captures committed data including WAL contents without copying a live WAL.
+Snapshots are consistent per database, not one transaction across databases.
+Stop the backend/monitoring writers before packaging when you need a coordinated
+cutoff. On the source machine their files are only read, never replaced.
+MONITORING_DATABASE_URL is an optional process environment override; check it if
+you use nondefault storage. SQLite is the default; no database server is needed.
+If DATABASE_URL or MONITORING_DATABASE_URL points at PostgreSQL, its server data
+is NOT a local file and is NOT exported here. Transfer a pg_dump separately and
+restore it into the destination server. docker-compose.yml defines optional
+PostGIS 16 / PostGIS 3.4 storage; Docker volumes are not included in the archive.
+
+5. FEATURE DATA AND CROSS-PROJECT DEPENDENCIES
+
+Dashboard / GIS / predictive views:
+  Preserve app/gis/data/, frontend/public/, app/ml/data/, app/ml/artifacts/,
+  app/ml/marala_pilot/, monitoring/config/ and all database files. Entire project
+  folders are included rather than selecting only visible map layers. Static
+  maps, historical examples, source audits and model cards travel unchanged.
+
+SAR flood/water extent:
+  Runtime inference is implemented in app/services/sar_water_service.py using
+  app/ml/sar_unet/network.py, release.json, and its pinned runs/ checkpoint,
+  dataset_scalers.json and model card. Those are already inside this app.
+  Historical display examples are in frontend/public/examples/.
+  NDMA_tasks is NOT required just to display those examples or run the bundled
+  model with user-supplied inputs. It IS required to reproduce dataset preparation,
+  training and exports, including the original example GeoTIFFs/reference labels.
+  The archive therefore includes the complete sibling NDMA_tasks project and
+  dataset tree, excluding environments/caches. See its README.md, requirements.txt
+  and model/requirements.txt for separate preparation/training dependencies
+  (including google-cloud-storage, pandas, matplotlib and tqdm).
+  scripts/build_ndma_terrain_flow.py has a source-machine absolute default:
+    D:/Projects/NDMA_tasks/NDMA_tasks/dataset/sen1floods11_sar_handlabeled_v1_1
+  When rebuilding at a different location pass the explicit --dataset option:
+    .\.venv\Scripts\python.exe scripts\build_ndma_terrain_flow.py --dataset ..\NDMA_tasks\NDMA_tasks\dataset\sen1floods11_sar_handlabeled_v1_1
+  Existing packaged replays do not need that script run again.
+
+Exposure / population / infrastructure impact:
+  Runtime data comes from sibling flood_model/exposure_infrastructure/datasets/
+  exposure, NOT from the disaster_management Git repository. Preserve raw/,
+  processed/, metadata/, validation_reports/ and analysis/ together. This includes
+  the Balloki and Trimmu/Jhang regions, GeoPackages, population rasters, historical
+  flood reference, source verification, independent building reference and saved
+  analyses. Copying only shapefiles or only processed files loses provenance or
+  references. Entire flood_model is included, with its preprocessing scripts and
+  configs. Its separate requirements.txt includes requests, osmium and matplotlib
+  for regeneration; these are not needed merely to read prepared layers in the app.
+
+Marala / riverine / other model research:
+  All models/ folders, sealed runs, inputs, source snapshots, inventories,
+  training/evaluation artifacts and LATEST_RUN.json pointers are included.
+  Keep app/ml/ as well. These records must not be replaced with newly generated
+  data when the aim is to reproduce the present demonstration.
+
+Hydraulic simulations:
+  frontend/public/ contains precomputed replays, so viewing them does not require
+  rerunning a solver. tools/hec_ras/ and tools/tuflow/ are ignored by Git but ARE
+  included in this archive for reproduction, with source samples and native runs.
+  HEC-RAS portable executable:
+    tools/hec_ras/2025-beta/HEC-RAS 2025 Beta/ras.exe
+  TUFLOW engine: tools/tuflow/2026.3.0/ (retained research trial).
+  Preserve installation/provenance records under models/. Existing trial/demo
+  restrictions continue to apply; copying an executable does not grant a licence.
+  The ANUGA trial uses its OWN environment; do not merge it into the main one.
+  Run models/jhang_hydraulic_pilot/setup.ps1 after recreating the main environment.
+  It installs requirements-serial.txt then anuga==4.0.1 --no-deps. Its .pth link
+  to the parent environment is regenerated on the destination. Follow the pilot
+  README for trial limitations. TUFLOW and ANUGA trial results are not operational
+  flood forecasts. Microsoft Edge is needed only to regenerate the backend PDF;
+  FFmpeg is needed only for video-generation scripts, not to run the dashboard.
+
+6. EXTERNAL SERVICES THAT CANNOT BE PACKAGED AS LOCAL DATA
+Live Open-Meteo weather and GloFAS river feeds; GEOGloWS streamflow; PMD/FFD
+bulletins; Google Flood Forecasting API; Microsoft Planetary Computer STAC,
+asset signing and satellite raster downloads; OpenStreetMap/any custom map
+style and tile services need internet access and provider availability.
+Google integration requires the existing approved API credentials and enablement;
+an empty GOOGLE_FLOOD_API_KEY does not enable it. No key is invented by packaging.
+Location-based SAR inference queries recent Sentinel-1 RTC, Copernicus DEM and
+JRC water imagery; provider data and selected scenes can change over time.
+Live values will change after transfer even when the stored data and libraries
+are identical. Browser Cache Storage/localStorage and source-machine environment
+variables are not captured; historical packaged examples remain available locally.
+
+7. REPACKAGING / CONTENT VALIDATION
+Re-run scripts/build_portable_bundle.py whenever you want a fresh transfer.
+It refuses to overwrite an existing archive; choose --output <new-file.tar.gz>.
+The default archive covers all three projects and Windows solver tools. Pass
+--no-archive to validate discovery and report sizes without making an archive.
+Use --verify <extracted-root> after extraction to check every retained file hash.
+Do not edit sealed research manifests or source files to rewrite provenance
+paths. Supply supported path/configuration overrides instead.
