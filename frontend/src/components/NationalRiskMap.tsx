@@ -446,6 +446,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const floodHubRef = useRef(floodHub);
   floodHubRef.current = floodHub;
   const [requestedLayers, setLayers] = useState({ boundary: true, glaciers: false, borderTest: false, risk: false, districts: false, floodHub: false, catchments: false, water: false, waterForecasts: false, gauges: false, stations: false, incidents: false, reports: false, resources: false });
+  const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
+  const selectedStationIdRef = useRef(selectedStationId);
+  selectedStationIdRef.current = selectedStationId;
   const sarPickRef = useRef(false);
   const sarRequestRef = useRef(0);
   const [sarOverlay, setSarOverlay] = useState<SarWaterOverlay | null>(null);
@@ -533,7 +536,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const screeningMapDataRef = useRef(screeningMapData);
   screeningMapDataRef.current = screeningMapData;
 
-  const districtFetchEnabled = backgroundReady || layers.districts || layers.risk;
+  const districtFetchEnabled = backgroundReady || layers.districts || layers.risk || Boolean(selectedStationId);
   useEffect(() => {
     if (!districtFetchEnabled) return;
     let active = true;
@@ -572,7 +575,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }, [rainfallFetchEnabled]);
   const [monitoring, setMonitoring] = useState<RiverMonitoringResponse | null>(null);
   const [monitoringError, setMonitoringError] = useState<string | null>(null);
-  const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
+  const [stationMapInstance, setStationMapInstance] = useState<MapLibreMap | null>(null);
+  const [stationRotationEnabled, setStationRotationEnabled] = useState(false);
   const [requestedMonitoringRiver, setMonitoringRiver] = useState("All");
   const monitoringRiver = studyActive ? "All" : requestedMonitoringRiver;
   const [requestedCatchmentId, setCatchmentId] = useState("");
@@ -616,6 +620,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     setSelectedWaterFeature(null);
     setSelectedFloodHubFeature(null);
     setSelectedDistrict(null);
+    setLayers((current) => ({ ...current, water: true, waterForecasts: true }));
   }
 
   function selectCatchment(id: string, fit = true) {
@@ -640,7 +645,63 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   activeCatchmentRef.current = activeCatchment;
   const catchmentStations = useMemo(() => (monitoring?.stations ?? []).filter((station) =>
     !activeCatchment || booleanPointInPolygon([station.longitude, station.latitude], activeCatchment)), [monitoring, activeCatchment]);
+  const rotationStations = useMemo(() => catchmentStations.filter((station) =>
+    monitoringRiver === "All" || monitoring?.chains[monitoringRiver]?.includes(station.id)), [catchmentStations, monitoring, monitoringRiver]);
   const quantityLabel = waterQuantityOptions.find((option) => option.id === waterQuantity)?.label ?? "Discharge";
+
+  useEffect(() => {
+    if (!stationRotationEnabled || rotationStations.length < 2) return;
+    const timer = window.setInterval(() => {
+      setSelectedStationId((current) => {
+        const currentIndex = rotationStations.findIndex((station) => station.id === current);
+        return rotationStations[(currentIndex + 1) % rotationStations.length]?.id ?? current;
+      });
+    }, 10000);
+    return () => window.clearInterval(timer);
+  }, [stationRotationEnabled, rotationStations]);
+
+  useEffect(() => {
+    if (!stationRotationEnabled || !rotationStations.length) return;
+    if (!rotationStations.some((station) => station.id === selectedStationId)) {
+      selectStation(rotationStations[0].id);
+    }
+  }, [stationRotationEnabled, rotationStations, selectedStationId]);
+
+  const selectedMonitoringStation = monitoring?.stations.find((item) => item.id === selectedStationId);
+  const lastCameraStation = useRef<{ id: string; latitude: number; longitude: number } | null>(null);
+  useEffect(() => {
+    if (!selectedStationId) { lastCameraStation.current = null; return; }
+    const station = selectedMonitoringStation;
+    const map = stationMapInstance;
+    if (!station || !map) return;
+    const focusStation = () => {
+      if (mapRef.current !== map) return;
+      const containerWidth = map.getContainer().clientWidth;
+      const mobile = containerWidth < 700;
+      const panelWidth = Math.min(620, containerWidth * 0.42);
+      const panelRightInset = Math.max(40, Math.min(96, containerWidth * 0.05));
+      const previous = lastCameraStation.current;
+      const radians = Math.PI / 180;
+      const latitudeDelta = (station.latitude - (previous?.latitude ?? station.latitude)) * radians;
+      const longitudeDelta = (station.longitude - (previous?.longitude ?? station.longitude)) * radians;
+      const meanLatitude = (station.latitude + (previous?.latitude ?? station.latitude)) / 2 * radians;
+      const distanceKm = 6371 * Math.sqrt(latitudeDelta ** 2 + (Math.cos(meanLatitude) * longitudeDelta) ** 2);
+      const zoom = !previous ? 9.2 : distanceKm > 700 ? 8.1 : distanceKm > 220 ? 8.7 : 9.5;
+      lastCameraStation.current = { id: station.id, latitude: station.latitude, longitude: station.longitude };
+      map.flyTo({
+        center: [station.longitude, station.latitude],
+        zoom,
+        curve: 1.35,
+        speed: 0.72,
+        duration: 2300,
+        essential: true,
+        padding: { top: mobile ? 120 : 185, bottom: mobile ? 55 : 90, left: mobile ? 16 : 230, right: mobile ? 16 : panelWidth + panelRightInset + 24 },
+      });
+    };
+    if (map.isStyleLoaded()) focusStation();
+    else map.once("load", focusStation);
+    return () => { map.off("load", focusStation); };
+  }, [stationMapInstance, selectedStationId, selectedMonitoringStation?.latitude, selectedMonitoringStation?.longitude]);
 
   waterIntelligenceRef.current = waterIntelligence;
   locationChangeRef.current = onLocationChange;
@@ -709,6 +770,54 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     });
     return { type: "FeatureCollection", features: riverLines } as FeatureCollection;
   }, [locationRivers, waterData.lines]);
+  const activeStationMapLayers = useMemo(() => {
+    const station = monitoring?.stations.find((item) => item.id === selectedStationId);
+    if (!station) return {
+      "active-monitoring-station": emptyCollection,
+      "active-monitoring-district": emptyCollection,
+      "active-monitoring-catchment": emptyCollection,
+      "active-monitoring-river": emptyCollection,
+    } satisfies Record<string, FeatureCollection>;
+
+    const coordinate: [number, number] = [station.longitude, station.latitude];
+    const district = districtDisplayData.features.find((feature) =>
+      (feature.geometry.type === "Polygon" || feature.geometry.type === "MultiPolygon")
+      && booleanPointInPolygon(coordinate, feature as Feature<Polygon | MultiPolygon>));
+    const catchment = catchmentMapData.features.find((feature) =>
+      (feature.geometry.type === "Polygon" || feature.geometry.type === "MultiPolygon")
+      && booleanPointInPolygon(coordinate, feature as Feature<Polygon | MultiPolygon>));
+    const districtName = String(district?.properties?.district_name ?? "District boundary unavailable");
+    const catchmentName = String(catchment?.properties?.name ?? station.basin);
+    const stationPoint = pointCollection([{
+      longitude: station.longitude,
+      latitude: station.latitude,
+      properties: {
+        station_id: station.id,
+        station_name: station.name,
+        river_name: station.river,
+        district_name: districtName,
+        catchment_name: catchmentName,
+        map_label: `${station.name}\n${districtName}${district ? " District" : ""}\n${catchmentName} catchment`,
+      },
+    }]);
+    const riverName = normalizeWaterName(station.river);
+    const riverFeatures = riverStatusLines.features.filter((feature) => {
+      const properties = feature.properties ?? {};
+      return [properties.live_river_name, properties.water_system, properties.name].some((value) => {
+        const lineName = normalizeWaterName(typeof value === "string" ? value : null);
+        return lineName.length > 3 && riverName.length > 3
+          && (lineName === riverName || lineName.startsWith(riverName) || riverName.startsWith(lineName));
+      });
+    });
+    return {
+      "active-monitoring-station": stationPoint,
+      "active-monitoring-district": district
+        ? { type: "FeatureCollection", features: [district] } as FeatureCollection : emptyCollection,
+      "active-monitoring-catchment": catchment
+        ? { type: "FeatureCollection", features: [catchment] } as FeatureCollection : emptyCollection,
+      "active-monitoring-river": { type: "FeatureCollection", features: riverFeatures } as FeatureCollection,
+    } satisfies Record<string, FeatureCollection>;
+  }, [monitoring, selectedStationId, districtDisplayData, riverStatusLines]);
   const [preparedRainfall, setPreparedRainfall] = useState<{
     weather: WeatherResponse[]; risk: NationalRiskCollection | null; window: RainfallWindowId;
     regional: RegionalRainfallCollection | null; data: ReturnType<typeof buildRainfallHeatmapData>;
@@ -928,7 +1037,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     };
     // Operational vectors should not wait for remote satellite tiles to finish loading.
     map.on("style.load", () => {
-      const fitOverview = () => selectedCoordinateRef.current ? fitCoordinate(map, selectedCoordinateRef.current, 0)
+      const fitOverview = () => selectedStationIdRef.current ? undefined : selectedCoordinateRef.current ? fitCoordinate(map, selectedCoordinateRef.current, 0)
         : (rainfallEnabledRef.current ? fitRainfallExtent : glacierEnabledRef.current ? fitGlacierExtent : fitPakistanExtent)(map, 0);
       requestAnimationFrame(fitOverview);
       window.setTimeout(() => {if(!map.getContainer().dataset.terrainStation)fitOverview();}, 250);
@@ -985,6 +1094,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         layout: { visibility: "none", "text-field": ["get", "name"], "text-font": ["Open Sans Regular"], "text-size": 11, "text-allow-overlap": false, "text-padding": 4 },
         paint: { "text-color": "#122126", "text-halo-color": "#f8fafc", "text-halo-width": 1.3, "text-opacity": 0.9 },
       });
+      map.addSource("active-monitoring-station", { type: "geojson", data: emptyCollection });
+      map.addSource("active-monitoring-district", { type: "geojson", data: emptyCollection });
+      map.addSource("active-monitoring-catchment", { type: "geojson", data: emptyCollection });
+      map.addSource("active-monitoring-river", { type: "geojson", data: emptyCollection });
       map.addSource("rainfall-heatmap", { type: "image", url: rainfallHeatmapData.imageUrl, coordinates: rainfallImageCoordinates });
       map.addLayer({
         id: "rainfall-heatmap",
@@ -1107,6 +1220,29 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         layout: { "text-field": ["get", "name"], "text-size": 11, "text-font": ["Open Sans Regular"],
           "text-anchor": "top", "text-offset": [0, 1.6], "text-padding": 4, "text-max-width": 14 },
         paint: { "text-color": "#ffffff", "text-halo-color": "#07171b", "text-halo-width": 2 } });
+      map.addLayer({ id: "active-monitoring-catchment-fill", type: "fill", source: "active-monitoring-catchment",
+        paint: { "fill-color": "#22d3b5", "fill-opacity": 0.075 } });
+      map.addLayer({ id: "active-monitoring-catchment-casing", type: "line", source: "active-monitoring-catchment",
+        layout: { "line-join": "round" }, paint: { "line-color": "#062d32", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 4, 9, 7], "line-opacity": 0.8 } });
+      map.addLayer({ id: "active-monitoring-catchment-line", type: "line", source: "active-monitoring-catchment",
+        layout: { "line-join": "round" }, paint: { "line-color": "#8affdf", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.8, 9, 3.2], "line-dasharray": [2, 1.4], "line-opacity": 1 } });
+      map.addLayer({ id: "active-monitoring-district-casing", type: "line", source: "active-monitoring-district",
+        layout: { "line-join": "round" }, paint: { "line-color": "#fff6ce", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 3.2, 9, 5], "line-opacity": 0.78 } });
+      map.addLayer({ id: "active-monitoring-district-line", type: "line", source: "active-monitoring-district",
+        layout: { "line-join": "round" }, paint: { "line-color": "#d68cff", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.5, 9, 2.5], "line-dasharray": [1, 1], "line-opacity": 1 } });
+      map.addLayer({ id: "active-monitoring-river-glow", type: "line", source: "active-monitoring-river",
+        layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#062b35", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 7, 9, 13], "line-opacity": 0.82 } });
+      map.addLayer({ id: "active-monitoring-river-line", type: "line", source: "active-monitoring-river",
+        layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#63ffe0", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 3, 9, 5.5], "line-opacity": 1 } });
+      map.addLayer({ id: "active-monitoring-station-halo", type: "circle", source: "active-monitoring-station",
+        paint: { "circle-radius": 17, "circle-color": "#ffe16c", "circle-opacity": 0.28, "circle-blur": 0.55 } });
+      map.addLayer({ id: "active-monitoring-station-point", type: "circle", source: "active-monitoring-station",
+        paint: { "circle-radius": 8, "circle-color": "#ffe16c", "circle-stroke-color": "#06272b", "circle-stroke-width": 3 } });
+      map.addLayer({ id: "active-monitoring-station-label", type: "symbol", source: "active-monitoring-station",
+        layout: { "text-field": ["get", "map_label"], "text-font": ["Open Sans Semibold", "Open Sans Regular"],
+          "text-size": 12, "text-anchor": "left", "text-offset": [1.15, 0], "text-max-width": 19,
+          "text-padding": 6, "text-allow-overlap": true, "text-ignore-placement": true },
+        paint: { "text-color": "#ffffff", "text-halo-color": "#06272b", "text-halo-width": 2.5 } });
       map.on("mouseenter", "priority-monitoring-points", () => { if (!coordinatePickingRef.current) map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", "priority-monitoring-points", () => { if (!coordinatePickingRef.current) map.getCanvas().style.cursor = ""; });
       const hoverCheckpointPopup = new maplibregl.Popup({ className: "border-checkpoint-popup", closeButton: false, closeOnClick: false });
@@ -1343,7 +1479,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     });
     resizeObserver.observe(containerRef.current);
     mapRef.current = map;
-    return () => { cancelWarmup(); map.off("render", warmAfterFirstPaint); resizeObserver.disconnect(); map.getCanvas().removeEventListener("mouseleave", hideCoordinates); hideCoordinates(); map.remove(); mapRef.current = null; };
+    setStationMapInstance(map);
+    return () => { cancelWarmup(); map.off("render", warmAfterFirstPaint); resizeObserver.disconnect(); map.getCanvas().removeEventListener("mouseleave", hideCoordinates); hideCoordinates(); map.remove(); mapRef.current = null; setStationMapInstance(null); };
   }, [expanded]);
 
   useEffect(() => {
@@ -1435,6 +1572,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     };
     if (studySources) Object.assign(sourceData, studySources);
     Object.assign(sourceData, stationPopupSources);
+    Object.assign(sourceData, activeStationMapLayers);
     for (const id of ["observed-water-stations", "water-quantity-labels"]) map.setLayerZoomRange(id, sourceData["observed-water-stations"].features.length > 300 ? 6 : 0, 24);
     map.setLayerZoomRange("water-bodies", sourceData["water-bodies"].features.length > 300 ? 6 : 0, 24);
     for (const [id, data] of Object.entries(sourceData)) {
@@ -1466,7 +1604,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     };
     updateSources();
     return () => { map.off("style.load", updateSources); };
-  }, [screeningMapData, districtDisplayData, operationalData, rainfallHeatmapData, riverStatusLines, waterData, floodHub, glacierData, backgroundReady, layers.catchments, kashmirBoundaryData, kashmirBoundarySource, studySources, studyCatchment, stationPopupSources]);
+  }, [screeningMapData, districtDisplayData, operationalData, rainfallHeatmapData, riverStatusLines, waterData, floodHub, glacierData, backgroundReady, layers.catchments, kashmirBoundaryData, kashmirBoundarySource, studySources, studyCatchment, stationPopupSources, activeStationMapLayers]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1519,6 +1657,11 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     }
     for (const id of ["water-lines-glow", "water-lines", "water-bodies"]) map.setLayoutProperty(id, "visibility", visibility(layers.water));
     for (const id of ["river-status-lines-glow", "river-status-lines", "model-water-points"]) map.setLayoutProperty(id, "visibility", visibility(layers.waterForecasts));
+    const stationContextVisibility = visibility(Boolean(selectedStationId));
+    for (const id of ["active-monitoring-catchment-fill", "active-monitoring-catchment-casing", "active-monitoring-catchment-line",
+      "active-monitoring-district-casing", "active-monitoring-district-line", "active-monitoring-river-glow",
+      "active-monitoring-river-line", "active-monitoring-station-halo", "active-monitoring-station-point",
+      "active-monitoring-station-label"]) map.setLayoutProperty(id, "visibility", stationContextVisibility);
     if (containerRef.current) {
       containerRef.current.dataset.waterGeometryVisibility = String(map.getLayoutProperty("water-lines", "visibility"));
       containerRef.current.dataset.waterForecastVisibility = String(map.getLayoutProperty("river-status-lines", "visibility"));
@@ -1532,7 +1675,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     };
     updateVisibility();
     return () => { map.off("style.load", updateVisibility); };
-  }, [layers, rainfallHeatmapEnabled, catchmentId, waterQuantity, showNormalFloodHub, glacierView, studyActive]);
+  }, [layers, rainfallHeatmapEnabled, catchmentId, waterQuantity, showNormalFloodHub, glacierView, studyActive, selectedStationId]);
 
   useMapBasemap(mapRef, basemap);
   usePopulationLayers(mapRef, populationOverlay);
@@ -1651,6 +1794,27 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           <button className="map-layer-toggle" data-tour-target="gis-map-layers-toggle" type="button" aria-label="Toggle map layers" title="Map layers" aria-expanded={mapControlsOpen} onClick={() => setMapControlsOpen((current) => !current)}><Layers3 size={14} /><span>Map layers</span>{mapControlsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</button>
           {coordinatePicking && <div className="coordinate-pick-status"><span role="status"><MousePointer2 size={14} /> Coordinate selection</span><button type="button" title="Cancel coordinate selection" aria-label="Cancel coordinate selection" onClick={() => setPickingMode(false)}><X size={14} /></button></div>}
           <div hidden={!mapControlsOpen}>
+          <div className="station-monitoring-control">
+            <button type="button" className="station-monitoring-toggle" aria-pressed={stationRotationEnabled}
+              disabled={!rotationStations.length}
+              onClick={() => {
+                if (!stationRotationEnabled && rotationStations.length) {
+                  const current = rotationStations.find((station) => station.id === selectedStationId);
+                  selectStation(current?.id ?? rotationStations[0].id);
+                }
+                setStationRotationEnabled((enabled) => !enabled);
+              }}>
+              <RadioTower size={15} />
+              <span><strong>{stationRotationEnabled ? "Monitoring mode on" : "Monitoring mode off"}</strong><small>{stationRotationEnabled ? "Stations advance every 10 seconds" : "Turn on to cycle through river stations"}</small></span>
+              <i aria-hidden="true" />
+            </button>
+            {stationRotationEnabled && <span className="station-monitoring-progress" role="status">
+              {selectedStationId && rotationStations.some((station) => station.id === selectedStationId)
+                ? `Station ${rotationStations.findIndex((station) => station.id === selectedStationId) + 1} of ${rotationStations.length}`
+                : `${rotationStations.length} stations available`}
+              {rotationStations.length === 1 ? " · one station in this selection" : " · live stats shown beside the map"}
+            </span>}
+          </div>
           <div className="map-basemap-control" role="group" aria-label="Map background">
             <strong>Map background</strong>
             <div className="map-basemap-options">

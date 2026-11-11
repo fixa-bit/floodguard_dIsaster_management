@@ -108,6 +108,9 @@ class FFDBulletinService:
                 response.raise_for_status()
             result = parse_bulletin(response.text)
             self.cache, self.cached_at = result, time.monotonic()
+            # Keep the bulletin text for report explanations (document search). Best effort; never raises.
+            from app.reports.ai.knowledge import archive_bulletin
+            await asyncio.to_thread(archive_bulletin, response.text)
             return result
 
 

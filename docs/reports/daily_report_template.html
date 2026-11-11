@@ -1,0 +1,604 @@
+<title>FloodGuard Daily Situation Report</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single bulletin column (A4-like width), numbered sections in report order, figures drawn from one data object */
+:root{
+  --bg:#f4f6f7; --paper:#ffffff; --ink:#12191d; --ink-2:#4b5559; --ink-3:#7a8488;
+  --rule:#dfe4e6; --rule-2:#eef1f2; --accent:#0e5a78; --accent-soft:#e3eef3;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --muted-bar:#c9d0d3;
+  --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1416; --paper:#171d20; --ink:#eef1f2; --ink-2:#b9c2c5; --ink-3:#8b9599;
+  --rule:#2c3539; --rule-2:#222a2d; --accent:#5fb0d3; --accent-soft:#1d2d34;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --muted-bar:#46525a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1416; --paper:#171d20; --ink:#eef1f2; --ink-2:#b9c2c5; --ink-3:#8b9599;
+  --rule:#2c3539; --rule-2:#222a2d; --accent:#5fb0d3; --accent-soft:#1d2d34;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --muted-bar:#46525a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.report{max-width:1040px;margin:0 auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px}
+.inner{padding:28px clamp(16px,4vw,44px)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:30px;font-weight:700;letter-spacing:-.01em}
+h2{font-size:21px;font-weight:600;display:flex;gap:12px;align-items:baseline}
+h2 .no{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500}
+h3{font-size:15px;font-weight:600;margin-bottom:8px}
+p{margin:0;max-width:72ch}
+.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.num,td.n,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sample{background:var(--accent-soft);color:var(--accent);font-size:12px;padding:8px clamp(16px,4vw,44px);border-bottom:1px solid var(--rule);border-radius:6px 6px 0 0}
+header.top{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;border-bottom:3px solid var(--accent)}
+.meta{display:grid;grid-template-columns:auto auto;gap:2px 14px;font-size:12.5px;color:var(--ink-2);margin-top:12px}
+.meta b{color:var(--ink);font-weight:500}
+.status-big{border:1px solid var(--rule);border-radius:6px;padding:12px 16px;text-align:right;min-width:180px}
+.status-big .lvl{font-family:var(--display);font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px;justify-content:flex-end}
+section{border-top:1px solid var(--rule);display:grid;gap:16px}
+section > .inner{display:grid;gap:18px}
+.lead{font-size:16px;line-height:1.55;max-width:80ch}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.kpi{background:var(--paper);padding:12px 14px;display:grid;gap:2px;align-content:start}
+.kpi .v{font-family:var(--display);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--ink-2)}
+.kpi .d{font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.grid2 > *{min-width:0}
+.tbl{overflow-x:auto;border:1px solid var(--rule);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--rule-2);white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--rule-2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right}
+tr.river td{background:var(--rule-2);font-family:var(--display);font-weight:600;font-size:13px;color:var(--accent)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+.note{font-size:12px;color:var(--ink-3);max-width:90ch}
+.concerns{display:grid;gap:8px;margin:0;padding:0;list-style:none;counter-reset:c}
+.concerns li{display:grid;grid-template-columns:28px 1fr;gap:8px;counter-increment:c}
+.concerns li::before{content:counter(c);font-family:var(--mono);color:var(--accent);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:3px;border-radius:2px;display:inline-block}
+.sw.box{height:10px;width:10px;border-radius:2px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--body);fill:var(--ink-2);font-size:11px}
+svg .t-ink{fill:var(--ink)} svg .t-mute{fill:var(--ink-3)}
+.fig{display:grid;gap:8px;min-width:0}
+.callout{border-left:3px solid var(--warn);background:var(--rule-2);padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px}
+.callout.crit{border-color:var(--crit)}
+.check{font-family:var(--mono);font-size:13px}
+.tag{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--rule);border-radius:3px;padding:1px 6px;color:var(--ink-3);font-weight:600;white-space:nowrap}
+.new{color:var(--accent);border-color:var(--accent)}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-size:12px;padding:6px 9px;border-radius:4px;z-index:20;max-width:240px;line-height:1.35}
+.hit{fill:transparent;cursor:default}
+footer{border-top:1px solid var(--rule)}
+.src{display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;border-radius:3px;padding:2px 7px;white-space:nowrap;border:1px solid;vertical-align:middle;line-height:1.4}
+.src::before{font-size:10px}
+.src.obs{color:var(--good);border-color:var(--good)} .src.obs::before{content:"●"}
+.src.off{color:var(--accent);border-color:var(--accent)} .src.off::before{content:"◆"}
+.src.api{color:var(--s1);border-color:var(--s1)} .src.api::before{content:"◇"}
+.src.ml{color:var(--ink-2);border-color:var(--ink-3)} .src.ml::before{content:"▲"}
+.src.sat{color:var(--s3);border-color:var(--s3)} .src.sat::before{content:"◎"}
+.src.est{color:var(--ink-3);border-color:var(--ink-3);border-style:dashed} .src.est::before{content:"≈"}
+.src.sim{color:var(--paper);background:repeating-linear-gradient(135deg,var(--crit) 0 6px,#b02f2f 6px 12px);border-color:var(--crit)} .src.sim::before{content:"⚑"}
+.srcs{display:inline-flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+h2{flex-wrap:wrap}
+.testbar{background:repeating-linear-gradient(135deg,var(--crit) 0 14px,#b02f2f 14px 28px);color:#ffffff;padding:10px clamp(16px,4vw,44px);font-weight:600;display:grid;gap:2px}
+.testbar span{font-weight:400;font-size:12.5px}
+tr.simrow td:first-child{box-shadow:inset 3px 0 0 var(--crit)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.shot{border:1px solid var(--rule);border-radius:6px;overflow:hidden;display:grid;align-content:start;min-width:0}
+.shot .cap{padding:10px 12px;display:grid;gap:4px;font-size:12.5px}
+.shot .cap b{font-family:var(--display);font-size:14px;font-weight:600}
+.shot .from{font-size:11.5px;color:var(--ink-3)}
+.inapp{display:grid;gap:8px;border-top:1px dashed var(--rule);padding-top:14px}
+.inapp .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+@media (max-width:640px){header.top{grid-template-columns:1fr}.status-big{text-align:left}.status-big .lvl{justify-content:flex-start}h1{font-size:24px}}
+@media (prefers-reduced-motion:no-preference){.bar{transition:opacity .15s}}
+</style>
+
+<div class="report">
+  <div class="sample">Template preview. All figures are sample values that show the layout. The scheduled job fills in live portal data. Sections marked <span class="tag new">Insight</span> are the added analyses.</div>
+  <div class="testbar">⚑ TEST REPORT: contains simulated data
+    <span>Simulation run "Chenab flash rise test" (SIM-0007) was active during this period. Every simulated value carries a striped SIMULATED label. Do not use simulated figures for operational decisions. When the report has no simulated data, this banner does not appear.</span></div>
+
+  <div class="inner"><header class="top" style="padding-bottom:20px">
+    <div>
+      <div class="eyebrow">FloodGuard AI · National Flood Monitoring</div>
+      <h1>Daily Flood Situation Report</h1>
+      <div class="meta">
+        <span>Report no.</span><b class="mono">DFSR-2026-315</b>
+        <span>Reporting period</span><b>10 Nov 2026 06:00 → 11 Nov 2026 06:00 PKT</b>
+        <span>Generated</span><b>11 Nov 2026 06:15 PKT (scheduled)</b>
+        <span>Data mode</span><b>Live feeds + simulation test run (SIM-0007)</b>
+        <span>Units</span><b>Discharge in cusecs, rainfall in mm</b>
+      </div>
+    </div>
+    <div class="status-big">
+      <div class="eyebrow">National status</div>
+      <div class="lvl"><span class="dot" style="background:var(--warn);width:14px;height:14px"></span>Watch</div>
+      <div class="note">Up from Normal yesterday</div>
+    </div>
+  </header></div>
+
+  <!-- 0 -->
+  <section><div class="inner">
+    <h2><span class="no">00</span>Where This Report's Data Comes From</h2>
+    <p>Every section heading, table row and figure carries a label naming where its data came from. Simulated data always gets the striped label and is never mixed into a figure without one.</p>
+    <div class="tbl"><table id="provlegend"><thead><tr><th>Label</th><th>Meaning</th><th>Used in this report for</th></tr></thead><tbody></tbody></table></div>
+    <div class="fig"><h3>Share of report figures by data source</h3><div id="provbar"></div></div>
+  </div></section>
+
+  <!-- 1 -->
+  <section><div class="inner">
+    <h2><span class="no">01</span>Executive Summary</h2>
+    <div class="callout crit">⚑ The Chenab rise at Marala and Khanki, and the flooding at Bajwat, Sialkot, come from simulation run SIM-0007. They are not real conditions. All other stations, forecasts and weather data are live.</div>
+    <p class="lead">All 22 monitored stations are below low flood. The Chenab is rising after 38 mm of rain in the upper catchment. A small flood wave is expected to peak at Marala around 02:00 on 12 Nov and reach Panjnad by 15 Nov. No station is forecast to enter flood in the next 72 hours. Satellite radar shows localized new flooding near Bajwat, Sialkot, affecting an estimated 18,700 people.</p>
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2">
+      <div><h3>Top concerns</h3>
+        <ol class="concerns">
+          <li><span class="src sim">Simulated</span> Chenab rise: Marala up 18% in 24 h. Expected peak about 23,500 cusecs, still below low flood.</li>
+          <li><span class="src sim">Simulated</span> A simulated flood of 6.2 km² near Bajwat, Sialkot, drawn over a real satellite image, would affect about 18,700 people, 2 schools and 1 health facility.</li>
+          <li>Sialkot and Narowal show three warning signs at once: high risk score, citizen reports and a rising station nearby.</li>
+          <li>GloFAS and Google Flood Hub disagree by 31% on the Danyor peak.</li>
+          <li>Mangla is releasing more than it receives. Outflow exceeds inflow by 7,600 cusecs.</li>
+        </ol></div>
+      <div class="fig"><h3>Stations by FFD flood category</h3><div id="catbar"></div><div class="legend" id="catlegend"></div>
+        <p class="note">Every station appears every day. A station with no reading is counted as "Unavailable".</p></div>
+    </div>
+  </div></section>
+
+  <!-- 2 -->
+  <section><div class="inner">
+    <h2><span class="no">02</span>Observed River Conditions</h2>
+    <p>All 22 FFD stations, upstream to downstream within each river. "% of normal" compares today with the station's November average. "Rising days" counts how many of the last 7 days the flow went up.</p>
+    <div class="fig"><h3>River network status</h3><div id="network"></div><div class="legend" id="netlegend"></div></div>
+    <div class="tbl"><table id="stations"><thead><tr>
+      <th>Station</th><th>Source</th><th class="n">Discharge</th><th class="n">24 h change</th><th>% of normal <span class="tag new">Insight</span></th><th>7-day trend <span class="tag new">Insight</span></th><th class="n">Rising days</th><th>FFD category</th><th>Observed</th>
+    </tr></thead><tbody></tbody></table></div>
+  </div></section>
+
+  <!-- 3 -->
+  <section><div class="inner">
+    <h2><span class="no">03</span>Flood Wave Travel <span class="tag new">Insight</span></h2>
+    <p>When a station rises, the report estimates when the rise reaches each station downstream. Times come from the river chain and typical travel times between stations.</p>
+    <div class="fig"><h3>Chenab: expected arrival of the Marala rise</h3><div id="wave"></div></div>
+  </div></section>
+
+  <!-- 4 -->
+  <section><div class="inner">
+    <h2><span class="no">04</span>Dams &amp; Barrages: Inflow vs Outflow <span class="tag new">Insight</span></h2>
+    <p>The difference between inflow and outflow shows whether a dam is storing water or releasing it. A sudden increase in release is an early warning for the stations below.</p>
+    <div class="grid2">
+      <div class="fig"><div id="inout"></div><div class="legend"><span><i class="sw box" style="background:var(--s1)"></i>Inflow</span><span><i class="sw box" style="background:var(--s2)"></i>Outflow</span></div></div>
+      <div class="tbl"><table id="inouttbl"><thead><tr><th>Site</th><th class="n">Net</th><th>Reading</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div></section>
+
+  <!-- 5 -->
+  <section><div class="inner">
+    <h2><span class="no">05</span>Hydrological Forecast &amp; Outlook</h2>
+    <h3>5a. Station forecasts, next 72 h</h3>
+    <div class="tbl"><table id="fc"><thead><tr><th>Station</th><th class="n">+24 h</th><th class="n">+48 h</th><th class="n">+72 h</th><th>Expected peak</th><th>Forecast category</th><th>FFD forecast text</th></tr></thead><tbody></tbody></table></div>
+
+    <h3>5b. Upstream Source Flood Watch</h3>
+    <div class="grid2">
+      <div class="fig"><div class="eyebrow">Marala (Chenab): observed and forecast discharge, cusecs</div><div id="hydro"></div>
+        <div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Observed (FFD)</span><span><i class="sw" style="background:var(--s2)"></i>GloFAS</span><span><i class="sw" style="background:var(--s3)"></i>Google Flood Hub</span></div></div>
+      <div class="tbl" style="align-self:start"><table id="up"><thead><tr><th>Station</th><th class="n">GloFAS peak</th><th class="n">Flood Hub peak</th><th>Agreement <span class="tag new">Insight</span></th><th>Signals</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="callout">Forecast sources disagree when their peaks differ by more than 25%. Those stations are flagged for manual review.</div>
+
+    <h3>5c. Model predictions</h3>
+    <div class="tbl"><table id="models"><thead><tr><th>Model</th><th>Target</th><th class="n">Prediction</th><th>Risk class</th><th>Model status</th></tr></thead><tbody></tbody></table></div>
+
+    <h3>5d. Seasonal outlook: Marala monthly mean flow</h3>
+    <div class="fig"><div id="seasonal"></div><div class="legend"><span><i class="sw box" style="background:var(--s1)"></i>Outlook</span><span><i class="sw" style="background:var(--ink)"></i>Historical normal</span></div></div>
+  </div></section>
+
+  <!-- 6 -->
+  <section><div class="inner">
+    <h2><span class="no">06</span>Forecast Accuracy <span class="tag new">Insight</span></h2>
+    <p>Yesterday's 24 h forecast compared with today's observed discharge. Positive error means the forecast was too high. The 30-day average shows how far each source is usually off.</p>
+    <div class="grid2">
+      <div class="fig"><h3>Yesterday's forecast error by station</h3><div id="err"></div></div>
+      <div class="fig"><h3>30-day mean absolute error by source</h3><div id="mae"></div>
+        <p class="note">Shows which source to rely on more. The sample assumes FFD's own forecast is the most accurate at barrage stations.</p></div>
+    </div>
+  </div></section>
+
+  <!-- 7 -->
+  <section><div class="inner">
+    <h2><span class="no">07</span>Rainfall &amp; Weather</h2>
+    <div class="grid2">
+      <div class="fig"><h3>Heaviest rainfall, observed and forecast (mm)</h3><div id="rain"></div>
+        <div class="legend"><span><i class="sw box" style="background:var(--s1)"></i>Last 24 h</span><span><i class="sw box" style="background:var(--s2)"></i>Next 24 h</span></div></div>
+      <div class="fig"><h3>Heat &amp; snowmelt watch <span class="tag new">Insight</span></h3>
+        <div class="tbl"><table id="melt"><thead><tr><th>Station</th><th class="n">Max temp</th><th class="n">vs normal</th><th class="n">Flow 3-day</th><th>Signal</th></tr></thead><tbody></tbody></table></div>
+        <p class="note">Flags a possible snowmelt rise or glacial lake outburst flood (GLOF) when the temperature is 4 °C or more above normal and flow is rising at the same time.</p></div>
+    </div>
+  </div></section>
+
+  <!-- 8 -->
+  <section><div class="inner">
+    <h2><span class="no">08</span>District Risk Screening</h2>
+    <div class="fig"><h3>126 districts by risk band</h3><div id="bands"></div></div>
+    <h3>Districts with several warning signs <span class="tag new">Insight</span></h3>
+    <div class="tbl"><table id="hot"><thead><tr><th>District</th><th class="n">Risk</th><th class="n">vs yesterday</th><th>High risk</th><th>Station rising</th><th>Citizen reports</th><th>Open incident</th><th class="n">Signs</th></tr></thead><tbody></tbody></table></div>
+    <p class="note">Based on a weather-only screen that ranks districts for attention. It is not an inundation forecast.</p>
+  </div></section>
+
+  <!-- 9 -->
+  <section><div class="inner">
+    <h2><span class="no">09</span>Alerts, Incidents &amp; Citizen Reports</h2>
+    <div class="grid2">
+      <div class="tbl"><table id="ops"><thead><tr><th>Item</th><th class="n">New</th><th class="n">Open</th><th class="n">Closed</th></tr></thead><tbody></tbody></table></div>
+      <div class="fig"><h3>Response times vs target <span class="tag new">Insight</span></h3><div id="resp"></div>
+        <div class="legend"><span><i class="sw box" style="background:var(--s1)"></i>Median today</span><span><i class="sw" style="background:var(--ink)"></i>Target</span></div></div>
+    </div>
+    <div class="tbl"><table id="inc"><thead><tr><th>Ref</th><th>Type</th><th>Location</th><th>Severity</th><th>Status</th><th class="n">Age</th></tr></thead><tbody></tbody></table></div>
+  </div></section>
+
+  <!-- 10 -->
+  <section><div class="inner">
+    <h2><span class="no">10</span>Satellite Flood Detection &amp; Impact</h2>
+    <p>Each day the job runs a Sentinel-1 radar check at every watch location: stations rising or in flood, districts with 3 or more warning signs, and open flood incidents. Radar sees through cloud. Each check compares the latest pass with an earlier pass from the same orbit and removes permanent rivers and lakes, so only new water counts. When new flooding is found, the report estimates who and what is inside the flooded area.</p>
+
+    <h3>10a. Satellite checks this period</h3>
+    <div class="tbl"><table id="sar"><thead><tr><th>Location</th><th>Why checked</th><th>Before pass</th><th>Latest pass</th><th class="n">Image age</th><th>Flood extent from</th><th class="n">New flood area</th><th>Result</th></tr></thead><tbody></tbody></table></div>
+    <div class="callout"><b>How simulated floods are tested:</b> when a simulation run creates a flood, the job still downloads the real Sentinel-1 image for that location and draws the simulated flood extent on top of it. The impact counts then run on the simulated extent. This tests the full chain (imagery, exposure, impact, report) without a real flood. Simulated water is drawn hatched and real detected water is solid, so the two are never confused.</div>
+    <p class="note">The satellite passes over each location about every 6 to 12 days, so the latest image can be several days old. The image age is always shown. A location with no recent pass is reported as such, not as "no flooding".</p>
+
+    <div class="callout crit"><span class="src sim">Simulated</span> <b>Simulated flood: Bajwat, Sialkot (Chenab and Tawi floodplain).</b> A 6.2 km² flood extent from simulation run SIM-0007 (HEC-RAS floodplain replay), drawn over the real Sentinel-1 image of 10 Nov. The real image shows no new water here. The impact below is a test result.</div>
+
+    <div class="grid2">
+      <div class="fig"><h3>10b. Before and after (Sentinel-1 radar)</h3><div><span class="src sat">Satellite</span> image <span class="src sim">Simulated</span> flood extent</div><div id="sarmap"></div>
+        <div class="legend"><span><i class="sw box" style="background:repeating-linear-gradient(135deg,#2bc4dd 0 2px,transparent 2px 4px);outline:1px solid #2bc4dd"></i>Simulated flood extent</span><span><i class="sw box" style="background:#2bc4dd"></i>Detected flood water (real)</span><span><i class="sw box" style="background:#36506b"></i>Permanent water (excluded)</span><span><i class="sw box" style="background:#ffffff;outline:1px solid var(--rule)"></i>Settlement</span><span>✚ Health facility</span><span>■ School</span></div>
+        <p class="note">Illustration. The real report embeds the radar water overlay that the portal's satellite analysis produces, at 30 m resolution over a 7.7 × 7.7 km window.</p></div>
+      <div class="fig"><h3>10c. Estimated impact inside the flooded area</h3><div><span class="src sim">Simulated</span> extent, <span class="src est">Estimate</span> counts</div>
+        <div class="kpis" id="impact" style="grid-template-columns:repeat(2,1fr)"></div>
+        <p class="note">Population is a modeled estimate from gridded population data, not a count of affected people. An infrastructure item inside the flooded area is exposed. That does not confirm damage or closure. OpenStreetMap is incomplete, so zero mapped items does not prove there are none.</p></div>
+    </div>
+
+    <div class="grid2">
+      <div class="fig"><h3>10d. Exposed population by tehsil</h3><div id="tehsil"></div></div>
+      <div class="fig"><h3>10e. Exposed facilities</h3>
+        <div class="tbl"><table id="facil"><thead><tr><th>Facility</th><th>Type</th><th>Tehsil</th><th>Location in flooded area</th></tr></thead><tbody></tbody></table></div></div>
+    </div>
+
+    <div class="callout"><b>Suggested actions (for review):</b> check embankment seepage reported at Narowal (INC-0398). Pre-position relief for about 12,400 people in Sialkot tehsil. Confirm whether the 2 exposed schools need to close. Request the next Sentinel-1 pass, due 16 Nov.</div>
+    <p class="note">When no new flooding is detected anywhere, this section shows the check table and the line "No new flood water detected at any watch location in the latest satellite passes."</p>
+  </div></section>
+
+  <!-- 11 -->
+  <section><div class="inner">
+    <h2><span class="no">11</span>App &amp; Simulation Snapshots</h2>
+    <p>Screenshots taken from the FloodGuard portal at report time, so supervisors see exactly what operators see. The most relevant screens also appear inside their sections above. This section collects all of them. Each image shows when it was taken, which screen it came from and its data-source label.</p>
+    <h3>11a. Simulation runs active this period</h3>
+    <div class="tbl"><table id="simruns"><thead><tr><th>Run</th><th>Name</th><th>Station</th><th>Measurement</th><th>Window</th><th>Thresholds</th><th class="n">Readings</th><th>Triggered</th></tr></thead><tbody></tbody></table></div>
+    <h3>11b. Portal screens</h3>
+    <div class="gallery" id="appgallery"></div>
+    <h3>11c. Simulation &amp; analysis views</h3>
+    <div class="gallery" id="gallery"></div>
+    <p class="note">The thumbnails are placeholders. The scheduled job opens the portal in a headless browser at a fixed size (1600 × 1000, light theme). It waits for each screen's data to finish loading, then saves a picture. Every picture is stamped with the report number and capture time. A screen that fails to load is listed as "Snapshot unavailable" with the reason. A screen showing simulated data is captured with the portal's own simulation notice visible.</p>
+  </div></section>
+
+  <!-- 12 -->
+  <section><div class="inner">
+    <h2><span class="no">12</span>Data Quality &amp; System Health</h2>
+    <div class="tbl"><table id="dq"><thead><tr><th>Feed</th><th>Status</th><th>Last update</th><th class="n">Coverage</th><th>Note</th></tr></thead><tbody></tbody></table></div>
+    <p class="note">System mode: Live · Simulation: On (SIM-0007, test only) · ML model: Off (rule-based engine active) · Stations without data: 0 of 22 · Stations overridden by simulation: 2 of 22</p>
+  </div></section>
+
+  <!-- 13 -->
+  <section><div class="inner">
+    <h2><span class="no">13</span>Annex</h2>
+    <div class="grid2">
+      <div><h3>FFD flood categories</h3><div class="legend" id="annexcat" style="flex-direction:column;gap:6px"></div></div>
+      <div><h3>Sources &amp; notes</h3>
+        <p class="note">River observations and forecasts come from the PMD Flood Forecasting Division (FFD). Modeled discharge comes from GloFAS and Google Flood Hub. Weather data comes from Open-Meteo. Satellite radar comes from Sentinel-1 RTC via Microsoft Planetary Computer, with Copernicus DEM elevation and JRC Global Surface Water used to exclude permanent water. Exposure uses gridded population data and OpenStreetMap. GloFAS gives modeled discharge, not measured water level. Travel times and "% of normal" are FloodGuard estimates. Each report keeps a copy of the data it used, so past reports can be reproduced.</p></div>
+    </div>
+  </div></section>
+
+  <footer><div class="inner" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink-3)">
+    <span>Prepared by: FloodGuard AI (automatic) · Reviewed by: ________</span><span class="mono">DFSR-2026-315 · page 1 of 1</span>
+  </div></footer>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const CAT = {
+  "Below low":{c:"var(--good)",d:"Normal flow"},
+  "Low flood":{c:"var(--warn)",d:"Water in active floodplain"},
+  "Medium flood":{c:"var(--serious)",d:"Floodplain partly inundated"},
+  "High flood":{c:"var(--crit)",d:"Embankments under pressure"},
+  "Very high flood":{c:"var(--crit)",d:"Breach risk, evacuation likely"},
+  "Exceptionally high flood":{c:"var(--crit)",d:"Record-scale flows"},
+  "Unavailable":{c:"var(--muted-bar)",d:"No reading in the period"}
+};
+const SRC = {obs:'<span class="src obs">Observed</span>',off:'<span class="src off">Official forecast</span>',api:'<span class="src api">Flood API</span>',
+  ml:'<span class="src ml">Model prediction</span>',sat:'<span class="src sat">Satellite</span>',est:'<span class="src est">Estimate</span>',sim:'<span class="src sim">Simulated</span>'};
+const SIM_STATIONS = ["Marala","Khanki"];
+// section number -> data sources used in it
+const SECTION_SRC = {"01":["obs","api","sat","sim"],"02":["obs","sim"],"03":["est","sim"],"04":["obs"],"05":["off","api","ml","sim"],"06":["off","api","ml","obs"],
+  "07":["api","obs"],"08":["api","est"],"09":["obs","sim"],"10":["sat","sim","est"],"11":["sim","sat","api","est"],"12":["obs"],"13":[]};
+document.querySelectorAll("h2 .no").forEach(n=>{const s=SECTION_SRC[n.textContent];if(s&&s.length)n.parentElement.insertAdjacentHTML("beforeend",`<span class="srcs">${s.map(k=>SRC[k]).join("")}</span>`);});
+document.querySelector("#provlegend tbody").innerHTML=[
+  ["obs","Measured by a real gauge or reported by a real person (FFD river state, citizen reports, incidents)","20 stations, incidents, citizen reports"],
+  ["off","Forecast issued by the PMD Flood Forecasting Division","Station forecasts, FFD forecast text"],
+  ["api","Modeled data from an external flood or weather service (GloFAS, Google Flood Hub, Open-Meteo)","Upstream watch, rainfall, district screening"],
+  ["ml","Output of a FloodGuard model. Pilot models are marked as not validated","Marala next-day, flood risk engine"],
+  ["sat","Real Sentinel-1 radar image from a real satellite pass","Satellite checks, imagery in sections 10–11"],
+  ["est","Calculated by FloodGuard from the other data (travel time, % of normal, exposure)","Wave travel, exposure counts"],
+  ["sim","Test data from a portal simulation run. Not real conditions","Marala and Khanki readings, Bajwat flood extent, impact"]
+].map(([k,m,u])=>`<tr><td>${SRC[k]}</td><td>${m}</td><td>${u}</td></tr>`).join("");
+(function(){const d=[["obs",38,"var(--good)"],["off",9,"var(--accent)"],["api",21,"var(--s1)"],["ml",4,"var(--ink-3)"],["sat",6,"var(--s3)"],["est",10,"var(--muted-bar)"],["sim",12,"var(--crit)"]];
+  const names={obs:"Observed",off:"Official forecast",api:"Flood API",ml:"Model prediction",sat:"Satellite",est:"Estimate",sim:"Simulated"};
+  const W=600,H=30,tot=d.reduce((a,b)=>a+b[1],0);let x=0,g="";
+  d.forEach(([k,n,c])=>{const w=W*n/tot;g+=`<rect x="${x}" y="0" width="${Math.max(w-2,1)}" height="${H}" rx="4" fill="${c}" data-tip="${names[k]}: ${n} figures (${Math.round(n/tot*100)}%)"/>`;x+=w;});
+  document.getElementById("provbar").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Figures by data source">${g}</svg><div class="legend">${d.map(([k,n,c])=>`<span><i class="sw box" style="background:${c}"></i>${names[k]} <b class="mono">${n}</b></span>`).join("")}</div>`;})();
+const fmt = n => n==null?"–":Math.round(n).toLocaleString("en-US");
+const sgn = n => (n>0?"+":n<0?"−":"±")+fmt(Math.abs(n));
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pill = (cat) => `<span class="pill"><i class="dot" style="background:${CAT[cat].c}"></i>${cat}</span>`;
+
+// station: id, name, river, now, normal, change24, trend direction (-1..1), category, observed time
+const RIVERS = {
+  Indus:[["Tarbela",28400,26000,600,.2],["Kalabagh",41200,39500,900,.3],["Chashma",43800,42000,400,.2],["Taunsa",39600,40500,-500,-.2],["Guddu",33100,35000,-700,-.3],["Sukkur",18900,21000,-400,-.3],["Kotri",6200,7000,-200,-.2]],
+  Kabul:[["Nowshera",9800,10500,-300,-.2]],
+  Jhelum:[["Mangla",7400,9000,200,.1],["Rasul",6100,7500,1900,.6]],
+  Chenab:[["Marala",21600,12500,3300,1],["Khanki",17900,11800,2600,.9],["Qadirabad",14200,10300,1400,.7],["Trimmu",12300,11000,300,.2],["Panjnad",9700,10200,-100,-.1]],
+  Ravi:[["Jassar",3100,2600,400,.5],["Shahdara",2400,2300,100,.1],["Balloki",4900,5200,-100,-.1],["Sidhnai",1900,2100,-50,-.1]],
+  Sutlej:[["Ganda Singh Wala",2800,3000,-80,-.1],["Sulemanki",1600,1900,-40,-.1],["Islam",600,800,-20,-.1]]
+};
+function series(now,dir,seed){ // 7 sample values ending at `now`
+  const out=[];let v=now;for(let i=6;i>=0;i--){out.unshift(v);v=v*(1-dir*0.045)+Math.sin(seed+i)*now*0.012;}return out;}
+const ALL=[];let k=0;for(const [r,list] of Object.entries(RIVERS))for(const s of list){const sr=series(s[1],s[4],k++);
+  ALL.push({river:r,name:s[0],now:s[1],normal:s[2],ch:s[3],s:sr,rise:sr.slice(1).filter((v,i)=>v>sr[i]).length,cat:"Below low",obs:"06:00"});}
+
+/* ---------- tooltip ---------- */
+const tip=document.getElementById("tip");
+document.addEventListener("pointermove",e=>{const t=e.target.closest("[data-tip]");
+  if(!t){tip.hidden=true;return}tip.innerHTML=t.dataset.tip;tip.hidden=false;
+  const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8);tip.style.left=x+"px";tip.style.top=(e.clientY+14)+"px";});
+
+/* ---------- 1. KPIs + category bar ---------- */
+const K=[["0 / 22","Stations in flood","= yesterday"],["Below low","Highest category","= yesterday"],["7","Stations rising","↑ 4 from yesterday"],["2","Active alerts","↑ 2"],["3 (0)","Open incidents (critical)","↑ 1"],["5","Pending citizen reports","↑ 3"],["61%","Highest district risk","↑ 19 pts, Sialkot"],["6.2 km²","New flood water (satellite)","1 location, Sialkot"],["~18,700","People in flooded area","modeled estimate"]];
+document.getElementById("kpis").innerHTML=K.map(([v,l,d])=>`<div class="kpi"><span class="v">${v}</span><span class="l">${l}</span><span class="d">${d}</span></div>`).join("");
+(function(){const counts=Object.keys(CAT).map(c=>[c,ALL.filter(s=>s.cat===c).length]).filter(x=>x[1]>0||x[0]==="Low flood"||x[0]==="Medium flood");
+  const W=600,H=34,tot=ALL.length;let x=0;let g="";
+  counts.forEach(([c,n])=>{if(!n)return;const w=W*n/tot;g+=`<rect x="${x}" y="0" width="${Math.max(w-2,1)}" height="${H}" rx="4" fill="${CAT[c].c}" data-tip="${c}: ${n} stations"/>`;
+    g+=`<text x="${x+8}" y="${H/2+4}" class="t-ink" style="font-weight:600">${n} ${c}</text>`;x+=w;});
+  document.getElementById("catbar").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Stations by category">${g}</svg>`;
+  document.getElementById("catlegend").innerHTML=counts.map(([c,n])=>`<span>${pill(c)} ${n}</span>`).join("");})();
+
+/* ---------- 2. Network diagram ---------- */
+(function(){const rows=Object.keys(RIVERS),W=980,rowH=46,left=80,H=rows.length*rowH+10;let g="";
+  rows.forEach((r,i)=>{const y=20+i*rowH,list=ALL.filter(s=>s.river===r),step=(W-left-40)/Math.max(6,1);
+    g+=`<text x="0" y="${y+4}" class="t-ink" style="font-family:var(--display);font-weight:600;font-size:13px">${r}</text>`;
+    const xEnd=left+(list.length-1)*step;g+=`<line x1="${left}" x2="${Math.max(xEnd,left+1)}" y1="${y}" y2="${y}" stroke="var(--s1)" stroke-width="3" stroke-linecap="round" opacity=".35"/>`;
+    list.forEach((s,j)=>{const x=left+j*step,pct=Math.round(s.now/s.normal*100);
+      g+=`<circle cx="${x}" cy="${y}" r="7" fill="${CAT[s.cat].c}" stroke="var(--paper)" stroke-width="2"/>`;
+      if(s.rise>=5)g+=`<path d="M${x-5} ${y-13} L${x} ${y-19} L${x+5} ${y-13}Z" fill="var(--ink)"/>`;
+      g+=`<text x="${x}" y="${y+21}" text-anchor="middle">${s.name.replace("Ganda Singh Wala","G.S. Wala")}</text>`;
+      g+=`<circle class="hit" cx="${x}" cy="${y}" r="16" data-tip="<b>${s.name}</b><br>${fmt(s.now)} cusecs · ${pct}% of normal<br>${s.cat}"/>`;});});
+  document.getElementById("network").innerHTML=`<div style="overflow-x:auto"><svg viewBox="-4 0 ${W} ${H}" style="min-width:640px" role="img" aria-label="River network">${g}</svg></div>`;
+  document.getElementById("netlegend").innerHTML=`<span>${pill("Below low")}</span><span>${pill("Low flood")}</span><span>${pill("Medium flood")}</span><span>${pill("High flood")}</span><span>▲ Rising on 5 or more of the last 7 days</span><span>Panjnad also receives the Sutlej</span>`;})();
+
+/* ---------- 2. Station table ---------- */
+function spark(v){const W=90,H=22,mn=Math.min(...v),mx=Math.max(...v),sx=i=>i*(W-4)/(v.length-1)+2,sy=x=>H-3-(x-mn)/((mx-mn)||1)*(H-6);
+  const d=v.map((x,i)=>(i?"L":"M")+sx(i).toFixed(1)+" "+sy(x).toFixed(1)).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:90px"><path d="${d}" fill="none" stroke="var(--s1)" stroke-width="1.75"/><circle cx="${sx(v.length-1)}" cy="${sy(v[v.length-1])}" r="2.5" fill="var(--s1)"/></svg>`;}
+function pctBar(p){const W=120,cap=200,w=Math.min(p,cap)/cap*W;
+  return `<span style="display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 ${W} 12" style="width:${W}px"><rect width="${W}" height="12" rx="3" fill="var(--rule-2)"/><rect width="${w}" height="12" rx="3" fill="${p>=130?"var(--s2)":"var(--s1)"}"/><line x1="${W/2}" x2="${W/2}" y1="-2" y2="14" stroke="var(--ink)" stroke-width="1.5"/></svg><span class="mono">${p}%</span></span>`;}
+(function(){let h="",cur="";ALL.forEach(s=>{if(s.river!==cur){cur=s.river;h+=`<tr class="river"><td colspan="9">${cur}</td></tr>`;}
+  const p=Math.round(s.now/s.normal*100),sim=SIM_STATIONS.includes(s.name);
+  h+=`<tr${sim?' class="simrow"':""}><td>${s.name}</td><td>${sim?SRC.sim:SRC.obs}</td><td class="n">${fmt(s.now)}</td><td class="n">${s.ch>0?"▲ ":s.ch<0?"▼ ":""}${sgn(s.ch)}</td><td>${pctBar(p)}</td><td>${spark(s.s)}</td><td class="n">${s.rise} / 6</td><td>${pill(s.cat)}</td><td class="mono">${s.obs}</td></tr>`;});
+  document.querySelector("#stations tbody").innerHTML=h;})();
+
+/* ---------- 3. Wave travel ---------- */
+(function(){const st=[["Marala",0,23500],["Khanki",7,22100],["Qadirabad",14,20400],["Trimmu",42,15800],["Panjnad",78,12100]];
+  const W=900,H=150,l=30,r=40,maxH=84,sx=h=>l+h/maxH*(W-l-r),base=new Date(2026,10,12,2);let g="";
+  for(let h=0;h<=84;h+=12){const x=sx(h);const d=new Date(base.getTime()+h*36e5);
+    g+=`<line x1="${x}" x2="${x}" y1="30" y2="110" stroke="var(--rule)" stroke-width="1"/><text x="${x}" y="128" text-anchor="middle" class="t-mute">${d.toLocaleDateString("en-GB",{day:"numeric",month:"short"})} ${String(d.getHours()).padStart(2,"0")}:00</text>`;}
+  g+=`<line x1="${sx(0)}" x2="${sx(78)}" y1="70" y2="70" stroke="var(--s1)" stroke-width="2" stroke-dasharray="4 4"/>`;
+  st.forEach(([n,h,q],i)=>{const x=sx(h);g+=`<circle cx="${x}" cy="70" r="8" fill="var(--s1)" stroke="var(--paper)" stroke-width="2"/>
+    <text x="${x}" y="${i%2?100:50}" text-anchor="middle" class="t-ink" style="font-weight:600">${n}</text>
+    <text x="${x}" y="${i%2?113:37}" text-anchor="middle">${h?"+"+h+" h · ":""}${fmt(q)}</text>
+    <circle class="hit" cx="${x}" cy="70" r="18" data-tip="<b>${n}</b><br>Peak about ${fmt(q)} cusecs<br>${h?h+" h after Marala":"Origin of the rise"}"/>`;});
+  document.getElementById("wave").innerHTML=`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="min-width:620px" role="img" aria-label="Flood wave arrival times">${g}</svg></div>
+  <p class="note">The peak shrinks as it travels downstream. All values stay below the low-flood threshold.</p>`;})();
+
+/* ---------- 4. Inflow / outflow ---------- */
+(function(){const d=[["Tarbela",28400,35000],["Mangla",7400,15000],["Chashma",43800,41200],["Marala",21600,14800],["Sukkur",18900,9600]];
+  const W=520,rowH=40,l=70,r=70,mx=50000,sx=v=>v/mx*(W-l-r),H=d.length*rowH+20;let g="";
+  [0,10000,20000,30000,40000,50000].forEach(t=>{g+=`<line x1="${l+sx(t)}" x2="${l+sx(t)}" y1="0" y2="${H-20}" stroke="var(--rule)"/><text x="${l+sx(t)}" y="${H-4}" text-anchor="middle" class="t-mute">${t/1000}k</text>`;});
+  d.forEach(([n,i,o],k)=>{const y=k*rowH+6;g+=`<text x="${l-8}" y="${y+17}" text-anchor="end" class="t-ink">${n}</text>
+    <rect class="bar" x="${l}" y="${y}" width="${sx(i)}" height="13" rx="3" fill="var(--s1)" data-tip="${n} inflow: ${fmt(i)} cusecs"/>
+    <rect class="bar" x="${l}" y="${y+15}" width="${sx(o)}" height="13" rx="3" fill="var(--s2)" data-tip="${n} outflow: ${fmt(o)} cusecs"/>`;});
+  document.getElementById("inout").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Inflow and outflow">${g}</svg>`;
+  document.querySelector("#inouttbl tbody").innerHTML=d.map(([n,i,o])=>{const net=i-o;
+    const read=n==="Mangla"?"Releasing above inflow. Watch Rasul and Trimmu.":net<0?"Releasing from storage":n==="Sukkur"||n==="Marala"?"Diverting to canals":"Storing";
+    return `<tr><td>${n}</td><td class="n">${sgn(net)}</td><td>${read}</td></tr>`;}).join("");})();
+
+/* ---------- 5a forecast table ---------- */
+document.querySelector("#fc tbody").innerHTML=[["Marala",23100,19800,16500,"12 Nov 02:00 · 23,500","Below low","Rise expected, below low flood"],["Khanki",21800,20900,17200,"12 Nov 09:00 · 22,100","Below low","—"],["Qadirabad",18600,20100,17900,"12 Nov 16:00 · 20,400","Below low","—"],["Trimmu",13100,14900,15800,"13 Nov 20:00 · 15,800","Below low","—"],["Tarbela",28900,29300,29000,"No peak","Below low","Steady"],["…all 22 stations","","","","","",""]]
+  .map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]?fmt(r[1]):""}</td><td class="n">${r[2]?fmt(r[2]):""}</td><td class="n">${r[3]?fmt(r[3]):""}</td><td class="mono">${r[4]}</td><td>${r[5]?pill(r[5]):""}</td><td>${r[6]}</td></tr>`).join("");
+
+/* ---------- 5b hydrograph ---------- */
+(function(){const days=11,W=560,H=240,l=46,r=12,t=12,b=30,mx=30000,sx=i=>l+i/(days-1)*(W-l-r),sy=v=>t+(1-v/mx)*(H-t-b);
+  const obs=[13800,14100,13600,14900,18300,21600],glo=[null,null,null,null,null,21600,23200,21000,18400,16200,14900],hub=[null,null,null,null,null,21600,26800,27400,23000,19100,16400];
+  const lo=glo.map(v=>v&&v*.88),hi=glo.map(v=>v&&v*1.12);const lab=i=>{const d=new Date(2026,10,6+i);return d.getDate()+" Nov"};
+  let g="";[0,10000,20000,30000].forEach(v=>{g+=`<line x1="${l}" x2="${W-r}" y1="${sy(v)}" y2="${sy(v)}" stroke="var(--rule)"/><text x="${l-6}" y="${sy(v)+4}" text-anchor="end" class="t-mute">${v/1000}k</text>`;});
+  for(let i=0;i<days;i+=2)g+=`<text x="${sx(i)}" y="${H-10}" text-anchor="middle" class="t-mute">${lab(i)}</text>`;
+  g+=`<line x1="${sx(5)}" x2="${sx(5)}" y1="${t}" y2="${H-b}" stroke="var(--ink-3)" stroke-dasharray="3 3"/><text x="${sx(5)+5}" y="${t+10}" class="t-mute">Today</text>`;
+  const band=[];for(let i=5;i<days;i++)band.push(sx(i)+" "+sy(hi[i]));for(let i=days-1;i>=5;i--)band.push(sx(i)+" "+sy(lo[i]));
+  g+=`<path d="M${band.join("L")}Z" fill="var(--s2)" opacity=".14"/>`;
+  const line=(a,c,off=0)=>`<path d="${a.map((v,i)=>v==null?"":`${a.slice(0,i).some(x=>x!=null)?"L":"M"}${sx(i+off).toFixed(1)} ${sy(v).toFixed(1)}`).join("")}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>`;
+  g+=line(glo,"var(--s2)")+line(hub,"var(--s3)")+line(obs,"var(--s1)");
+  g+=`<circle cx="${sx(5)}" cy="${sy(21600)}" r="4" fill="var(--s1)" stroke="var(--paper)" stroke-width="2"/>`;
+  for(let i=0;i<days;i++){const parts=[];if(obs[i]!=null)parts.push("Observed "+fmt(obs[i]));if(i>5){parts.push("GloFAS "+fmt(glo[i]));parts.push("Flood Hub "+fmt(hub[i]));}
+    g+=`<rect class="hit" x="${sx(i)-(W-l-r)/(days-1)/2}" y="${t}" width="${(W-l-r)/(days-1)}" height="${H-t-b}" data-tip="<b>${lab(i)}</b><br>${parts.join("<br>")}"/>`;}
+  document.getElementById("hydro").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Marala hydrograph">${g}</svg><p class="note">Shaded band: GloFAS forecast range.</p>`;
+  const up=[["Besham (Indus)",31200,29800,"Agree"],["Danyor (Gilgit)",4100,5900,"Disagree, 31%"],["Marala (Chenab)",23200,27400,"Agree, 17%"],["Jassar (Ravi)",3600,3900,"Agree"]];
+  const sig=["Riverine low · 20%","GLOF watch · 15%","Riverine low · 35%","None"];
+  document.querySelector("#up tbody").innerHTML=up.map((u,i)=>`<tr><td>${u[0]}</td><td class="n">${fmt(u[1])}</td><td class="n">${fmt(u[2])}</td><td>${u[3].startsWith("Disagree")?`<span class="pill"><i class="dot" style="background:var(--warn)"></i>${u[3]}</span>`:`<span class="pill"><i class="dot" style="background:var(--good)"></i>${u[3]}</span>`}</td><td>${sig[i]}</td></tr>`).join("");})();
+
+/* ---------- 5c models ---------- */
+document.querySelector("#models tbody").innerHTML=[["Marala next-day (XGBoost pilot)","Marala discharge, 12 Nov","22,900 cusecs","Elevated","Pilot, not validated for operational use"],["Flood risk engine (rule-based)","Sialkot","61%","Medium","Operational"],["Flood risk engine (rule-based)","Lahore","18%","Low","Operational"]]
+  .map(r=>`<tr>${r.map((c,i)=>`<td${i===2?' class="n"':""}>${c}</td>`).join("")}</tr>`).join("");
+
+/* ---------- 5d seasonal ---------- */
+(function(){const d=[["Dec",9800,10600],["Jan",8200,8900],["Feb",9400,9100],["Mar",15800,13900]];
+  const W=520,H=200,l=46,r=10,t=10,b=28,mx=20000,bw=46,step=(W-l-r)/d.length,sy=v=>t+(1-v/mx)*(H-t-b);let g="";
+  [0,5000,10000,15000,20000].forEach(v=>{g+=`<line x1="${l}" x2="${W-r}" y1="${sy(v)}" y2="${sy(v)}" stroke="var(--rule)"/><text x="${l-6}" y="${sy(v)+4}" text-anchor="end" class="t-mute">${v/1000}k</text>`;});
+  d.forEach(([m,o,n],i)=>{const cx=l+step*i+step/2;
+    g+=`<rect class="bar" x="${cx-bw/2}" y="${sy(o)}" width="${bw}" height="${sy(0)-sy(o)}" rx="4" fill="var(--s1)" data-tip="${m} 2026–27<br>Outlook ${fmt(o)} · normal ${fmt(n)}"/>`;
+    g+=`<line x1="${cx-bw/2-6}" x2="${cx+bw/2+6}" y1="${sy(n)}" y2="${sy(n)}" stroke="var(--ink)" stroke-width="2"/>`;
+    g+=`<text x="${cx}" y="${H-8}" text-anchor="middle" class="t-mute">${m}</text><text x="${cx}" y="${sy(Math.max(o,n))-6}" text-anchor="middle" class="t-ink">${o>n?"+":"−"}${Math.abs(Math.round((o/n-1)*100))}%</text>`;});
+  document.getElementById("seasonal").innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="max-width:560px" role="img" aria-label="Seasonal outlook">${g}</svg>`;})();
+
+/* ---------- 6. accuracy ---------- */
+(function(){const d=[["Marala",-9],["Khanki",-6],["Qadirabad",-4],["Tarbela",3],["Kalabagh",2],["Mangla",7],["Rasul",-12],["Sukkur",5],["Guddu",1],["Taunsa",-2]];
+  const W=460,rowH=22,l=80,r=40,mx=15,mid=l+(W-l-r)/2,sx=v=>v/mx*(W-l-r)/2,H=d.length*rowH+24;let g="";
+  [-15,-10,-5,0,5,10,15].forEach(v=>{g+=`<line x1="${mid+sx(v)}" x2="${mid+sx(v)}" y1="0" y2="${H-22}" stroke="${v?"var(--rule)":"var(--ink-3)"}"/><text x="${mid+sx(v)}" y="${H-6}" text-anchor="middle" class="t-mute">${v>0?"+":""}${v}%</text>`;});
+  d.forEach(([n,e],i)=>{const y=i*rowH+4,w=Math.abs(sx(e));
+    g+=`<text x="${l-8}" y="${y+12}" text-anchor="end" class="t-ink">${n}</text><rect class="bar" x="${e<0?mid-w:mid}" y="${y+2}" width="${w}" height="13" rx="3" fill="var(--s1)" data-tip="${n}: forecast ${e>0?"too high":"too low"} by ${Math.abs(e)}%"/>
+    <text x="${e<0?mid-w-5:mid+w+5}" y="${y+12}" text-anchor="${e<0?"end":"start"}" class="mono t-mute">${e>0?"+":""}${e}%</text>`;});
+  document.getElementById("err").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Forecast error">${g}</svg><p class="note">Left of zero: the forecast was too low. It underestimated the Chenab rise.</p>`;
+  const m=[["FFD forecast",6.1],["GloFAS",14.8],["Google Flood Hub",11.2],["XGBoost pilot (Marala)",8.4]];
+  const W2=460,l2=150,r2=50,mx2=20,s2=v=>v/mx2*(W2-l2-r2),H2=m.length*30+22;let g2="";
+  [0,5,10,15,20].forEach(v=>{g2+=`<line x1="${l2+s2(v)}" x2="${l2+s2(v)}" y1="0" y2="${H2-22}" stroke="var(--rule)"/><text x="${l2+s2(v)}" y="${H2-6}" text-anchor="middle" class="t-mute">${v}%</text>`;});
+  m.forEach(([n,v],i)=>{const y=i*30+4;g2+=`<text x="${l2-8}" y="${y+14}" text-anchor="end" class="t-ink">${n}</text><rect class="bar" x="${l2}" y="${y+3}" width="${s2(v)}" height="16" rx="3" fill="var(--s1)" data-tip="${n}: ${v}% mean error, 30 days"/><text x="${l2+s2(v)+6}" y="${y+15}" class="mono t-mute">${v}%</text>`;});
+  document.getElementById("mae").innerHTML=`<svg viewBox="0 0 ${W2} ${H2}" role="img" aria-label="Mean absolute error">${g2}</svg>`;})();
+
+/* ---------- 7. rain + melt ---------- */
+(function(){const d=[["Sialkot",38,22],["Narowal",31,18],["Muzaffarabad",27,30],["Jhelum",19,9],["Gujranwala",16,12],["Lahore",11,6],["Mansehra",9,14],["Swat",6,11]];
+  const W=500,rowH=34,l=100,r=40,mx=40,sx=v=>v/mx*(W-l-r),H=d.length*rowH+22;let g="";
+  [0,10,20,30,40].forEach(v=>{g+=`<line x1="${l+sx(v)}" x2="${l+sx(v)}" y1="0" y2="${H-22}" stroke="var(--rule)"/><text x="${l+sx(v)}" y="${H-6}" text-anchor="middle" class="t-mute">${v}</text>`;});
+  d.forEach(([n,o,f],i)=>{const y=i*rowH+4;g+=`<text x="${l-8}" y="${y+14}" text-anchor="end" class="t-ink">${n}</text>
+    <rect class="bar" x="${l}" y="${y}" width="${sx(o)}" height="11" rx="3" fill="var(--s1)" data-tip="${n}: ${o} mm, last 24 h"/>
+    <rect class="bar" x="${l}" y="${y+13}" width="${sx(f)}" height="11" rx="3" fill="var(--s2)" data-tip="${n}: ${f} mm forecast, next 24 h"/>`;});
+  document.getElementById("rain").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Rainfall">${g}</svg>`;
+  document.querySelector("#melt tbody").innerHTML=[["Besham (Indus)","14.2 °C","+2.1","▲ 4%","None"],["Danyor (Gilgit)","11.8 °C","+4.6","▲ 11%","Watch"],["Nowshera (Kabul)","22.4 °C","+1.0","▼ 3%","None"]]
+    .map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td><td class="n">${r[3]}</td><td>${r[4]==="Watch"?`<span class="pill"><i class="dot" style="background:var(--warn)"></i>Watch</span>`:`<span class="pill"><i class="dot" style="background:var(--good)"></i>None</span>`}</td></tr>`).join("");})();
+
+/* ---------- 8. bands + hotspots ---------- */
+(function(){const b=[["High (≥ 60%)",3,"var(--crit)"],["Medium (30–59%)",14,"var(--serious)"],["Low (< 30%)",109,"var(--good)"]];const W=600,H=34;let x=0,g="";
+  b.forEach(([n,c,col])=>{const w=W*c/126;g+=`<rect x="${x}" y="0" width="${Math.max(w-2,1)}" height="${H}" rx="4" fill="${col}" data-tip="${n}: ${c} districts"/>`;x+=w;});
+  document.getElementById("bands").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Districts by band">${g}</svg><div class="legend">${b.map(([n,c,col])=>`<span><i class="dot" style="background:${col}"></i>${n}: <b class="mono">${c}</b></span>`).join("")}</div>`;
+  const h=[["Sialkot",61,19,1,1,1,1],["Narowal",58,16,0,1,1,1],["Gujranwala",44,9,0,1,1,0],["Muzaffarabad",63,4,1,0,0,0],["Jhelum",37,6,0,1,0,0]];
+  const ck=v=>v?`<span class="check">● Yes</span>`:`<span class="check" style="color:var(--ink-3)">○ No</span>`;
+  document.querySelector("#hot tbody").innerHTML=h.map(r=>{const n=r[3]+r[4]+r[5]+r[6];return `<tr><td>${r[0]}</td><td class="n">${r[1]}%</td><td class="n">▲ ${r[2]} pts</td><td>${ck(r[3]||r[1]>=55)}</td><td>${ck(r[4])}</td><td>${ck(r[5])}</td><td>${ck(r[6])}</td><td class="n"><b>${(r[3]||r[1]>=55)+r[4]+r[5]+r[6]} / 4</b></td></tr>`}).join("");})();
+
+/* ---------- 9. ops ---------- */
+document.querySelector("#ops tbody").innerHTML=[["Alerts",2,2,0],["Incidents",1,3,2],["Citizen reports",9,5,4]].map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td><td class="n">${r[3]}</td></tr>`).join("");
+document.querySelector("#inc tbody").innerHTML=[["INC-0412","Riverine flooding","Sialkot, Bajwat","Medium","Open","14 h"],["INC-0409","Urban drainage","Gujranwala","Low","Monitoring","2 d"],["INC-0398","Embankment seepage","Narowal","Medium","Open","4 d"]]
+  .map(r=>`<tr><td class="mono">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="pill"><i class="dot" style="background:${r[3]==="Medium"?"var(--serious)":"var(--good)"}"></i>${r[3]}</span></td><td>${r[4]}</td><td class="n">${r[5]}</td></tr>`).join("");
+(function(){const d=[["Alert approval",42,30,"min"],["Report verification",3.1,4,"h"],["Incident closure",19,24,"h"]];
+  const W=460,l=140,r=60,rowH=34,H=d.length*rowH+4;let g="";
+  d.forEach(([n,v,t,u],i)=>{const mx=Math.max(v,t)*1.25,sx=x=>x/mx*(W-l-r),y=i*rowH+4;
+    g+=`<text x="${l-8}" y="${y+15}" text-anchor="end" class="t-ink">${n}</text><rect x="${l}" y="${y+3}" width="${W-l-r}" height="16" rx="3" fill="var(--rule-2)"/>
+    <rect class="bar" x="${l}" y="${y+3}" width="${sx(v)}" height="16" rx="3" fill="var(--s1)" data-tip="${n}: median ${v} ${u}, target ${t} ${u}"/>
+    <line x1="${l+sx(t)}" x2="${l+sx(t)}" y1="${y-1}" y2="${y+23}" stroke="var(--ink)" stroke-width="2"/>
+    <text x="${W-r+8}" y="${y+15}" class="mono ${v>t?"t-ink":"t-mute"}">${v} ${u}${v>t?" ⚠":""}</text>`;});
+  document.getElementById("resp").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Response times">${g}</svg><p class="note">⚠ Slower than target. Alert approval took longer than the 30-minute target.</p>`;})();
+
+/* ---------- 10 satellite ---------- */
+(function(){
+  const rows=[["Bajwat, Sialkot","Simulated flood (SIM-0007)","29 Oct","10 Nov","1 d","sim","6.2 km²","flood"],
+    ["Marala headworks","Station rising 6 of 7 days","29 Oct","10 Nov","1 d","sat","0.4 km²","minor"],
+    ["Shakargarh, Narowal","3 warning signs","27 Oct","08 Nov","3 d","sat","0.0 km²","none"],
+    ["Danyor, Gilgit","Snowmelt watch","—","—","—","sat","—","nopass"]];
+  const res={flood:["var(--crit)","Flooding (simulated)"],minor:["var(--warn)","Minor new water, below 1 km² threshold"],none:["var(--good)","No new flooding"],nopass:["var(--muted-bar)","No recent satellite pass"]};
+  document.querySelector("#sar tbody").innerHTML=rows.map(r=>`<tr${r[5]==="sim"?' class="simrow"':""}><td>${r[0]}</td><td>${r[1]}</td><td class="mono">${r[2]}</td><td class="mono">${r[3]}</td><td class="n">${r[4]}</td><td>${r[5]==="sim"?SRC.sim+" on real image":SRC.sat+" detection"}</td><td class="n">${r[6]}</td><td><span class="pill"><i class="dot" style="background:${res[r[7]][0]}"></i>${res[r[7]][1]}</span></td></tr>`).join("");
+
+  // before / after illustration (fixed colors: radar imagery is always dark)
+  const W=300,H=300;
+  const river=`<path d="M-10 60 C 60 80, 90 140, 150 150 S 250 210, 310 250" fill="none" stroke="#36506b" stroke-width="16"/><path d="M40 -10 C 70 50, 110 100, 150 150" fill="none" stroke="#36506b" stroke-width="7"/>`;
+  const noise=Array.from({length:140},(_,i)=>{const x=(i*73)%W,y=(i*151)%H;return `<rect x="${x}" y="${y}" width="3" height="3" fill="#ffffff" opacity="${.04+(i%5)*.02}"/>`}).join("");
+  const settle=[[95,175],[200,120],[230,255],[60,230]].map(([x,y])=>`<rect x="${x-7}" y="${y-7}" width="14" height="14" rx="2" fill="#ffffff" opacity=".85"/>`).join("");
+  const icons=`<text x="178" y="186" style="fill:#ffffff;font-size:15px;font-weight:700">✚</text><rect x="112" y="200" width="9" height="9" fill="#ffffff"/><rect x="240" y="178" width="9" height="9" fill="#ffffff"/>`;
+  const flood=`<defs><pattern id="simhatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#2bc4dd" opacity=".25"/><rect width="3" height="7" fill="#2bc4dd" opacity=".9"/></pattern></defs>
+    <path d="M70 120 C 100 115, 150 125, 185 160 C 215 185, 260 200, 285 235 C 250 255, 200 230, 160 205 C 120 185, 85 175, 62 150 Z" fill="url(#simhatch)" stroke="#2bc4dd" stroke-width="2"/>
+    <rect x="160" y="270" width="132" height="22" rx="3" fill="#d03b3b"/><text x="168" y="285" style="fill:#ffffff;font-size:11px;font-weight:700">⚑ SIMULATED EXTENT</text>`;
+  const panel=(label,date,body)=>`<svg viewBox="0 0 ${W} ${H+26}" role="img" aria-label="${label}"><rect width="${W}" height="${H}" rx="4" fill="#1e2428"/>${noise}${body}${settle}${icons}
+    <rect x="8" y="8" width="118" height="22" rx="3" fill="#000000" opacity=".55"/><text x="16" y="23" style="fill:#ffffff;font-size:11px;font-weight:600">${label} · ${date}</text>
+    <text x="0" y="${H+18}" class="t-mute">0</text><line x1="12" x2="90" y1="${H+14}" y2="${H+14}" stroke="var(--ink-3)" stroke-width="2"/><text x="96" y="${H+18}" class="t-mute">2 km</text></svg>`;
+  document.getElementById("sarmap").innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${panel("Before","29 Oct",river)}${panel("Latest","10 Nov",river+flood)}</div>`;
+
+  /* 11a simulation runs */
+  document.querySelector("#simruns tbody").innerHTML=[["SIM-0007","Chenab flash rise test","Marala","Discharge, inflow (cusecs)","10 Nov 08:00 → 12 Nov 08:00","Custom (test): warning 20,000 · danger 30,000","48","2 alerts, 1 incident"]]
+    .map(r=>`<tr class="simrow">${r.map((c,i)=>`<td${i===6?' class="n"':""}${i===0?' class="mono"':""}>${c}</td>`).join("")}</tr>`).join("");
+
+  /* 11b gallery: placeholder thumbnails drawn by kind */
+  const th=(kind)=>{const bg='<rect width="320" height="180" fill="var(--rule-2)"/>';
+    if(kind==="map")return `<svg viewBox="0 0 320 180">${bg}<path d="M60 30 L170 20 L250 60 L270 140 L180 165 L90 150 L50 90Z" fill="var(--good)" opacity=".35" stroke="var(--ink-3)"/><path d="M150 40 L200 55 L210 100 L160 110Z" fill="var(--serious)" opacity=".7"/><path d="M170 60 L190 65 L192 85 L172 88Z" fill="var(--crit)"/></svg>`;
+    if(kind==="flood")return `<svg viewBox="0 0 320 180"><rect width="320" height="180" fill="#1e2428"/><path d="M0 70 C 80 80, 140 120, 320 130" stroke="#36506b" stroke-width="14" fill="none"/><path d="M60 80 C 120 75, 200 110, 280 120 C 240 160, 140 140, 70 115Z" fill="url(#simhatch2)" stroke="#2bc4dd" stroke-width="2"/><defs><pattern id="simhatch2" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="7" fill="#2bc4dd"/></pattern></defs></svg>`;
+    if(kind==="terrain")return `<svg viewBox="0 0 320 180">${bg}${[0,1,2,3,4].map(i=>`<path d="M0 ${150-i*22} C 80 ${120-i*22}, 160 ${165-i*22}, 320 ${130-i*22}" stroke="var(--ink-3)" fill="none" opacity="${.3+i*.1}"/>`).join("")}<path d="M0 160 C 90 140, 170 170, 320 150 L320 180 L0 180Z" fill="#2bc4dd" opacity=".7"/></svg>`;
+    if(kind==="storm")return `<svg viewBox="0 0 320 180">${bg}${[[90,70,50],[170,90,38],[230,60,28]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="var(--s1)" opacity=".35"/><circle cx="${x}" cy="${y}" r="${r*.5}" fill="var(--s1)" opacity=".6"/>`).join("")}<path d="M20 160 L300 120" stroke="var(--ink-3)" stroke-dasharray="4 4"/></svg>`;
+    if(kind==="pop")return `<svg viewBox="0 0 320 180">${bg}${Array.from({length:60},(_,i)=>`<rect x="${20+(i%12)*24}" y="${20+Math.floor(i/12)*30}" width="22" height="28" fill="var(--s2)" opacity="${((i*37)%10)/14+.05}"/>`).join("")}<path d="M80 40 C 160 30, 240 90, 260 160 L 120 160Z" fill="none" stroke="#2bc4dd" stroke-width="3"/></svg>`;
+    return `<svg viewBox="0 0 320 180"><rect width="320" height="180" fill="#1e2428"/>${Array.from({length:120},(_,i)=>`<rect x="${(i*53)%320}" y="${(i*97)%180}" width="3" height="3" fill="#ffffff" opacity=".12"/>`).join("")}<path d="M40 60 C 120 70, 170 120, 300 120 L300 150 C 170 150, 110 100, 40 90Z" fill="#2bc4dd" opacity=".8"/></svg>`;};
+  const shots=[
+    ["flood","HEC-RAS floodplain replay, Bajwat","Simulation › HEC-RAS floodplain","sim","Peak simulated extent at 12 Nov 02:00, used as the flood extent in section 10."],
+    ["pop","Population exposure layers","GIS Operations › Population analysis","sim","Population grid and tehsil totals inside the simulated extent."],
+    ["terrain","Station terrain view, Marala","River Monitoring › Station terrain","sim","Simulated water level on the real elevation model at the headworks."],
+    ["storm","Storm replay, upper Chenab","Simulation › Storm replay","sim","The rainfall cells that drive SIM-0007."],
+    ["map","National district risk map","GIS Operations › National risk","api","Weather-based district screening at 06:00, live data."],
+    ["sar","SAR water check, Marala headworks","GIS Operations › SAR validation","sat","Real radar detection on the 10 Nov pass, 0.4 km² of new water."]];
+  /* app screenshots (placeholders drawn as a portal frame) */
+  const app=(kind,title,flag)=>{let c="";const X=58,Y=30,Wc=254,Hc=162;
+    if(kind==="dash")c=[0,1,2,3].map(i=>`<rect x="${X+i*63}" y="${Y}" width="58" height="34" rx="3" fill="var(--paper)" stroke="var(--rule)"/><rect x="${X+6+i*63}" y="${Y+8}" width="${20+i*6}" height="7" rx="2" fill="var(--ink-3)"/>`).join("")+`<rect x="${X}" y="${Y+42}" width="150" height="112" rx="3" fill="var(--good)" opacity=".18"/><path d="M${X+30} ${Y+60} L${X+110} ${Y+55} L${X+130} ${Y+120} L${X+50} ${Y+140}Z" fill="var(--serious)" opacity=".45"/><rect x="${X+158}" y="${Y+42}" width="96" height="112" rx="3" fill="var(--paper)" stroke="var(--rule)"/>`+[0,1,2,3,4].map(i=>`<rect x="${X+166}" y="${Y+52+i*19}" width="${70-i*6}" height="7" rx="2" fill="var(--ink-3)" opacity=".6"/>`).join("");
+    if(kind==="map")c=`<rect x="${X}" y="${Y}" width="${Wc}" height="${Hc}" rx="3" fill="var(--s1)" opacity=".08"/><path d="M${X+40} ${Y+20} L${X+160} ${Y+10} L${X+230} ${Y+60} L${X+220} ${Y+150} L${X+90} ${Y+150} L${X+30} ${Y+90}Z" fill="var(--good)" opacity=".3" stroke="var(--ink-3)"/><path d="M${X+130} ${Y+40} L${X+175} ${Y+50} L${X+180} ${Y+90} L${X+140} ${Y+95}Z" fill="var(--serious)" opacity=".7"/><path d="M${X+150} ${Y+55} L${X+168} ${Y+60} L${X+168} ${Y+78} L${X+150} ${Y+80}Z" fill="var(--crit)"/>`;
+    if(kind==="rivers")c=[0,1,2,3,4,5].map(i=>`<line x1="${X+10}" x2="${X+Wc-10}" y1="${Y+14+i*25}" y2="${Y+14+i*25}" stroke="var(--s1)" stroke-width="3" opacity=".3"/>`+[0,1,2,3,4].slice(0,[7,1,2,5,4,3][i]>4?5:[7,1,2,5,4,3][i]).map(j=>`<circle cx="${X+20+j*55}" cy="${Y+14+i*25}" r="5" fill="${i===3&&j<2?"var(--warn)":"var(--good)"}"/>`).join("")).join("");
+    if(kind==="chart")c=`<rect x="${X}" y="${Y}" width="${Wc}" height="${Hc}" rx="3" fill="var(--paper)" stroke="var(--rule)"/><path d="M${X+10} ${Y+120} C ${X+60} ${Y+115}, ${X+90} ${Y+70}, ${X+130} ${Y+60}" stroke="var(--s1)" stroke-width="2.5" fill="none"/><path d="M${X+130} ${Y+60} C ${X+170} ${Y+50}, ${X+200} ${Y+90}, ${X+245} ${Y+110}" stroke="var(--s2)" stroke-width="2.5" fill="none"/><path d="M${X+130} ${Y+60} C ${X+170} ${Y+30}, ${X+200} ${Y+70}, ${X+245} ${Y+100}" stroke="var(--s3)" stroke-width="2.5" fill="none"/><line x1="${X+130}" x2="${X+130}" y1="${Y+10}" y2="${Y+150}" stroke="var(--ink-3)" stroke-dasharray="3 3"/>`;
+    if(kind==="table")c=[0,1,2,3,4,5,6].map(i=>`<rect x="${X}" y="${Y+i*23}" width="${Wc}" height="20" rx="2" fill="${i?"var(--paper)":"var(--rule-2)"}" stroke="var(--rule)"/><circle cx="${X+12}" cy="${Y+10+i*23}" r="4" fill="${i===1||i===2?"var(--serious)":i?"var(--good)":"var(--ink-3)"}"/><rect x="${X+24}" y="${Y+7+i*23}" width="${90+(i*29)%60}" height="6" rx="2" fill="var(--ink-3)" opacity=".6"/>`).join("");
+    if(kind==="heat")c=`<rect x="${X}" y="${Y}" width="${Wc}" height="${Hc}" rx="3" fill="var(--s1)" opacity=".06"/>`+[[110,50,40],[160,80,30],[200,40,22],[90,120,26]].map(([x,y,r])=>`<circle cx="${X+x}" cy="${Y+y}" r="${r}" fill="var(--s1)" opacity=".25"/><circle cx="${X+x}" cy="${Y+y}" r="${r*.5}" fill="var(--s1)" opacity=".5"/>`).join("");
+    if(kind==="station")c=`<rect x="${X}" y="${Y}" width="120" height="${Hc}" rx="3" fill="var(--paper)" stroke="var(--rule)"/>`+[0,1,2,3,4,5].map(i=>`<rect x="${X+8}" y="${Y+10+i*24}" width="${60+(i*17)%40}" height="7" rx="2" fill="var(--ink-3)" opacity=".6"/>`).join("")+`<rect x="${X+128}" y="${Y}" width="126" height="${Hc}" rx="3" fill="var(--paper)" stroke="var(--rule)"/><path d="M${X+136} ${Y+130} C ${X+170} ${Y+120}, ${X+200} ${Y+60}, ${X+246} ${Y+40}" stroke="var(--s1)" stroke-width="2.5" fill="none"/><line x1="${X+128}" x2="${X+254}" y1="${Y+55}" y2="${Y+55}" stroke="var(--warn)" stroke-dasharray="4 3"/>`;
+    return `<svg viewBox="0 0 320 200" role="img" aria-label="${title} screenshot"><rect width="320" height="200" fill="var(--bg)"/><rect width="48" height="200" fill="var(--ink)" opacity=".88"/>${[0,1,2,3,4,5,6].map(i=>`<rect x="10" y="${30+i*18}" width="28" height="6" rx="2" fill="var(--paper)" opacity="${i===0?.9:.35}"/>`).join("")}<rect x="48" y="0" width="272" height="22" fill="var(--paper)"/><text x="58" y="15" class="t-ink" style="font-size:10px;font-weight:600">${title}</text>${flag?`<rect x="250" y="5" width="64" height="13" rx="2" fill="var(--crit)"/><text x="256" y="15" style="fill:#ffffff;font-size:8.5px;font-weight:700">⚑ SIM RUN</text>`:""}${c}<text x="314" y="196" text-anchor="end" class="t-mute" style="font-size:8px">DFSR-2026-315 · 06:12 PKT</text></svg>`;};
+  const APP={
+    overview:["dash","Overview","Overview dashboard: key figures, national risk map and live feeds.",["obs","api","sim"],true],
+    gis:["map","GIS Operations","National district risk layer with rainfall and river overlays.",["api","est"],false],
+    predictive:["chart","Predictive Risk Views","Model outlooks and the Marala monthly view.",["ml"],false],
+    upstream:["chart","Upstream Source Flood Watch","GloFAS and Google Flood Hub forecasts for the 4 source stations.",["api"],false],
+    monitoring:["rivers","River Monitoring","All 22 FFD stations by river, with flood category.",["obs","sim"],true],
+    inspector:["station","Station inspector: Marala","Station detail with hydrograph and thresholds during the test run.",["sim"],true],
+    rainfall:["heat","Rainfall heatmap","Forecast rainfall raster across Pakistan.",["api"],false],
+    alerts:["table","Alerts","Alerts awaiting approval and approved alerts.",["obs","sim"],true],
+    incidents:["table","Incidents","Open incidents with severity and status.",["obs","sim"],true],
+    reports:["map","Citizen Reports","Citizen report locations and verification status.",["obs"],false],
+    activity:["table","System Activity","Event log for the reporting period.",["obs"],false]};
+  const appShot=(key,small)=>{const [k,t,cap,srcs,flag]=APP[key];return `<figure class="shot" style="margin:0">${app(k,t,flag)}<figcaption class="cap"><span style="display:flex;flex-wrap:wrap;gap:4px">${srcs.map(s=>SRC[s]).join("")}</span><b>${t}</b>${small?"":`<span>${cap}</span>`}<span class="from">Captured 06:12 PKT from: ${t}</span></figcaption></figure>`;};
+  document.getElementById("appgallery").innerHTML=Object.keys(APP).map(k=>appShot(k)).join("");
+  // inline "In the portal" strips inside the related sections
+  const INLINE={"01":["overview"],"02":["monitoring","inspector"],"05":["upstream","predictive"],"07":["rainfall"],"08":["gis"],"09":["alerts","incidents","reports"],"12":["activity"]};
+  document.querySelectorAll("h2 .no").forEach(n=>{const keys=INLINE[n.textContent];if(!keys)return;
+    n.closest(".inner").insertAdjacentHTML("beforeend",`<div class="inapp"><div class="eyebrow">In the portal</div><div class="row">${keys.map(k=>appShot(k,true)).join("")}</div></div>`);});
+
+  document.getElementById("gallery").innerHTML=shots.map(([k,t,from,src,cap])=>`<figure class="shot" style="margin:0">${th(k)}<figcaption class="cap"><span>${SRC[src]}</span><b>${t}</b><span>${cap}</span><span class="from">Captured from: ${from}</span></figcaption></figure>`).join("");
+
+  const imp=[["~18,700","People in the flooded area","modeled estimate, 0.6% of study area"],["9","Settlements touched","villages and hamlets"],["2,140","Buildings","OSM footprints"],["14.3 km","Roads","3 sections cut by water"],["2","Schools","both government primary"],["1","Health facility","Basic Health Unit"]];
+  document.getElementById("impact").innerHTML=imp.map(([v,l,d])=>`<div class="kpi"><span class="v">${v}</span><span class="l">${l}</span><span class="d">${d}</span></div>`).join("");
+
+  const t=[["Sialkot",12400],["Pasrur",4100],["Sambrial",2200]];const W2=460,l=80,r=60,mx=14000,sx=v=>v/mx*(W2-l-r),H2=t.length*32+22;let g="";
+  [0,5000,10000].forEach(v=>{g+=`<line x1="${l+sx(v)}" x2="${l+sx(v)}" y1="0" y2="${H2-22}" stroke="var(--rule)"/><text x="${l+sx(v)}" y="${H2-6}" text-anchor="middle" class="t-mute">${v/1000}k</text>`;});
+  t.forEach(([n,v],i)=>{const y=i*32+4;g+=`<text x="${l-8}" y="${y+14}" text-anchor="end" class="t-ink">${n}</text><rect class="bar" x="${l}" y="${y+3}" width="${sx(v)}" height="16" rx="3" fill="var(--s1)" data-tip="${n} tehsil: about ${fmt(v)} people"/><text x="${l+sx(v)+6}" y="${y+15}" class="mono t-mute">${fmt(v)}</text>`;});
+  document.getElementById("tehsil").innerHTML=`<svg viewBox="0 0 ${W2} ${H2}" role="img" aria-label="Population by tehsil">${g}</svg><p class="note">Totals per tehsil use the share of each population cell that falls inside the flooded area.</p>`;
+
+  document.querySelector("#facil tbody").innerHTML=[["GPS Bajwat Kalan","School","Sialkot","Inside, near edge"],["GPS Chak Mirza","School","Sialkot","Inside"],["BHU Bajwat","Health facility","Sialkot","Inside, near edge"],["Sialkot–Bajwat road","Road, 3 sections","Sialkot","Water over 1.8 km"]]
+    .map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("");
+})();
+
+/* ---------- 11 data quality ---------- */
+document.querySelector("#dq tbody").innerHTML=[["FFD river state","OK","11 Nov 06:00","22 / 22",""],["FFD forecast bulletin","OK","11 Nov 05:30","22 / 22",""],["GloFAS","OK","11 Nov 05:10","4 / 4",""],["Google Flood Hub","Stale","10 Nov 18:00","4 / 4","No update for 12 h"],["Open-Meteo weather","OK","11 Nov 06:05","126 / 126",""],["Sentinel-1 radar (Planetary Computer)","OK","10 Nov 01:05","3 / 4","Danyor: no pass in 12 days"],["Population & OSM exposure data","OK","Static, 2025","—","Population grid and OSM extract"],["Simulation engine","Test run active","10 Nov 08:00","2 / 22 stations","SIM-0007 overrides Marala and Khanki"],["Portal snapshots","OK","11 Nov 06:12","17 / 17","11 portal screens + 6 simulation and analysis views"],["Citizen reports intake","OK","11 Nov 05:52","—",""]]
+  .map(r=>`<tr><td>${r[0]}</td><td><span class="pill"><i class="dot" style="background:${r[1]==="OK"?"var(--good)":"var(--warn)"}"></i>${r[1]}</span></td><td class="mono">${r[2]}</td><td class="n">${r[3]}</td><td>${r[4]}</td></tr>`).join("");
+document.getElementById("annexcat").innerHTML=Object.entries(CAT).map(([k,v])=>`<span>${pill(k)}<span style="color:var(--ink-3)">${v.d}</span></span>`).join("");
+</script>

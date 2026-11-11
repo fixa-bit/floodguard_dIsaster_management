@@ -11,6 +11,7 @@ import { FloodRiskMultiView } from "./components/FloodRiskMultiView";
 import { SourceFloodForecastTab } from "./components/SourceFloodForecastTab";
 import { RiverMonitoringView } from "./components/RiverMonitoringView";
 import { PortalTour } from "./components/PortalTour";
+import { ReportsCenter } from "./components/ReportsCenter";
 import { LOCATIONS, type LocationId } from "./config";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { OverviewPage } from "./pages/OverviewPage";
@@ -30,6 +31,7 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   reports: { title: "Citizen Reports", subtitle: "Field observations awaiting authority verification" },
   activity: { title: "System Activity", subtitle: "Automated decisions, monitoring changes, and response events" },
   simulation: { title: "Simulation", subtitle: "Monitoring test scenarios" },
+  "situation-reports": { title: "Situation Reports", subtitle: "Daily and flood event reports: generate, test, download and manage" },
 };
 
 export default function App() {
@@ -70,7 +72,7 @@ export default function App() {
 
       {simulationNotice && <div className="simulation-alert-banner" role="alert"><BellRing size={20} /><div><strong>SIMULATED FLOW: {simulationNotice.station_name}</strong><span>{simulationNotice.alerts.length} threshold alerts saved / {pendingSimulationAlerts} awaiting review</span></div><button type="button" className="secondary-button" onClick={() => setView("alerts")}>View alerts</button><button type="button" className="icon-button" title="Dismiss simulation alert" aria-label="Dismiss simulation alert" onClick={() => setSimulationNotice(null)}><X size={17} /></button></div>}
 
-      {loading && !["overview", "gis", "rainfall", "simulation", "alerts", "incidents"].includes(view) ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
+      {loading && !["overview", "gis", "rainfall", "simulation", "alerts", "incidents", "situation-reports"].includes(view) ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
         <div className="page-content">
           {view === "overview" && <OverviewPage data={data} locationId={locationId} onLocationChange={setLocationId} onRefresh={() => refresh(false)} />}
           {view === "gis" && <GISPage data={data} locationId={locationId} onLocationChange={setLocationId} />}
@@ -90,6 +92,7 @@ export default function App() {
             />
           )}
           {view === "activity" && <ActivityTimeline events={data.events} full />}
+          {view === "situation-reports" && <ReportsCenter />}
           {view === "simulation" && <SimulationPanel onCompleted={(result) => { setSimulationNotice(result.alerts.length ? result : null); void refreshOperations(result); }} onOpenAlerts={() => setView("alerts")} onOpenIncidents={() => { setSelectedIncidentId(null); setView("incidents"); }} />}
         </div>
       )}

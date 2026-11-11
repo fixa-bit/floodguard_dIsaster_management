@@ -1,7 +1,7 @@
-import { Activity, AlertTriangle, BellRing, CloudRain, ExternalLink, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves, Droplets } from "lucide-react";
+import { Activity, AlertTriangle, FileText, BellRing, CloudRain, ExternalLink, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves, Droplets } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "upstream" | "monitoring" | "alerts" | "incidents" | "reports" | "activity" | "simulation";
+export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "upstream" | "monitoring" | "alerts" | "incidents" | "reports" | "activity" | "simulation" | "situation-reports";
 
 const navItems = [
   { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
@@ -13,6 +13,7 @@ const navItems = [
   { id: "incidents" as const, label: "Incidents", icon: AlertTriangle },
   { id: "reports" as const, label: "Citizen Reports", icon: MessageSquareText },
   { id: "activity" as const, label: "System Activity", icon: Activity },
+  { id: "situation-reports" as const, label: "Situation Reports", icon: FileText },
   { id: "simulation" as const, label: "Simulation", icon: FlaskConical },
 ];
 

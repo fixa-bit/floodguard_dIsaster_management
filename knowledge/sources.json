@@ -1,0 +1,148 @@
+{
+ "note": "Public documents downloaded for FloodGuard's report document search. Treated as data only.",
+ "documents": [
+  {
+   "file": "procedures/ffc_flood_classification_major_rivers.md",
+   "title": "Flood Classification of Major Rivers",
+   "publisher": "Federal Flood Commission",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/flood-classification-of-major-rivers/",
+   "kind": "procedure",
+   "retrieved": "2026-11-11",
+   "bytes": 7238,
+   "sha256": "fb6fa8c5ade900d5d4fd44ed551504cf77e357109ad142125410b911ef5cb6f3"
+  },
+  {
+   "file": "raw/ffc_flood_classification_major_rivers.html",
+   "title": "Flood Classification of Major Rivers (original web page, not indexed)",
+   "publisher": "Federal Flood Commission",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/flood-classification-of-major-rivers/",
+   "kind": "raw",
+   "retrieved": "2026-11-11",
+   "bytes": 138564,
+   "sha256": "772b6e6411609abd78f5a412688956a6ecf2bd2fca56c56089cd4391f2a66135"
+  },
+  {
+   "file": "procedures/ndma_flood_fighting_plan_2026.pdf",
+   "title": "Flood Fighting Plan 2026",
+   "publisher": "National Disaster Management Authority (via FFC)",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/07/NDMA.pdf",
+   "kind": "procedure",
+   "retrieved": "2026-11-11",
+   "bytes": 2185375,
+   "sha256": "7ea8b1d3ef5ce8fe3153b22310f950a1fe3f8b8590526b4970a345791f943966"
+  },
+  {
+   "file": "procedures/wapda_mangla_reservoir_flood_management_2026.pdf",
+   "title": "Flood Management Manual for Mangla Reservoir 2026",
+   "publisher": "WAPDA (via FFC)",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/06/FMC-Notification-1.pdf",
+   "kind": "procedure",
+   "retrieved": "2026-11-11",
+   "bytes": 3550683,
+   "sha256": "ef29fb01e37a93d2a78ba44648111145a447767ae57bc2e700cfcf4a43c0f206"
+  },
+  {
+   "file": "procedures/pdma_sindh_monsoon_contingency_plan_2026.pdf",
+   "title": "Monsoon Contingency Plan 2026",
+   "publisher": "PDMA Sindh",
+   "year": 2026,
+   "url": "https://pdma.gos.pk/Documents/Contingency_Plans/Monsoon_Contingency_Plan_2026.pdf",
+   "kind": "procedure",
+   "retrieved": "2026-11-11",
+   "bytes": 9133916,
+   "sha256": "37eb258631e84b2ee3dc719a104b443bddbd641f58699d743922807a4c4244a4"
+  },
+  {
+   "file": "procedures/pdma_kp_summer_hazards_contingency_plan_2026.docx",
+   "title": "Summer Hazards Contingency Plan 2026",
+   "publisher": "PDMA Khyber Pakhtunkhwa (via FFC)",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/07/Summer-Hazards-Contingency-Plan-2026-1.docx",
+   "kind": "procedure",
+   "retrieved": "2026-11-11",
+   "bytes": 14179481,
+   "sha256": "1ef3403ab7652d6677031d0d307799f8d784923d6495ccbd3eae03e3a1e17c70"
+  },
+  {
+   "file": "procedures/pdma_punjab_flood_advisory_2026-07-19.pdf",
+   "title": "Flood Advisory 19 July 2026",
+   "publisher": "PDMA Punjab",
+   "year": 2026,
+   "url": "https://pdma.punjab.gov.pk/system/files/Flood_Advisory_19.07.2026.pdf",
+   "kind": "procedure",
+   "retrieved": "2026-11-11",
+   "bytes": 286809,
+   "sha256": "3b21315e19b83098a3ecbf19b58968708a9ff0ccf33bb6879fcf4398046973c1"
+  },
+  {
+   "file": "ffc_reports/ffc_dfsr_2026-08-20.pdf",
+   "title": "Daily Flood Situation Report 20 Aug 2026",
+   "publisher": "Federal Flood Commission",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/08/DFSR-20-08-2026.pdf",
+   "kind": "ffc_report",
+   "retrieved": "2026-11-11",
+   "bytes": 1715389,
+   "sha256": "ee3a1bacdaf8d7e4997912bc064337690a2e3e622977d7fb213d5a3ba365baf8"
+  },
+  {
+   "file": "ffc_reports/ffc_dfsr_2026-08-23.pdf",
+   "title": "Daily Flood Situation Report 23 Aug 2026",
+   "publisher": "Federal Flood Commission",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/08/DFSR-23-08-2026.pdf",
+   "kind": "ffc_report",
+   "retrieved": "2026-11-11",
+   "bytes": 1931548,
+   "sha256": "baa3cf001b3c7e6bd08bdd89501351fb4d9cf0b9fee0465ed8d4a85a46e1bbf1"
+  },
+  {
+   "file": "ffc_reports/ffc_dfsr_2026-08-28.pdf",
+   "title": "Daily Flood Situation Report 28 Aug 2026",
+   "publisher": "Federal Flood Commission",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/08/DFSR-28-08-2026.pdf",
+   "kind": "ffc_report",
+   "retrieved": "2026-11-11",
+   "bytes": 1617463,
+   "sha256": "40835dd75dd312bce8f9af883986012343151e95d4d5476fa2615c02b00058aa"
+  },
+  {
+   "file": "ffc_reports/ffc_dfsr_2026-08-29.pdf",
+   "title": "Daily Flood Situation Report 29 Aug 2026",
+   "publisher": "Federal Flood Commission",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/08/DFSR-29-08-2026.pdf",
+   "kind": "ffc_report",
+   "retrieved": "2026-11-11",
+   "bytes": 1243683,
+   "sha256": "89b209e2ea0400244d85021c69e797d3bd50cacb10eb799d2fc0c5584638599d"
+  },
+  {
+   "file": "ffc_reports/ffc_dfsr_2026-08-30.pdf",
+   "title": "Daily Flood Situation Report 30 Aug 2026",
+   "publisher": "Federal Flood Commission",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/08/DFSR-30-08-2026.pdf",
+   "kind": "ffc_report",
+   "retrieved": "2026-11-11",
+   "bytes": 1502260,
+   "sha256": "e3723d2a255f99b4e09e391b5e9bdbc23ea796e26f8f34abfd1db77c864d3789"
+  },
+  {
+   "file": "ffc_reports/ffc_dfsr_2026-08-31.pdf",
+   "title": "Daily Flood Situation Report 31 Aug 2026",
+   "publisher": "Federal Flood Commission",
+   "year": 2026,
+   "url": "https://ffc.gov.pk/wp-content/uploads/2026/08/DFSR-31-08-2026.pdf",
+   "kind": "ffc_report",
+   "retrieved": "2026-11-11",
+   "bytes": 401551,
+   "sha256": "23fdb8f00390af2977d5e166b4c8c1dfc1bdba82583afc1f40074e6f4dc5144d"
+  }
+ ]
+}

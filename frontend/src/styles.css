@@ -143,6 +143,7 @@ svg { flex: 0 0 auto; }
 .map-layer-control label { display: flex; min-height: 28px; align-items: center; gap: 7px; color: #43575c; font-size: 11px; cursor: pointer; }
 .map-layer-control input { width: 14px; height: 14px; margin: 0; accent-color: var(--teal); }
 .map-home-button { top: 12px; right: 52px; display: grid; width: 34px; height: 34px; place-items: center; color: #244b52; border-radius: 4px; }
+.river-monitoring-layout.has-station .map-home-button { right: min(calc(42vw + clamp(40px, 5vw, 96px) + 24px), 740px); }
 .map-home-button:hover { color: white; background: var(--teal); border-color: var(--teal-dark); }
 .map-legend { bottom: 25px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 4px; }
 .map-legend strong { margin-right: 2px; color: #31494f; font-size: 9px; }
@@ -1956,8 +1957,8 @@ body { color: var(--ink); background: #071114; }
 .source-forecast-page .source-station-selector { padding: 0 0 12px; background: transparent; }
 .source-forecast-page .source-tab-body { padding: 14px 0 0; gap: 14px; }
 .source-cache-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 0 16px; }
-.river-monitoring-layout { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; }
-.river-monitoring-layout.has-station { grid-template-columns: minmax(0, 1fr) 360px; }
+.river-monitoring-layout { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.river-monitoring-layout.has-station { grid-template-columns: minmax(0, 1fr); }
 .river-monitoring-panel { display: flex; flex-direction: column; min-width: 0; max-height: calc(100vh - 180px); padding: 16px 14px; background: #f8fafb; color: #243438; border-right: 1px solid #d6dfe2; }
 .overview-command-canvas .river-monitoring-panel { height: 100vh; max-height: 100vh; padding-top: 82px; padding-bottom: 80px; }
 .river-monitoring-panel header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -2026,7 +2027,7 @@ body { color: var(--ink); background: #071114; }
 .overview-command-canvas .command-stats-panel:has(.river-monitoring-view) { background: #081c20; backdrop-filter: none; }
 .river-monitoring-view.is-compact th { position: sticky; top: 0; z-index: 1; }
 .river-monitoring-view.is-detailed .data-table { min-width: 1000px; }
-.monitoring-detail-row .river-station-inspector { max-height: none; border: 0; padding: 16px; }
+.monitoring-detail-row .river-station-inspector { position: static; display: block; width: auto; max-height: none; overflow: visible; border: 0; padding: 16px; }
 .river-monitoring-view.is-detailed .source-chart-wrap { max-width: 900px; }
 @media (max-width: 700px) {
   .monitoring-view-filters { gap: 8px; }
@@ -2037,20 +2038,81 @@ body { color: var(--ink); background: #071114; }
 .river-monitoring-panel footer { padding-top: 12px; font-size: 10px; line-height: 1.5; color: #52686e; }
 .river-panel-error { color: #a51f32; font-size: 11px; }
 .river-monitoring-layout .map-workspace { min-width: 0; }
-.river-station-inspector { min-width: 0; padding: 16px; color: #dffefa; background: #081c20; border-left: 1px solid rgba(125, 232, 219, .25); max-height: calc(100vh - 180px); overflow-y: auto; }
-.overview-command-canvas .river-station-inspector { max-height: 100vh; padding-top: 82px; padding-bottom: 76px; }
+.river-station-inspector { position: absolute; z-index: 6; top: 12px; right: clamp(40px, 5vw, 96px); bottom: 12px; display: flex; flex-direction: column; width: min(620px, 42vw); min-width: 0; padding: 14px; color: #dffefa; background: transparent; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none; max-height: calc(100vh - 24px); overflow: hidden; }
+.overview-command-canvas .river-station-inspector { max-height: calc(100vh - 24px); padding-top: 78px; padding-bottom: 12px; }
+.river-station-inspector #station-details-panel { flex: 1 1 auto; min-height: 0; }
+.river-station-inspector > footer { flex: 0 0 auto; margin-top: auto; padding-top: 6px; font-size: 9px; }
+.river-station-inspector .station-details-tabs { margin: 2px 0 8px; }
+.river-station-inspector .station-details-tabs button { padding: 6px 8px; font-size: 10px; }
 .river-station-inspector header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .river-station-inspector header span, .river-station-inspector small, .river-station-inspector footer span { color: #9fbfc0; font-size: 10px; line-height: 1.4; }
-.river-station-inspector h3 { margin: 4px 0 12px; font-size: 18px; }
-.river-station-inspector h4 { margin: 18px 0 10px; font-size: 12px; }
+.river-station-inspector h3 { margin: 3px 0 5px; font-size: 18px; }
+.river-station-inspector h4 { margin: 0 0 6px; font-size: 11px; }
 .river-station-inspector header button { display: grid; width: 30px; height: 30px; place-items: center; background: transparent; border: 0; color: #dffefa; }
 .river-station-category { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; font-size: 12px; }
 .river-station-category strong { color: #ffc857; }
 .river-station-category > div { display: grid; gap: 3px; text-align: right; }
+.station-panel-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 8px 14px; min-width: 0; }
+.station-panel-grid > section { min-width: 0; padding: 0; border: 0; background: transparent; }
+.station-identity-group, .station-reading-group { grid-row: 1; }
+.station-hydrograph-group, .station-rainfall-group { grid-row: 2; }
+.station-network-group { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; gap: 8px 12px; }
+.station-network-group h4 { margin: 0 0 4px; }
+.station-network-group p { margin: 3px 0 0; font-size: 9px; }
+.station-panel-grid .river-station-category { align-items: center; gap: 5px; margin-bottom: 5px; font-size: 10px; }
+.station-panel-grid .river-station-category > div { display: flex; align-items: center; gap: 6px; }
+.station-panel-grid .river-station-category small { font-size: 9px; }
 .river-station-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 16px 0; gap: 14px; }
 .river-station-stats div { min-width: 0; }
 .river-station-stats dt { color: #9fbfc0; font-size: 11px; }
 .river-station-stats dd { margin: 5px 0; color: #ffffff; font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
+.station-title-ticket { animation: station-ticket-arrive 540ms cubic-bezier(.2,.72,.25,1) both; }
+.station-identity-tickets, .river-station-stats.station-reading-tickets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; margin: 5px 0; }
+.station-identity-tickets > div, .station-reading-tickets > div { min-width: 0; padding: 6px 8px; border: 1px solid rgba(125, 232, 219, .28); border-radius: 5px; background: linear-gradient(135deg, rgba(27, 77, 78, .48), rgba(6, 26, 30, .54)); box-shadow: inset 0 1px 0 rgba(255,255,255,.07); backdrop-filter: blur(10px) saturate(130%); }
+.station-identity-tickets dt, .station-reading-tickets dt { color: #9fd2cc; font-size: 10px; letter-spacing: .025em; }
+.station-identity-tickets dd { margin: 5px 0 0; color: #f0fffc; font-size: 12px; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.station-reading-tickets dd { margin: 3px 0; font-size: 13px; }
+.station-reading-tickets small { display: block; margin-top: 2px; color: #a7c6c4; font-size: 8px; line-height: 1.25; }
+.station-reading-tickets .river-data-source { font-size: 8px; line-height: 1.2; }
+.station-identity-tickets > div { padding: 5px 7px; }
+.station-identity-tickets dd { margin-top: 2px; font-size: 10px; }
+.station-context-ticket, .station-facts-ticket { padding: 5px 8px; border: 1px solid rgba(125, 232, 219, .24); border-radius: 5px; background: rgba(9, 37, 40, .48); backdrop-filter: blur(8px); }
+.station-context-ticket > span, .station-facts-ticket summary { color: #9fd2cc; font-size: 10px; font-weight: 700; }
+.station-context-ticket p { margin: 3px 0 0; font-size: 9px; line-height: 1.3; }
+.station-facts-ticket { margin-top: 4px; }
+.station-facts-ticket summary, .station-chain-details summary { cursor: pointer; }
+.station-facts-ticket ul { display: grid; gap: 4px; margin: 6px 0 0; padding-left: 16px; color: #c2ddda; font-size: 9px; line-height: 1.3; }
+.station-official-forecast { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: 3px 7px; margin-top: 4px; padding: 5px 7px; border: 1px solid rgba(125, 232, 219, .24); border-radius: 5px; background: rgba(9, 37, 40, .48); backdrop-filter: blur(8px); font-size: 9px; }
+.station-official-forecast strong { color: #9fd2cc; }
+.station-official-forecast .river-data-source { grid-column: 1 / -1; }
+.station-hydrograph-group .source-chart-legend { gap: 8px; margin-bottom: 4px; font-size: 8px; }
+.station-hydrograph-group .source-chart-legend i { width: 16px; }
+.station-hydrograph-group .source-chart-context, .station-hydrograph-group .source-chart-axis-title { display: none; }
+.station-hydrograph-group .source-chart-area { grid-template-columns: 38px minmax(0, 1fr); gap: 4px; }
+.station-hydrograph-group .source-forecast-chart, .station-hydrograph-group .source-chart-axis { height: 68px; }
+.station-hydrograph-group .source-chart-dates { height: 15px; margin-top: 3px; font-size: 8px; }
+.station-hydrograph-group .source-chart-date-title { display: none; }
+.station-hydrograph-group .source-chart-empty { min-height: 50px; font-size: 9px; }
+.station-hydrograph-group .river-data-source { font-size: 8px; }
+.station-rainfall-group .river-rainfall-heading { margin: 0 0 4px; font-size: 11px; }
+.station-rainfall-group .river-rainfall-summary { gap: 4px; margin: 4px 0; }
+.station-rainfall-group .river-rainfall-summary > div { padding: 4px 6px; }
+.station-rainfall-group .river-rainfall-summary dd { margin: 2px 0; font-size: 12px; }
+.station-rainfall-group .river-rainfall-summary .river-data-source { font-size: 8px; }
+.station-rainfall-group .river-rain-strip { gap: 3px; }
+.station-rainfall-group .river-rain-strip > div { min-height: 34px; gap: 1px; padding: 3px 2px; background: rgba(6, 26, 30, .46); }
+.station-rainfall-group .river-rain-strip strong { font-size: 9px; }
+.station-rainfall-group .river-rain-strip span, .station-rainfall-group .river-rain-strip small { font-size: 7px; }
+.station-network-group .river-upstream-stations { gap: 2px 6px; }
+.station-network-group .river-upstream-stations button { margin: 0; padding: 2px 0; font-size: 9px; }
+.station-chain-details { min-width: 0; color: #c2ddda; font-size: 9px; }
+.station-chain-details ol { display: flex; flex-wrap: wrap; gap: 2px 5px; margin: 3px 0 0; padding: 0; list-style: none; }
+.station-chain-details li:not(:last-child)::after { content: "›"; margin-left: 5px; color: #9fbfc0; }
+.station-chain-details button { padding: 0; color: #50f5d0; background: none; border: 0; font-size: 8px; }
+.station-method-note { color: #9fbfc0; }
+.station-panel-grid .station-ticket { border: 1px solid rgba(125, 232, 219, .3); border-radius: 5px; background: linear-gradient(135deg, rgba(21, 65, 69, .62), rgba(4, 21, 26, .7)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 4px 12px rgba(0,0,0,.14); backdrop-filter: blur(9px) saturate(135%); animation: station-ticket-arrive 560ms cubic-bezier(.2,.72,.25,1) var(--ticket-delay, 0ms) both; }
+@keyframes station-ticket-arrive { from { opacity: 0; filter: blur(4px); transform: translateX(34px) scale(.98); } to { opacity: 1; filter: blur(0); transform: translateX(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .station-title-ticket, .station-panel-grid .station-ticket { animation: none; } }
 .river-station-inspector p { font-size: 10px; line-height: 1.5; color: #b5cecb; }
 .river-rainfall-heading { display: flex; align-items: center; gap: 7px; color: #50f5d0; }
 .river-rainfall-summary { margin-bottom: 10px; }
@@ -2064,6 +2126,19 @@ body { color: var(--ink); background: #071114; }
 .river-station-chain button[aria-current] { color: #ffffff; font-weight: 700; }
 .river-station-inspector footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(125, 232, 219, .2); }
 .river-station-inspector footer button { display: flex; align-items: center; gap: 6px; min-height: 32px; padding: 5px 8px; color: #dffefa; background: #123330; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 11px; }
+.station-monitoring-control { display: grid; gap: 5px; margin: 10px 0 3px; padding: 8px; border: 1px solid rgba(125, 232, 219, .18); border-radius: 4px; background: rgba(5, 17, 20, .38); }
+.station-monitoring-toggle { display: flex; width: 100%; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; color: #c0d4d5; text-align: left; cursor: pointer; }
+.station-monitoring-toggle > svg { flex: 0 0 auto; color: #9fbfc0; }
+.station-monitoring-toggle > span { display: grid; flex: 1; gap: 2px; }
+.station-monitoring-toggle strong { margin: 0; font-size: 10px; }
+.station-monitoring-toggle small, .station-monitoring-progress { color: #9fbfc0; font-size: 9px; line-height: 1.4; }
+.station-monitoring-toggle > i { width: 25px; height: 14px; flex: 0 0 auto; border: 1px solid #607b7b; border-radius: 10px; background: #263c3e; }
+.station-monitoring-toggle > i::after { display: block; width: 8px; height: 8px; margin: 2px; border-radius: 50%; background: #b2c1c1; content: ""; transition: transform 150ms, background 150ms; }
+.station-monitoring-toggle[aria-pressed="true"] > svg { color: #50f5d0; }
+.station-monitoring-toggle[aria-pressed="true"] > i { border-color: #50f5d0; background: #16544d; }
+.station-monitoring-toggle[aria-pressed="true"] > i::after { transform: translateX(11px); background: #50f5d0; }
+.station-monitoring-toggle:disabled { opacity: .5; cursor: not-allowed; }
+.station-monitoring-toggle:focus-visible { outline: 2px solid #f8d96a; outline-offset: 3px; }
 .map-layer-control .river-network-select { display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 4px; margin-top: 7px; }
 .river-network-select select { min-width: 0; width: 100%; padding: 4px; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }
 .map-layer-control .kashmir-boundary-source { display: grid; gap: 4px; margin: 2px 0 8px; }
@@ -2162,10 +2237,14 @@ body { color: var(--ink); background: #071114; }
 .catchment-station-reading button { width: fit-content; max-width: 100%; padding: 0; border: 0; color: #50f5d0; background: transparent; font-size: 12px; text-align: left; text-decoration: underline; }
 .catchment-station-reading strong { font-size: 14px; overflow-wrap: anywhere; }
 .catchment-inspector footer a { color: #50f5d0; font-size: 11px; }
-@media (max-width: 1100px) {
+@media (max-width: 700px) {
   .river-monitoring-layout.has-station { grid-template-columns: minmax(0, 1fr); }
-  .river-monitoring-layout > .river-station-inspector { grid-column: 1 / -1; }
-  .river-station-inspector, .overview-command-canvas .river-station-inspector { max-height: none; padding: 16px; border-left: 0; border-top: 1px solid rgba(125, 232, 219, .25); }
+  .river-monitoring-layout > .river-station-inspector { position: static; display: block; grid-column: 1 / -1; width: auto; max-height: none; padding: 16px; overflow: visible; border: 0; border-radius: 0; background: transparent; }
+  .overview-command-canvas .river-station-inspector { max-height: none; padding: 16px; }
+  .station-panel-grid { grid-template-columns: minmax(0, 1fr); }
+  .station-identity-group, .station-reading-group, .station-hydrograph-group, .station-rainfall-group { grid-row: auto; }
+  .station-network-group { grid-column: 1; grid-template-columns: minmax(0, 1fr); }
+  .river-monitoring-layout.has-station .map-home-button { right: 52px; }
 }
 @media (max-width: 700px) {
   .river-monitoring-layout, .river-monitoring-layout.has-station { grid-template-columns: minmax(0, 1fr); }

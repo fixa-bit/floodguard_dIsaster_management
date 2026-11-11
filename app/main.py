@@ -10,6 +10,8 @@ from app.core.logging import configure_logging
 from app.db.init_db import init_db
 from app.services.upstream_forecast_cache_service import upstream_forecast_cache
 from app.services.river_monitoring_service import river_monitoring_cache
+from app.services.flood_event_watcher import flood_event_watcher
+from app.services.report_jobs import daily_report_scheduler
 
 configure_logging()
 settings = get_settings()
@@ -38,9 +40,13 @@ async def startup() -> None:
     init_db()
     upstream_forecast_cache.start()
     river_monitoring_cache.start()
+    flood_event_watcher.start()
+    daily_report_scheduler.start()
 
 
 @app.on_event("shutdown")
 async def shutdown() -> None:
     await upstream_forecast_cache.stop()
     await river_monitoring_cache.stop()
+    await flood_event_watcher.stop()
+    await daily_report_scheduler.stop()

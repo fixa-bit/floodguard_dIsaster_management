@@ -226,4 +226,28 @@ def infer_water_extent(files: dict[str, bytes], threshold: float | None = None) 
         "image_data_url": _overlay_url(potential_flood),
         "all_water_image_data_url": _overlay_url(water),
         "permanent_water_image_data_url": _overlay_url(permanent & valid, (76, 115, 255, 210)),
+        "potential_flood_geojson": _mask_geojson(files, potential_flood),
     }
+
+
+def _mask_geojson(files: dict[str, bytes], mask: np.ndarray, min_pixels: int = 4, tolerance_deg: float = 0.0003) -> dict | None:
+    """Outline of mask pixels as a WGS84 MultiPolygon (simplified), for exposure analysis.
+
+    Specks smaller than min_pixels are dropped. Returns None when nothing remains.
+    """
+    from rasterio.features import shapes
+    from shapely.geometry import mapping, shape as to_shape
+    from shapely.ops import transform as reproject_shape, unary_union
+
+    if not mask.any():
+        return None
+    with MemoryFile(files["during_sar"]) as memory, memory.open() as source:
+        grid, crs = source.transform, source.crs
+    pixel_area = abs(grid.a * grid.e)
+    parts = [to_shape(geometry) for geometry, value in shapes(mask.astype(np.uint8), mask=mask, transform=grid)
+             if value == 1 and to_shape(geometry).area >= min_pixels * pixel_area]
+    if not parts:
+        return None
+    to_wgs84 = Transformer.from_crs(crs, "EPSG:4326", always_xy=True).transform
+    merged = reproject_shape(to_wgs84, unary_union(parts)).simplify(tolerance_deg, preserve_topology=True)
+    return mapping(merged) if not merged.is_empty else None

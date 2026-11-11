@@ -20,6 +20,7 @@ from app.models.model_forecast import ModelForecastPoint
 from app.models import monitoring_simulation_run
 from app.models import river_gauge_observation
 from app.models import station_observation
+from app.models import flood_event  # noqa: F401
 from app.models import citizen_report, district_risk_snapshot, flood_data_layer, incident, model_forecast, prediction, system_event, system_state, upstream_forecast_snapshot
 from app.simulation.model_forecasts import build_dummy_model_forecasts
 

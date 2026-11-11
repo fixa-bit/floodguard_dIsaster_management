@@ -1,9 +1,12 @@
 """Fetch and align public satellite inputs for a selected map location."""
 
+import base64
 from datetime import datetime, timedelta, timezone
+from io import BytesIO
 
 import httpx
 import numpy as np
+from PIL import Image
 import rasterio
 from rasterio.enums import Resampling
 from rasterio.io import MemoryFile
@@ -45,6 +48,19 @@ def _window(url, crs, transform, resampling=Resampling.bilinear):
             with WarpedVRT(source, crs=crs, transform=transform, width=SIZE, height=SIZE,
                            resampling=resampling) as aligned:
                 return aligned.read(1, masked=True).astype(np.float32).filled(np.nan)
+
+
+def _radar_image_url(vv_db, low=None, high=None):
+    """Render VV backscatter (dB) as a greyscale PNG data URL for display only."""
+    finite = vv_db[np.isfinite(vv_db)]
+    if finite.size == 0:
+        return None
+    if low is None or high is None:
+        low, high = np.percentile(finite, [2, 98])
+    scaled = np.clip((np.nan_to_num(vv_db, nan=low) - low) / max(high - low, 1e-6), 0, 1)
+    buffer = BytesIO()
+    Image.fromarray((scaled * 255).astype(np.uint8), "L").save(buffer, format="PNG")
+    return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode("ascii")
 
 
 def _tiff(data, crs, transform, descriptions=None):
@@ -104,4 +120,9 @@ def infer_at_location(latitude: float, longitude: float) -> dict:
     result["during_date"] = pair[0]["properties"]["datetime"]
     result["pre_date"] = pair[1]["properties"]["datetime"]
     result["source"] = "Microsoft Planetary Computer Sentinel-1 RTC, Copernicus DEM, JRC GSW"
+    # One shared stretch keeps the before and during images visually comparable.
+    both = np.concatenate([scenes[0][0][np.isfinite(scenes[0][0])], scenes[1][0][np.isfinite(scenes[1][0])]])
+    low, high = np.percentile(both, [2, 98]) if both.size else (None, None)
+    result["during_radar_image_data_url"] = _radar_image_url(scenes[0][0], low, high)
+    result["pre_radar_image_data_url"] = _radar_image_url(scenes[1][0], low, high)
     return result

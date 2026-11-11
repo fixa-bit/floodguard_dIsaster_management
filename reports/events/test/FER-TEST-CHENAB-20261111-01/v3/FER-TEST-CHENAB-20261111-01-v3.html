@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>FER-TEST-CHENAB-20261111-01-v3 Flood Report</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Shared report styles (app/reports/render.py). Styles copied from docs/reports/daily_report_template.html (approved template).
+   Layout: a single bulletin column (A4-like width), numbered sections in report order, figures drawn from one data object */
+:root{
+  --bg:#f4f6f7; --paper:#ffffff; --ink:#12191d; --ink-2:#4b5559; --ink-3:#7a8488;
+  --rule:#dfe4e6; --rule-2:#eef1f2; --accent:#0e5a78; --accent-soft:#e3eef3;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --muted-bar:#c9d0d3;
+  --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1416; --paper:#171d20; --ink:#eef1f2; --ink-2:#b9c2c5; --ink-3:#8b9599;
+  --rule:#2c3539; --rule-2:#222a2d; --accent:#5fb0d3; --accent-soft:#1d2d34;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --muted-bar:#46525a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1416; --paper:#171d20; --ink:#eef1f2; --ink-2:#b9c2c5; --ink-3:#8b9599;
+  --rule:#2c3539; --rule-2:#222a2d; --accent:#5fb0d3; --accent-soft:#1d2d34;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --muted-bar:#46525a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.report{max-width:1040px;margin:0 auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px}
+.inner{padding:28px clamp(16px,4vw,44px)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:30px;font-weight:700;letter-spacing:-.01em}
+h2{font-size:21px;font-weight:600;display:flex;gap:12px;align-items:baseline}
+h2 .no{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500}
+h3{font-size:15px;font-weight:600;margin-bottom:8px}
+p{margin:0;max-width:72ch}
+.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.num,td.n,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sample{background:var(--accent-soft);color:var(--accent);font-size:12px;padding:8px clamp(16px,4vw,44px);border-bottom:1px solid var(--rule);border-radius:6px 6px 0 0}
+header.top{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;border-bottom:3px solid var(--accent)}
+.meta{display:grid;grid-template-columns:auto auto;gap:2px 14px;font-size:12.5px;color:var(--ink-2);margin-top:12px}
+.meta b{color:var(--ink);font-weight:500}
+.status-big{border:1px solid var(--rule);border-radius:6px;padding:12px 16px;text-align:right;min-width:180px}
+.status-big .lvl{font-family:var(--display);font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px;justify-content:flex-end}
+section{border-top:1px solid var(--rule);display:grid;gap:16px}
+section > .inner{display:grid;gap:18px}
+.lead{font-size:16px;line-height:1.55;max-width:80ch}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.kpi{background:var(--paper);padding:12px 14px;display:grid;gap:2px;align-content:start}
+.kpi .v{font-family:var(--display);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--ink-2)}
+.kpi .d{font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.grid2 > *{min-width:0}
+.tbl{overflow-x:auto;border:1px solid var(--rule);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--rule-2);white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--rule-2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right}
+tr.river td{background:var(--rule-2);font-family:var(--display);font-weight:600;font-size:13px;color:var(--accent)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+.note{font-size:12px;color:var(--ink-3);max-width:90ch}
+.concerns{display:grid;gap:8px;margin:0;padding:0;list-style:none;counter-reset:c}
+.concerns li{display:grid;grid-template-columns:28px 1fr;gap:8px;counter-increment:c}
+.concerns li::before{content:counter(c);font-family:var(--mono);color:var(--accent);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:3px;border-radius:2px;display:inline-block}
+.sw.box{height:10px;width:10px;border-radius:2px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--body);fill:var(--ink-2);font-size:11px}
+svg .t-ink{fill:var(--ink)} svg .t-mute{fill:var(--ink-3)}
+.fig{display:grid;gap:8px;min-width:0}
+.callout{border-left:3px solid var(--warn);background:var(--rule-2);padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px}
+.callout.crit{border-color:var(--crit)}
+.check{font-family:var(--mono);font-size:13px}
+.tag{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--rule);border-radius:3px;padding:1px 6px;color:var(--ink-3);font-weight:600;white-space:nowrap}
+.new{color:var(--accent);border-color:var(--accent)}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-size:12px;padding:6px 9px;border-radius:4px;z-index:20;max-width:240px;line-height:1.35}
+.hit{fill:transparent;cursor:default}
+footer{border-top:1px solid var(--rule)}
+.src{display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;border-radius:3px;padding:2px 7px;white-space:nowrap;border:1px solid;vertical-align:middle;line-height:1.4}
+.src::before{font-size:10px}
+.src.obs{color:var(--good);border-color:var(--good)} .src.obs::before{content:"●"}
+.src.off{color:var(--accent);border-color:var(--accent)} .src.off::before{content:"◆"}
+.src.api{color:var(--s1);border-color:var(--s1)} .src.api::before{content:"◇"}
+.src.ml{color:var(--ink-2);border-color:var(--ink-3)} .src.ml::before{content:"▲"}
+.src.sat{color:var(--s3);border-color:var(--s3)} .src.sat::before{content:"◎"}
+.src.est{color:var(--ink-3);border-color:var(--ink-3);border-style:dashed} .src.est::before{content:"≈"}
+.src.sim{color:var(--paper);background:repeating-linear-gradient(135deg,var(--crit) 0 6px,#b02f2f 6px 12px);border-color:var(--crit)} .src.sim::before{content:"⚑"}
+.srcs{display:inline-flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+h2{flex-wrap:wrap}
+.testbar{background:repeating-linear-gradient(135deg,var(--crit) 0 14px,#b02f2f 14px 28px);color:#ffffff;padding:10px clamp(16px,4vw,44px);font-weight:600;display:grid;gap:2px}
+.testbar span{font-weight:400;font-size:12.5px}
+tr.simrow td:first-child{box-shadow:inset 3px 0 0 var(--crit)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.shot{border:1px solid var(--rule);border-radius:6px;overflow:hidden;display:grid;align-content:start;min-width:0}
+.shot .cap{padding:10px 12px;display:grid;gap:4px;font-size:12.5px}
+.shot .cap b{font-family:var(--display);font-size:14px;font-weight:600}
+.shot .from{font-size:11.5px;color:var(--ink-3)}
+.inapp{display:grid;gap:8px;border-top:1px dashed var(--rule);padding-top:14px}
+.inapp .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+@media (max-width:640px){header.top{grid-template-columns:1fr}.status-big{text-align:left}.status-big .lvl{justify-content:flex-start}h1{font-size:24px}}
+@media (prefers-reduced-motion:no-preference){.bar{transition:opacity .15s}}
+.shot img{display:block;width:100%;height:auto;border-bottom:1px solid var(--rule)}
+.lead{font-size:16px}
+</style>
+
+<div class="report" id="report"></div>
+<div id="tip" hidden></div>
+<script id="report-data" type="application/json">{"meta": {"report_no": "FER-TEST-CHENAB-20261111-01-v3", "event_no": "FER-TEST-CHENAB-20261111-01", "version": 3, "reason": "Closed", "generated": "11 Nov 2026 12:39 PKT", "data_mode": "live", "is_test": true, "units": "Discharge in cumecs (m³/s, as provided by the portal)"}, "event": {"river": "Chenab", "status": "CLOSED", "level": 5, "level_name": "Very high flood", "current_level": 0, "current_level_name": "No signal", "previous_level_name": "Very high flood", "opened": "11 Nov 12:36", "closed": "11 Nov 12:39", "quiet_since": "11 Nov 12:39", "peak_value": 14000.0, "signals": [{"kind": "observed", "river": "Chenab", "station_id": "TRIMMU", "station_name": "Trimmu", "level": 5, "label": "Very high flood", "value_cumecs": 14000.0, "at": "11 Nov 12:39", "sources": ["sim"], "stale": false, "simulated": true, "detail": "SIMULATED: Very high flood at Trimmu (test signal, not real data)."}, {"kind": "observed", "river": "Chenab", "station_id": "PANJNAD", "station_name": "Panjnad", "level": 3, "label": "Medium flood", "value_cumecs": null, "at": "11 Nov 12:39", "sources": ["sim"], "stale": false, "simulated": true, "detail": "SIMULATED: Medium flood at Panjnad (test signal, not real data)."}], "versions": [{"version": 1, "reason": "New event", "level": 4, "level_name": "High flood", "issued_at": "11 Nov 12:38", "path": "D:\\projects\\disaster_management\\disaster_management\\reports\\events\\test\\FER-TEST-CHENAB-20261111-01\\v1\\FER-TEST-CHENAB-20261111-01-v1.html"}, {"version": 2, "reason": "Escalated", "level": 5, "level_name": "Very high flood", "issued_at": "11 Nov 12:39", "path": "D:\\projects\\disaster_management\\disaster_management\\reports\\events\\test\\FER-TEST-CHENAB-20261111-01\\v2\\FER-TEST-CHENAB-20261111-01-v2.html"}]}, "stations": [{"id": "MARALA", "name": "Marala", "river": "Chenab", "available": true, "discharge": 56.63, "inflow": 203.15, "outflow": 56.63, "change_24h": 0.0, "change_source": "FFD observed, previous stored reading", "history": [{"time": "2026-11-09T01:00:00+00:00", "value": 56.63}, {"time": "2026-11-10T01:00:00+00:00", "value": 56.63}, {"time": "2026-11-11T01:00:00+00:00", "value": 56.63}], "rising_days": 0, "category": "Below low", "observed_at": "11 Nov 06:00", "age_hours": 6.7, "stale": false, "level": null, "level_unit": null, "forecast": 236.14, "forecast_valid": "2026-11-12", "peak": 242.78, "peak_at": "2026-11-15", "official_text": null, "forecast_mismatch": false, "pct_normal": null, "sources": ["obs"]}, {"id": "KHANKI", "name": "Khanki", "river": "Chenab", "available": true, "discharge": 0.0, "inflow": 153.76, "outflow": 0.0, "change_24h": 0.0, "change_source": "FFD observed, previous stored reading", "history": [{"time": "2026-11-09T01:00:00+00:00", "value": 0.0}, {"time": "2026-11-10T01:00:00+00:00", "value": 0.0}, {"time": "2026-11-11T01:00:00+00:00", "value": 0.0}], "rising_days": 0, "category": "Below low", "observed_at": "11 Nov 06:00", "age_hours": 6.7, "stale": false, "level": null, "level_unit": null, "forecast": 247.89, "forecast_valid": "2026-11-12", "peak": 250.77, "peak_at": "2026-11-16", "official_text": null, "forecast_mismatch": false, "pct_normal": null, "sources": ["obs"]}, {"id": "QADIRABAD", "name": "Qadirabad", "river": "Chenab", "available": true, "discharge": 0.0, "inflow": 291.1, "outflow": 0.0, "change_24h": 0.0, "change_source": "FFD observed, previous stored reading", "history": [{"time": "2026-11-09T01:00:00+00:00", "value": 0.0}, {"time": "2026-11-10T01:00:00+00:00", "value": 0.0}, {"time": "2026-11-11T01:00:00+00:00", "value": 0.0}], "rising_days": 0, "category": "Below low", "observed_at": "11 Nov 06:00", "age_hours": 6.7, "stale": false, "level": null, "level_unit": null, "forecast": 255.45, "forecast_valid": "2026-11-12", "peak": 255.45, "peak_at": "2026-11-12", "official_text": null, "forecast_mismatch": false, "pct_normal": null, "sources": ["obs"]}, {"id": "TRIMMU", "name": "Trimmu", "river": "Chenab", "available": true, "discharge": 14000.0, "inflow": 362.17, "outflow": 93.16, "change_24h": 60.6, "change_source": "FFD observed, previous stored reading", "history": [{"time": "2026-11-09T01:00:00+00:00", "value": 0.0}, {"time": "2026-11-10T01:00:00+00:00", "value": 32.56}, {"time": "2026-11-11T01:00:00+00:00", "value": 93.16}], "rising_days": 2, "category": "Very high flood", "observed_at": "11 Nov 06:00", "age_hours": 6.7, "stale": false, "level": null, "level_unit": null, "forecast": 649.13, "forecast_valid": "2026-11-12", "peak": 652.13, "peak_at": "2026-11-20", "official_text": null, "forecast_mismatch": false, "pct_normal": null, "sources": ["sim"], "simulated": true, "real_category": "Below low", "real_discharge": 93.16}, {"id": "PANJNAD", "name": "Panjnad", "river": "Panjnad", "available": true, "discharge": 0.0, "inflow": 182.64, "outflow": 0.0, "change_24h": 0.0, "change_source": "FFD observed, previous stored reading", "history": [{"time": "2026-11-09T01:00:00+00:00", "value": 0.0}, {"time": "2026-11-10T01:00:00+00:00", "value": 0.0}, {"time": "2026-11-11T01:00:00+00:00", "value": 0.0}], "rising_days": 0, "category": "Medium flood", "observed_at": "11 Nov 06:00", "age_hours": 6.7, "stale": false, "level": null, "level_unit": null, "forecast": 0.01, "forecast_valid": "2026-11-12", "peak": 0.01, "peak_at": "2026-11-12", "official_text": null, "forecast_mismatch": false, "pct_normal": null, "sources": ["sim"], "simulated": true, "real_category": "Below low", "real_discharge": 0.0}], "arrival": {"available": true, "origin": "Trimmu", "base_time": "11 Nov 12:39", "rows": [{"station": "Panjnad", "id": "PANJNAD", "hours": 36, "eta": "13 Nov 00:39", "category_now": "Medium flood", "sources": ["est"]}], "tail": "Below Panjnad the water joins the Indus at Mithankot, upstream of Guddu.", "note": "Indicative FloodGuard travel times, to be calibrated against FFD peak timings."}, "forecasts": [{"name": "Marala", "forecast": 236.14, "valid": "2026-11-12", "peak": 242.78, "peak_at": "2026-11-15", "official_text": null, "mismatch": false, "current": 56.63, "sources": ["api"]}, {"name": "Khanki", "forecast": 247.89, "valid": "2026-11-12", "peak": 250.77, "peak_at": "2026-11-16", "official_text": null, "mismatch": false, "current": 0.0, "sources": ["api"]}, {"name": "Qadirabad", "forecast": 255.45, "valid": "2026-11-12", "peak": 255.45, "peak_at": "2026-11-12", "official_text": null, "mismatch": false, "current": 0.0, "sources": ["api"]}, {"name": "Trimmu", "forecast": 649.13, "valid": "2026-11-12", "peak": 652.13, "peak_at": "2026-11-20", "official_text": null, "mismatch": false, "current": 14000.0, "sources": ["api"]}, {"name": "Panjnad", "forecast": 0.01, "valid": "2026-11-12", "peak": 0.01, "peak_at": "2026-11-12", "official_text": null, "mismatch": false, "current": 0.0, "sources": ["api"]}], "upstream": {"available": true, "stations": [{"name": "Chenab Marala", "river": "Chenab", "providers": [{"provider": "GloFAS", "status": "available", "peak": 242.78, "peak_at": "2026-11-15", "current": 239.99, "series": [{"time": "2026-10-28", "value": 305.9, "phase": "past"}, {"time": "2026-10-29", "value": 299.61, "phase": "past"}, {"time": "2026-10-30", "value": 294.12, "phase": "past"}, {"time": "2026-10-31", "value": 288.73, "phase": "past"}, {"time": "2026-11-01", "value": 283.45, "phase": "past"}, {"time": "2026-11-02", "value": 278.25, "phase": "past"}, {"time": "2026-11-03", "value": 273.79, "phase": "past"}, {"time": "2026-11-04", "value": 268.77, "phase": "past"}, {"time": "2026-11-05", "value": 264.46, "phase": "past"}, {"time": "2026-11-06", "value": 260.22, "phase": "past"}, {"time": "2026-11-07", "value": 256.04, "phase": "past"}, {"time": "2026-11-08", "value": 251.35, "phase": "past"}, {"time": "2026-11-09", "value": 247.31, "phase": "past"}, {"time": "2026-11-10", "value": 243.34, "phase": "past"}, {"time": "2026-11-11", "value": 239.99, "phase": "past"}, {"time": "2026-11-12", "value": 236.14, "phase": "forecast"}, {"time": "2026-11-13", "value": 235.59, "phase": "forecast"}, {"time": "2026-11-14", "value": 238.88, "phase": "forecast"}, {"time": "2026-11-15", "value": 242.78, "phase": "forecast"}, {"time": "2026-11-16", "value": 240.55, "phase": "forecast"}, {"time": "2026-11-17", "value": 235.59, "phase": "forecast"}, {"time": "2026-11-18", "value": 230.21, "phase": "forecast"}, {"time": "2026-11-19", "value": 225.99, "phase": "forecast"}, {"time": "2026-11-20", "value": 222.36, "phase": "forecast"}, {"time": "2026-11-21", "value": 218.79, "phase": "forecast"}, {"time": "2026-11-22", "value": 215.77, "phase": "forecast"}, {"time": "2026-11-23", "value": 213.29, "phase": "forecast"}, {"time": "2026-11-24", "value": 210.35, "phase": "forecast"}]}, {"provider": "GEOGloWS", "status": "available", "peak": 548.3, "peak_at": "2026-11-15T18:00:00+00:00", "current": 197.4, "series": [{"time": "2026-11-10", "value": 197.4, "phase": "forecast"}, {"time": "2026-11-10", "value": 217.8, "phase": "forecast"}, {"time": "2026-11-11", "value": 216.9, "phase": "forecast"}, {"time": "2026-11-11", "value": 200.2, "phase": "forecast"}, {"time": "2026-11-12", "value": 184.0, "phase": "forecast"}, {"time": "2026-11-12", "value": 180.1, "phase": "forecast"}, {"time": "2026-11-13", "value": 183.8, "phase": "forecast"}, {"time": "2026-11-13", "value": 189.8, "phase": "forecast"}, {"time": "2026-11-14", "value": 195.6, "phase": "forecast"}, {"time": "2026-11-14", "value": 232.5, "phase": "forecast"}, {"time": "2026-11-15", "value": 334.7, "phase": "forecast"}, {"time": "2026-11-15", "value": 509.5, "phase": "forecast"}, {"time": "2026-11-16", "value": 531.6, "phase": "forecast"}, {"time": "2026-11-16", "value": 442.9, "phase": "forecast"}, {"time": "2026-11-17", "value": 381.1, "phase": "forecast"}, {"time": "2026-11-17", "value": 335.8, "phase": "forecast"}, {"time": "2026-11-18", "value": 279.5, "phase": "forecast"}, {"time": "2026-11-18", "value": 224.5, "phase": "forecast"}, {"time": "2026-11-19", "value": 183.7, "phase": "forecast"}, {"time": "2026-11-19", "value": 164.6, "phase": "forecast"}, {"time": "2026-11-20", "value": 150.7, "phase": "forecast"}, {"time": "2026-11-20", "value": 145.3, "phase": "forecast"}, {"time": "2026-11-21", "value": 142.4, "phase": "forecast"}, {"time": "2026-11-21", "value": 140.7, "phase": "forecast"}, {"time": "2026-11-22", "value": 139.2, "phase": "forecast"}, {"time": "2026-11-22", "value": 139.2, "phase": "forecast"}, {"time": "2026-11-23", "value": 138.9, "phase": "forecast"}, {"time": "2026-11-23", "value": 138.0, "phase": "forecast"}, {"time": "2026-11-24", "value": 138.1, "phase": "forecast"}, {"time": "2026-11-24", "value": 137.9, "phase": "forecast"}]}], "agreement_pct": 56, "gap_cumecs": 305.5, "agree": false, "signals": [{"type": "Riverine flood", "severity": "LOW", "probability": 15, "basis": "Highest modeled peak is 19.4% of the ffd low-flood threshold."}, {"type": "Flash flood", "severity": "CRITICAL", "probability": 88, "basis": "Short-step GEOGloWS rise plus forecast rainfall stress."}, {"type": "Urban/surface-water flood", "severity": "LOW", "probability": 27, "basis": "Daily precipitation forecast and probability near the selected station."}], "rain_max_mm": 5.2, "sources": ["api", "est"]}], "refresh_error": null, "cached_at": "11 Nov 12:19"}, "models": {"rows": [{"model": "xgboost_riverine_baseline_v1", "target": "Trimmu", "value": "1680 cumecs", "risk_class": "Low", "status": "dummy until trained model ready", "sources": ["sim"]}], "error": null}, "satellite": {"checks": [{"location": "Trimmu station", "station_id": "TRIMMU", "category": "Very high flood", "simulated_category": true, "result": "not_run", "reason": "Satellite checks switched off for this run", "sources": ["sat"]}, {"location": "Panjnad station", "station_id": "PANJNAD", "category": "Medium flood", "simulated_category": true, "result": "not_run", "reason": "Satellite checks switched off for this run", "sources": ["sat"]}], "note": "Each check compares the latest Sentinel-1 radar pass with an earlier pass from the same orbit and removes permanent water. The image is always real, also in test events."}, "impact": {"region": "trimmu_jhang", "flood_source": "sample", "exposure_error": null, "sources": ["sim", "est"], "label": "SYNTHETIC TEST POLYGON — not an observed or forecast flood", "area_km2": 50.749008710270026, "people": 12190.703535744487, "counts": {"settlements": {"count": 1, "length_km": 0.0}, "buildings": {"count": 0, "length_km": 0.0}, "roads": {"count": 245, "length_km": 26.948180016230722}, "schools": {"count": 0, "length_km": 0.0}, "hospitals": {"count": 0, "length_km": 0.0}}, "warnings": ["Population is a modelled estimate, not an observed affected-person count.", "OSM inventories are incomplete; zero mapped exposure does not establish absence.", "OSM buildings and reference detections overlap and MUST NOT be added together.", "Infrastructure intersection indicates geometric exposure, not damage, road closure, facility functionality or settlement isolation."], "facilities": [{"name": "Malkana", "type": "Settlement", "detail": "village"}], "extent": [[72.106, 31.1148], [72.106, 31.1748], [72.186, 31.1748], [72.186, 31.1148], [72.106, 31.1148]], "center": [72.14599999999999, 31.1448], "population": {"rows": [{"name": "Jhang", "level": "ADM2", "people": 12190.703535744487}], "status": "PARTIAL_COVERAGE", "known_area_fraction": 0.4338779335675188, "adm3_available": false, "density": [{"density_min_people_km2": 0.0, "density_max_people_km2": 100.0, "exposed_population": 246.74653142918373}, {"density_min_people_km2": 100.0, "density_max_people_km2": 500.0, "exposed_population": 2396.0423126239393}, {"density_min_people_km2": 500.0, "density_max_people_km2": 1000.0, "exposed_population": 2755.2202013636747}, {"density_min_people_km2": 1000.0, "density_max_people_km2": 5000.0, "exposed_population": 5729.615638454117}, {"density_min_people_km2": 5000.0, "density_max_people_km2": null, "exposed_population": 1063.0788518735735}]}, "population_error": null, "kind": "simulated", "available": true, "station": "Trimmu", "station_id": "TRIMMU", "reason": null}, "districts": {"available": true, "rows": [{"district": "Jhang", "station": "Trimmu", "risk": 8, "why": "Flooded station in district", "eta": "Now", "sources": ["api", "est"]}, {"district": "Bahawalpur", "station": "Panjnad", "risk": 1, "why": "Flooded station in district", "eta": "13 Nov 00:39", "sources": ["api", "est"]}], "geometries": null}, "operations": {"alerts": [], "incidents": [], "reports": [{"id": 4, "location": "Jhang", "description": "floo near jhang", "verification": "PENDING", "status": "OPEN", "important": false, "depth_cm": null, "age_hours": 480.0, "new": false, "sources": ["obs"]}, {"id": 1, "location": "Jhang", "description": "Water is crossing a low road near Jhang city. Traffic is slowing and residents are requesting field verification.", "verification": "PENDING", "status": "OPEN", "important": false, "depth_cm": 22.0, "age_hours": 483.2, "new": false, "sources": ["obs"]}]}, "checklist": {"level": "Very high flood", "items": ["Confirm with FFD that all stations on this river are below low flood.", "Stand down pre-alerts issued for this event; keep damage and relief follow-up open.", "Close related incidents and resolve citizen reports along this river."], "note": "FloodGuard checklist by flood level. It supports, and does not replace, NDMA/PDMA standard operating procedures."}, "snapshots": {"captured": false, "reason": "Snapshot capture switched off for this run", "shots": [{"key": "model-riverine", "view": "Model prediction: riverine short-term", "section": "04", "sources": ["sim"], "caption": "Placeholder model output (illustrative values)"}, {"key": "upstream-Chenab Marala", "view": "GloFAS vs GEOGloWS forecast: Chenab Marala", "section": "04", "sources": ["api"], "caption": "Modeled discharge from both providers against the low-flood threshold"}, {"key": "population-trimmu_jhang", "view": "Flood-affected population (synthetic test extent)", "section": "06", "sources": ["sim", "est"], "caption": "WorldPop estimate on the flood extent; partial coverage is a lower bound"}, {"key": "extent-trimmu_jhang", "view": "Flood extent over population density (synthetic test extent)", "section": "06", "sources": ["sim", "est"], "caption": "Blue: flood extent. Yellow to red: population density. Pink: affected settlements"}]}, "data_quality": [{"feed": "FFD river state", "status": "OK", "note": "Newest reading 7 h old"}, {"feed": "Upstream forecasts (GloFAS, GEOGloWS)", "status": "OK", "note": "Stored 11 Nov 12:19 PKT"}, {"feed": "District risk layer", "status": "OK", "note": ""}, {"feed": "Sentinel-1 radar", "status": "Partial", "note": ""}, {"feed": "Portal snapshots", "status": "Unavailable", "note": "Snapshot capture switched off for this run"}], "summary": {"headline": "No flood signal on the Chenab since 11 Nov 12:39 PKT. The event is closed. Highest level reached: Very high flood.", "kpis": [{"value": "Very high flood", "label": "Event level (highest)"}, {"value": "No signal", "label": "Level now"}, {"value": "14,000", "label": "Peak observed discharge (cumecs)"}, {"value": "2 / 5", "label": "Chenab stations in flood"}, {"value": "Panjnad +36 h", "label": "Next station downstream"}, {"value": "12,191", "label": "People in flood extent (lower bound)"}, {"value": "0.0 km²", "label": "Possible flood water (satellite)"}]}, "provenance": {"obs": 26, "sim": 17, "est": 8, "api": 11, "ml": 4, "sat": 2}, "has_simulated": true}</script>
+<script>
+/* Shared report helpers: labels, tables, charts, radar figure, portal snapshots. Expects D (report data). */
+const D = JSON.parse(document.getElementById("report-data").textContent);
+const CAT = {"Below low":"var(--good)","Low flood":"var(--warn)","Medium flood":"var(--serious)","High flood":"var(--crit)","Very high flood":"var(--crit)","Exceptionally high flood":"var(--crit)","Unavailable":"var(--muted-bar)"};
+const CAT_DEF = {"Below low":"Normal flow","Low flood":"Water in active floodplain","Medium flood":"Floodplain partly inundated","High flood":"Embankments under pressure","Very high flood":"Breach risk, evacuation likely","Exceptionally high flood":"Record-scale flows","Unavailable":"No reading in the period"};
+const SRCN = {obs:"Observed",off:"Official forecast",api:"Flood API",ml:"Model prediction",sat:"Satellite",est:"Estimate",sim:"Simulated"};
+const SRCC = {obs:"var(--good)",off:"var(--accent)",api:"var(--s1)",ml:"var(--ink-3)",sat:"var(--s3)",est:"var(--muted-bar)",sim:"var(--crit)"};
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt = (n, d=0) => n == null ? "—" : Number(n).toLocaleString("en-US", {maximumFractionDigits:d, minimumFractionDigits:0});
+const sgn = n => n == null ? "—" : (n > 0 ? "▲ +" : n < 0 ? "▼ −" : "± ") + fmt(Math.abs(n), 1);
+const src = keys => (keys||[]).filter((k,i,a)=>a.indexOf(k)===i).map(k => `<span class="src ${k}">${SRCN[k]}</span>`).join(" ");
+const pill = (label, color) => `<span class="pill"><i class="dot" style="background:${color}"></i>${esc(label)}</span>`;
+const cat = c => pill(c, CAT[c] || "var(--muted-bar)");
+const unavailable = reason => `<div class="callout"><b>Unavailable.</b> ${esc(reason)}</div>`;
+const table = (head, rows, cls="") => `<div class="tbl"><table class="${cls}"><thead><tr>${head.map(h => `<th${h.startsWith("#")?' class="n"':""}>${h.replace("#","")}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td colspan="${head.length}">None in this period.</td></tr>`}</tbody></table></div>`;
+const hrs = h => h == null ? "—" : h >= 48 ? `${Math.round(h/24)} d` : `${Math.round(h)} h`;
+let out = "";
+const section = (no, title, sources, body) => { out += `<section><div class="inner"><h2><span class="no">${no}</span>${title}<span class="srcs">${src(sources)}</span></h2>${body}${inapp(no)}</div></section>`; };
+
+/* ---------- chart helpers (drawn to scale, colors from theme tokens) ---------- */
+function hbars(rows, series, opts={}) { // rows: [{label, values:[...], tips:[...]}]
+  const W = 520, l = opts.left || 110, r = 50, barH = 12, gap = 3, groupH = series.length*(barH+gap) + 10;
+  const max = opts.max || Math.max(1, ...rows.flatMap(x => x.values.filter(v => v != null)));
+  const sx = v => v / max * (W - l - r), H = rows.length * groupH + 22;
+  const ticks = [0, .25, .5, .75, 1].map(t => t * max);
+  let g = ticks.map(t => `<line x1="${l+sx(t)}" x2="${l+sx(t)}" y1="0" y2="${H-22}" stroke="var(--rule)"/><text x="${l+sx(t)}" y="${H-6}" text-anchor="middle" class="t-mute">${fmt(t, max < 10 ? 1 : 0)}</text>`).join("");
+  rows.forEach((row, i) => { const y = i * groupH + 4;
+    g += `<text x="${l-8}" y="${y + series.length*(barH+gap)/2 + 3}" text-anchor="end" class="t-ink">${esc(row.label)}</text>`;
+    row.values.forEach((v, j) => { if (v == null) return; const yy = y + j*(barH+gap);
+      g += `<rect class="bar" x="${l}" y="${yy}" width="${Math.max(sx(v),1)}" height="${barH}" rx="3" fill="${series[j].color}" data-tip="${esc(row.label)}: ${esc(series[j].name)} ${fmt(v,1)}${opts.unit||""}"/>`;
+      if (opts.labels) g += `<text x="${l+sx(v)+5}" y="${yy+10}" class="mono t-mute" style="font-size:10px">${fmt(v, v<10?1:0)}</text>`; }); });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||"bar chart")}">${g}</svg>` + (series.length > 1 ? `<div class="legend">${series.map(s => `<span><i class="sw box" style="background:${s.color}"></i>${esc(s.name)}</span>`).join("")}</div>` : "");
+}
+function stackbar(parts) { // [{label,n,color}]
+  const W = 600, H = 30, tot = parts.reduce((a,b) => a+b.n, 0) || 1; let x = 0, g = "";
+  parts.filter(p => p.n).forEach(p => { const w = W*p.n/tot; g += `<rect x="${x}" y="0" width="${Math.max(w-2,1)}" height="${H}" rx="4" fill="${p.color}" data-tip="${esc(p.label)}: ${p.n}"/>`;
+    if (w > 70) g += `<text x="${x+8}" y="19" class="t-ink" style="font-weight:600">${p.n} ${esc(p.label)}</text>`; x += w; });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Proportions">${g}</svg><div class="legend">${parts.map(p => `<span><i class="sw box" style="background:${p.color}"></i>${esc(p.label)}: <b class="mono">${p.n}</b></span>`).join("")}</div>`;
+}
+function spark(values) {
+  if (values.length < 3) return `<span class="note">${values.length} reading${values.length===1?"":"s"}, need 3</span>`;
+  const W = 90, H = 22, mn = Math.min(...values), mx = Math.max(...values), sx = i => i*(W-4)/(values.length-1)+2, sy = v => H-3-(v-mn)/((mx-mn)||1)*(H-6);
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:90px"><path d="${values.map((v,i) => (i?"L":"M")+sx(i).toFixed(1)+" "+sy(v).toFixed(1)).join("")}" fill="none" stroke="var(--s1)" stroke-width="1.75"/><circle cx="${sx(values.length-1)}" cy="${sy(values[values.length-1])}" r="2.5" fill="var(--s1)"/></svg>`;
+}
+function lines(seriesList, opts={}) { // [{name,color,points:[{time,value,phase}]}]
+  const all = seriesList.flatMap(s => s.points.filter(p => p.value != null));
+  if (!all.length) return `<p class="note">No series data.</p>`;
+  const times = [...new Set(all.map(p => p.time))].sort(), W = 300, H = 150, l = 40, r = 8, t = 8, b = 22;
+  const max = Math.max(...all.map(p => p.value)) * 1.1 || 1, sx = tm => l + times.indexOf(tm)/(Math.max(times.length-1,1))*(W-l-r), sy = v => t + (1 - v/max)*(H-t-b);
+  let g = [0, .5, 1].map(f => `<line x1="${l}" x2="${W-r}" y1="${sy(f*max)}" y2="${sy(f*max)}" stroke="var(--rule)"/><text x="${l-5}" y="${sy(f*max)+4}" text-anchor="end" class="t-mute" style="font-size:9px">${fmt(f*max, max<10?1:0)}</text>`).join("");
+  const today = opts.today && times.find(tm => tm >= opts.today); if (today) g += `<line x1="${sx(today)}" x2="${sx(today)}" y1="${t}" y2="${H-b}" stroke="var(--ink-3)" stroke-dasharray="3 3"/>`;
+  [times[0], times[times.length-1]].forEach((tm,i) => g += `<text x="${sx(tm)}" y="${H-6}" text-anchor="${i?"end":"start"}" class="t-mute" style="font-size:9px">${tm.slice(5)}</text>`);
+  seriesList.forEach(s => { const pts = s.points.filter(p => p.value != null);
+    g += `<path d="${pts.map((p,i) => (i?"L":"M")+sx(p.time).toFixed(1)+" "+sy(p.value).toFixed(1)).join("")}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"/>`;
+    pts.forEach(p => g += `<circle class="hit" cx="${sx(p.time)}" cy="${sy(p.value)}" r="6" data-tip="${esc(s.name)} ${p.time}: ${fmt(p.value,1)} cumecs (${p.phase})"/>`); });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||"line chart")}">${g}</svg>`;
+}
+// Satellite figure: real radar image + overlays + optional simulated polygon (hatched)
+function radar(image, overlays, label, coords, polygon) {
+  if (!image) return `<div class="callout">Radar image unavailable.</div>`;
+  const S = 256; let poly = "";
+  if (polygon && coords) { const [ul, ur, , ll] = coords;
+    const px = ([lon, lat]) => [((lon-ul[0])/(ur[0]-ul[0])*S).toFixed(1), ((lat-ul[1])/(ll[1]-ul[1])*S).toFixed(1)];
+    poly = `<polygon points="${polygon.map(p => px(p).join(",")).join(" ")}" fill="url(#hatch-${label.replace(/\W/g,"")})" stroke="#2bc4dd" stroke-width="2"/>`; }
+  const id = "hatch-" + label.replace(/\W/g,"");
+  return `<svg viewBox="0 0 ${S} ${S+18}" role="img" aria-label="${esc(label)}"><defs><pattern id="${id}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="7" fill="#2bc4dd" opacity=".9"/></pattern><clipPath id="c-${id}"><rect width="${S}" height="${S}"/></clipPath></defs>
+    <image href="${image}" width="${S}" height="${S}" preserveAspectRatio="none"/>${(overlays||[]).filter(Boolean).map(o => `<image href="${o}" width="${S}" height="${S}" preserveAspectRatio="none"/>`).join("")}<g clip-path="url(#c-${id})">${poly}</g>
+    <rect x="6" y="6" width="${label.length*6.2+14}" height="18" rx="3" fill="#000000" opacity=".6"/><text x="13" y="19" style="fill:#ffffff;font-size:10.5px;font-weight:600">${esc(label)}</text>
+    ${polygon ? `<rect x="${S-128}" y="${S-24}" width="122" height="18" rx="3" fill="#d03b3b"/><text x="${S-121}" y="${S-11}" style="fill:#ffffff;font-size:10px;font-weight:700">⚑ SIMULATED EXTENT</text>` : ""}
+    <line x1="4" x2="70" y1="${S+11}" y2="${S+11}" stroke="var(--ink-3)" stroke-width="2"/><text x="76" y="${S+15}" class="t-mute" style="font-size:9.5px">≈ 2 km</text></svg>`;
+}
+/* ---------- in-portal snapshots ---------- */
+function inapp(no) {
+  const shots = (D.snapshots.shots || []).filter(s => s.section === no); if (!shots.length) return "";
+  const body = shots.map(s => s.image ? `<figure class="shot" style="margin:0"><img src="${s.image}" alt="${esc(s.view)}"><figcaption class="cap"><b>${esc(s.view)}</b><span>${src(s.sources)}</span>${s.caption ? `<span class="note">${esc(s.caption)}</span>` : ""}<span class="from">Captured from the portal ${esc(s.captured_at)} PKT</span></figcaption></figure>`
+    : `<div class="note">Snapshot unavailable: ${esc(s.view)}. ${esc(s.error || D.snapshots.reason || "")}</div>`).join("");
+  return `<div class="inapp"><div class="eyebrow">In the portal</div><div class="row">${body}</div></div>`;
+}
+
+/* River network diagram: rows = [{label, stations:[{name, category, discharge, change_24h, simulated|sources}]}], upstream to downstream. */
+function riverNetwork(rows) {
+  const W = 980, rowH = 46, left = 80, H = rows.length*rowH + 10, step = (W-left-40)/6;
+  let net = "", anySim = false;
+  rows.forEach((row, i) => { const y = 20 + i*rowH, list = row.stations;
+    net += `<text x="0" y="${y+4}" class="t-ink" style="font-family:var(--display);font-weight:600;font-size:13px">${esc(row.label)}</text><line x1="${left}" x2="${left+Math.max(list.length-1,0.02)*step}" y1="${y}" y2="${y}" stroke="var(--s1)" stroke-width="3" stroke-linecap="round" opacity=".35"/>`;
+    list.forEach((s, j) => { const x = left + j*step, sim = s.simulated || (s.sources||[]).includes("sim"); anySim = anySim || sim;
+      net += `<circle cx="${x}" cy="${y}" r="7" fill="${CAT[s.category]||"var(--muted-bar)"}" stroke="var(--paper)" stroke-width="2"/>${sim ? `<circle cx="${x}" cy="${y}" r="11" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="3 2"/>` : ""}${(s.change_24h||0) > 0 ? `<path d="M${x-5} ${y-13} L${x} ${y-19} L${x+5} ${y-13}Z" fill="var(--ink)"/>` : ""}
+        <text x="${x}" y="${y+21}" text-anchor="middle">${esc(s.name.replace("Ganda Singh Wala","G.S. Wala"))}</text><circle class="hit" cx="${x}" cy="${y}" r="16" data-tip="<b>${esc(s.name)}</b><br>${fmt(s.discharge,1)} cumecs<br>${esc(s.category)}${sim ? "<br>SIMULATED" : ""}"/>`; }); });
+  const cats = ["Below low","Low flood","Medium flood","High flood"].concat(rows.some(r => r.stations.some(s => /Very high|Exceptionally/.test(s.category||""))) ? ["Very high flood"] : []);
+  return `<div style="overflow-x:auto"><svg viewBox="-4 0 ${W} ${H}" style="min-width:640px" role="img" aria-label="River network">${net}</svg></div>
+    <div class="legend">${cats.map(c => `<span>${cat(c)}</span>`).join("")}<span>▲ Higher than the previous reading</span>${anySim ? `<span>◌ Dashed ring: simulated reading</span>` : ""}</div>`;
+}
+/* Flood Event Report body. Shared pieces: _base.html, _helpers.js, _tip.js (see app/reports/render.py).
+   Data: app/reports/event_report.py. Spec: docs/reports/flood_event_report_spec.md */
+const M = D.meta, E = D.event, S = D.summary;
+const LVLC = l => l >= 4 ? "var(--crit)" : l === 3 ? "var(--serious)" : l === 2 ? "var(--warn)" : l === 1 ? "var(--s1)" : "var(--good)";
+const reasonText = {"New event":"New flood event", "Escalated":"Escalation update", "Closed":"Event closed"}[M.reason] || M.reason;
+
+/* ================= header ================= */
+out += `<div class="sample">Flood Event Report · issued automatically when a flood is detected in real data, when it escalates, and when it ends. Every value is labeled with where it came from.</div>`;
+if (D.has_simulated) out += `<div class="testbar">⚑ TEST ${M.is_test ? "EVENT" : "REPORT"}: contains simulated data<span>${M.is_test ? "This event was started by a simulated test signal, not by real data. The station reading marked SIMULATED, the flood extent and its impact are test values. Satellite images are real." : "Some items come from portal simulations or placeholder models and carry the striped SIMULATED label."} Do not use simulated figures for operational decisions.</span></div>`;
+out += `<div class="inner"><header class="top" style="padding-bottom:20px"><div><div class="eyebrow">FloodGuard AI · Flood Event Report · ${esc(reasonText)}</div><h1>${esc(E.river)} flood event</h1>
+  <div class="meta"><span>Event no.</span><b class="mono">${esc(M.event_no)}</b><span>Report</span><b class="mono">Version ${M.version} · ${esc(M.reason)}</b><span>Event opened</span><b>${esc(E.opened)} PKT</b>
+  <span>Issued</span><b>${esc(M.generated)}</b>${E.closed ? `<span>Closed</span><b>${esc(E.closed)} PKT</b>` : ""}<span>Units</span><b>${esc(M.units)}</b></div></div>
+  <div class="status-big"><div class="eyebrow">Event level</div><div class="lvl"><span class="dot" style="background:${LVLC(E.level)};width:14px;height:14px"></span>${esc(E.level_name)}</div><div class="note">Now: ${esc(E.current_level_name)} · status ${esc(E.status)}</div></div></header></div>`;
+
+/* ================= 01 ================= */
+const sigRows = E.signals.map(s => `<tr${s.sources.includes("sim")?' class="simrow"':""}><td>${src(s.sources)}</td><td>${esc(s.kind)}</td><td>${esc(s.station_name)}</td><td>${pill(s.label, LVLC(s.level))}</td><td class="n">${fmt(s.value_cumecs)}</td><td class="mono">${esc(s.at||"—")}</td><td>${esc(s.detail)}${s.stale ? ` ${pill("Stale reading: holds the event open, cannot raise it","var(--muted-bar)")}` : ""}</td></tr>`);
+const verRows = E.versions.map(v => `<tr><td class="mono">v${v.version}</td><td>${esc(v.reason)}</td><td>${pill(v.level_name, LVLC(v.level))}</td><td class="mono">${esc(v.issued_at)}</td></tr>`)
+  .concat([`<tr><td class="mono"><b>v${M.version}</b></td><td><b>${esc(M.reason)}</b> (this report)</td><td>${pill(E.level_name, LVLC(E.level))}</td><td class="mono">${esc(M.generated)}</td></tr>`]);
+section("01", "Event Summary", [...new Set(E.signals.flatMap(s => s.sources))], `
+  ${M.is_test ? `<div class="callout crit">⚑ Test event: started by a simulated signal. Real data shown alongside it is labeled as real.</div>` : ""}
+  <p class="lead">${esc(S.headline)}</p>
+  <div class="kpis">${S.kpis.map(k => `<div class="kpi"><span class="v" style="font-size:20px">${esc(k.value)}</span><span class="l">${esc(k.label)}</span></div>`).join("")}</div>
+  <h3>What triggered this report</h3>${table(["Source","Type","Where","Level","#Cumecs","Time (PKT)","Detail"], sigRows)}
+  <div class="grid2"><div><h3>Report versions for this event</h3>${table(["Version","Reason","Level","Issued (PKT)"], verRows)}</div>
+  <div><h3>When this event gets a new report</h3><p class="note">Only when the level rises above the highest level already reported, or when the event closes after 24 h without a flood signal. Readings that stay at the same level, or dip and return, do not create new reports.</p></div></div>`);
+
+/* ================= 02 ================= */
+const stRows = D.stations.map(s => `<tr${s.simulated?' class="simrow"':""}><td>${esc(s.name)}</td><td>${src(s.sources)}</td><td>${cat(s.category)}${s.simulated ? `<div class="note">Real now: ${esc(s.real_category)}</div>` : ""}</td><td class="n">${fmt(s.discharge)}</td><td class="n">${sgn(s.change_24h)}</td><td>${spark((s.history||[]).map(h => h.value))}</td><td class="mono">${esc(s.observed_at||"—")}</td><td class="n">${fmt(s.peak)}</td><td class="mono">${esc((s.peak_at||"—").slice(0,10))}</td></tr>`);
+section("02", `Stations on the ${esc(E.river)}`, ["obs","api"].concat(D.stations.some(s => s.simulated) ? ["sim"] : []), `<p>Every FFD station on this river, upstream to downstream. Category and discharge are FFD observations; the expected peak is GloFAS modeled discharge.</p>
+  <div class="fig"><h3>River network status</h3>${riverNetwork([{label:E.river, stations:D.stations.filter(s => s.river === E.river || !s.river)}].concat([...new Set(D.stations.filter(s => s.river && s.river !== E.river).map(s => s.river))].map(r => ({label:r, stations:D.stations.filter(s => s.river === r)}))))}</div>
+  ${table(["Station","Source","FFD category","#Discharge","#24 h change","Last 7 readings","Observed (PKT)","#GloFAS peak","Peak date"], stRows)}`);
+
+/* ================= 03 ================= */
+const A = D.arrival;
+section("03", "Downstream Arrival", ["est"], A.available ? `<p>Expected arrival of the water from <b>${esc(A.origin)}</b> (reading of ${esc(A.base_time)} PKT) at each station downstream.</p>
+  <div class="grid2"><div>${table(["Station","#Hours","Expected (PKT)","Category now"], A.rows.map(r => `<tr><td>${esc(r.station)}</td><td class="n">+${r.hours}</td><td class="mono">${esc(r.eta)}</td><td>${cat(r.category_now)}</td></tr>`))}</div>
+  <div class="fig"><h3>Hours after ${esc(A.origin)}</h3>${hbars(A.rows.map(r => ({label:r.station, values:[r.hours]})), [{name:"Hours", color:"var(--s1)"}], {unit:" h", labels:true, aria:"Arrival hours"})}</div></div>
+  ${A.tail ? `<p class="note">${esc(A.tail)}</p>` : ""}<p class="note">${esc(A.note)}</p>` : unavailable(A.reason));
+
+/* ================= 04 ================= */
+const U = D.upstream, provColor = {GloFAS:"var(--s2)", GEOGloWS:"var(--s3)"};
+const upBody = U.available && U.stations.length ? `<div class="gallery">${U.stations.map(u => `<div class="fig shot" style="padding:12px"><b style="font-family:var(--display)">${esc(u.name)}</b>${lines(u.providers.map(p => ({name:p.provider, color:provColor[p.provider]||"var(--ink-3)", points:p.series})), {aria:u.name})}
+  <div class="legend">${u.providers.map(p => `<span><i class="sw" style="background:${provColor[p.provider]||"var(--ink-3)"}"></i>${esc(p.provider)} peak ${fmt(p.peak)}</span>`).join("")}</div>
+  <span class="note">${u.agree ? "Providers agree" : `Providers differ by ${u.agreement_pct}%`}</span></div>`).join("")}</div>` : `<p class="note">${U.available ? "No upstream forecast point on this river." : esc(U.reason)}</p>`;
+const fcRows = D.forecasts.map(f => `<tr><td>${esc(f.name)}</td><td>${src(f.sources)||"—"}</td><td class="n">${fmt(f.current,1)}</td><td class="n">${fmt(f.forecast,1)}</td><td class="n">${fmt(f.peak,1)}</td><td class="mono">${esc((f.peak_at||"—").slice(0,10))}</td><td>${f.mismatch ? pill("Check: forecast cell may not match station","var(--warn)") : esc(f.official_text||"—")}</td></tr>`);
+const modelRows = D.models.rows.map(r => `<tr${r.sources.includes("sim")?' class="simrow"':""}><td>${esc(r.model)}</td><td>${esc(r.target)}</td><td class="n">${esc(r.value)}</td><td>${esc(r.risk_class)}</td><td>${esc(r.status)}</td><td>${src(r.sources)}</td></tr>`);
+section("04", "Forecasts &amp; Model Outputs", ["api","off","ml"].concat(D.models.rows.some(r => r.sources.includes("sim")) ? ["sim"] : []), `<h3>4a. Upstream forecasts (GloFAS and GEOGloWS)</h3>${upBody}
+  <h3>4b. Station forecasts</h3>${table(["Station","Source","#Now","#Next","#Peak","Peak date","FFD text / check"], fcRows)}
+  <h3>4c. Model outputs</h3>${table(["Model","Target","#Value","Class","Status","Source"], modelRows)}<p class="note">Placeholder model outputs are labeled SIMULATED and never trigger an event report.</p>`);
+
+/* ================= 05 ================= */
+const SAT = D.satellite, IM = D.impact;
+const satRows = SAT.checks.map(c => `<tr><td>${esc(c.location)}</td><td>${cat(c.category)}${c.simulated_category ? " (simulated)" : ""}</td><td class="mono">${esc((c.pre_date||"—").slice(0,10))}</td><td class="mono">${esc((c.during_date||"—").slice(0,10))}</td><td class="n">${c.potential_flood_area_km2 == null ? "—" : fmt(c.potential_flood_area_km2,1) + " km²"}</td><td>${c.error ? pill("Check failed: " + c.error, "var(--muted-bar)") : c.result === "potential_flooding_detected" ? pill("Possible flood water","var(--warn)") : pill(String(c.result).replace(/_/g," "),"var(--good)")}</td></tr>`);
+const satFigs = SAT.checks.filter(c => c.during_radar_image_data_url).map(c => `<div class="fig"><h3>${esc(c.location)}: real radar, before and latest</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${radar(c.pre_radar_image_data_url, [c.permanent_water_image_data_url], "Before · " + (c.pre_date||"").slice(0,10), c.coordinates)}${radar(c.during_radar_image_data_url, [c.permanent_water_image_data_url, c.image_data_url], "Latest · " + (c.during_date||"").slice(0,10), c.coordinates)}</div>
+  <div class="legend"><span><i class="sw box" style="background:#4c73ff"></i>Permanent water</span><span><i class="sw box" style="background:#00cae1"></i>Water outside the permanent-water reference</span></div></div>`).join("");
+section("05", "Satellite Check", ["sat"], `<p>${esc(SAT.note)}</p>${table(["Location","Gauge category","Before pass","Latest pass","#Possible flood water","Result"], satRows)}<div class="grid2">${satFigs}</div>
+  <p class="note">Water outside the permanent-water reference can include seasonal river water. Satellite age is shown for every image; a pass older than the flood cannot show it.</p>`);
+
+/* ================= 06 ================= */
+let imBody;
+if (IM.available) {
+  const c = IM.counts || {}, pop = IM.population || {};
+  const simSar = IM.kind === "simulated" && IM.sar && IM.sar.during_radar_image_data_url;
+  imBody = `${IM.kind === "simulated" ? `<div class="callout crit">⚑ Simulated flood extent (synthetic test polygon near ${esc(IM.station)}), drawn hatched over the real radar image. Impact numbers below are test values.</div>` : `<div class="callout">Flood extent = water detected by Sentinel-1 near ${esc(IM.station)} (${esc(IM.label)}). It needs field confirmation.</div>`}
+  <div class="kpis">${[[fmt(IM.people), "People in extent (lower bound)"], [fmt(IM.area_km2,1) + " km²", "Flood extent analysed"], [fmt((c.roads||{}).length_km,1) + " km", "Roads in extent"], [fmt((c.settlements||{}).count), "Settlements"], [fmt((c.schools||{}).count), "Schools"], [fmt((c.hospitals||{}).count), "Hospitals"]].map(([v,l]) => `<div class="kpi"><span class="v" style="font-size:20px">${v}</span><span class="l">${l}</span></div>`).join("")}</div>
+  <div class="grid2">${simSar ? `<div class="fig"><h3>Simulated extent over the real radar image</h3>${radar(IM.sar.during_radar_image_data_url, [IM.sar.permanent_water_image_data_url, IM.sar.image_data_url], "Real pass · " + (IM.sar.during_date||"").slice(0,10), IM.sar.coordinates, IM.extent)}</div>` : ""}
+  <div><h3>People by area</h3>${pop.rows && pop.rows.length ? table(["Area","Level","#People"], pop.rows.map(r => `<tr><td>${esc(r.name)}</td><td>${esc(r.level === "ADM3" ? "Tehsil" : "District")}</td><td class="n">${fmt(r.people)}</td></tr>`)) : `<p class="note">${esc(IM.population_error || "No breakdown available")}</p>`}
+  ${pop.known_area_fraction != null ? `<p class="note">Population data covers ${Math.round(pop.known_area_fraction*100)}% of the flood extent, so the total is a lower bound.${pop.adm3_available ? "" : " Tehsil boundaries are not available here, so totals are by district."}</p>` : ""}
+  <h3 style="margin-top:12px">Facilities in the extent</h3>${table(["Name","Type","Detail"], (IM.facilities||[]).map(f => `<tr><td>${esc(f.name)}</td><td>${esc(f.type)}</td><td>${esc(f.detail)}</td></tr>`))}</div></div>
+  ${(IM.warnings||[]).length ? `<p class="note">${IM.warnings.map(esc).join(" ")}</p>` : ""}`;
+} else imBody = unavailable(IM.reason);
+const DR = D.districts;
+section("06", "Impact &amp; Districts at Risk", (IM.sources||[]).concat(["api","est"]), `<h3>6a. Exposure in the flood extent</h3>${imBody}
+  <h3>6b. Districts along the flood path</h3>${DR.available ? table(["District","Station","Why","Expected (PKT)","#Screening risk"], DR.rows.map(r => `<tr><td>${esc(r.district)}</td><td>${esc(r.station)}</td><td>${esc(r.why)}</td><td class="mono">${esc(r.eta)}</td><td class="n">${r.risk}%</td></tr>`)) : unavailable(DR.reason)}
+  <p class="note">"In the extent" does not mean damaged or closed. Missing map features do not prove absence.</p>`);
+
+/* ================= 07 ================= */
+const O = D.operations;
+section("07", "Related Alerts, Incidents &amp; Citizen Reports", ["obs"].concat([...O.alerts, ...O.incidents].some(x => x.sources.includes("sim")) ? ["sim"] : []), `<div class="grid2">
+  <div><h3>Alerts at stations on this river</h3>${table(["Time","Station","Severity","Approval","Source"], O.alerts.map(a => `<tr${a.sources.includes("sim")?' class="simrow"':""}><td class="mono">${esc(a.time)}</td><td>${esc(a.location)}</td><td>${esc(a.severity)}</td><td>${esc(a.approval)}</td><td>${src(a.sources)}</td></tr>`))}</div>
+  <div><h3>Incidents</h3>${table(["#","Station","Severity","Status","Source"], O.incidents.map(i => `<tr${i.sources.includes("sim")?' class="simrow"':""}><td class="mono">${i.id}</td><td>${esc(i.location)}</td><td>${esc(i.severity)}</td><td>${esc(i.status)}</td><td>${src(i.sources)}</td></tr>`))}</div></div>
+  <h3>Open citizen reports in affected districts</h3>${table(["Where","Report","Verification","#Depth (cm)"], O.reports.map(r => `<tr><td>${esc(r.location)}</td><td>${esc(r.description)}</td><td>${esc(r.verification)}</td><td class="n">${fmt(r.depth_cm)}</td></tr>`))}`);
+
+/* ================= 08 ================= */
+const CL = D.checklist;
+section("08", "Checks for Supervisors", [], `<p>For level: <b>${esc(CL.level)}</b>${M.reason === "Closed" ? " (event closed)" : ""}</p><ol class="concerns">${CL.items.map(i => `<li><span>${esc(i)}</span></li>`).join("")}</ol><p class="note">${esc(CL.note)}</p>`);
+
+/* ================= 09 ================= */
+const P = D.provenance;
+section("09", "Data Sources &amp; Quality", [], `<div class="grid2"><div class="fig"><h3>Report items by data source</h3>${stackbar(Object.keys(SRCN).map(k => ({label:SRCN[k], n:P[k]||0, color:SRCC[k]})))}</div>
+  <div>${table(["Feed","Status","Note"], D.data_quality.map(q => `<tr><td>${esc(q.feed)}</td><td>${pill(q.status, q.status === "OK" ? "var(--good)" : ["Error","Unavailable"].includes(q.status) ? "var(--crit)" : "var(--warn)")}</td><td>${esc(q.note)}</td></tr>`))}</div></div>
+  <p class="note">River observations: PMD Flood Forecasting Division. Modeled discharge: GloFAS and GEOGloWS. Satellite: Sentinel-1 RTC via Microsoft Planetary Computer with Copernicus DEM and JRC Global Surface Water. Exposure: WorldPop and OpenStreetMap. The data used for this report is stored next to it as report.json.</p>`);
+
+out += `<footer><div class="inner" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink-3)"><span>Prepared by: FloodGuard AI (automatic, event-triggered) · Reviewed by: ________</span><span class="mono">${esc(M.report_no)}</span></div></footer>`;
+document.getElementById("report").innerHTML = out;
+
+const tip = document.getElementById("tip");
+document.addEventListener("pointermove", e => { const t = e.target.closest("[data-tip]"); if (!t) { tip.hidden = true; return; }
+  tip.innerHTML = t.dataset.tip; tip.hidden = false; tip.style.left = Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8) + "px"; tip.style.top = (e.clientY+14) + "px"; });
+</script>
+
+</body></html>

@@ -1,0 +1,1086 @@
+{
+ "meta": {
+  "report_no": "FER-TEST-CHENAB-20261111-01-v2",
+  "event_no": "FER-TEST-CHENAB-20261111-01",
+  "version": 2,
+  "reason": "Escalated",
+  "generated": "11 Nov 2026 12:39 PKT",
+  "data_mode": "live",
+  "is_test": true,
+  "units": "Discharge in cumecs (m³/s, as provided by the portal)"
+ },
+ "event": {
+  "river": "Chenab",
+  "status": "OPEN",
+  "level": 5,
+  "level_name": "Very high flood",
+  "current_level": 5,
+  "current_level_name": "Very high flood",
+  "previous_level_name": "High flood",
+  "opened": "11 Nov 12:36",
+  "closed": null,
+  "quiet_since": null,
+  "peak_value": 14000.0,
+  "signals": [
+   {
+    "kind": "observed",
+    "river": "Chenab",
+    "station_id": "TRIMMU",
+    "station_name": "Trimmu",
+    "level": 5,
+    "label": "Very high flood",
+    "value_cumecs": 14000.0,
+    "at": "11 Nov 12:39",
+    "sources": [
+     "sim"
+    ],
+    "stale": false,
+    "simulated": true,
+    "detail": "SIMULATED: Very high flood at Trimmu (test signal, not real data)."
+   },
+   {
+    "kind": "observed",
+    "river": "Chenab",
+    "station_id": "PANJNAD",
+    "station_name": "Panjnad",
+    "level": 3,
+    "label": "Medium flood",
+    "value_cumecs": null,
+    "at": "11 Nov 12:39",
+    "sources": [
+     "sim"
+    ],
+    "stale": false,
+    "simulated": true,
+    "detail": "SIMULATED: Medium flood at Panjnad (test signal, not real data)."
+   }
+  ],
+  "versions": [
+   {
+    "version": 1,
+    "reason": "New event",
+    "level": 4,
+    "level_name": "High flood",
+    "issued_at": "11 Nov 12:38",
+    "path": "D:\\projects\\disaster_management\\disaster_management\\reports\\events\\test\\FER-TEST-CHENAB-20261111-01\\v1\\FER-TEST-CHENAB-20261111-01-v1.html"
+   }
+  ]
+ },
+ "stations": [
+  {
+   "id": "MARALA",
+   "name": "Marala",
+   "river": "Chenab",
+   "available": true,
+   "discharge": 56.63,
+   "inflow": 203.15,
+   "outflow": 56.63,
+   "change_24h": 0.0,
+   "change_source": "FFD observed, previous stored reading",
+   "history": [
+    {
+     "time": "2026-11-09T01:00:00+00:00",
+     "value": 56.63
+    },
+    {
+     "time": "2026-11-10T01:00:00+00:00",
+     "value": 56.63
+    },
+    {
+     "time": "2026-11-11T01:00:00+00:00",
+     "value": 56.63
+    }
+   ],
+   "rising_days": 0,
+   "category": "Below low",
+   "observed_at": "11 Nov 06:00",
+   "age_hours": 6.7,
+   "stale": false,
+   "level": null,
+   "level_unit": null,
+   "forecast": 236.14,
+   "forecast_valid": "2026-11-12",
+   "peak": 242.78,
+   "peak_at": "2026-11-15",
+   "official_text": null,
+   "forecast_mismatch": false,
+   "pct_normal": null,
+   "sources": [
+    "obs"
+   ]
+  },
+  {
+   "id": "KHANKI",
+   "name": "Khanki",
+   "river": "Chenab",
+   "available": true,
+   "discharge": 0.0,
+   "inflow": 153.76,
+   "outflow": 0.0,
+   "change_24h": 0.0,
+   "change_source": "FFD observed, previous stored reading",
+   "history": [
+    {
+     "time": "2026-11-09T01:00:00+00:00",
+     "value": 0.0
+    },
+    {
+     "time": "2026-11-10T01:00:00+00:00",
+     "value": 0.0
+    },
+    {
+     "time": "2026-11-11T01:00:00+00:00",
+     "value": 0.0
+    }
+   ],
+   "rising_days": 0,
+   "category": "Below low",
+   "observed_at": "11 Nov 06:00",
+   "age_hours": 6.7,
+   "stale": false,
+   "level": null,
+   "level_unit": null,
+   "forecast": 247.89,
+   "forecast_valid": "2026-11-12",
+   "peak": 250.77,
+   "peak_at": "2026-11-16",
+   "official_text": null,
+   "forecast_mismatch": false,
+   "pct_normal": null,
+   "sources": [
+    "obs"
+   ]
+  },
+  {
+   "id": "QADIRABAD",
+   "name": "Qadirabad",
+   "river": "Chenab",
+   "available": true,
+   "discharge": 0.0,
+   "inflow": 291.1,
+   "outflow": 0.0,
+   "change_24h": 0.0,
+   "change_source": "FFD observed, previous stored reading",
+   "history": [
+    {
+     "time": "2026-11-09T01:00:00+00:00",
+     "value": 0.0
+    },
+    {
+     "time": "2026-11-10T01:00:00+00:00",
+     "value": 0.0
+    },
+    {
+     "time": "2026-11-11T01:00:00+00:00",
+     "value": 0.0
+    }
+   ],
+   "rising_days": 0,
+   "category": "Below low",
+   "observed_at": "11 Nov 06:00",
+   "age_hours": 6.7,
+   "stale": false,
+   "level": null,
+   "level_unit": null,
+   "forecast": 255.45,
+   "forecast_valid": "2026-11-12",
+   "peak": 255.45,
+   "peak_at": "2026-11-12",
+   "official_text": null,
+   "forecast_mismatch": false,
+   "pct_normal": null,
+   "sources": [
+    "obs"
+   ]
+  },
+  {
+   "id": "TRIMMU",
+   "name": "Trimmu",
+   "river": "Chenab",
+   "available": true,
+   "discharge": 14000.0,
+   "inflow": 362.17,
+   "outflow": 93.16,
+   "change_24h": 60.6,
+   "change_source": "FFD observed, previous stored reading",
+   "history": [
+    {
+     "time": "2026-11-09T01:00:00+00:00",
+     "value": 0.0
+    },
+    {
+     "time": "2026-11-10T01:00:00+00:00",
+     "value": 32.56
+    },
+    {
+     "time": "2026-11-11T01:00:00+00:00",
+     "value": 93.16
+    }
+   ],
+   "rising_days": 2,
+   "category": "Very high flood",
+   "observed_at": "11 Nov 06:00",
+   "age_hours": 6.7,
+   "stale": false,
+   "level": null,
+   "level_unit": null,
+   "forecast": 649.13,
+   "forecast_valid": "2026-11-12",
+   "peak": 652.13,
+   "peak_at": "2026-11-20",
+   "official_text": null,
+   "forecast_mismatch": false,
+   "pct_normal": null,
+   "sources": [
+    "sim"
+   ],
+   "simulated": true,
+   "real_category": "Below low",
+   "real_discharge": 93.16
+  },
+  {
+   "id": "PANJNAD",
+   "name": "Panjnad",
+   "river": "Panjnad",
+   "available": true,
+   "discharge": 0.0,
+   "inflow": 182.64,
+   "outflow": 0.0,
+   "change_24h": 0.0,
+   "change_source": "FFD observed, previous stored reading",
+   "history": [
+    {
+     "time": "2026-11-09T01:00:00+00:00",
+     "value": 0.0
+    },
+    {
+     "time": "2026-11-10T01:00:00+00:00",
+     "value": 0.0
+    },
+    {
+     "time": "2026-11-11T01:00:00+00:00",
+     "value": 0.0
+    }
+   ],
+   "rising_days": 0,
+   "category": "Medium flood",
+   "observed_at": "11 Nov 06:00",
+   "age_hours": 6.7,
+   "stale": false,
+   "level": null,
+   "level_unit": null,
+   "forecast": 0.01,
+   "forecast_valid": "2026-11-12",
+   "peak": 0.01,
+   "peak_at": "2026-11-12",
+   "official_text": null,
+   "forecast_mismatch": false,
+   "pct_normal": null,
+   "sources": [
+    "sim"
+   ],
+   "simulated": true,
+   "real_category": "Below low",
+   "real_discharge": 0.0
+  }
+ ],
+ "arrival": {
+  "available": true,
+  "origin": "Trimmu",
+  "base_time": "11 Nov 12:39",
+  "rows": [
+   {
+    "station": "Panjnad",
+    "id": "PANJNAD",
+    "hours": 36,
+    "eta": "13 Nov 00:39",
+    "category_now": "Medium flood",
+    "sources": [
+     "est"
+    ]
+   }
+  ],
+  "tail": "Below Panjnad the water joins the Indus at Mithankot, upstream of Guddu.",
+  "note": "Indicative FloodGuard travel times, to be calibrated against FFD peak timings."
+ },
+ "forecasts": [
+  {
+   "name": "Marala",
+   "forecast": 236.14,
+   "valid": "2026-11-12",
+   "peak": 242.78,
+   "peak_at": "2026-11-15",
+   "official_text": null,
+   "mismatch": false,
+   "current": 56.63,
+   "sources": [
+    "api"
+   ]
+  },
+  {
+   "name": "Khanki",
+   "forecast": 247.89,
+   "valid": "2026-11-12",
+   "peak": 250.77,
+   "peak_at": "2026-11-16",
+   "official_text": null,
+   "mismatch": false,
+   "current": 0.0,
+   "sources": [
+    "api"
+   ]
+  },
+  {
+   "name": "Qadirabad",
+   "forecast": 255.45,
+   "valid": "2026-11-12",
+   "peak": 255.45,
+   "peak_at": "2026-11-12",
+   "official_text": null,
+   "mismatch": false,
+   "current": 0.0,
+   "sources": [
+    "api"
+   ]
+  },
+  {
+   "name": "Trimmu",
+   "forecast": 649.13,
+   "valid": "2026-11-12",
+   "peak": 652.13,
+   "peak_at": "2026-11-20",
+   "official_text": null,
+   "mismatch": false,
+   "current": 14000.0,
+   "sources": [
+    "api"
+   ]
+  },
+  {
+   "name": "Panjnad",
+   "forecast": 0.01,
+   "valid": "2026-11-12",
+   "peak": 0.01,
+   "peak_at": "2026-11-12",
+   "official_text": null,
+   "mismatch": false,
+   "current": 0.0,
+   "sources": [
+    "api"
+   ]
+  }
+ ],
+ "upstream": {
+  "available": true,
+  "stations": [
+   {
+    "name": "Chenab Marala",
+    "river": "Chenab",
+    "providers": [
+     {
+      "provider": "GloFAS",
+      "status": "available",
+      "peak": 242.78,
+      "peak_at": "2026-11-15",
+      "current": 239.99,
+      "series": [
+       {
+        "time": "2026-10-28",
+        "value": 305.9,
+        "phase": "past"
+       },
+       {
+        "time": "2026-10-29",
+        "value": 299.61,
+        "phase": "past"
+       },
+       {
+        "time": "2026-10-30",
+        "value": 294.12,
+        "phase": "past"
+       },
+       {
+        "time": "2026-10-31",
+        "value": 288.73,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-01",
+        "value": 283.45,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-02",
+        "value": 278.25,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-03",
+        "value": 273.79,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-04",
+        "value": 268.77,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-05",
+        "value": 264.46,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-06",
+        "value": 260.22,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-07",
+        "value": 256.04,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-08",
+        "value": 251.35,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-09",
+        "value": 247.31,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-10",
+        "value": 243.34,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-11",
+        "value": 239.99,
+        "phase": "past"
+       },
+       {
+        "time": "2026-11-12",
+        "value": 236.14,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-13",
+        "value": 235.59,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-14",
+        "value": 238.88,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-15",
+        "value": 242.78,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-16",
+        "value": 240.55,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-17",
+        "value": 235.59,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-18",
+        "value": 230.21,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-19",
+        "value": 225.99,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-20",
+        "value": 222.36,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-21",
+        "value": 218.79,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-22",
+        "value": 215.77,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-23",
+        "value": 213.29,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-24",
+        "value": 210.35,
+        "phase": "forecast"
+       }
+      ]
+     },
+     {
+      "provider": "GEOGloWS",
+      "status": "available",
+      "peak": 548.3,
+      "peak_at": "2026-11-15T18:00:00+00:00",
+      "current": 197.4,
+      "series": [
+       {
+        "time": "2026-11-10",
+        "value": 197.4,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-10",
+        "value": 217.8,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-11",
+        "value": 216.9,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-11",
+        "value": 200.2,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-12",
+        "value": 184.0,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-12",
+        "value": 180.1,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-13",
+        "value": 183.8,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-13",
+        "value": 189.8,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-14",
+        "value": 195.6,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-14",
+        "value": 232.5,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-15",
+        "value": 334.7,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-15",
+        "value": 509.5,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-16",
+        "value": 531.6,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-16",
+        "value": 442.9,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-17",
+        "value": 381.1,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-17",
+        "value": 335.8,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-18",
+        "value": 279.5,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-18",
+        "value": 224.5,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-19",
+        "value": 183.7,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-19",
+        "value": 164.6,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-20",
+        "value": 150.7,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-20",
+        "value": 145.3,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-21",
+        "value": 142.4,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-21",
+        "value": 140.7,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-22",
+        "value": 139.2,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-22",
+        "value": 139.2,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-23",
+        "value": 138.9,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-23",
+        "value": 138.0,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-24",
+        "value": 138.1,
+        "phase": "forecast"
+       },
+       {
+        "time": "2026-11-24",
+        "value": 137.9,
+        "phase": "forecast"
+       }
+      ]
+     }
+    ],
+    "agreement_pct": 56,
+    "gap_cumecs": 305.5,
+    "agree": false,
+    "signals": [
+     {
+      "type": "Riverine flood",
+      "severity": "LOW",
+      "probability": 15,
+      "basis": "Highest modeled peak is 19.4% of the ffd low-flood threshold."
+     },
+     {
+      "type": "Flash flood",
+      "severity": "CRITICAL",
+      "probability": 88,
+      "basis": "Short-step GEOGloWS rise plus forecast rainfall stress."
+     },
+     {
+      "type": "Urban/surface-water flood",
+      "severity": "LOW",
+      "probability": 27,
+      "basis": "Daily precipitation forecast and probability near the selected station."
+     }
+    ],
+    "rain_max_mm": 5.2,
+    "sources": [
+     "api",
+     "est"
+    ]
+   }
+  ],
+  "refresh_error": null,
+  "cached_at": "11 Nov 12:19"
+ },
+ "models": {
+  "rows": [
+   {
+    "model": "xgboost_riverine_baseline_v1",
+    "target": "Trimmu",
+    "value": "1680 cumecs",
+    "risk_class": "Low",
+    "status": "dummy until trained model ready",
+    "sources": [
+     "sim"
+    ]
+   }
+  ],
+  "error": null
+ },
+ "satellite": {
+  "checks": [
+   {
+    "location": "Trimmu station",
+    "station_id": "TRIMMU",
+    "category": "Very high flood",
+    "simulated_category": true,
+    "result": "not_run",
+    "reason": "Satellite checks switched off for this run",
+    "sources": [
+     "sat"
+    ]
+   },
+   {
+    "location": "Panjnad station",
+    "station_id": "PANJNAD",
+    "category": "Medium flood",
+    "simulated_category": true,
+    "result": "not_run",
+    "reason": "Satellite checks switched off for this run",
+    "sources": [
+     "sat"
+    ]
+   }
+  ],
+  "note": "Each check compares the latest Sentinel-1 radar pass with an earlier pass from the same orbit and removes permanent water. The image is always real, also in test events."
+ },
+ "impact": {
+  "region": "trimmu_jhang",
+  "flood_source": "sample",
+  "exposure_error": null,
+  "sources": [
+   "sim",
+   "est"
+  ],
+  "label": "SYNTHETIC TEST POLYGON — not an observed or forecast flood",
+  "area_km2": 50.749008710270026,
+  "people": 12190.703535744487,
+  "counts": {
+   "settlements": {
+    "count": 1,
+    "length_km": 0.0
+   },
+   "buildings": {
+    "count": 0,
+    "length_km": 0.0
+   },
+   "roads": {
+    "count": 245,
+    "length_km": 26.948180016230722
+   },
+   "schools": {
+    "count": 0,
+    "length_km": 0.0
+   },
+   "hospitals": {
+    "count": 0,
+    "length_km": 0.0
+   }
+  },
+  "warnings": [
+   "Population is a modelled estimate, not an observed affected-person count.",
+   "OSM inventories are incomplete; zero mapped exposure does not establish absence.",
+   "OSM buildings and reference detections overlap and MUST NOT be added together.",
+   "Infrastructure intersection indicates geometric exposure, not damage, road closure, facility functionality or settlement isolation."
+  ],
+  "facilities": [
+   {
+    "name": "Malkana",
+    "type": "Settlement",
+    "detail": "village"
+   }
+  ],
+  "extent": [
+   [
+    72.106,
+    31.1148
+   ],
+   [
+    72.106,
+    31.1748
+   ],
+   [
+    72.186,
+    31.1748
+   ],
+   [
+    72.186,
+    31.1148
+   ],
+   [
+    72.106,
+    31.1148
+   ]
+  ],
+  "center": [
+   72.14599999999999,
+   31.1448
+  ],
+  "population": {
+   "rows": [
+    {
+     "name": "Jhang",
+     "level": "ADM2",
+     "people": 12190.703535744487
+    }
+   ],
+   "status": "PARTIAL_COVERAGE",
+   "known_area_fraction": 0.4338779335675188,
+   "adm3_available": false,
+   "density": [
+    {
+     "density_min_people_km2": 0.0,
+     "density_max_people_km2": 100.0,
+     "exposed_population": 246.74653142918373
+    },
+    {
+     "density_min_people_km2": 100.0,
+     "density_max_people_km2": 500.0,
+     "exposed_population": 2396.0423126239393
+    },
+    {
+     "density_min_people_km2": 500.0,
+     "density_max_people_km2": 1000.0,
+     "exposed_population": 2755.2202013636747
+    },
+    {
+     "density_min_people_km2": 1000.0,
+     "density_max_people_km2": 5000.0,
+     "exposed_population": 5729.615638454117
+    },
+    {
+     "density_min_people_km2": 5000.0,
+     "density_max_people_km2": null,
+     "exposed_population": 1063.0788518735735
+    }
+   ]
+  },
+  "population_error": null,
+  "kind": "simulated",
+  "available": true,
+  "station": "Trimmu",
+  "station_id": "TRIMMU",
+  "reason": null
+ },
+ "districts": {
+  "available": true,
+  "rows": [
+   {
+    "district": "Jhang",
+    "station": "Trimmu",
+    "risk": 8,
+    "why": "Flooded station in district",
+    "eta": "Now",
+    "sources": [
+     "api",
+     "est"
+    ]
+   },
+   {
+    "district": "Bahawalpur",
+    "station": "Panjnad",
+    "risk": 1,
+    "why": "Flooded station in district",
+    "eta": "13 Nov 00:39",
+    "sources": [
+     "api",
+     "est"
+    ]
+   }
+  ],
+  "geometries": null
+ },
+ "operations": {
+  "alerts": [],
+  "incidents": [],
+  "reports": [
+   {
+    "id": 4,
+    "location": "Jhang",
+    "description": "floo near jhang",
+    "verification": "PENDING",
+    "status": "OPEN",
+    "important": false,
+    "depth_cm": null,
+    "age_hours": 480.0,
+    "new": false,
+    "sources": [
+     "obs"
+    ]
+   },
+   {
+    "id": 1,
+    "location": "Jhang",
+    "description": "Water is crossing a low road near Jhang city. Traffic is slowing and residents are requesting field verification.",
+    "verification": "PENDING",
+    "status": "OPEN",
+    "important": false,
+    "depth_cm": 22.0,
+    "age_hours": 483.2,
+    "new": false,
+    "sources": [
+     "obs"
+    ]
+   }
+  ]
+ },
+ "checklist": {
+  "level": "Very high flood",
+  "items": [
+   "Begin evacuation of floodplain settlements in arrival-time order.",
+   "Patrol embankments and coordinate barrage operations with the Irrigation Department.",
+   "Request fresh satellite passes for the reach below the highest station."
+  ],
+  "note": "FloodGuard checklist by flood level. It supports, and does not replace, NDMA/PDMA standard operating procedures."
+ },
+ "snapshots": {
+  "captured": false,
+  "reason": "Snapshot capture switched off for this run",
+  "shots": [
+   {
+    "key": "model-riverine",
+    "view": "Model prediction: riverine short-term",
+    "section": "04",
+    "sources": [
+     "sim"
+    ],
+    "caption": "Placeholder model output (illustrative values)"
+   },
+   {
+    "key": "upstream-Chenab Marala",
+    "view": "GloFAS vs GEOGloWS forecast: Chenab Marala",
+    "section": "04",
+    "sources": [
+     "api"
+    ],
+    "caption": "Modeled discharge from both providers against the low-flood threshold"
+   },
+   {
+    "key": "population-trimmu_jhang",
+    "view": "Flood-affected population (synthetic test extent)",
+    "section": "06",
+    "sources": [
+     "sim",
+     "est"
+    ],
+    "caption": "WorldPop estimate on the flood extent; partial coverage is a lower bound"
+   },
+   {
+    "key": "extent-trimmu_jhang",
+    "view": "Flood extent over population density (synthetic test extent)",
+    "section": "06",
+    "sources": [
+     "sim",
+     "est"
+    ],
+    "caption": "Blue: flood extent. Yellow to red: population density. Pink: affected settlements"
+   },
+   {
+    "key": "spread2d-jhang",
+    "view": "Simulated flood spread vs baseline population: Jhang",
+    "section": "06",
+    "sources": [
+     "sim",
+     "est"
+    ],
+    "caption": "Hypothetical river spread (level 5 of 5) beside the WorldPop 2025 baseline"
+   },
+   {
+    "key": "spread3d-jhang",
+    "view": "3D population exposure (simulated spread): Jhang",
+    "section": "06",
+    "sources": [
+     "sim",
+     "est"
+    ],
+    "caption": "Column height = population density; blue columns intersect the simulated footprint"
+   }
+  ]
+ },
+ "data_quality": [
+  {
+   "feed": "FFD river state",
+   "status": "OK",
+   "note": "Newest reading 7 h old"
+  },
+  {
+   "feed": "Upstream forecasts (GloFAS, GEOGloWS)",
+   "status": "OK",
+   "note": "Stored 11 Nov 12:19 PKT"
+  },
+  {
+   "feed": "District risk layer",
+   "status": "OK",
+   "note": ""
+  },
+  {
+   "feed": "Sentinel-1 radar",
+   "status": "Partial",
+   "note": ""
+  },
+  {
+   "feed": "Portal snapshots",
+   "status": "Unavailable",
+   "note": "Snapshot capture switched off for this run"
+  }
+ ],
+ "summary": {
+  "headline": "Escalated from High flood to Very high flood on the Chenab: Trimmu (Very high flood), Panjnad (Medium flood). Triggered by observed data. Water is expected at Panjnad in about 36 h (13 Nov 00:39 PKT). About 12,191 people are in the simulated flood extent (lower bound).",
+  "kpis": [
+   {
+    "value": "Very high flood",
+    "label": "Event level (highest)"
+   },
+   {
+    "value": "Very high flood",
+    "label": "Level now"
+   },
+   {
+    "value": "14,000",
+    "label": "Peak observed discharge (cumecs)"
+   },
+   {
+    "value": "2 / 5",
+    "label": "Chenab stations in flood"
+   },
+   {
+    "value": "Panjnad +36 h",
+    "label": "Next station downstream"
+   },
+   {
+    "value": "12,191",
+    "label": "People in flood extent (lower bound)"
+   },
+   {
+    "value": "0.0 km²",
+    "label": "Possible flood water (satellite)"
+   }
+  ]
+ },
+ "provenance": {
+  "obs": 26,
+  "sim": 17,
+  "est": 8,
+  "api": 11,
+  "ml": 4,
+  "sat": 2
+ },
+ "has_simulated": true
+}
