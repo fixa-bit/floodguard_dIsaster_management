@@ -1,30 +1,24 @@
-Terminal 1 
+## Run the app
 
+From the project root, start both the API and frontend with one command:
 
-
-cd D:\Projects\disaster_management
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-
-
-terminal 2
-
-cd D:\Projects\disaster_management\frontend
-npm run dev -- --host 127.0.0.1 --port 3000
-
-
--------------------------------------------------
-
-.venv\Scripts\activate
-uvicorn app.main:app --reload
-
-Access backend/API docs here:
-http://127.0.0.1:8000/docs
-
-Terminal 2:
-cd frontend
+```bash
 npm run dev
+```
 
-http://localhost:3000
+The frontend is at `http://127.0.0.1:3000` and the API docs are at
+`http://127.0.0.1:8000/docs`. Press Ctrl+C to stop both services.
+
+The launcher uses `.venv` if it exists; otherwise it uses the system Python.
+Install the backend and frontend dependencies first if this is a fresh checkout:
+
+```bash
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+cd frontend
+npm install
+cd ..
+```
 
 The frontend is configured to call the backend at:
 http://127.0.0.1:8000/api/v1
@@ -55,7 +49,12 @@ copy .env.example .env
 uvicorn app.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000/docs`.
+The root `npm run dev` command starts the backend and frontend together. To run
+only the backend, open `http://127.0.0.1:8000/docs` after starting it with:
+
+```bash
+uvicorn app.main:app --reload
+```
 
 ## Technical documentation
 
