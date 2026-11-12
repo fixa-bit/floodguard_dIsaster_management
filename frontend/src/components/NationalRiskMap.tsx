@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePopulationLayers } from './usePopulationLayers';
 import { useMapBasemap, type MapBasemap } from "./useMapBasemap";
 import { StationTerrainStudio } from "./StationTerrainStudio";
+import { preloadMonitoringHop, runMonitoringHop, stationCameraPadding } from "./monitoringTour";
 import type { PopulationOverlay } from '../services/population';
 import { bbox } from "@turf/bbox";
 import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
@@ -649,16 +650,12 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     monitoringRiver === "All" || monitoring?.chains[monitoringRiver]?.includes(station.id)), [catchmentStations, monitoring, monitoringRiver]);
   const quantityLabel = waterQuantityOptions.find((option) => option.id === waterQuantity)?.label ?? "Discharge";
 
-  useEffect(() => {
-    if (!stationRotationEnabled || rotationStations.length < 2) return;
-    const timer = window.setInterval(() => {
-      setSelectedStationId((current) => {
-        const currentIndex = rotationStations.findIndex((station) => station.id === current);
-        return rotationStations[(currentIndex + 1) % rotationStations.length]?.id ?? current;
-      });
-    }, 10000);
-    return () => window.clearInterval(timer);
-  }, [stationRotationEnabled, rotationStations]);
+  const rotationStationsRef = useRef(rotationStations);
+  rotationStationsRef.current = rotationStations;
+  // Station polling replaces the array every refresh; only a change in the stations themselves restarts the tour timing.
+  const rotationKey = rotationStations.map((station) => station.id).join("|");
+  const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
+  useEffect(() => { if (!stationRotationEnabled) setMonitoringArrival(null); }, [stationRotationEnabled]);
 
   useEffect(() => {
     if (!stationRotationEnabled || !rotationStations.length) return;
@@ -668,26 +665,42 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }, [stationRotationEnabled, rotationStations, selectedStationId]);
 
   const selectedMonitoringStation = monitoring?.stations.find((item) => item.id === selectedStationId);
-  const lastCameraStation = useRef<{ id: string; latitude: number; longitude: number } | null>(null);
+  const stationRotationRef = useRef(stationRotationEnabled);
+  stationRotationRef.current = stationRotationEnabled;
+  const lastCameraStation = useRef<{ id: string; latitude: number; longitude: number; monitoring: boolean } | null>(null);
   useEffect(() => {
     if (!selectedStationId) { lastCameraStation.current = null; return; }
     const station = selectedMonitoringStation;
     const map = stationMapInstance;
     if (!station || !map) return;
+    let current = true;
     const focusStation = () => {
       if (mapRef.current !== map) return;
-      const containerWidth = map.getContainer().clientWidth;
-      const mobile = containerWidth < 700;
-      const panelWidth = Math.min(620, containerWidth * 0.42);
-      const panelRightInset = Math.max(40, Math.min(96, containerWidth * 0.05));
       const previous = lastCameraStation.current;
+      // Leaving monitoring mode at the same stop: the terrain studio eases the camera back to flat.
+      if (!stationRotationEnabled && previous?.monitoring && previous.id === station.id) {
+        lastCameraStation.current = { ...previous, monitoring: false };
+        return;
+      }
+      lastCameraStation.current = { id: station.id, latitude: station.latitude, longitude: station.longitude, monitoring: stationRotationEnabled };
+      map.getContainer().dataset.cameraStation = station.id;
+      if (stationRotationEnabled) {
+        // Between stops: zoom out for context, travel, then descend into the cached 3D terrain.
+        const hop = Boolean(previous?.monitoring && previous.id !== station.id);
+        if (!hop) void preloadMonitoringHop(map, null, station);
+        void runMonitoringHop(map, station, hop, () => current).then(() => {
+          if (!current) return;
+          setMonitoringArrival(station.id);
+          map.getContainer().dataset.monitoringArrival = station.id;
+        });
+        return;
+      }
       const radians = Math.PI / 180;
       const latitudeDelta = (station.latitude - (previous?.latitude ?? station.latitude)) * radians;
       const longitudeDelta = (station.longitude - (previous?.longitude ?? station.longitude)) * radians;
       const meanLatitude = (station.latitude + (previous?.latitude ?? station.latitude)) / 2 * radians;
       const distanceKm = 6371 * Math.sqrt(latitudeDelta ** 2 + (Math.cos(meanLatitude) * longitudeDelta) ** 2);
       const zoom = !previous ? 9.2 : distanceKm > 700 ? 8.1 : distanceKm > 220 ? 8.7 : 9.5;
-      lastCameraStation.current = { id: station.id, latitude: station.latitude, longitude: station.longitude };
       map.flyTo({
         center: [station.longitude, station.latitude],
         zoom,
@@ -695,13 +708,37 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         speed: 0.72,
         duration: 2300,
         essential: true,
-        padding: { top: mobile ? 120 : 185, bottom: mobile ? 55 : 90, left: mobile ? 16 : 230, right: mobile ? 16 : panelWidth + panelRightInset + 24 },
+        padding: stationCameraPadding(map),
       });
     };
-    if (map.isStyleLoaded()) focusStation();
-    else map.once("load", focusStation);
-    return () => { map.off("load", focusStation); };
-  }, [stationMapInstance, selectedStationId, selectedMonitoringStation?.latitude, selectedMonitoringStation?.longitude]);
+    // isStyleLoaded() is also false whenever tiles (e.g. terrain DEM) are still
+    // streaming, and "load" fires only once, so wait for the overlay layers instead.
+    if (map.getLayer("active-monitoring-station-point")) focusStation();
+    else map.once("style.load", focusStation);
+    return () => { current = false; map.off("style.load", focusStation); };
+  }, [stationMapInstance, selectedStationId, selectedMonitoringStation?.latitude, selectedMonitoringStation?.longitude, stationRotationEnabled]);
+
+  // Hold each monitoring stop for 10 s after the camera lands, preloading the
+  // next hop's terrain and imagery meanwhile (waiting up to 4 s more if needed).
+  useEffect(() => {
+    const map = stationMapInstance;
+    if (!map || !stationRotationEnabled || !selectedStationId || monitoringArrival !== selectedStationId) return;
+    const stations = rotationStationsRef.current;
+    const index = stations.findIndex((station) => station.id === selectedStationId);
+    const next = index < 0 ? undefined : stations[(index + 1) % stations.length];
+    if (!next || next.id === selectedStationId) return;
+    let active = true;
+    let startPreload = 0;
+    // Give the stop that just landed a moment to finish its own tiles first.
+    const preloaded = new Promise<void>((resolve) => {
+      startPreload = window.setTimeout(() => { void preloadMonitoringHop(map, stations[index], next).then(resolve, resolve); }, 1000);
+    });
+    const timer = window.setTimeout(() => {
+      void Promise.race([preloaded, new Promise((resolve) => window.setTimeout(resolve, 4000))])
+        .then(() => { if (active) setSelectedStationId(next.id); });
+    }, 10000);
+    return () => { active = false; window.clearTimeout(startPreload); window.clearTimeout(timer); };
+  }, [stationMapInstance, stationRotationEnabled, selectedStationId, monitoringArrival, rotationKey]);
 
   waterIntelligenceRef.current = waterIntelligence;
   locationChangeRef.current = onLocationChange;
@@ -1465,7 +1502,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     });
     map.once("style.load", () => map.once("render", warmAfterFirstPaint));
     const resizeObserver = new ResizeObserver(() => {
-      if (map.getContainer().dataset.terrainStation) {map.resize();return;}
+      if (map.getContainer().dataset.terrainStation || stationRotationRef.current) {map.resize();return;}
       if (selectedCoordinateRef.current) fitCoordinate(map, selectedCoordinateRef.current, 0);
       else if (populationOverlayRef.current) {
         const [w,s,e,n] = populationOverlayRef.current.summary.bounds;
@@ -1789,7 +1826,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         </div>}
         <output ref={coordinateReadoutRef} className="map-coordinate-readout" aria-label="Map cursor coordinates" aria-live="off" hidden />
         {mapOverlay && <div className="map-command-overlay">{mapOverlay}</div>}
-        <StationTerrainStudio mapRef={mapRef} selectedStationId={selectedStationId} onSelectStation={selectStation} onEnter={()=>{setMapControlsOpen(false);setLayers(current=>({...current,water:true}));}}/>
+        <StationTerrainStudio mapRef={mapRef} selectedStationId={selectedStationId} onSelectStation={selectStation} onEnter={()=>{setMapControlsOpen(false);setLayers(current=>({...current,water:true}));}} monitoring={stationRotationEnabled}/>
         <div className="map-layer-control">
           <button className="map-layer-toggle" data-tour-target="gis-map-layers-toggle" type="button" aria-label="Toggle map layers" title="Map layers" aria-expanded={mapControlsOpen} onClick={() => setMapControlsOpen((current) => !current)}><Layers3 size={14} /><span>Map layers</span>{mapControlsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</button>
           {coordinatePicking && <div className="coordinate-pick-status"><span role="status"><MousePointer2 size={14} /> Coordinate selection</span><button type="button" title="Cancel coordinate selection" aria-label="Cancel coordinate selection" onClick={() => setPickingMode(false)}><X size={14} /></button></div>}
@@ -1805,7 +1842,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
                 setStationRotationEnabled((enabled) => !enabled);
               }}>
               <RadioTower size={15} />
-              <span><strong>{stationRotationEnabled ? "Monitoring mode on" : "Monitoring mode off"}</strong><small>{stationRotationEnabled ? "Stations advance every 10 seconds" : "Turn on to cycle through river stations"}</small></span>
+              <span><strong>{stationRotationEnabled ? "Monitoring mode on" : "Monitoring mode off"}</strong><small>{stationRotationEnabled ? "Holds each station for 10 seconds in 3D terrain" : "Turn on to cycle through river stations"}</small></span>
               <i aria-hidden="true" />
             </button>
             {stationRotationEnabled && <span className="station-monitoring-progress" role="status">

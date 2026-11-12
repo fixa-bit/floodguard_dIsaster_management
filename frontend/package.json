@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vite build",
     "preview": "vite preview",
+    "terrain:download": "node scripts/download-station-terrain.mjs",
     "validate:ui": "node scripts/validate-ui.mjs"
   },
   "dependencies": {
