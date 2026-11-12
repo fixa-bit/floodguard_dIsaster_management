@@ -1,4 +1,5 @@
 import * as maplibregl from "maplibre-gl";
+import { inBatches, persistentTileBytes, untilAborted } from "./tileCache";
 
 const base = `${import.meta.env.BASE_URL}station-terrain/`;
 const remote = "https://elevation-tiles-prod.s3.amazonaws.com/terrarium/";
@@ -12,13 +13,15 @@ const tileIndex = () => indexPromise ??= fetch(base+"manifest.json").then(async 
 export const stationCatalogElevation = (id:string) => cachedIndex?.station_elevations_m?.[id];
 
 // Elevation bytes stay in memory so tiles preloaded in the background (for the
-// next monitoring stop) are served instantly when the map asks for them.
+// next monitoring stop) are served instantly when the map asks for them. Remote
+// tiles beyond the project's cache are also kept in persistent browser storage.
 const maxCachedTiles = 700;
+const remoteTerrainCache = "floodguard-terrain-v1";
 const tileBytes = new Map<string, Promise<ArrayBuffer>>();
 function cachedTileBytes(url:string) {
   const hit=tileBytes.get(url);
   if (hit) {tileBytes.delete(url);tileBytes.set(url,hit);return hit;}
-  const pending=fetch(url).then(async response => {
+  const pending=url.startsWith(remote) ? persistentTileBytes(url,remoteTerrainCache) : fetch(url).then(async response => {
     if(!response.ok)throw new Error(`HTTP ${response.status}`);
     return response.arrayBuffer();
   });
@@ -28,14 +31,6 @@ function cachedTileBytes(url:string) {
   return pending;
 }
 const tileUrl = (manifest:TileIndex,key:string) => (manifest.tiles[key] ? base : remote)+key;
-function untilAborted<T>(promise:Promise<T>,signal:AbortSignal) {
-  if (signal.aborted) return Promise.reject(signal.reason);
-  return new Promise<T>((resolve,reject) => {
-    const abort=() => reject(signal.reason);
-    signal.addEventListener("abort",abort,{once:true});
-    promise.then(resolve,reject).finally(() => signal.removeEventListener("abort",abort));
-  });
-}
 
 maplibregl.addProtocol("station-dem",async (params, controller) => {
   const key = params.url.replace("station-dem://","");
@@ -67,13 +62,6 @@ maplibregl.addProtocol("station-dem",async (params, controller) => {
     throw new Error(`Elevation tile ${key} unavailable`);
   }
 });
-
-export async function inBatches<T>(items:T[],work:(item:T)=>Promise<unknown>,concurrency=6) {
-  let next=0;
-  await Promise.all(Array.from({length:Math.min(concurrency,items.length)},async () => {
-    while (next<items.length) await work(items[next++]).catch(() => undefined);
-  }));
-}
 
 /** Fetch elevation tiles ("z/x/y.png") into memory ahead of the camera. */
 export async function preloadTerrainTiles(keys:string[]) {

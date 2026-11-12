@@ -6,7 +6,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePopulationLayers } from './usePopulationLayers';
 import { useMapBasemap, type MapBasemap } from "./useMapBasemap";
 import { StationTerrainStudio } from "./StationTerrainStudio";
-import { preloadMonitoringHop, runMonitoringHop, stationCameraPadding } from "./monitoringTour";
+import { preloadMonitoringHop, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
+import { cachedImageryTiles } from "./imageryTiles";
+import {
+  activeCatchmentCasingPaint, activeCatchmentFillPaint, activeCatchmentGlowPaint, activeCatchmentLabel, activeCatchmentLinePaint,
+  catchmentAreaFillPaint, catchmentAreaGlowPaint, catchmentAreaLabel, catchmentAreaLinePaint, catchmentLabelPoint, catchmentSpotlight, catchmentSpotlightPaint,
+} from "./catchmentStyle";
+import {
+  activeRiverBodyPaint, activeRiverCorePaint, activeRiverFlowPaint, activeRiverGlowPaint, riverBodyPaint, riverCorePaint,
+  riverFlowEnabled, riverFlowPaint, riverGlowPaint, riverLabelLayer, riverLabelLines, riverStatusGlowBlur, startRiverFlow,
+} from "./riverFlow";
 import type { PopulationOverlay } from '../services/population';
 import { bbox } from "@turf/bbox";
 import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
@@ -62,13 +71,21 @@ interface NationalRiskMapProps {
   populationOverlay?: PopulationOverlay | null;
 }
 
+// Globe on app load: rendered as a globe below zoom 3, blending to the flat
+// (Mercator) map by zoom 4.6, so the Pakistan view and every working view stay flat.
+let globeIntroPending = true;
+const globeToFlatProjection: Parameters<MapLibreMap["setProjection"]>[0] = {
+  type: ["interpolate", ["linear"], ["zoom"], 3, "vertical-perspective", 4.6, "mercator"],
+};
+
 const baseStyle: StyleSpecification = {
   version: 8,
   glyphs: "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
   sources: {
     "global-satellite-basemap": {
       type: "raster",
-      tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+      // Esri World Imagery, served through the persistent local tile cache.
+      tiles: [cachedImageryTiles],
       tileSize: 256,
       attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics, and GIS user community",
     },
@@ -448,6 +465,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   floodHubRef.current = floodHub;
   const [requestedLayers, setLayers] = useState({ boundary: true, glaciers: false, borderTest: false, risk: false, districts: false, floodHub: false, catchments: false, water: false, waterForecasts: false, gauges: false, stations: false, incidents: false, reports: false, resources: false });
   const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
+  const [stationTicketArrival, setStationTicketArrival] = useState<{ stationId: string; map: MapLibreMap } | null>(null);
   const selectedStationIdRef = useRef(selectedStationId);
   selectedStationIdRef.current = selectedStationId;
   const sarPickRef = useRef(false);
@@ -616,6 +634,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }
 
   function selectStation(id: string) {
+    if (id !== selectedStationIdRef.current) setStationTicketArrival(null);
     setSelectedStationId(id);
     setSelectedCatchment(null);
     setSelectedWaterFeature(null);
@@ -652,6 +671,15 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
 
   const rotationStationsRef = useRef(rotationStations);
   rotationStationsRef.current = rotationStations;
+  // Monitoring stops frame the station's whole catchment, so the tour needs each catchment's bounds.
+  const stationCatchments = useMemo(() => new Map((monitoring?.stations ?? []).flatMap((station) => {
+    const catchment = catchmentMapData.features.find((feature) => booleanPointInPolygon([station.longitude, station.latitude], feature));
+    return catchment ? [[station.id, bbox(catchment) as [number, number, number, number]] as const] : [];
+  })), [monitoring?.stations]);
+  const stationCatchmentsRef = useRef(stationCatchments);
+  stationCatchmentsRef.current = stationCatchments;
+  const toTourStation = (station: { id: string; longitude: number; latitude: number }) =>
+    ({ id: station.id, longitude: station.longitude, latitude: station.latitude, catchment: stationCatchmentsRef.current.get(station.id) });
   // Station polling replaces the array every refresh; only a change in the stations themselves restarts the tour timing.
   const rotationKey = rotationStations.map((station) => station.id).join("|");
   const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
@@ -674,6 +702,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     const map = stationMapInstance;
     if (!station || !map) return;
     let current = true;
+    let cameraMoveEnd: (() => void) | null = null;
     const focusStation = () => {
       if (mapRef.current !== map) return;
       const previous = lastCameraStation.current;
@@ -684,13 +713,17 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       }
       lastCameraStation.current = { id: station.id, latitude: station.latitude, longitude: station.longitude, monitoring: stationRotationEnabled };
       map.getContainer().dataset.cameraStation = station.id;
+      map.getContainer().dataset.monitoringArrival = "";
+      setStationTicketArrival(null);
       if (stationRotationEnabled) {
-        // Between stops: zoom out for context, travel, then descend into the cached 3D terrain.
+        // One continuous flight: rise for context, travel, then land in the cached 3D terrain.
+        setMonitoringArrival(null);
         const hop = Boolean(previous?.monitoring && previous.id !== station.id);
-        if (!hop) void preloadMonitoringHop(map, null, station);
-        void runMonitoringHop(map, station, hop, () => current).then(() => {
-          if (!current) return;
+        if (!hop) void preloadMonitoringHop(map, null, toTourStation(station));
+        void runMonitoringHop(map, toTourStation(station), () => current).then((landed) => {
+          if (!current || !landed || mapRef.current !== map || selectedStationIdRef.current !== station.id) return;
           setMonitoringArrival(station.id);
+          setStationTicketArrival({ stationId: station.id, map });
           map.getContainer().dataset.monitoringArrival = station.id;
         });
         return;
@@ -701,6 +734,11 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       const meanLatitude = (station.latitude + (previous?.latitude ?? station.latitude)) / 2 * radians;
       const distanceKm = 6371 * Math.sqrt(latitudeDelta ** 2 + (Math.cos(meanLatitude) * longitudeDelta) ** 2);
       const zoom = !previous ? 9.2 : distanceKm > 700 ? 8.1 : distanceKm > 220 ? 8.7 : 9.5;
+      cameraMoveEnd = () => {
+        if (!current || mapRef.current !== map || selectedStationIdRef.current !== station.id) return;
+        setStationTicketArrival({ stationId: station.id, map });
+        map.getContainer().dataset.monitoringArrival = station.id;
+      };
       map.flyTo({
         center: [station.longitude, station.latitude],
         zoom,
@@ -710,12 +748,20 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         essential: true,
         padding: stationCameraPadding(map),
       });
+      // Register after flyTo has stopped any earlier animation, so an old
+      // moveend cannot reveal this station's ticket before its own flight lands.
+      if (map.isMoving()) map.once("moveend", cameraMoveEnd);
+      else cameraMoveEnd();
     };
     // isStyleLoaded() is also false whenever tiles (e.g. terrain DEM) are still
     // streaming, and "load" fires only once, so wait for the overlay layers instead.
     if (map.getLayer("active-monitoring-station-point")) focusStation();
     else map.once("style.load", focusStation);
-    return () => { current = false; map.off("style.load", focusStation); };
+    return () => {
+      current = false;
+      map.off("style.load", focusStation);
+      if (cameraMoveEnd) map.off("moveend", cameraMoveEnd);
+    };
   }, [stationMapInstance, selectedStationId, selectedMonitoringStation?.latitude, selectedMonitoringStation?.longitude, stationRotationEnabled]);
 
   // Hold each monitoring stop for 10 s after the camera lands, preloading the
@@ -731,7 +777,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     let startPreload = 0;
     // Give the stop that just landed a moment to finish its own tiles first.
     const preloaded = new Promise<void>((resolve) => {
-      startPreload = window.setTimeout(() => { void preloadMonitoringHop(map, stations[index], next).then(resolve, resolve); }, 1000);
+      startPreload = window.setTimeout(() => {
+        void preloadMonitoringHop(map, toTourStation(stations[index]), toTourStation(next)).then(resolve, resolve);
+        warmMonitoringTour(map, stations.map(toTourStation), index, () => stationRotationRef.current);
+      }, 1000);
     });
     const timer = window.setTimeout(() => {
       void Promise.race([preloaded, new Promise((resolve) => window.setTimeout(resolve, 4000))])
@@ -786,6 +835,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       }) } as FeatureCollection<Point>,
     };
   }, [waterIntelligence, waterGeometry, monitoring, monitoringRiver, selectedStationId, activeCatchment, waterQuantity, flowUnit, minimumFlow]);
+  const riverLabelData = useMemo(() => riverLabelLines(waterData.lines), [waterData.lines]);
   const waterDataRef = useRef(waterData);
   waterDataRef.current = waterData;
 
@@ -813,6 +863,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       "active-monitoring-station": emptyCollection,
       "active-monitoring-district": emptyCollection,
       "active-monitoring-catchment": emptyCollection,
+      "active-monitoring-catchment-spotlight": emptyCollection,
+      "active-monitoring-catchment-label": emptyCollection,
       "active-monitoring-river": emptyCollection,
     } satisfies Record<string, FeatureCollection>;
 
@@ -846,12 +898,14 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           && (lineName === riverName || lineName.startsWith(riverName) || riverName.startsWith(lineName));
       });
     });
+    const catchmentCollection = catchment ? { type: "FeatureCollection", features: [catchment] } as FeatureCollection : emptyCollection;
     return {
       "active-monitoring-station": stationPoint,
       "active-monitoring-district": district
         ? { type: "FeatureCollection", features: [district] } as FeatureCollection : emptyCollection,
-      "active-monitoring-catchment": catchment
-        ? { type: "FeatureCollection", features: [catchment] } as FeatureCollection : emptyCollection,
+      "active-monitoring-catchment": catchmentCollection,
+      "active-monitoring-catchment-spotlight": catchment ? catchmentSpotlight(catchment as Feature<Polygon | MultiPolygon>) : emptyCollection,
+      "active-monitoring-catchment-label": catchment ? catchmentLabelPoint(catchment as Feature<Polygon | MultiPolygon>) : emptyCollection,
       "active-monitoring-river": { type: "FeatureCollection", features: riverFeatures } as FeatureCollection,
     } satisfies Record<string, FeatureCollection>;
   }, [monitoring, selectedStationId, districtDisplayData, riverStatusLines]);
@@ -1028,14 +1082,22 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    // The first map of the session opens on the whole globe, then flies in to Pakistan.
+    const playGlobeIntro = globeIntroPending && !selectedCoordinateRef.current && !selectedStationIdRef.current
+      && !rainfallEnabledRef.current && !glacierEnabledRef.current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (playGlobeIntro) globeIntroPending = false;
+    let globeIntroFlying = playGlobeIntro;
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: MAP_STYLE_URL || baseStyle,
-      center: [69.35, 30.45],
-      zoom: expanded ? 3.45 : 3.25,
+      center: playGlobeIntro ? [52, 22] : [69.35, 30.45],
+      zoom: playGlobeIntro ? 1.5 : expanded ? 3.45 : 3.25,
       minZoom: 0,
       maxZoom: 15,
       maxPitch: 70,
+      // Keep more decoded tiles in memory (default 5 zoom levels' worth) so
+      // recently seen stops and flight paths redraw without refetching.
+      maxTileCacheZoomLevels: 9,
       attributionControl: false,
     });
     // A picked click must not also open an overlapping layer's feature inspector.
@@ -1068,6 +1130,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     map.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), "top-right");
     map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
     let cancelWarmup = () => {};
+    let stopRiverFlow = () => {};
     const warmAfterFirstPaint = () => {
       if (containerRef.current) containerRef.current.dataset.boundaryPainted = "true";
       cancelWarmup = scheduleMapWarmup(() => setBackgroundReady(true));
@@ -1076,8 +1139,26 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     map.on("style.load", () => {
       const fitOverview = () => selectedStationIdRef.current ? undefined : selectedCoordinateRef.current ? fitCoordinate(map, selectedCoordinateRef.current, 0)
         : (rainfallEnabledRef.current ? fitRainfallExtent : glacierEnabledRef.current ? fitGlacierExtent : fitPakistanExtent)(map, 0);
-      requestAnimationFrame(fitOverview);
-      window.setTimeout(() => {if(!map.getContainer().dataset.terrainStation)fitOverview();}, 250);
+      if (playGlobeIntro) {
+        map.setProjection(globeToFlatProjection);
+        // Wait for the globe's imagery (at most 4.5 s), show it for a moment, then fly
+        // in; the projection flattens into the normal map on the way down.
+        let introQueued = false;
+        const queueIntro = () => { if (!introQueued) { introQueued = true; window.setTimeout(flyIn, 1100); } };
+        map.once("idle", queueIntro);
+        window.setTimeout(queueIntro, 4500);
+        const flyIn = () => {
+          if (mapRef.current !== map || !globeIntroFlying) return;
+          if (selectedStationIdRef.current || selectedCoordinateRef.current) { globeIntroFlying = false; fitOverview(); return; }
+          fitPakistanExtent(map, 5200);
+          // Listen after starting: fitPakistanExtent resizes first, which ends with its own moveend.
+          if (map.isMoving()) map.once("moveend", () => { globeIntroFlying = false; });
+          else globeIntroFlying = false;
+        };
+      } else {
+        requestAnimationFrame(fitOverview);
+        window.setTimeout(() => {if(!map.getContainer().dataset.terrainStation)fitOverview();}, 250);
+      }
       addWaterIcons(map);
       map.addSource("pakistan-political-labels", { type: "geojson", data: pakistanPoliticalLabels });
       map.addSource("jammu-kashmir-context", { type: "geojson", data: kashmirBoundaryRef.current, tolerance: 0 });
@@ -1106,34 +1187,17 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       });
       map.addLayer({ id: "district-risk-line", type: "line", source: "district-risk", paint: { "line-color": "#d7ebe8", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.35, 7, 0.62, 10, 1.05], "line-opacity": 0.42 } });
       map.addSource("catchment-areas", { type: "geojson", data: emptyCollection, attribution: '<a href="https://www.hydrosheds.org/products/hydrobasins">HydroBASINS / HydroSHEDS</a> (Lehner &amp; Grill, 2013)' });
-      map.addLayer({
-        id: "catchment-area-fill",
-        type: "fill",
-        source: "catchment-areas",
-        layout: { visibility: "none" },
-        paint: {
-          "fill-color": ["get", "map_color"],
-          "fill-opacity": 0.22,
-        },
-      });
-      map.addLayer({
-        id: "catchment-area-line",
-        type: "line",
-        source: "catchment-areas",
-        layout: { visibility: "none" },
-        paint: { "line-color": "#f8fafc", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 1.15, 7, 2.1, 10, 3], "line-dasharray": [2, 2], "line-opacity": 0.86 },
-      });
-      map.addLayer({
-        id: "catchment-area-labels",
-        type: "symbol",
-        source: "catchment-areas",
-        minzoom: 4,
-        layout: { visibility: "none", "text-field": ["get", "name"], "text-font": ["Open Sans Regular"], "text-size": 11, "text-allow-overlap": false, "text-padding": 4 },
-        paint: { "text-color": "#122126", "text-halo-color": "#f8fafc", "text-halo-width": 1.3, "text-opacity": 0.9 },
-      });
+      // Each basin in its own colour: soft fill, a glow along its edge, a fine light outline and a spaced label.
+      map.addLayer({ id: "catchment-area-fill", type: "fill", source: "catchment-areas", layout: { visibility: "none" }, paint: catchmentAreaFillPaint });
+      map.addLayer({ id: "catchment-area-glow", type: "line", source: "catchment-areas", layout: { visibility: "none", "line-join": "round" }, paint: catchmentAreaGlowPaint });
+      map.addLayer({ id: "catchment-area-line", type: "line", source: "catchment-areas", layout: { visibility: "none", "line-join": "round" }, paint: catchmentAreaLinePaint });
+      map.addLayer({ id: "catchment-area-labels", type: "symbol", source: "catchment-areas", minzoom: 4,
+        layout: { visibility: "none", ...catchmentAreaLabel.layout }, paint: catchmentAreaLabel.paint });
       map.addSource("active-monitoring-station", { type: "geojson", data: emptyCollection });
       map.addSource("active-monitoring-district", { type: "geojson", data: emptyCollection });
       map.addSource("active-monitoring-catchment", { type: "geojson", data: emptyCollection });
+      map.addSource("active-monitoring-catchment-spotlight", { type: "geojson", data: emptyCollection });
+      map.addSource("active-monitoring-catchment-label", { type: "geojson", data: emptyCollection });
       map.addSource("active-monitoring-river", { type: "geojson", data: emptyCollection });
       map.addSource("rainfall-heatmap", { type: "image", url: rainfallHeatmapData.imageUrl, coordinates: rainfallImageCoordinates });
       map.addLayer({
@@ -1173,11 +1237,18 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       map.addSource("pakistan-loc-overlay", { type: "geojson", data: pakistanLocOverlay });
       map.addLayer({ id: "pakistan-loc-line", type: "line", source: "pakistan-loc-overlay", layout: { "line-cap": "round", "line-join": "round" }, paint: { ...boundaryLinePaint, "line-color": "#6faeb9" } });
       map.addSource("water-lines", { type: "geojson", data: waterData.lines });
-      map.addLayer({ id: "water-lines-glow", type: "line", source: "water-lines", paint: { "line-color": "#0ea5e9", "line-width": ["interpolate", ["linear"], ["zoom"], 4, 4.2, 8, 7.2, 12, 11], "line-opacity": 0.26 } });
-      map.addLayer({ id: "water-lines", type: "line", source: "water-lines", paint: { "line-color": "#4de7ff", "line-width": ["interpolate", ["linear"], ["zoom"], 4, 1.9, 8, 3.7, 12, 6.4], "line-opacity": 0.94 } });
+      // Rivers as living water: glow, body sized by river, bright core, and (below) flowing light and names.
+      const riverLineLayout = { "line-cap": "round", "line-join": "round" } as const;
+      map.addLayer({ id: "water-lines-glow", type: "line", source: "water-lines", layout: riverLineLayout, paint: riverGlowPaint });
+      map.addLayer({ id: "water-lines", type: "line", source: "water-lines", layout: riverLineLayout, paint: riverBodyPaint });
+      map.addLayer({ id: "water-lines-core", type: "line", source: "water-lines", layout: riverLineLayout, paint: riverCorePaint });
       map.addSource("river-status-lines", { type: "geojson", data: riverStatusLines });
-      map.addLayer({ id: "river-status-lines-glow", type: "line", source: "river-status-lines", paint: { "line-color": ["match", ["get", "live_status"], "DANGER", "#ff244f", "WARNING", "#ff7a1a", "RISING", "#ffd02f", "NORMAL", "#2fd07e", "#4de7ff"], "line-width": ["interpolate", ["linear"], ["zoom"], 4, 6, 8, 9, 12, 13], "line-opacity": 0.22 } });
-      map.addLayer({ id: "river-status-lines", type: "line", source: "river-status-lines", paint: { "line-color": ["match", ["get", "live_status"], "DANGER", "#ff244f", "WARNING", "#ff7a1a", "RISING", "#ffd02f", "NORMAL", "#2fd07e", "#4de7ff"], "line-width": ["interpolate", ["linear"], ["zoom"], 4, 2.6, 8, 4.8, 12, 7.2], "line-opacity": 0.96 } });
+      map.addLayer({ id: "river-status-lines-glow", type: "line", source: "river-status-lines", layout: riverLineLayout, paint: { "line-color": ["match", ["get", "live_status"], "DANGER", "#ff244f", "WARNING", "#ff7a1a", "RISING", "#ffd02f", "NORMAL", "#2fd07e", "#4de7ff"], "line-width": ["interpolate", ["linear"], ["zoom"], 4, 9, 8, 14, 12, 20], "line-blur": riverStatusGlowBlur, "line-opacity": 0.34 } });
+      map.addLayer({ id: "river-status-lines", type: "line", source: "river-status-lines", layout: riverLineLayout, paint: { "line-color": ["match", ["get", "live_status"], "DANGER", "#ff244f", "WARNING", "#ff7a1a", "RISING", "#ffd02f", "NORMAL", "#2fd07e", "#4de7ff"], "line-width": ["interpolate", ["linear"], ["zoom"], 4, 2.6, 8, 4.8, 12, 7.2], "line-opacity": 0.96 } });
+      map.addLayer({ id: "water-lines-flow", type: "line", source: "water-lines", paint: riverFlowPaint });
+      // High tolerance: simplified per zoom level, so names follow a smooth path at every scale.
+      map.addSource("water-line-labels", { type: "geojson", data: riverLabelLines(waterData.lines), tolerance: 7 });
+      map.addLayer({ id: "water-lines-label", type: "symbol", source: "water-line-labels", ...riverLabelLayer });
       map.addSource("water-bodies", { type: "geojson", data: waterData.bodies });
       map.addLayer({ id: "water-bodies", type: "symbol", source: "water-bodies", layout: { "icon-image": ["case", ["in", ["get", "feature_kind"], ["literal", ["dam", "dam_reservoir", "reservoir"]]], "dam-icon", "water-dot"], "icon-size": 1, "icon-allow-overlap": true } });
       map.addSource("observed-water-stations", { type: "geojson", data: waterDataRef.current.observedStations });
@@ -1257,26 +1328,37 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         layout: { "text-field": ["get", "name"], "text-size": 11, "text-font": ["Open Sans Regular"],
           "text-anchor": "top", "text-offset": [0, 1.6], "text-padding": 4, "text-max-width": 14 },
         paint: { "text-color": "#ffffff", "text-halo-color": "#07171b", "text-halo-width": 2 } });
-      map.addLayer({ id: "active-monitoring-catchment-fill", type: "fill", source: "active-monitoring-catchment",
-        paint: { "fill-color": "#22d3b5", "fill-opacity": 0.075 } });
+      // The station's catchment: the map outside it dims, its edge glows, and its name runs along the boundary.
+      map.addLayer({ id: "active-monitoring-catchment-spotlight", type: "fill", source: "active-monitoring-catchment-spotlight", paint: catchmentSpotlightPaint });
+      map.addLayer({ id: "active-monitoring-catchment-fill", type: "fill", source: "active-monitoring-catchment", paint: activeCatchmentFillPaint });
+      map.addLayer({ id: "active-monitoring-catchment-glow", type: "line", source: "active-monitoring-catchment",
+        layout: { "line-join": "round" }, paint: activeCatchmentGlowPaint });
       map.addLayer({ id: "active-monitoring-catchment-casing", type: "line", source: "active-monitoring-catchment",
-        layout: { "line-join": "round" }, paint: { "line-color": "#062d32", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 4, 9, 7], "line-opacity": 0.8 } });
+        layout: { "line-join": "round" }, paint: activeCatchmentCasingPaint });
       map.addLayer({ id: "active-monitoring-catchment-line", type: "line", source: "active-monitoring-catchment",
-        layout: { "line-join": "round" }, paint: { "line-color": "#8affdf", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.8, 9, 3.2], "line-dasharray": [2, 1.4], "line-opacity": 1 } });
+        layout: { "line-join": "round" }, paint: activeCatchmentLinePaint });
+      map.addLayer({ id: "active-monitoring-catchment-label", type: "symbol", source: "active-monitoring-catchment-label", ...activeCatchmentLabel });
       map.addLayer({ id: "active-monitoring-district-casing", type: "line", source: "active-monitoring-district",
         layout: { "line-join": "round" }, paint: { "line-color": "#fff6ce", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 3.2, 9, 5], "line-opacity": 0.78 } });
       map.addLayer({ id: "active-monitoring-district-line", type: "line", source: "active-monitoring-district",
         layout: { "line-join": "round" }, paint: { "line-color": "#d68cff", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.5, 9, 2.5], "line-dasharray": [1, 1], "line-opacity": 1 } });
       map.addLayer({ id: "active-monitoring-river-glow", type: "line", source: "active-monitoring-river",
-        layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#062b35", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 7, 9, 13], "line-opacity": 0.82 } });
+        layout: { "line-cap": "round", "line-join": "round" }, paint: activeRiverGlowPaint });
+      map.addLayer({ id: "active-monitoring-river-casing", type: "line", source: "active-monitoring-river",
+        layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#062b35", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 6, 9, 9.5], "line-opacity": 0.7 } });
       map.addLayer({ id: "active-monitoring-river-line", type: "line", source: "active-monitoring-river",
-        layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#63ffe0", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 3, 9, 5.5], "line-opacity": 1 } });
+        layout: { "line-cap": "round", "line-join": "round" }, paint: activeRiverBodyPaint });
+      map.addLayer({ id: "active-monitoring-river-core", type: "line", source: "active-monitoring-river",
+        layout: { "line-cap": "round", "line-join": "round" }, paint: activeRiverCorePaint });
+      map.addLayer({ id: "active-monitoring-river-flow", type: "line", source: "active-monitoring-river", paint: activeRiverFlowPaint });
+      stopRiverFlow();
+      stopRiverFlow = startRiverFlow(map);
       map.addLayer({ id: "active-monitoring-station-halo", type: "circle", source: "active-monitoring-station",
         paint: { "circle-radius": 17, "circle-color": "#ffe16c", "circle-opacity": 0.28, "circle-blur": 0.55 } });
       map.addLayer({ id: "active-monitoring-station-point", type: "circle", source: "active-monitoring-station",
         paint: { "circle-radius": 8, "circle-color": "#ffe16c", "circle-stroke-color": "#06272b", "circle-stroke-width": 3 } });
       map.addLayer({ id: "active-monitoring-station-label", type: "symbol", source: "active-monitoring-station",
-        layout: { "text-field": ["get", "map_label"], "text-font": ["Open Sans Semibold", "Open Sans Regular"],
+        layout: { "text-field": ["get", "map_label"], "text-font": ["Open Sans Semibold"],
           "text-size": 12, "text-anchor": "left", "text-offset": [1.15, 0], "text-max-width": 19,
           "text-padding": 6, "text-allow-overlap": true, "text-ignore-placement": true },
         paint: { "text-color": "#ffffff", "text-halo-color": "#06272b", "text-halo-width": 2.5 } });
@@ -1399,11 +1481,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           const monitoringId = hit?.properties?.monitoring_station_id as string | undefined;
           if (monitoringId) {
             suppressDistrictFallbackRef.current = true;
-            setSelectedStationId(monitoringId);
-            setSelectedCatchment(null);
-            setSelectedWaterFeature(null);
-            setSelectedFloodHubFeature(null);
-            setSelectedDistrict(null);
+            selectStation(monitoringId);
             return;
           }
           const id = hit?.id ?? hit?.properties?.id;
@@ -1502,7 +1580,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     });
     map.once("style.load", () => map.once("render", warmAfterFirstPaint));
     const resizeObserver = new ResizeObserver(() => {
-      if (map.getContainer().dataset.terrainStation || stationRotationRef.current) {map.resize();return;}
+      if (globeIntroFlying || map.getContainer().dataset.terrainStation || stationRotationRef.current) {map.resize();return;}
       if (selectedCoordinateRef.current) fitCoordinate(map, selectedCoordinateRef.current, 0);
       else if (populationOverlayRef.current) {
         const [w,s,e,n] = populationOverlayRef.current.summary.bounds;
@@ -1516,8 +1594,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     });
     resizeObserver.observe(containerRef.current);
     mapRef.current = map;
+    // With ?mapDiagnostics=1, browser checks can inspect the live map.
+    if (mapDiagnosticsEnabled) (window as unknown as { __floodguardMap?: MapLibreMap }).__floodguardMap = map;
     setStationMapInstance(map);
-    return () => { cancelWarmup(); map.off("render", warmAfterFirstPaint); resizeObserver.disconnect(); map.getCanvas().removeEventListener("mouseleave", hideCoordinates); hideCoordinates(); map.remove(); mapRef.current = null; setStationMapInstance(null); };
+    return () => { cancelWarmup(); stopRiverFlow(); map.off("render", warmAfterFirstPaint); resizeObserver.disconnect(); map.getCanvas().removeEventListener("mouseleave", hideCoordinates); hideCoordinates(); map.remove(); mapRef.current = null; setStationMapInstance(null); };
   }, [expanded]);
 
   useEffect(() => {
@@ -1598,6 +1678,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       "glaciers": glacierData ?? emptyCollection,
       "glacier-indus-basin": glacierIndusBasin,
       "water-lines": waterData.lines,
+      "water-line-labels": riverLabelData,
       "river-status-lines": riverStatusLines,
       "water-bodies": waterData.bodies,
       "observed-water-stations": waterData.observedStations,
@@ -1688,17 +1769,23 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       map.setLayoutProperty(id, "visibility", visibility(layers.borderTest));
     }
     if (containerRef.current) containerRef.current.dataset.borderTestVisibility = visibility(layers.borderTest);
-    for (const id of ["catchment-area-fill", "catchment-area-line", "catchment-area-labels"] as const) {
+    for (const id of ["catchment-area-fill", "catchment-area-glow", "catchment-area-line", "catchment-area-labels"] as const) {
       map.setLayoutProperty(id, "visibility", visibility(layers.catchments));
       setFilterIfChanged(id, catchmentId ? ["==", ["get", "basin_id"], catchmentId] : null);
     }
-    for (const id of ["water-lines-glow", "water-lines", "water-bodies"]) map.setLayoutProperty(id, "visibility", visibility(layers.water));
+    for (const id of ["water-lines-glow", "water-lines", "water-lines-core", "water-bodies"]) map.setLayoutProperty(id, "visibility", visibility(layers.water));
     for (const id of ["river-status-lines-glow", "river-status-lines", "model-water-points"]) map.setLayoutProperty(id, "visibility", visibility(layers.waterForecasts));
+    // Flowing light and river names show on whichever river layer is on.
+    map.setLayoutProperty("water-lines-flow", "visibility", visibility((layers.water || layers.waterForecasts) && riverFlowEnabled));
+    map.setLayoutProperty("water-lines-label", "visibility", visibility(layers.water || layers.waterForecasts));
     const stationContextVisibility = visibility(Boolean(selectedStationId));
-    for (const id of ["active-monitoring-catchment-fill", "active-monitoring-catchment-casing", "active-monitoring-catchment-line",
+    for (const id of ["active-monitoring-catchment-spotlight", "active-monitoring-catchment-fill", "active-monitoring-catchment-glow",
+      "active-monitoring-catchment-casing", "active-monitoring-catchment-line", "active-monitoring-catchment-label",
       "active-monitoring-district-casing", "active-monitoring-district-line", "active-monitoring-river-glow",
-      "active-monitoring-river-line", "active-monitoring-station-halo", "active-monitoring-station-point",
+      "active-monitoring-river-casing", "active-monitoring-river-line", "active-monitoring-river-core",
+      "active-monitoring-station-halo", "active-monitoring-station-point",
       "active-monitoring-station-label"]) map.setLayoutProperty(id, "visibility", stationContextVisibility);
+    map.setLayoutProperty("active-monitoring-river-flow", "visibility", visibility(Boolean(selectedStationId) && riverFlowEnabled));
     if (containerRef.current) {
       containerRef.current.dataset.waterGeometryVisibility = String(map.getLayoutProperty("water-lines", "visibility"));
       containerRef.current.dataset.waterForecastVisibility = String(map.getLayoutProperty("river-status-lines", "visibility"));
@@ -2126,7 +2213,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         <p>HydroBASINS level 5; full transboundary sub-basin, simplified for display.</p>
         <footer><a href="https://www.hydrosheds.org/products/hydrobasins" target="_blank" rel="noreferrer">HydroBASINS / HydroSHEDS</a></footer>
       </aside>}
-      {selectedStationId && <RiverStationInspector stationId={selectedStationId} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => setSelectedStationId(null)} onSelect={selectStation} flowUnit={flowUnit} />}
+      {selectedStationId && stationTicketArrival?.stationId === selectedStationId && stationTicketArrival.map === stationMapInstance && <RiverStationInspector stationId={selectedStationId} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => { setStationTicketArrival(null); setSelectedStationId(null); }} onSelect={selectStation} flowUnit={flowUnit} />}
       </div>
       {sarValidationOpen && sarOverlay?.validation && <SarValidationView result={sarOverlay} onClose={() => setSarValidationOpen(false)} />}
       <footer className="map-provenance">

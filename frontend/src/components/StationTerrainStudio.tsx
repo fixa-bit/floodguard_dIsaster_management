@@ -104,12 +104,14 @@ export function StationTerrainStudio({mapRef,selectedStationId,onSelectStation,o
     // Monitoring mode shows the 3D terrain mesh only; the finer hillshade layer
     // (studio relief) would otherwise pop in tile by tile after every landing.
     if (map.getLayer("station-terrain-shade")) map.setLayoutProperty("station-terrain-shade","visibility",relief ? "visible" : "none");
+    // Monitoring stops frame whole catchments (zoomed out), so lift the relief there to keep the 3D evident.
+    const heightScale=monitoring ? Math.max(exaggeration,1.6) : exaggeration;
     const current=map.getTerrain();
-    if (terrainActive ? current?.source!==sourceId || current.exaggeration!==exaggeration : current) map.setTerrain(terrainActive ? {source:sourceId,exaggeration} : null);
+    if (terrainActive ? current?.source!==sourceId || current.exaggeration!==heightScale : current) map.setTerrain(terrainActive ? {source:sourceId,exaggeration:heightScale} : null);
     map.setSky(((bird && relief) || monitoring) && terrainActive ? {"sky-color":"#a1c6c8","horizon-color":"#d4e4dc","fog-color":"#dce6df","sky-horizon-blend":.7,"horizon-fog-blend":.6,"fog-ground-blend":.3} : {});
     map.getContainer().dataset.stationTerrain=String(terrainActive);
     map.getContainer().dataset.monitoringTerrain=String(monitoring && terrainActive);
-    map.getContainer().dataset.terrainExaggeration=String(exaggeration);
+    map.getContainer().dataset.terrainExaggeration=String(heightScale);
     if (!terrainOn && map.getPitch()>0) map.easeTo({pitch:0,bearing:0,duration:canAnimate ? 700 : 0});
   }, [readyMap,relief,bird,exaggeration,canAnimate,terrainReady,monitoring]);
 

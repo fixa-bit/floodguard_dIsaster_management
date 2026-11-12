@@ -1,0 +1,172 @@
+/* Station panel as a monitoring console (RiverStationInspector).
+   Same mint-on-deep-teal palette as the rest of FloodGuard; glass cards stay flat. */
+.station-console {
+  --console-ink: #f2fffc;
+  --console-text: #dffefa;
+  --console-muted: #9fbfc0;
+  --console-label: #93d3cb;
+  --console-line: rgba(125, 232, 219, .24);
+  --console-accent: #50f5d0;
+  --console-calm: #50f5d0;
+  --console-watch: #ffd02f;
+  --console-warning: #ff9a3d;
+  --console-danger: #ff4d61;
+  color: var(--console-text);
+}
+
+/* Header: eyebrow, station name, basin line and the flood-category pill. */
+.station-console .console-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.station-console .console-eyebrow { display: block; color: var(--console-label); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.station-console h3 { margin: 3px 0 2px; color: var(--console-ink); font-size: 22px; letter-spacing: -.01em; }
+.station-console .console-subtitle { margin: 0; color: #a7c9c5; font-size: 11px; line-height: 1.4; }
+.station-console .console-header-side { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.station-console .console-status { padding: 5px 11px; border: 1px solid currentColor; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; white-space: nowrap;
+  animation: console-status-in 900ms cubic-bezier(.2, .8, .2, 1) 120ms both; }
+.station-console .console-status[data-tone="calm"] { color: var(--console-calm); background: rgba(80, 245, 208, .1); box-shadow: 0 0 18px rgba(80, 245, 208, .18); }
+.station-console .console-status[data-tone="watch"] { color: var(--console-watch); background: rgba(255, 208, 47, .1); box-shadow: 0 0 18px rgba(255, 208, 47, .2); }
+.station-console .console-status[data-tone="warning"] { color: var(--console-warning); background: rgba(255, 154, 61, .12); box-shadow: 0 0 18px rgba(255, 154, 61, .22); }
+.station-console .console-status[data-tone="danger"] { color: var(--console-danger); background: rgba(255, 77, 97, .14); box-shadow: 0 0 22px rgba(255, 77, 97, .3); }
+.station-console .console-status[data-tone="neutral"] { color: #c8dfdd; background: rgba(200, 223, 221, .08); }
+
+/* Scrolling body, so no card is ever clipped. */
+.station-console .console-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin-right: -6px; padding: 2px 6px 6px 0; scrollbar-width: thin; }
+
+/* Six-column grid: hero full width, three reading cards, two lists, station card, drawer. */
+.station-console .console-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.station-console .console-card {
+  position: relative; grid-column: span 6; min-width: 0; padding: 11px 12px;
+  border: 1px solid var(--console-line); border-radius: 10px;
+  background: linear-gradient(150deg, rgba(16, 54, 58, .74), rgba(4, 20, 24, .82));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 10px 26px rgba(0, 0, 0, .22);
+  backdrop-filter: blur(12px) saturate(140%);
+  animation: console-rise 560ms cubic-bezier(.2, .8, .2, 1) var(--rise-delay, 0ms) both;
+}
+/* A thin light along each card's top edge, like the rim of a glass panel. */
+.station-console .console-card::before { position: absolute; inset: 0 12px auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(125, 232, 219, .55), transparent); content: ""; }
+.station-console .console-kpi { display: flex; flex-direction: column; gap: 3px; grid-column: span 2; }
+.station-console .console-list { grid-column: span 3; }
+
+.station-console .console-label { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; color: var(--console-label); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.station-console .console-value { display: block; color: var(--console-ink); font-size: 18px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.station-console .console-value-hero { margin: 4px 0 7px; font-size: 30px; letter-spacing: -.01em; text-shadow: 0 0 22px rgba(80, 245, 208, .22); }
+.station-console small, .station-console .console-time { color: var(--console-muted); font-size: 10px; line-height: 1.4; }
+.station-console .console-subline { color: #a7c9c5; font-size: 10px; line-height: 1.45; }
+.station-console .console-subline b { color: #e6fffa; font-weight: 600; }
+.station-console .river-data-source { display: block; color: #7fa9a6; font-size: 9px; line-height: 1.4; }
+.station-console .river-data-source a { color: #7fe8d3; }
+.station-console .console-empty, .station-console .console-note { margin: 4px 0; color: #a7c9c5; font-size: 10px; }
+
+/* Live indicator with a soft pulse. */
+.station-console .console-live { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; color: var(--console-accent); font-size: 9px; letter-spacing: .1em; }
+.station-console .console-live i { width: 6px; height: 6px; border-radius: 50%; background: var(--console-accent); animation: console-pulse 2.2s ease-out infinite; }
+
+/* Hero: the current discharge beside its hydrograph. */
+.station-console .console-hero { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.35fr); align-items: start; gap: 14px; }
+.station-console .console-hero-reading { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.station-console .console-trend { display: inline-flex; align-items: center; gap: 4px; width: fit-content; margin-bottom: 4px; padding: 3px 9px; border: 1px solid var(--console-line); border-radius: 999px;
+  background: rgba(255, 255, 255, .04); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.station-console .console-trend small { margin-left: 4px; font-weight: 500; }
+.station-console .console-trend[data-direction="falling"] { color: #7dffe0; }
+.station-console .console-trend[data-direction="rising"] { color: #ffd76a; border-color: rgba(255, 215, 106, .35); }
+.station-console .console-trend[data-direction="steady"], .station-console .console-trend[data-direction="unknown"] { color: #c8dfdd; }
+.station-console .console-hero-chart { min-width: 0; }
+.station-console .console-hero-chart .source-chart-legend { gap: 8px; margin-bottom: 4px; font-size: 8px; }
+.station-console .console-hero-chart .source-chart-legend i { width: 16px; }
+.station-console .console-hero-chart .source-chart-context, .station-console .console-hero-chart .source-chart-axis-title,
+.station-console .console-hero-chart .source-chart-date-title { display: none; }
+.station-console .console-hero-chart .source-chart-area { grid-template-columns: 36px minmax(0, 1fr); gap: 4px; }
+.station-console .console-hero-chart .source-forecast-chart, .station-console .console-hero-chart .source-chart-axis { height: 96px; }
+.station-console .console-hero-chart .source-forecast-chart { background: rgba(2, 16, 18, .5); border-color: rgba(125, 232, 219, .18); border-radius: 6px; }
+.station-console .console-hero-chart .source-chart-dates { height: 14px; margin-top: 3px; font-size: 8px; }
+.station-console .console-hero-chart .source-chart-empty { min-height: 60px; font-size: 9px; }
+
+/* Rainfall: one small bar chart instead of a ticket per day (observed bars softer than forecast). */
+.station-console .console-rain-bars { display: flex; align-items: flex-end; gap: 3px; height: 46px; margin: 8px 0 16px; padding: 0; background: none; border: 0; }
+.station-console .console-rain-bars > div { position: relative; display: flex; flex: 1; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; min-height: 0; padding: 0; background: none; border: 0; }
+.station-console .console-rain-bars i { width: 100%; max-width: 12px; height: var(--bar); border-radius: 3px 3px 1px 1px; background: linear-gradient(180deg, #50f5d0, rgba(80, 245, 208, .3));
+  transform-origin: bottom; animation: console-bar 640ms cubic-bezier(.2, .8, .2, 1) var(--bar-delay, 0ms) both; }
+.station-console .console-rain-bars > div[data-phase="observed"] i { background: linear-gradient(180deg, rgba(159, 210, 204, .85), rgba(159, 210, 204, .25)); }
+.station-console .console-rain-bars small { position: absolute; bottom: -14px; color: #7fa9a6; font-size: 8px; }
+
+/* Lists: one row per signal, gauge or model, with a status dot. */
+.station-console .console-list ul { display: grid; margin: 0 0 4px; padding: 0; list-style: none; }
+.station-console .console-list li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 6px 1px;
+  border-bottom: 1px solid rgba(125, 232, 219, .1); animation: console-row 420ms ease-out var(--row-delay, 0ms) both; }
+.station-console .console-list li:last-child { border-bottom: 0; }
+.station-console .console-list li strong { display: block; color: #eafffb; font-size: 11px; }
+.station-console .console-list li small { display: block; font-size: 9px; }
+.station-console .console-list li b { color: #c8dfdd; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-align: right; font-variant-numeric: tabular-nums; }
+.station-console .console-dot { width: 8px; height: 8px; border-radius: 50%; background: #9fbfc0; box-shadow: 0 0 0 3px rgba(159, 191, 192, .12); }
+.station-console [data-tone="calm"].console-dot { background: var(--console-calm); box-shadow: 0 0 0 3px rgba(80, 245, 208, .14), 0 0 10px rgba(80, 245, 208, .5); }
+.station-console [data-tone="watch"].console-dot { background: var(--console-watch); box-shadow: 0 0 0 3px rgba(255, 208, 47, .16), 0 0 10px rgba(255, 208, 47, .5); }
+.station-console [data-tone="warning"].console-dot { background: var(--console-warning); box-shadow: 0 0 0 3px rgba(255, 154, 61, .16), 0 0 10px rgba(255, 154, 61, .5); }
+.station-console [data-tone="danger"].console-dot { background: var(--console-danger); box-shadow: 0 0 0 3px rgba(255, 77, 97, .18), 0 0 12px rgba(255, 77, 97, .6); }
+.station-console [data-tone="muted"].console-dot { background: #5d7776; box-shadow: none; }
+.station-console .console-list b[data-tone="calm"] { color: var(--console-calm); }
+.station-console .console-list b[data-tone="watch"] { color: var(--console-watch); }
+.station-console .console-list b[data-tone="warning"] { color: var(--console-warning); }
+.station-console .console-list b[data-tone="danger"] { color: var(--console-danger); }
+.station-console .console-list b[data-tone="muted"] { color: #7f9998; }
+
+/* Station card: identity facts beside the river network. */
+.station-console .console-station { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 4px 16px; }
+.station-console .console-station > .console-label, .station-console .console-about { grid-column: 1 / -1; }
+.station-console .console-facts { display: grid; gap: 7px; margin: 0; }
+.station-console .console-facts div { display: grid; gap: 1px; }
+.station-console .console-facts dt { color: #8fbfb9; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.station-console .console-facts dd { margin: 0; color: #eafffb; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.station-console .console-network { display: grid; align-content: start; gap: 6px; min-width: 0; }
+.station-console .console-network .console-label { margin: 0; }
+.station-console .river-upstream-stations { display: flex; flex-wrap: wrap; gap: 5px; }
+.station-console .river-upstream-stations button { margin: 0; padding: 3px 9px; border: 1px solid rgba(125, 232, 219, .3); border-radius: 999px; background: rgba(80, 245, 208, .08);
+  color: #bff8ec; font-size: 10px; text-decoration: none; cursor: pointer; transition: background 160ms, border-color 160ms; }
+.station-console .river-upstream-stations button:hover { border-color: rgba(125, 232, 219, .6); background: rgba(80, 245, 208, .16); }
+.station-console details summary { display: flex; align-items: center; gap: 5px; color: #9fd2cc; font-size: 10px; font-weight: 600; list-style: none; cursor: pointer; }
+.station-console details summary::-webkit-details-marker { display: none; }
+.station-console details summary svg { transition: transform 200ms ease; }
+.station-console details[open] > summary svg { transform: rotate(180deg); }
+.station-console .console-chain ol { display: flex; flex-wrap: wrap; gap: 2px 6px; margin: 6px 0 0; padding: 0; list-style: none; }
+.station-console .console-chain li:not(:last-child)::after { margin-left: 6px; color: #6f9896; content: "›"; }
+.station-console .console-chain button { padding: 0; background: none; border: 0; color: var(--console-accent); font-size: 10px; cursor: pointer; }
+.station-console .console-chain button[aria-current] { color: #ffffff; font-weight: 700; }
+.station-console .console-about { margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(125, 232, 219, .1); }
+.station-console .console-about p, .station-console .console-about li { margin: 6px 0 0; color: #b5cecb; font-size: 10px; line-height: 1.45; }
+.station-console .console-about ul { margin: 0; padding-left: 16px; }
+
+/* Drawer with every model statistic, closed by default. */
+.station-console .console-more summary { justify-content: space-between; }
+.station-console .console-more summary .console-label { margin: 0; }
+.station-console .console-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 12px; margin: 10px 0 0; }
+.station-console .console-metrics div { min-width: 0; }
+.station-console .console-metrics dt { color: #8fbfb9; font-size: 9px; overflow-wrap: anywhere; }
+.station-console .console-metrics dd { margin: 1px 0 0; color: #eafffb; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.station-console .console-model-note { margin: 8px 0 0; color: var(--console-muted); font-size: 9px; line-height: 1.45; }
+.station-console .console-model-note b { color: #c8dfdd; }
+
+.station-console .console-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(125, 232, 219, .16); }
+.station-console .console-footer span { color: var(--console-muted); font-size: 9px; }
+.station-console button:focus-visible, .station-console summary:focus-visible { outline: 2px solid #f8d96a; outline-offset: 2px; }
+
+/* With a station open, keep the terrain studio clear of the panel's header (as the map's home button moves),
+   leaving room for that button. */
+.river-monitoring-layout.has-station .station-terrain-studio { right: calc(min(calc(42vw + clamp(40px, 5vw, 96px) + 24px), 740px) + 44px); }
+
+@keyframes console-rise { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes console-row { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+@keyframes console-bar { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes console-pulse { 0% { box-shadow: 0 0 0 0 rgba(80, 245, 208, .55); } 70% { box-shadow: 0 0 0 7px rgba(80, 245, 208, 0); } 100% { box-shadow: 0 0 0 0 rgba(80, 245, 208, 0); } }
+@keyframes console-status-in { 0% { opacity: 0; transform: scale(.9); filter: brightness(1.7); } 60% { opacity: 1; transform: scale(1.03); } 100% { transform: none; filter: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .station-console .console-card, .station-console .console-list li, .station-console .console-rain-bars i,
+  .station-console .console-status, .station-console .console-live i { animation: none; }
+}
+
+@media (max-width: 700px) {
+  .river-monitoring-layout.has-station .station-terrain-studio { right: 52px; }
+  .station-console .console-scroll { overflow: visible; margin-right: 0; padding-right: 0; }
+  .station-console .console-grid { grid-template-columns: minmax(0, 1fr); }
+  .station-console .console-card, .station-console .console-kpi, .station-console .console-list { grid-column: 1; }
+  .station-console .console-hero, .station-console .console-station { grid-template-columns: minmax(0, 1fr); }
+  .station-console .console-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
