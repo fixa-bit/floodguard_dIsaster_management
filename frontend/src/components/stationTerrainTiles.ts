@@ -1,5 +1,6 @@
 import * as maplibregl from "maplibre-gl";
 import { inBatches, persistentTileBytes, untilAborted } from "./tileCache";
+import { despikeTerrarium } from "./terrariumDespike";
 
 const base = `${import.meta.env.BASE_URL}station-terrain/`;
 const remote = "https://elevation-tiles-prod.s3.amazonaws.com/terrarium/";
@@ -21,10 +22,13 @@ const tileBytes = new Map<string, Promise<ArrayBuffer>>();
 function cachedTileBytes(url:string) {
   const hit=tileBytes.get(url);
   if (hit) {tileBytes.delete(url);tileBytes.set(url,hit);return hit;}
-  const pending=url.startsWith(remote) ? persistentTileBytes(url,remoteTerrainCache) : fetch(url).then(async response => {
+  const fetched=url.startsWith(remote) ? persistentTileBytes(url,remoteTerrainCache) : fetch(url).then(async response => {
     if(!response.ok)throw new Error(`HTTP ${response.status}`);
     return response.arrayBuffer();
   });
+  // Bad pixels in the public elevation data would stand up as needles in the 3D terrain.
+  const zoom=Number(/(\d+)\/\d+\/\d+\.png$/.exec(url)?.[1] ?? 0);
+  const pending=fetched.then(bytes => despikeTerrarium(bytes,zoom));
   tileBytes.set(url,pending);
   pending.catch(() => {if(tileBytes.get(url)===pending)tileBytes.delete(url);});
   for (const key of tileBytes.keys()) {if(tileBytes.size<=maxCachedTiles)break;tileBytes.delete(key);}

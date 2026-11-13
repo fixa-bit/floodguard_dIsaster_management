@@ -6,8 +6,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePopulationLayers } from './usePopulationLayers';
 import { useMapBasemap, type MapBasemap } from "./useMapBasemap";
 import { StationTerrainStudio } from "./StationTerrainStudio";
-import { preloadMonitoringHop, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
-import { cachedImageryTiles, imageryBackdropMaxZoom } from "./imageryTiles";
+import { endMonitoringTour, monitoringTourTiles, preloadMonitoringHop, prepareMonitoringTour, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
+import { cachedImageryTiles, imageryAttribution, imageryBackdropMaxZoom } from "./imageryTiles";
 import {
   activeCatchmentCasingPaint, activeCatchmentFillPaint, activeCatchmentGlowPaint, activeCatchmentLabel, activeCatchmentLinePaint,
   catchmentAreaFillPaint, catchmentAreaGlowPaint, catchmentAreaLabel, catchmentAreaLinePaint, catchmentLabelPoint, catchmentSpotlight, catchmentSpotlightPaint,
@@ -90,7 +90,7 @@ const baseStyle: StyleSpecification = {
       // Esri World Imagery, served through the persistent local tile cache.
       tiles: [cachedImageryTiles],
       tileSize: 256,
-      attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics, and GIS user community",
+      attribution: imageryAttribution,
     },
   },
   layers: [
@@ -699,7 +699,18 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   // Station polling replaces the array every refresh; only a change in the stations themselves restarts the tour timing.
   const rotationKey = rotationStations.map((station) => station.id).join("|");
   const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
-  useEffect(() => { if (!stationRotationEnabled) setMonitoringArrival(null); }, [stationRotationEnabled]);
+  useEffect(() => {
+    if (stationRotationEnabled) return;
+    setMonitoringArrival(null);
+    // The tour held the imagery back to what was loaded; outside it the map loads freely again.
+    if (stationMapInstance) endMonitoringTour(stationMapInstance);
+  }, [stationRotationEnabled, stationMapInstance]);
+  // With ?mapDiagnostics=1, the tile-pack builder (scripts/build-tour-tile-pack.mjs) asks for every tile the tour draws.
+  useEffect(() => {
+    if (!mapDiagnosticsEnabled || !stationMapInstance) return;
+    (window as unknown as { __monitoringTourTiles?: (view: "3d" | "2d") => ReturnType<typeof monitoringTourTiles> }).__monitoringTourTiles = (view) =>
+      monitoringTourTiles(stationMapInstance, rotationStationsRef.current.map((station) => ({ ...toTourStation(station), flat: view === "2d" })));
+  });
 
   useEffect(() => {
     if (!stationRotationEnabled || !rotationStations.length) return;
@@ -1153,6 +1164,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     const warmAfterFirstPaint = () => {
       if (containerRef.current) containerRef.current.dataset.boundaryPainted = "true";
       cancelWarmup = scheduleMapWarmup(() => setBackgroundReady(true));
+      // The coarse imagery the monitoring tour flies over (a hundred or so tiles), ready before it starts.
+      prepareMonitoringTour();
     };
     // Operational vectors should not wait for remote satellite tiles to finish loading.
     map.on("style.load", () => {

@@ -1,19 +1,21 @@
 import type { FlyToOptions, Map as MapLibreMap, PaddingOptions } from "maplibre-gl";
-import { imageryBackdropMaxZoom, preloadImageryBackdrop, preloadImageryTiles } from "./imageryTiles";
+import { backdropTileKeys, imageryBackdropMaxZoom, preloadImageryBackdrop, preloadImageryTiles } from "./imageryTiles";
 import { preloadTerrainTiles } from "./stationTerrainTiles";
 
-// Cinematic camera for monitoring mode. Each hop is one continuous flight,
-// banking toward the direction of travel. When the ground on the way is already
-// loaded it is a low glide: the camera stays near the height of the lower of the
-// two views, rising further only when a hop is too long to cross at that height.
-// When that ground is still downloading (a first visit: the tile servers deliver
-// only a dozen or so tiles a second), it rises instead to the height where the
-// always-loaded coarse imagery is all the view needs, so tiles are never seen
-// arriving one by one. It lands in a tilted 3D view, facing the way it arrived:
+// Cinematic camera for monitoring mode. Each hop is one continuous low glide,
+// banking toward the direction of travel: the camera stays near the height of
+// the lower of the two views, rising further only when a hop is too long to
+// cross at that height. It lands in a tilted 3D view, facing the way it arrived:
 // the station itself for a close-up station, otherwise the station's whole
-// catchment. While a stop is held the camera orbits slowly. The tiles for the
-// next stop and for the ground the low flight passes over are loaded, onto the
-// graphics card, during the stop before.
+// catchment. While a stop is held the camera orbits slowly.
+//
+// No tile is ever downloaded while the camera is over it. The tiles for the next
+// stop and for the ground the flight passes over are loaded, onto the graphics
+// card, during the stop before, coarse levels of detail first. The map is only
+// allowed to ask for imagery as fine as what is already loaded for the whole
+// view it is about to show (the detail cap below), so on a first visit (the tile
+// servers deliver only a dozen or so tiles a second) the flight is uniformly a
+// little softer instead of showing sharp squares arriving one by one.
 
 /**
  * `catchment` is the station's catchment bounding box [west, south, east, north].
@@ -36,8 +38,13 @@ const arrivalTurn = 20;   // landing bearing for a due east or west arrival
 const smootherstep = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
 const easeInOutSine = (t: number) => (1 - Math.cos(Math.PI * t)) / 2;
 const imagerySourceId = "global-satellite-basemap";
-const tourRegion: [number, number, number, number] = [58, 22, 82, 40];   // every station and the overview between them
-const maxWayTiles = 700;   // most tiles loaded for the ground one flight passes over (per layer)
+// Every station and the overview between them, plus the horizon a tilted camera sees beyond them.
+const tourRegion: [number, number, number, number] = [52, 16, 88, 44];
+const tourHorizon: [number, number, number, number] = [25, 0, 115, 55];   // zoom 4 and 5 only: the far edge of a tilted view
+const tourBackdrop = () => preloadImageryBackdrop(tourRegion, tourHorizon);
+const maxWayTiles = 700;   // most elevation tiles loaded for the ground one flight passes over
+const maxLevelTiles = 1100;   // most imagery tiles one level of detail of a flight may need to be loaded at all
+const tourMaxDetail = 13;   // the finest imagery zoom the tour uses (the measured footprints stop there too)
 const diagnostics = new URLSearchParams(window.location.search).get("mapDiagnostics") === "1";
 
 /** Keeps the station clear of the map controls (left) and station details panel (right). */
@@ -114,7 +121,8 @@ function flightPlan(map: MapLibreMap, start: CameraView, stop: StopCamera, groun
   // overview and back; only a hop too long to cross at that height rises further.
   // Over ground that is not loaded yet, rise to where the coarse imagery suffices.
   const lowest = Math.min(start.zoom, stop.zoom) - travelMargin, low = groundReady ? lowest : Math.min(lowest, coarseViewZoom);
-  const apex = Math.max(3.6, Math.min(low, reach > 0 ? Math.log2(maxTravelSpans / reach) : low));
+  // A descent from the overview never rises first: that would widen a view already wider than what is loaded.
+  const apex = start.zoom < stop.zoom - 3 ? start.zoom : Math.max(3.6, Math.min(low, reach > 0 ? Math.log2(maxTravelSpans / reach) : low));
   const spans = reach * 2 ** start.zoom, peak = 2 ** (start.zoom - apex), end = 2 ** (start.zoom - stop.zoom);
   // flyTo's `minZoom` only caps how far a flight zooms out and never sets it, so the
   // height is set through the curve: the one whose arc (van Wijk and Nuij's flight
@@ -179,9 +187,14 @@ async function cinematicFlight(map: MapLibreMap, stop: StopCamera, groundReady: 
   const { apex, curve, duration, turn, bank } = flightPlan(map, start, stop, groundReady);
   if (diagnostics) map.getContainer().dataset.monitoringFlight = JSON.stringify({ low: groundReady, apex: +apex.toFixed(2), ms: Math.round(duration) });
   const began = performance.now();
-  map.setTransformCameraUpdate(() => {
+  // Descending from the flat overview, the tilt comes with the descent rather than
+  // with time: tilted while still high, the camera would see half a continent of
+  // horizon, far more ground than is loaded.
+  const descent = startPitch < 15 && stop.zoom - start.zoom > 3;
+  map.setTransformCameraUpdate((transform) => {
     const k = smootherstep(clamp((performance.now() - began) / duration, 0, 1)), arc = Math.sin(Math.PI * k);
-    return { pitch: startPitch + (stop.pitch - startPitch) * k, bearing: start.bearing + turn * k + bank * arc };
+    const tilt = descent ? clamp((transform.zoom - start.zoom) / (stop.zoom - start.zoom), 0, 1) ** 1.5 : k;
+    return { pitch: startPitch + (stop.pitch - startPitch) * tilt, bearing: start.bearing + turn * k + bank * arc };
   });
   try {
     const { center, zoom, pitch, bearing, padding } = stop;
@@ -194,20 +207,25 @@ async function cinematicFlight(map: MapLibreMap, stop: StopCamera, groundReady: 
 // Where the hold's slow pass will leave the camera, which is where the next flight starts from.
 let heldView: { id: string; zoom: number; bearing: number } | null = null;
 
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/** Where the hold's slow pass ends. */
+function orbitEnd(stop: StopCamera): { zoom: number; bearing?: number; pitch?: number } {
+  if (reducedMotion()) return { zoom: stop.zoom };
+  const side = Math.sign(stop.bearing || 1);
+  return stop.flat ? { zoom: stop.zoom + 0.25 }
+    : stop.closeUp ? { zoom: stop.zoom + 0.2, bearing: stop.bearing + side * 40 }
+      : { zoom: stop.zoom + 0.2, bearing: stop.bearing + side * 16, pitch: stop.pitch + 4 };
+}
+
 /**
  * A slow drone pass while a stop is held: the 3D tour orbits and drifts closer
  * (a wider orbit round a close-up station), the 2D tour only drifts closer.
  * Skipped when the viewer prefers reduced motion.
  */
-function holdOrbit(map: MapLibreMap, station: TourStation, stop: StopCamera) {
-  heldView = { id: station.id, zoom: stop.zoom, bearing: stop.bearing };
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const side = Math.sign(stop.bearing || 1);
-  const end = stop.flat ? { zoom: stop.zoom + 0.25 }
-    : stop.closeUp ? { zoom: stop.zoom + 0.2, bearing: stop.bearing + side * 40 }
-      : { zoom: stop.zoom + 0.2, bearing: stop.bearing + side * 16, pitch: stop.pitch + 4 };
+function holdOrbit(map: MapLibreMap, station: TourStation, stop: StopCamera, duration = 9500) {
+  const end = orbitEnd(stop);
   heldView = { id: station.id, zoom: end.zoom, bearing: end.bearing ?? stop.bearing };
-  map.easeTo({ ...end, duration: 9500, easing: easeInOutSine, essential: true });
+  if (!reducedMotion()) map.easeTo({ ...end, duration, easing: easeInOutSine, essential: true });
 }
 
 /**
@@ -217,12 +235,126 @@ function holdOrbit(map: MapLibreMap, station: TourStation, stop: StopCamera) {
  */
 export async function runMonitoringHop(map: MapLibreMap, station: TourStation, isCurrent: () => boolean) {
   const stop = stopCamera(map, station, map.getCenter().toArray() as [number, number]);
-  const landed = await cinematicFlight(map, stop, groundReadyFor === station.id) && isCurrent();
+  // A flight nobody loaded the route for (a station picked by hand mid-tour) keeps to the backdrop.
+  if (preloadedFor !== station.id) { flightDetail.set(station.id, detailFloor); routePlanned.delete(station.id); }
+  followDetail(map, station.id, "flight");
+  // A flight leaving before even its coarse route (zoom 7) is loaded, as the
+  // first one of a tour can, waits a moment for it.
+  if (imageryShown(map)) await detailReached(flightDetail, station.id, detailFloor, 3000);
+  // Take off on a calm main thread: changing stations rebuilds the station panel,
+  // and a stalled frame as the camera starts to move reads as a jolt.
+  await steadyFrames();
+  if (!isCurrent()) return false;
+  // A flight whose route was planned from a measured stop glides low; before
+  // any stop has been measured it rises to where the always-loaded coarse imagery suffices.
+  const landed = await cinematicFlight(map, stop, routePlanned.has(station.id)) && isCurrent();
+  if (isCurrent()) followDetail(map, station.id, "stop");
   if (landed) {
     measureStopFootprint(map, stop);
-    holdOrbit(map, station, stop);
+    // The station's details open as the camera lands; the slow pass waits for them to settle.
+    heldView = { id: station.id, zoom: orbitEnd(stop).zoom, bearing: orbitEnd(stop).bearing ?? stop.bearing };
+    void steadyFrames().then((waited) => { if (isCurrent()) holdOrbit(map, station, stop, 9500 - waited); });
   }
   return landed;
+}
+
+/**
+ * Resolves once three frames in a row have come at a steady rate (or after
+ * `limit` ms), with how long it waited.
+ */
+function steadyFrames(limit = 1200) {
+  return new Promise<number>((resolve) => {
+    const started = performance.now();
+    let last = started, calm = 0;
+    const tick = (now: number) => {
+      calm = now - last < 22 ? calm + 1 : 0;
+      last = now;
+      if (calm >= 3 || now - started > limit) resolve(Math.max(0, now - started));
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+/** Loads the coarse imagery under the whole tour (zoom 4 to 7), so even the first flight has it ready. */
+export function prepareMonitoringTour() {
+  void tourBackdrop().catch(() => undefined);
+}
+
+/** Ends the tour's hold on the map's imagery detail (monitoring mode turned off). */
+export function endMonitoringTour(map: MapLibreMap) {
+  detailFollows = null;
+  setImageryMaxzoom(map, null);
+}
+
+// The detail cap. With 3D terrain the map swaps a sharper imagery tile in within
+// one frame (it cross-fades tiles only on a flat map), so a tile arriving while
+// the camera is over it shows as a sharp square on the blurred one beneath. The
+// tour therefore caps the imagery source's highest zoom at the finest level that
+// is fully loaded for what is on screen: the flight's whole route while flying,
+// the stop while it is held. Routes load coarse levels first, so the cap rises
+// as downloads finish and the view sharpens as a whole, never square by square.
+const detailFloor = imageryBackdropMaxZoom;   // the coarse level the backdrop loads over the whole tour region
+const firstLevel = 5;   // the level a route starts from, before any of it is loaded: the overview map's own
+const flightDetail = new Map<string, number>();   // station → finest level loaded for the whole flight there
+const stopDetail = new Map<string, number>();   // station → finest level loaded for its stop and hold
+const routePlanned = new Set<string>();   // stations whose flight route was known (from a measured stop) when it was loaded
+let detailFollows: { map: MapLibreMap; station: string; phase: "flight" | "stop" } | null = null;
+let uncappedMaxzoom: number | null = null;
+
+function setImageryMaxzoom(map: MapLibreMap, level: number | null) {
+  const source = map.getSource(imagerySourceId) as { maxzoom: number } | undefined;
+  if (!source) return;
+  uncappedMaxzoom ??= source.maxzoom;
+  const maxzoom = level === null ? uncappedMaxzoom : Math.min(level, tourMaxDetail);
+  if (source.maxzoom === maxzoom) return;
+  source.maxzoom = maxzoom;
+  if (diagnostics) map.getContainer().dataset.monitoringDetail = String(level ?? "");
+  map.triggerRepaint();
+}
+
+function followDetail(map: MapLibreMap, station: string, phase: "flight" | "stop") {
+  detailFollows = { map, station, phase };
+  applyDetailCap();
+}
+
+function applyDetailCap() {
+  if (!detailFollows) return;
+  const { map, station, phase } = detailFollows;
+  setImageryMaxzoom(map, (phase === "flight" ? flightDetail : stopDetail).get(station) ?? firstLevel);
+}
+
+const detailWaiters = new Set<() => void>();
+function raiseDetail(levels: Map<string, number>, station: string, level: number) {
+  if ((levels.get(station) ?? -1) >= level) return;
+  levels.set(station, level);
+  applyDetailCap();
+  for (const waiter of [...detailWaiters]) waiter();
+}
+
+/** Resolves once `station` has reached `level` in `levels`, or after `timeout` ms. */
+function detailReached(levels: Map<string, number>, station: string, level: number, timeout: number) {
+  return new Promise<void>((resolve) => {
+    const check = () => {
+      if ((levels.get(station) ?? -1) < level) return;
+      detailWaiters.delete(check);
+      clearTimeout(timer);
+      resolve();
+    };
+    const timer = setTimeout(() => { detailWaiters.delete(check); resolve(); }, timeout);
+    detailWaiters.add(check);
+    check();
+  });
+}
+
+/** The tiles `keys` ("z/x/y") at no finer than `level`: a finer tile is replaced by its ancestor at that level. */
+function atLevel(keys: string[], level: number) {
+  const tiles = new Set<string>();
+  for (const key of keys) {
+    const [z, x, y] = key.split("/").map(Number);
+    tiles.add(z <= level ? key : `${level}/${x >> (z - level)}/${y >> (z - level)}`);
+  }
+  return [...tiles];
 }
 
 // Stops of one kind share tilt and padding; only centre, zoom and bearing differ.
@@ -310,14 +442,16 @@ type CachedTile = { tileID: { key: string }; state: string; constructor: new (id
 type ImageryTiles = {
   getIds(): string[]; getTileByID(id: string): CachedTile | undefined;
   _source: { tileSize: number; loadTile(tile: CachedTile): Promise<unknown>; unloadTile?(tile: CachedTile): void };
-  _outOfViewCache: { has(id: unknown): boolean; add(id: unknown, tile: CachedTile): unknown };
+  _outOfViewCache: { has(id: unknown): boolean; add(id: unknown, tile: CachedTile): unknown; getAndRemove(id: unknown): CachedTile | undefined };
 };
 /**
  * Puts imagery tiles ("z/x/y") in the map's own cache of ready-to-draw tiles,
  * as textures on the graphics card. When the camera reaches them they are drawn
  * in the same frame, so a coarser tile is never seen being replaced by a sharper
- * one. The map has no public call for this, so it uses the map's tile store
- * directly; it resolves false, having done nothing, if that store is not as expected.
+ * one. A tile already in that cache is moved to its newest end: the cache drops
+ * its oldest tiles first, so those the coming flight needs stay. The map has no
+ * public call for this, so it uses the map's tile store directly; it resolves
+ * false, having done nothing, if that store is not as expected.
  */
 async function keepImageryOnGpu(map: MapLibreMap, keys: string[], concurrency = 12) {
   try {
@@ -325,12 +459,14 @@ async function keepImageryOnGpu(map: MapLibreMap, keys: string[], concurrency = 
     const sample = tiles?.getTileByID(tiles.getIds()[0] ?? "");
     if (!tiles || !sample) return false;
     const Tile = sample.constructor, TileId = sample.tileID.constructor as new (overscaledZ: number, wrap: number, z: number, x: number, y: number) => { key: string };
-    const ready = (id: { key: string }) => Boolean(tiles.getTileByID(id.key)) || tiles._outOfViewCache.has(id);
+    const cache = tiles._outOfViewCache;
+    const ready = (id: { key: string }) => Boolean(tiles.getTileByID(id.key)) || cache.has(id);
     const pending = [...new Set(keys)];
     let next = 0;
     await Promise.all(Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
       while (next < pending.length) {
         const [z, x, y] = pending[next++].split("/").map(Number), id = new TileId(z, 0, z, x, y);
+        if (cache.has(id)) { const kept = cache.getAndRemove(id); if (kept) cache.add(id, kept); continue; }
         if (ready(id)) continue;
         const tile = new Tile(id, tiles._source.tileSize);
         await tiles._source.loadTile(tile).catch(() => undefined);
@@ -355,15 +491,24 @@ function byDistance(keys: string[], target: [number, number]) {
   return keys.map((key) => [distance(key), key] as const).sort((a, b) => a[0] - b[0]).map(([, key]) => key);
 }
 
-/** Tiles the stop view will need: the measured footprint moved there, or rings around it before any landing. */
+/**
+ * Tiles the stop view will need, from landing to the end of the hold's slow
+ * pass: the measured footprint moved there, or rings around it before any landing.
+ */
 function stopTiles(stop: StopCamera, target: [number, number]) {
   const footprint = footprintFor(stop);
   if (!footprint) {
     const z = Math.floor(stop.zoom);
     return { terrain: [...tilesAround(target, z - 1, 1), ...tilesAround(target, z, 2)], detail: [...tilesAround(target, z + 1, 3), ...tilesAround(target, z + 2, 2)] };
   }
-  const turn = stop.bearing - footprint.bearing, zoomChange = stop.zoom - footprint.zoom;
-  return { terrain: footprintKeys(footprint.terrain, target, turn, zoomChange), detail: footprintKeys(footprint.detail, target, turn, zoomChange) };
+  const end = orbitEnd(stop), endBearing = end.bearing ?? stop.bearing, terrain = new Set<string>(), detail = new Set<string>();
+  // The start, middle and end of the slow pass, which turns the view by up to 40°.
+  for (const view of [0, 0.5, 1].map((t) => ({ zoom: stop.zoom + (end.zoom - stop.zoom) * t, bearing: stop.bearing + (endBearing - stop.bearing) * t }))) {
+    const turn = view.bearing - footprint.bearing, zoomChange = view.zoom - footprint.zoom;
+    for (const key of footprintKeys(footprint.terrain, target, turn, zoomChange)) terrain.add(key);
+    for (const key of footprintKeys(footprint.detail, target, turn, zoomChange)) detail.add(key);
+  }
+  return { terrain: [...terrain], detail: [...detail] };
 }
 
 /**
@@ -387,70 +532,167 @@ function flightTiles(map: MapLibreMap, start: CameraView, stop: StopCamera) {
   return { terrain: [...terrain], detail: [...detail] };
 }
 
-// The station whose flight path was fully loaded by the time its preload finished: the flight there can stay low.
-let groundReadyFor: string | null = null;
 // The preload for the hop about to be flown; the background warm-up waits for it, as the two share one slow download.
 let hopPreload: Promise<unknown> = Promise.resolve();
+let preloadedFor: string | null = null;   // the station that preload leads to
+
+const imageryShown = (map: MapLibreMap) => Boolean(map.getLayer(imagerySourceId)) && map.getLayoutProperty(imagerySourceId, "visibility") !== "none";
 
 /**
- * Loads elevation and imagery for the hop to the next stop: first the stop's own
- * view, then the ground the low flight passes over, imagery going straight onto
- * the graphics card. `from` is the stop being held (null when the tour is
- * starting). The returned promise settles once all of it is loaded.
+ * Loads elevation and imagery for the hop to the next stop, imagery going
+ * straight onto the graphics card. Imagery comes level by level, coarse first:
+ * the stop and the whole route up to zoom 10 (a few dozen tiles), then the stop
+ * at full detail, then the route one finer level at a time. After each level the
+ * detail cap for that flight or stop is raised to it. `from` is the stop being
+ * held (null when the tour is starting). The returned promise settles once all
+ * of it is loaded.
  */
 export function preloadMonitoringHop(map: MapLibreMap, from: TourStation | null, to: TourStation) {
-  groundReadyFor = null;
   recallFootprints(map);
-  if (map.getLayer(imagerySourceId) && map.getLayoutProperty(imagerySourceId, "visibility") !== "none") void preloadImageryBackdrop(tourRegion);
+  const satellite = imageryShown(map);
+  const backdrop = satellite ? tourBackdrop() : Promise.resolve();
   // The flight leaves from where the hold's slow pass ends, or from the camera as it is now.
   const center = map.getCenter().toArray() as [number, number];
   const start: CameraView = from && heldView?.id === from.id ? { center, zoom: heldView.zoom, bearing: heldView.bearing }
     : { center, zoom: map.getZoom(), bearing: map.getBearing() };
   const stop = stopCamera(map, to, center), target = mercator(...stop.center);
   const tiles = stopTiles(stop, target), way = flightTiles(map, start, stop);
-  const stopTerrain = byDistance(tiles.terrain, target), stopDetail = byDistance(tiles.detail, target);
+  const stopTerrain = byDistance(tiles.terrain, target), stopImagery = byDistance(tiles.detail, target);
   // What the flight needs beyond the stop's own tiles (elevation and imagery tiles are separate sets).
-  const stopTerrainKeys = new Set(stopTerrain), stopDetailKeys = new Set(stopDetail);
-  const restTerrain = way.terrain.filter((key) => !stopTerrainKeys.has(key)), restDetail = way.detail.filter((key) => !stopDetailKeys.has(key));
-  const wayTerrain = restTerrain.slice(0, maxWayTiles), wayDetail = restDetail.slice(0, maxWayTiles);
-  // The whole way is covered only once a stop has been measured and nothing had to be left out.
-  const wholeWay = Boolean(footprintFor(stop)) && restTerrain.length <= maxWayTiles && restDetail.length <= maxWayTiles;
+  const stopTerrainKeys = new Set(stopTerrain), stopImageryKeys = new Set(stopImagery);
+  const wayTerrain = way.terrain.filter((key) => !stopTerrainKeys.has(key)).slice(0, maxWayTiles);
+  // The route in the order the camera reaches it, ending at the stop.
+  const route = [...way.detail.filter((key) => !stopImageryKeys.has(key)), ...stopImagery];
+  if (footprintFor(stop)) routePlanned.add(to.id); else routePlanned.delete(to.id);
+  // A new route: none of it counts as loaded yet.
+  flightDetail.set(to.id, firstLevel);
+  applyDetailCap();
   // Hillshade (256 px DEM tiles) only renders with the studio's relief on.
   const shade = map.getLayer("station-terrain-shade") && map.getLayoutProperty("station-terrain-shade", "visibility") === "visible";
   const started = performance.now(), container = map.getContainer();
-  if (diagnostics) container.dataset.monitoringPreloadPlan = JSON.stringify({ stopTerrain, stopDetail, wayTerrain, wayDetail });
+  if (diagnostics) container.dataset.monitoringPreloadPlan = JSON.stringify({ stopTerrain, stopDetail: stopImagery, wayTerrain, wayDetail: route.slice(0, route.length - stopImagery.length) });
+  const imagery = async () => {
+    if (!satellite) {
+      // Vector background: no imagery is drawn, so nothing needs holding back.
+      raiseDetail(stopDetail, to.id, tourMaxDetail);
+      raiseDetail(flightDetail, to.id, tourMaxDetail);
+      return;
+    }
+    // Without a measured stop the route is unknown: that flight keeps to the backdrop.
+    const planned = routePlanned.has(to.id), coarse = 10;
+    if (!planned) void backdrop.then(() => raiseDetail(flightDetail, to.id, detailFloor), () => undefined);
+    // The coarsest levels are a handful of tiles each, so even a first flight soon has a whole picture.
+    for (let level = firstLevel + 1; level <= coarse; level++) {
+      await preloadImagery(map, atLevel(route, level), 12, true);
+      raiseDetail(stopDetail, to.id, level);
+      if (planned) raiseDetail(flightDetail, to.id, level);
+    }
+    for (let level = coarse + 1; level <= tourMaxDetail; level++) {
+      await preloadImagery(map, atLevel(stopImagery, level), 12, true);
+      raiseDetail(stopDetail, to.id, level);
+    }
+    // A flight is only allowed a level whose whole route is loaded; a level too
+    // large to load in reasonable time ends the climb.
+    if (!planned) return;
+    for (let level = coarse + 1; level <= tourMaxDetail; level++) {
+      const keys = atLevel(route, level);
+      if (keys.length > maxLevelTiles) break;
+      await preloadImagery(map, keys, 12, true);
+      raiseDetail(flightDetail, to.id, level);
+    }
+  };
   const loaded = Promise.all([
     // The 2D tour has no terrain to load.
-    to.flat ? Promise.resolve() : preloadTerrainTiles(png([...stopTerrain, ...wayTerrain, ...(shade ? [...stopDetail, ...wayDetail] : [])])),
-    preloadImagery(map, stopDetail, 12, true).then(() => preloadImagery(map, wayDetail, 12, true)),
+    to.flat ? Promise.resolve() : preloadTerrainTiles(png([...stopTerrain, ...wayTerrain, ...(shade ? [...stopImagery, ...route.slice(0, maxWayTiles)] : [])])),
+    imagery(),
   ]).then(() => {
     container.dataset.monitoringPreloadMs = String(Math.round(performance.now() - started));
-    if (wholeWay && hopPreload === loaded) groundReadyFor = to.id;
   });
   hopPreload = loaded;
+  preloadedFor = to.id;
   return loaded;
 }
 
+/**
+ * Every tile the tour draws, for building the local tile pack: each stop with
+ * its hold, each flight between consecutive stops at every level of detail it
+ * steps through, the first flight in from the camera's current view (the
+ * overview), and the backdrop. Imagery keys are "z/x/y"; terrain keys are the
+ * 512 px mesh tiles as "z/x/y".
+ */
+export function monitoringTourTiles(map: MapLibreMap, stations: TourStation[]) {
+  recallFootprints(map);
+  const imagery = new Set<string>(backdropTileKeys(tourRegion, tourHorizon)), terrain = new Set<string>();
+  const overview: CameraView = { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing: map.getBearing() };
+  const addRoute = (keys: string[]) => {
+    for (let level = firstLevel; level <= tourMaxDetail; level++) for (const key of atLevel(keys, level)) imagery.add(key);
+  };
+  stations.forEach((to, index) => {
+    const count = stations.length, from = stations[(index - 1 + count) % count], before = stations[(index - 2 + count) % count];
+    const stop = stopCamera(map, to, [from.longitude, from.latitude]), target = mercator(...stop.center);
+    const tiles = stopTiles(stop, target);
+    for (const key of tiles.terrain) terrain.add(key);
+    addRoute(tiles.detail);
+    const starts = [count > 1 ? departureView(map, from, before) : null, index === 0 ? overview : null];
+    for (const start of starts) {
+      if (!start) continue;
+      const way = flightTiles(map, start, stop);
+      for (const key of way.terrain) terrain.add(key);
+      addRoute(way.detail);
+    }
+  });
+  return { measured: Boolean(footprints.closeUp ?? footprints.catchment ?? footprints.flat), stations: stations.length, imagery: [...imagery], terrain: [...terrain] };
+}
+
+/** The view a flight from `from` leaves from: where the hold's slow pass there ends (`before` is the stop before it). */
+function departureView(map: MapLibreMap, from: TourStation, before: TourStation): CameraView {
+  const held = stopCamera(map, from, [before.longitude, before.latitude]), end = orbitEnd(held);
+  return { center: held.center, zoom: end.zoom, bearing: end.bearing ?? held.bearing };
+}
+
 // After the first landing, quietly fetch the imagery and terrain for every stop
-// on the tour, so even the first loop lands on ready tiles. The persistent tile
-// caches keep them; stations already warmed this session are skipped.
+// on the tour, then for every flight between them, so later hops find their
+// tiles in the persistent tile caches and are ready within a second or two.
+// Stops and flights already warmed this session are skipped.
 const warmedStations = new Set<string>();
+const warmedFlights = new Set<string>();
 let warming = false;
 export function warmMonitoringTour(map: MapLibreMap, stations: TourStation[], fromIndex: number, isActive: () => boolean) {
   if (warming || !(footprints.flat ?? footprints.closeUp ?? footprints.catchment) || fromIndex < 0) return;
   const order = [...stations.slice(fromIndex + 1), ...stations.slice(0, fromIndex + 1)];
+  const previous = (index: number) => index ? order[index - 1] : stations[fromIndex];
   warming = true;
   void (async () => {
     try {
+      // Low concurrency throughout: this runs alongside each hop's own, more urgent preload.
       for (let index = 0; index < order.length && isActive(); index++) {
-        const to = order[index], from = index ? order[index - 1] : stations[fromIndex];
+        const to = order[index], from = previous(index);
         if (warmedStations.has(to.id)) continue;
         await hopPreload.catch(() => undefined);
         const stop = stopCamera(map, to, [from.longitude, from.latitude]), target = mercator(...stop.center);
         const tiles = stopTiles(stop, target);
-        // Low concurrency: this runs alongside the next hop's own, more urgent preload.
         await Promise.all([to.flat ? Promise.resolve() : preloadTerrainTiles(png(tiles.terrain)), preloadImagery(map, byDistance(tiles.detail, target), 4)]);
         warmedStations.add(to.id);
+      }
+      for (let index = 0; index < order.length && isActive(); index++) {
+        const to = order[index], from = previous(index), key = `${from.id}>${to.id}`;
+        if (warmedFlights.has(key) || from.id === to.id) continue;
+        await hopPreload.catch(() => undefined);
+        const before = index > 1 ? order[index - 2] : index === 1 ? stations[fromIndex] : stations[(fromIndex - 1 + stations.length) % stations.length];
+        const stop = stopCamera(map, to, [from.longitude, from.latitude]);
+        const way = flightTiles(map, departureView(map, from, before), stop);
+        // Every level the hop's own preload steps through, as far as it would go.
+        const levels: string[] = [];
+        for (let level = 8; level <= tourMaxDetail; level++) {
+          const keys = atLevel(way.detail, level);
+          if (keys.length > maxLevelTiles) break;
+          levels.push(...keys);
+        }
+        await Promise.all([
+          to.flat ? Promise.resolve() : preloadTerrainTiles(png(way.terrain.slice(0, maxWayTiles))),
+          preloadImagery(map, levels, 4),
+        ]);
+        warmedFlights.add(key);
       }
     } finally {
       warming = false;
