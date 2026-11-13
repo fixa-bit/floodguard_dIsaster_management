@@ -1,0 +1,42 @@
+{
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_pinball": 0.22940636536854492,
+      "validation_pinball": 0.18418552183708656
+    },
+    {
+      "epoch": 2,
+      "train_pinball": 0.15745434149457568,
+      "validation_pinball": 0.1600540362484237
+    },
+    {
+      "epoch": 3,
+      "train_pinball": 0.14861232668545885,
+      "validation_pinball": 0.1543366976309351
+    },
+    {
+      "epoch": 4,
+      "train_pinball": 0.1412497730355586,
+      "validation_pinball": 0.15017609702748275
+    },
+    {
+      "epoch": 5,
+      "train_pinball": 0.1331172375059082,
+      "validation_pinball": 0.15257523644333731
+    },
+    {
+      "epoch": 6,
+      "train_pinball": 0.1284107503092881,
+      "validation_pinball": 0.15733082584231844
+    },
+    {
+      "epoch": 7,
+      "train_pinball": 0.12759227634719725,
+      "validation_pinball": 0.15693935495994757
+    }
+  ],
+  "elapsed_seconds": 163.87137249999978,
+  "learning_rate": 0.001,
+  "source_hashes_unchanged": true
+}

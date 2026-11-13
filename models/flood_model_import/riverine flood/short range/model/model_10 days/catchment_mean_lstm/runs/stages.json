@@ -1,0 +1,8 @@
+{
+  "spatial": [
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_10 days\\spatially_distributed_model\\runs\\initial\\seed_42\\best.pt"
+  ],
+  "mean_control": [
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_10 days\\catchment_mean_lstm\\runs\\initial\\seed_42\\best.pt"
+  ]
+}

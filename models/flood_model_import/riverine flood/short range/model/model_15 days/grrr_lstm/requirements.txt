@@ -1,0 +1,7 @@
+numpy
+pandas
+torch
+matplotlib
+zarr>=2.18,<3
+numcodecs>=0.15,<0.16
+pyshp>=3

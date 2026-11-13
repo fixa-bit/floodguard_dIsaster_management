@@ -1,0 +1,43 @@
+{
+  "source_checkpoint": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\pretrained_multibasin_lstm\\runs\\pretrained\\seed_42\\best.pt",
+  "source_sha256": "a30d0bfdc465aab90db819636a9bd1c3efbf61f4b9332a4829aea6a88c25f6da",
+  "adapted_sha256": "0b704a8cbb9c6bd7e0e236005111858de444aff88e04978abb7d7e6a00de89af",
+  "pretraining_basins": [
+    "06043500",
+    "06191500",
+    "11528700",
+    "12189500",
+    "12358500",
+    "12414500",
+    "13235000",
+    "13340000"
+  ],
+  "training_years": [
+    1985,
+    1986,
+    1987,
+    1988,
+    1989,
+    1990,
+    1991,
+    1992,
+    1993,
+    1994
+  ],
+  "selection_years": [
+    1995,
+    1996
+  ],
+  "adaptation": {
+    "source_horizon": 10,
+    "new_horizon": 15,
+    "new_lead_initialization": "copy day-10 embedding; all lead embeddings trainable",
+    "new_historical_channels": [
+      "log_observed_discharge",
+      "observed_discharge_missing"
+    ],
+    "new_channel_initialization": "zero input weights; transferred calendar columns remapped",
+    "all_other_weight_tensors_unchanged": true
+  },
+  "normalization": "recomputed on 2016-2020 Marala only; transferred weights readapt during fine-tuning"
+}

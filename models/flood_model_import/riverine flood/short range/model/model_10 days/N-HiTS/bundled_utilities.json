@@ -1,0 +1,30 @@
+{
+  "project_files": [
+    {
+      "source": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\data.py",
+      "sha256": "dc4b491f2d246d40a77cb7bb5b07fe6ed8a7c7e7fbdf2dd0d1b83ccea4c5e01a",
+      "local": "_nhits/core/data.py"
+    },
+    {
+      "source": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\lstm\\train.py",
+      "sha256": "e5619ccd6b69faa43a3c6368d09d5b9ee6ff6d5bb63f4816e43e99e6fe16999e",
+      "local": "_nhits/core/training.py"
+    },
+    {
+      "source": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\lstm\\model.py",
+      "sha256": "a0470ec42a47be88fc3ddaa788531eed179d8f7d17300ccd901350853ffd2e83",
+      "local": "_nhits/core/lstm_model.py"
+    }
+  ],
+  "evaluation_functions_source": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\evaluate.py",
+  "evaluation_functions_sha256": "43a9194714bc6899ea09ff9fc52f951eae8e78bba8836b44ddef0b614aff4110",
+  "extracted_evaluation_functions": [
+    "season_for",
+    "metrics",
+    "markdown",
+    "predict_checkpoint"
+  ],
+  "reference_checkpoint_sha256": "5c4e794911deb184184e72980093184f708c9a89a5594d5afaa744781c34c1c3",
+  "implementation_and_helpers_bundled": true,
+  "model_weights_retrained_or_changed": false
+}

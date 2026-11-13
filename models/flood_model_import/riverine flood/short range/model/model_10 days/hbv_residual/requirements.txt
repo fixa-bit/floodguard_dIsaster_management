@@ -1,0 +1,7 @@
+numpy
+pandas
+scipy
+numba
+lightgbm>=4.7
+torch
+matplotlib

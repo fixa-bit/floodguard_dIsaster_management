@@ -1,0 +1,183 @@
+{
+  "method": "reuse_existing_catchment_without_redelineation",
+  "source_file": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\dataset\\chenab_marala\\processed\\marala\\catchment\\marala_upstream_catchment.geojson",
+  "source_sha256": "49efd115f5d3ce2d1241fb35adaaf48bf6c8d0705768ac93dc88fbd4f11ab651",
+  "source_properties": {
+    "station": "Marala",
+    "river": "Chenab",
+    "area_km2_geodesic": 28780.646,
+    "outlet_longitude": 74.46,
+    "outlet_latitude": 32.67,
+    "source": "Global Watersheds / MERIT-Hydro and MERIT-Basins",
+    "verification_status": "source_and_geometry_checked_research_delineation",
+    "agency_certified": false,
+    "source_url": "https://mghydro.com/app/watershed_api?lat=32.67&lng=74.46&precision=high&simplify=false&beautify=false",
+    "nominal_source_resolution": "3 arc-seconds (~90 m at equator)",
+    "crs": "OGC:CRS84 (WGS84 longitude, latitude)",
+    "license_note": "Service derived-data terms: CC BY-NC-SA 4.0; see saved terms and README."
+  },
+  "catchment_area_km2": 28794.390101044257,
+  "saved_verification_report": {
+    "checked_utc": "2026-10-23T08:57:16.497941+00:00",
+    "verification_status": "source_and_geometry_checked_research_delineation",
+    "agency_certified": false,
+    "field_survey_verified": false,
+    "checks": {
+      "valid_polygon_without_repair": true,
+      "outlet_coordinates_found_in_jica_pmd_table": true,
+      "published_station_point_inside_or_on_boundary": true,
+      "station_within_500m_of_catchment_edge": true,
+      "upstream_network_intersects_station_coordinate_rounding_box": true,
+      "area_within_5_percent_of_pmd_29192_km2": true,
+      "nearby_outlet_polygon_iou_at_least_0_99": true,
+      "low_precision_polygon_iou_at_least_0_98": true,
+      "downstream_khanki_excluded": true
+    },
+    "area_km2_geodesic": 28780.645645367713,
+    "service_rounded_area_km2": "28,800",
+    "bounds_wgs84": [
+      74.05041,
+      32.08875,
+      77.80625,
+      34.21208
+    ],
+    "outlet": {
+      "longitude": 74.46,
+      "latitude": 32.67,
+      "station_to_boundary_m": 60.139296361186034,
+      "station_to_upstream_network_m": 557.8418828207521,
+      "nearest_boundary_coordinate": [
+        74.45958,
+        32.67041
+      ],
+      "actual_service_snapped_pour_point": "not exposed by API",
+      "published_coordinate_rounding_half_width_degrees": 0.005,
+      "network_check_basis": "Network intersects the +/-0.005 degree rounding box implied by two-decimal station coordinates, rather than assuming survey precision."
+    },
+    "sensitivity": {
+      "nearby_test_outlet": [
+        74.461,
+        32.671
+      ],
+      "nearby_polygon_iou": 1.0,
+      "nearby_symmetric_difference_km2": 0.0,
+      "low_precision_area_km2": 28868.038579979886,
+      "low_precision_polygon_iou": 0.9956977753735436
+    },
+    "references": {
+      "station_coordinate": {
+        "url": "https://openjicareport.jica.go.jp/pdf/12395935.pdf",
+        "pdf_pages": [
+          36
+        ],
+        "table_source": "Received from PMD"
+      },
+      "catchment_area": {
+        "url": "https://www.pmd.gov.pk/rnd/rndweb/rnd_new/journal/vol13_issue26_files/5_Flood_Forecasting_of_an_Ungauged_Trans-boundary_Chenab_River_Basin_Using_Distributed_Hydrological_Model_Integrated_Flood_Analysis_System_%28IFAS%29.pdf",
+        "pdf_pages": [
+          4
+        ],
+        "area_km2": 29192,
+        "difference_percent": -1.4091338539061637
+      }
+    },
+    "rainfall_grid_coverage": {
+      "downloaded_cells": 21,
+      "intersecting_cells": 21,
+      "covered_area_km2": 28780.645645367713,
+      "uncovered_area_km2": 0.0,
+      "covered_fraction": 1.0,
+      "full_coverage": true,
+      "method": "Intersect native cell footprints, not grid centers or the requested rectangle, with the catchment. WGS84 geodesic areas.",
+      "action": "Full catchment is covered; no spatial grid extension is required."
+    },
+    "source_receipts": [
+      {
+        "source_url": "https://mghydro.com/app/watershed_api?lat=32.67&lng=74.46&precision=high&simplify=false&beautify=false",
+        "raw_file": "raw/marala/catchment/global_watersheds/marala_32.67_74.46_high.geojson",
+        "sha256": "39cfdce5301a37699f12f3cc9b68cb68a99eafbc1de6ea22e82f06d21561c789",
+        "bytes": 297746,
+        "downloaded_utc": "2026-10-23T08:35:45.520388+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.270678+00:00"
+      },
+      {
+        "source_url": "https://mghydro.com/app/watershed_api?lat=32.671&lng=74.461&precision=high&simplify=false&beautify=false",
+        "raw_file": "raw/marala/catchment/global_watersheds/marala_nearby_32.671_74.461_high.geojson",
+        "sha256": "fdae474e52c03300ee7c2e1b57d5fbab70e3bf795af525bb4d3c141558e002fe",
+        "bytes": 297748,
+        "downloaded_or_checked_utc": "2026-10-23T08:38:22.865200+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.275801+00:00"
+      },
+      {
+        "source_url": "https://mghydro.com/app/watershed_api?lat=32.67&lng=74.46&precision=low&simplify=false&beautify=false",
+        "raw_file": "raw/marala/catchment/global_watersheds/marala_32.67_74.46_low.geojson",
+        "sha256": "4af4fa41248dc7e338a9b196ab40d61aaecdf803f6620afb3b0c2af3e7207d66",
+        "bytes": 70750,
+        "downloaded_or_checked_utc": "2026-10-23T08:38:30.425530+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.293209+00:00"
+      },
+      {
+        "source_url": "https://mghydro.com/app/upstream_rivers_api?lat=32.67&lng=74.46&precision=high&simplify=false&beautify=false",
+        "raw_file": "raw/marala/catchment/global_watersheds/marala_upstream_rivers_high.geojson",
+        "sha256": "74e02c707c156ade40662e120a032d7ab876470f859c6b7bc23ef202f8ab0fd3",
+        "bytes": 521777,
+        "downloaded_utc": "2026-10-23T08:37:04.710680+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.302361+00:00"
+      },
+      {
+        "source_url": "https://openjicareport.jica.go.jp/pdf/12395935.pdf",
+        "raw_file": "raw/marala/catchment/references/jica_station_locations.pdf",
+        "sha256": "058025b7bbdc01f4958f89a854cc900d4968b261fd32c04e44a59e201fad4a1a",
+        "bytes": 24389344,
+        "downloaded_utc": "2026-10-23T08:42:20.360755+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.334845+00:00"
+      },
+      {
+        "source_url": "https://mghydro.com/watersheds/help.html",
+        "raw_file": "raw/marala/catchment/references/global_watersheds_help.html",
+        "sha256": "e9f316b6695a0afbba8a1786f4a93571e40cd1536b8b3488f9f63b47aface8ad",
+        "bytes": 60840,
+        "downloaded_utc": "2026-10-23T08:42:20.378629+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.343218+00:00"
+      },
+      {
+        "source_url": "https://mghydro.com/watersheds/data/",
+        "raw_file": "raw/marala/catchment/references/global_watersheds_data_terms.html",
+        "sha256": "20619d265ea65181e3e7b1775e33b1b44c25f9006617bcb9815cd7417690d69f",
+        "bytes": 21753,
+        "downloaded_utc": "2026-10-23T08:42:21.874911+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.347193+00:00"
+      },
+      {
+        "source_url": "https://global-hydrodynamics.github.io/MERIT_Hydro/",
+        "raw_file": "raw/marala/catchment/references/merit_hydro_source.html",
+        "sha256": "a74ec0f5bef33d2f552049f18971d2ebe001cc931ca30a01836fd5f920585fd4",
+        "bytes": 20989,
+        "downloaded_utc": "2026-10-23T08:42:22.667296+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.357098+00:00"
+      },
+      {
+        "source_url": "https://power.larc.nasa.gov/docs/methodology/meteorology/",
+        "raw_file": "raw/marala/catchment/references/nasa_power_meteorology.html",
+        "sha256": "cdd5ca11ef652d3cda60889d3d3c735c39663f9126d3487b2eebb867265ff3bb",
+        "bytes": 25236,
+        "downloaded_utc": "2026-10-23T08:42:24.089848+00:00",
+        "last_checked_utc": "2026-10-23T08:57:15.365610+00:00"
+      },
+      {
+        "source_url": "https://www.pmd.gov.pk/rnd/rndweb/rnd_new/journal/vol13_issue26_files/5_Flood_Forecasting_of_an_Ungauged_Trans-boundary_Chenab_River_Basin_Using_Distributed_Hydrological_Model_Integrated_Flood_Analysis_System_%28IFAS%29.pdf",
+        "raw_file": "raw/marala/discharge/pmd/marala_historical_flood_peaks_pmd_journal.pdf",
+        "sha256": "c5b14dfa3d63b1fdcc03f89b40fa439b906d293a1ba95b1d506b3ddc59b0f070",
+        "role": "published_area_reference"
+      }
+    ],
+    "limitations": [
+      "Model-derived hydrological boundary; not a surveyed or WAPDA/PMD-issued polygon.",
+      "Literature area agreement is a consistency check, not independent field verification.",
+      "Input coordinate is published to two decimal degrees. A nearby test gives an identical polygon; the exact service snap point is not exposed.",
+      "Provider documents MERIT-Hydro/MERIT-Basins, but the live API does not expose exact underlying dataset/software versions.",
+      "Catchment follows modeled topographic drainage and does not encode time-varying canal transfers, dam operations, or groundwater exchanges."
+    ]
+  },
+  "qualification": "Existing MERIT-derived research polygon; original service's exact snapped cell is not exposed. Saved checks are provenance, not a new independent validation."
+}

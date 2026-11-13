@@ -1,0 +1,127 @@
+{
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_pinball": 0.3861277473208114,
+      "validation_pinball": 0.1523733061702289
+    },
+    {
+      "epoch": 2,
+      "train_pinball": 0.13884534538415744,
+      "validation_pinball": 0.11351088702417907
+    },
+    {
+      "epoch": 3,
+      "train_pinball": 0.11789424452124694,
+      "validation_pinball": 0.10293108090999836
+    },
+    {
+      "epoch": 4,
+      "train_pinball": 0.10779227998035043,
+      "validation_pinball": 0.10470144890053935
+    },
+    {
+      "epoch": 5,
+      "train_pinball": 0.09466446715596172,
+      "validation_pinball": 0.09906545098720233
+    },
+    {
+      "epoch": 6,
+      "train_pinball": 0.08902661041339352,
+      "validation_pinball": 0.0973633915182965
+    },
+    {
+      "epoch": 7,
+      "train_pinball": 0.08332396912648458,
+      "validation_pinball": 0.09355088508933963
+    },
+    {
+      "epoch": 8,
+      "train_pinball": 0.0769231948270664,
+      "validation_pinball": 0.0970346753146476
+    },
+    {
+      "epoch": 9,
+      "train_pinball": 0.07377450512439594,
+      "validation_pinball": 0.09159880701333589
+    },
+    {
+      "epoch": 10,
+      "train_pinball": 0.07014894406950253,
+      "validation_pinball": 0.08365346593572094
+    },
+    {
+      "epoch": 11,
+      "train_pinball": 0.06907891332947295,
+      "validation_pinball": 0.08174318091774764
+    },
+    {
+      "epoch": 12,
+      "train_pinball": 0.06814988120490463,
+      "validation_pinball": 0.07668577898780833
+    },
+    {
+      "epoch": 13,
+      "train_pinball": 0.06681612325193652,
+      "validation_pinball": 0.07705476446907149
+    },
+    {
+      "epoch": 14,
+      "train_pinball": 0.06500275288423753,
+      "validation_pinball": 0.08085854309663344
+    },
+    {
+      "epoch": 15,
+      "train_pinball": 0.06493973044783968,
+      "validation_pinball": 0.0850862774935349
+    },
+    {
+      "epoch": 16,
+      "train_pinball": 0.06407590838929499,
+      "validation_pinball": 0.08340410958796642
+    },
+    {
+      "epoch": 17,
+      "train_pinball": 0.06312265206902468,
+      "validation_pinball": 0.07660068775297242
+    },
+    {
+      "epoch": 18,
+      "train_pinball": 0.06255900758628158,
+      "validation_pinball": 0.07491714688031115
+    },
+    {
+      "epoch": 19,
+      "train_pinball": 0.06345576599077332,
+      "validation_pinball": 0.08849580787611942
+    },
+    {
+      "epoch": 20,
+      "train_pinball": 0.06274001476690137,
+      "validation_pinball": 0.08531452800592941
+    },
+    {
+      "epoch": 21,
+      "train_pinball": 0.06132942903788669,
+      "validation_pinball": 0.08375728747308213
+    },
+    {
+      "epoch": 22,
+      "train_pinball": 0.062436559423768856,
+      "validation_pinball": 0.0760274108751543
+    },
+    {
+      "epoch": 23,
+      "train_pinball": 0.0599373998309083,
+      "validation_pinball": 0.07924640407820778
+    },
+    {
+      "epoch": 24,
+      "train_pinball": 0.0589733389151051,
+      "validation_pinball": 0.07575177397377818
+    }
+  ],
+  "elapsed_seconds": 67.94024270000227,
+  "learning_rate": 0.001,
+  "source_hashes_unchanged": true
+}

@@ -1,0 +1,114 @@
+data:
+  daily_file: data/marala_daily.csv
+  date_column: date
+  basin_column: basin_id
+  default_basin_id: marala
+  target_column: q_cumecs
+  dynamic_columns:
+  - rain_chirps_mm
+  - temperature_c
+  - swe_mm
+  - snow_depth_m
+  - snowmelt_mm
+  - dewpoint_c
+  - ssrd_wm2
+  - pet_mm
+  static_file: null
+  static_columns: []
+  use_static: false
+  past_discharge: true
+  hindcast_length: 365
+  forecast_horizon: 10
+  calendar_features: true
+  forecast_mode: reanalysis_with_noise
+  forecast_file: null
+  forecast_date_column: date
+  forecast_lead_column: lead_day
+  forecast_available_at_column: null
+  issue_hour_utc: 24
+  forecast_columns:
+  - precipitation_mm
+  - temperature_c
+  reanalysis_columns:
+  - rain_era5_mm
+  - temperature_c
+  noise:
+    std_at_lead_1: 0.05
+    std_growth_per_lead: 0.025
+    evaluation_seed: 12345
+splits:
+  train:
+  - 2016
+  - 2020
+  validation:
+  - 2021
+  - 2021
+  test:
+  - 2022
+  - 2024
+normalization:
+  inputs: standard
+  static: standard
+  flow_scale_cumecs: 1.0
+  standardize_log_flow: true
+model:
+  hidden_size: 64
+  num_layers: 1
+  dropout: 0.1
+  lead_embedding_size: 8
+  static_embedding_size: 8
+  quantiles:
+  - 0.05
+  - 0.25
+  - 0.5
+  - 0.75
+  - 0.95
+training:
+  output_dir: runs/initial
+  epochs: 40
+  batch_size: 64
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+  patience: 7
+  min_delta: 0.0001
+  gradient_clip: 1.0
+  ensemble_size: 1
+  seeds:
+  - 42
+  device: cpu
+  cpu_threads: 2
+  flush_denormal: true
+finetuning:
+  output_dir: runs/finetuned
+  epochs: 10
+  learning_rate: 0.0001
+  freeze_hindcast: false
+  recompute_normalization: false
+model_family: nhits
+architecture:
+  name: nhits
+  hidden_units: 64
+  hidden_layers: 2
+  blocks_per_stack: 1
+  pooling_kernels:
+  - 16
+  - 4
+  - 1
+  frequency_downsample:
+  - 4
+  - 2
+  - 1
+  stack_types:
+  - identity
+  - trend
+  - seasonality
+  polynomial_degree: 2
+  harmonics: 2
+reference:
+  config: reference/original_lstm/config.yaml
+  checkpoint: reference/original_lstm/best.pt
+  prior_comparison: reports/all_models_comparison/scores_flood_nonflood_by_lead.csv
+evaluation:
+  output_dir: reports/initial
+  peak_percentile: 0.95
+  flood_threshold_cumecs: null

@@ -1,0 +1,26 @@
+{
+  "config_sha256": "78be52f6072b3af2ed92fba5b6687735a92917a3ef89f822db285e913e4836ff",
+  "configuration_frozen_before_training": true,
+  "source_sha256": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "forecast_horizon": 30,
+  "training_year_range": [
+    2016,
+    2020
+  ],
+  "validation_year_range": [
+    2021,
+    2021
+  ],
+  "test_year_range": [
+    2022,
+    2024
+  ],
+  "checkpoint_selection": "validation masked pinball only",
+  "training_mode": "scratch",
+  "no_hpo_search": true,
+  "one_real_model_only": true,
+  "next_model_requires_user_feedback": true,
+  "discharge_filling": false,
+  "forecast_mode": "reanalysis_with_noise",
+  "archived_weather_forecasts": "not available"
+}

@@ -1,0 +1,21 @@
+{
+  "original_and_copied_daily_sha256": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "all_original_observations_and_nan_locations_preserved": true,
+  "observed_targets_in_full_table": 3454,
+  "nan_targets_in_full_table": 13636,
+  "all_frozen_configs_unchanged": true,
+  "tests_passed": {
+    "nhits": 8,
+    "nbeatsx": 8
+  },
+  "synthetic_tests_are_not_accuracy_evidence": true,
+  "all_future_weather_channels_exactly_match_original_experiment": true,
+  "observed_test_days": 1084,
+  "scored_issue_lead_pairs": 10795,
+  "missing_target_pairs_excluded": 45,
+  "no_discharge_filling": true,
+  "single_frozen_configuration_per_model": true,
+  "hpo_sweep_performed": false,
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "upstream_source_provenance": "source_reference/provenance.json"
+}

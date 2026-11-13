@@ -1,0 +1,22 @@
+{
+  "seconds": 226.58163590000004,
+  "epochs": 80,
+  "best_validation_loss": 0.29786673758652715,
+  "parameters": 6668,
+  "train_samples_available": 1767,
+  "train_samples_per_epoch": 589,
+  "validation_samples": 336,
+  "seed": 42,
+  "training_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020
+  ],
+  "selection_years": [
+    2021
+  ],
+  "source_sha256_unchanged": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "hpo_trials": 1
+}

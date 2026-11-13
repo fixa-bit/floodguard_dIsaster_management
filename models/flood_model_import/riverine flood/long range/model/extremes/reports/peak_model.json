@@ -1,0 +1,47 @@
+{
+  "selected_features": "P3",
+  "selection": {
+    "P3": {
+      "loo_mean_log_score": -0.8826518320106376,
+      "loo_brier_400k": 0.146289329627661
+    },
+    "P3+A30": {
+      "loo_mean_log_score": -0.8924163794835522,
+      "loo_brier_400k": 0.1465637918205057
+    },
+    "P3+A30+T3": {
+      "loo_mean_log_score": -0.9273937345230944,
+      "loo_brier_400k": 0.15411405749473836
+    },
+    "no_predictor": {
+      "loo_mean_log_score": -1.0225824070381315,
+      "loo_brier_400k": 0.20891161431701968
+    }
+  },
+  "model": {
+    "features": [
+      "log_p3"
+    ],
+    "feature_mean": [
+      4.328308510392872
+    ],
+    "feature_std": [
+      0.5133802063008552
+    ],
+    "coefficients": [
+      8.895901475656755,
+      0.3727063169359953
+    ],
+    "sigma_log": 0.5643562149562126,
+    "converged": true
+  },
+  "censor_m3s": 5663.3693184,
+  "thresholds_m3s": {
+    "high_200k_cusecs": 5663.3693184,
+    "very_high_400k_cusecs": 11326.7386368,
+    "exceptional_600k_cusecs": 16990.1079552
+  },
+  "n_train_years": 37,
+  "n_censored": 14,
+  "assumption": "PMD list complete for High-class-and-above floods 1980-2016"
+}

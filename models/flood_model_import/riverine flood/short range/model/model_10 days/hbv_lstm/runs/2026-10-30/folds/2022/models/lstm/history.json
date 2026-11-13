@@ -1,0 +1,157 @@
+[
+  {
+    "epoch": 1,
+    "train_pinball_scaled": 0.22540699438011166,
+    "validation_pinball_scaled": 0.22035711481117867
+  },
+  {
+    "epoch": 2,
+    "train_pinball_scaled": 0.19763872734084936,
+    "validation_pinball_scaled": 0.17777548203585852
+  },
+  {
+    "epoch": 3,
+    "train_pinball_scaled": 0.16000648900385825,
+    "validation_pinball_scaled": 0.1553249194798335
+  },
+  {
+    "epoch": 4,
+    "train_pinball_scaled": 0.13745540641058482,
+    "validation_pinball_scaled": 0.14698115266124967
+  },
+  {
+    "epoch": 5,
+    "train_pinball_scaled": 0.1240907089313546,
+    "validation_pinball_scaled": 0.13394533846999557
+  },
+  {
+    "epoch": 6,
+    "train_pinball_scaled": 0.11249998306732226,
+    "validation_pinball_scaled": 0.1253094704008438
+  },
+  {
+    "epoch": 7,
+    "train_pinball_scaled": 0.10291894775750479,
+    "validation_pinball_scaled": 0.11964745777593531
+  },
+  {
+    "epoch": 8,
+    "train_pinball_scaled": 0.09531138671206835,
+    "validation_pinball_scaled": 0.11953129315040481
+  },
+  {
+    "epoch": 9,
+    "train_pinball_scaled": 0.08899819155196788,
+    "validation_pinball_scaled": 0.11813481097490015
+  },
+  {
+    "epoch": 10,
+    "train_pinball_scaled": 0.08470802969627618,
+    "validation_pinball_scaled": 0.12051114721197477
+  },
+  {
+    "epoch": 11,
+    "train_pinball_scaled": 0.08098876047046696,
+    "validation_pinball_scaled": 0.11930342289343686
+  },
+  {
+    "epoch": 12,
+    "train_pinball_scaled": 0.07829552769964539,
+    "validation_pinball_scaled": 0.11850026973956068
+  },
+  {
+    "epoch": 13,
+    "train_pinball_scaled": 0.07610055606076457,
+    "validation_pinball_scaled": 0.1186805110372288
+  },
+  {
+    "epoch": 14,
+    "train_pinball_scaled": 0.07474653934717314,
+    "validation_pinball_scaled": 0.11752007572163999
+  },
+  {
+    "epoch": 15,
+    "train_pinball_scaled": 0.07360137576563047,
+    "validation_pinball_scaled": 0.11557933232733901
+  },
+  {
+    "epoch": 16,
+    "train_pinball_scaled": 0.07210693526517623,
+    "validation_pinball_scaled": 0.11964314959838357
+  },
+  {
+    "epoch": 17,
+    "train_pinball_scaled": 0.07059811360935876,
+    "validation_pinball_scaled": 0.11234053956790709
+  },
+  {
+    "epoch": 18,
+    "train_pinball_scaled": 0.0691273800320354,
+    "validation_pinball_scaled": 0.11386946280237654
+  },
+  {
+    "epoch": 19,
+    "train_pinball_scaled": 0.06845776207563765,
+    "validation_pinball_scaled": 0.11618148665612853
+  },
+  {
+    "epoch": 20,
+    "train_pinball_scaled": 0.0671133636209711,
+    "validation_pinball_scaled": 0.11266618301750908
+  },
+  {
+    "epoch": 21,
+    "train_pinball_scaled": 0.06635641085060896,
+    "validation_pinball_scaled": 0.11148935501844111
+  },
+  {
+    "epoch": 22,
+    "train_pinball_scaled": 0.06640971652703834,
+    "validation_pinball_scaled": 0.1149530774061109
+  },
+  {
+    "epoch": 23,
+    "train_pinball_scaled": 0.0653175973224316,
+    "validation_pinball_scaled": 0.11689671084914409
+  },
+  {
+    "epoch": 24,
+    "train_pinball_scaled": 0.06419391343586177,
+    "validation_pinball_scaled": 0.11299352807478166
+  },
+  {
+    "epoch": 25,
+    "train_pinball_scaled": 0.06311567975856452,
+    "validation_pinball_scaled": 0.11509193385570822
+  },
+  {
+    "epoch": 26,
+    "train_pinball_scaled": 0.062001113346068955,
+    "validation_pinball_scaled": 0.11383424816836774
+  },
+  {
+    "epoch": 27,
+    "train_pinball_scaled": 0.06160357970181467,
+    "validation_pinball_scaled": 0.11507081462883613
+  },
+  {
+    "epoch": 28,
+    "train_pinball_scaled": 0.06093403160251597,
+    "validation_pinball_scaled": 0.11497343520463353
+  },
+  {
+    "epoch": 29,
+    "train_pinball_scaled": 0.06032078983878846,
+    "validation_pinball_scaled": 0.11474924438016515
+  },
+  {
+    "epoch": 30,
+    "train_pinball_scaled": 0.05952484483014208,
+    "validation_pinball_scaled": 0.113759016738811
+  },
+  {
+    "epoch": 31,
+    "train_pinball_scaled": 0.058692428567481025,
+    "validation_pinball_scaled": 0.11847670699509097
+  }
+]

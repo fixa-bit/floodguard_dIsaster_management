@@ -1,0 +1,12 @@
+{
+  "earth_engine_project": "n8n-gmail-send-503521",
+  "catchment_file": "../../dataset/chenab_marala/processed/marala/catchment/marala_upstream_catchment.geojson",
+  "weather_collection": "ECMWF/ERA5_LAND/DAILY_AGGR",
+  "dem_image": "MERIT/DEM/v1_0_3",
+  "elevation_edges_m": [1500, 3000, 4500],
+  "start_year": 2015,
+  "end_year": 2024,
+  "request_chunk_days": 92,
+  "max_workers": 3,
+  "raw_directory": "data/raw/era5land_elevation_bands_v2"
+}

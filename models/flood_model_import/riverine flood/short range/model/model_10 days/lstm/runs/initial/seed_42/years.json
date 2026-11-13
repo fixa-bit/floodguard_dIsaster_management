@@ -1,0 +1,17 @@
+{
+  "training_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020
+  ],
+  "selection_years": [
+    2021
+  ],
+  "configured_test_years": [
+    2022,
+    2023,
+    2024
+  ]
+}

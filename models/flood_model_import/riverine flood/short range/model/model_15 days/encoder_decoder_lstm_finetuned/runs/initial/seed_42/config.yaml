@@ -1,0 +1,96 @@
+model_family: seq2seq_15day
+data:
+  daily_file: data/marala_daily.csv
+  date_column: date
+  basin_column: basin_id
+  default_basin_id: marala
+  target_column: q_cumecs
+  dynamic_columns:
+  - precipitation_mm
+  - temperature_c
+  static_file: null
+  static_columns: []
+  use_static: false
+  past_discharge: true
+  hindcast_length: 365
+  forecast_horizon: 15
+  calendar_features: true
+  forecast_mode: reanalysis_with_noise
+  forecast_file: null
+  forecast_date_column: date
+  forecast_lead_column: lead_day
+  forecast_available_at_column: null
+  issue_hour_utc: 24
+  forecast_columns:
+  - precipitation_mm
+  - temperature_c
+  reanalysis_columns:
+  - precipitation_mm
+  - temperature_c
+  noise:
+    std_at_lead_1: 0.05
+    std_growth_per_lead: 0.025
+    evaluation_seed: 12345
+splits:
+  train:
+  - 2016
+  - 2020
+  validation:
+  - 2021
+  - 2021
+  test:
+  - 2022
+  - 2024
+normalization:
+  inputs: standard
+  static: standard
+  flow_scale_cumecs: 1.0
+  standardize_log_flow: true
+model:
+  hidden_size: 32
+  num_layers: 1
+  dropout: 0.15
+  lead_embedding_size: 8
+  static_embedding_size: 8
+  quantiles:
+  - 0.05
+  - 0.25
+  - 0.5
+  - 0.75
+  - 0.95
+training:
+  output_dir: runs/scratch
+  epochs: 60
+  batch_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  patience: 12
+  min_delta: 0.0001
+  gradient_clip: 1.0
+  ensemble_size: 1
+  seeds:
+  - 42
+  device: cpu
+  cpu_threads: 2
+  flush_denormal: true
+finetuning:
+  output_dir: runs/finetuned
+  epochs: 60
+  learning_rate: 0.0003
+  freeze_hindcast: false
+  recompute_normalization: true
+experiment:
+  source_daily_file: ../data/marala_daily.csv
+  source_pretrained_checkpoint: ../pretrained_multibasin_lstm/runs/pretrained/seed_42/best.pt
+  adapted_checkpoint: pretrained/camels_us_adapted_15day.pt
+  report_dir: reports/initial
+  report_leads:
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15

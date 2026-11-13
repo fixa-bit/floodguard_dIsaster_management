@@ -1,0 +1,6 @@
+{
+  "selection_split": "2021 validation only",
+  "selected_stage": "scratch",
+  "checkpoint": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_15 days\\encoder_decoder_lstm\\runs\\initial\\seed_42\\best.pt",
+  "validation_pinball": 0.06542843067220279
+}

@@ -1,0 +1,7 @@
+{
+  "daily_file": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\N-HiTS\\data\\marala_daily.csv",
+  "sha256": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "no_discharge_filling": true,
+  "forecast_mode": "reanalysis_with_noise",
+  "past_discharge_as_input": true
+}

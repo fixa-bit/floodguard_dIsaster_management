@@ -1,0 +1,618 @@
+from typing import Any, Optional, Union
+
+import torch
+
+from hydrodl2.core.calc import change_param_range, trim_warmup, uh_conv, uh_gamma
+from hydrodl2.models.base import BasePhysicsModel
+
+
+class Hbv(BasePhysicsModel):
+    """HBV 1.0.
+
+    Multi-component, differentiable PyTorch HBV model with option to run without
+    internal state warmup.
+
+    Authors
+    -------
+    -   Farshid Rahmani, Yalan Song, Leo Lonzarich
+    -   (Original NumPy HBV ver.) Beck et al., 2020 (http://www.gloh2o.org/hbv/).
+    -   (HBV-light Version 2) Seibert, 2005
+        (https://www.geo.uzh.ch/dam/jcr:c8afa73c-ac90-478e-a8c7-929eed7b1b62/HBV_manual_2005.pdf).
+
+    Publication
+    -----------
+    -   Feng, D., Liu, J., Lawson, K., & Shen, C. (2022). Differentiable, learnable,
+        regionalized process-based models with multiphysical outputs can approach
+        state-of-the-art hydrologic prediction accuracy. Water Resources Research,
+        58, e2022WR032404. https://doi.org/10.1029/2022WR032404
+
+    Parameters
+    ----------
+    config
+        Configuration dictionary.
+    device
+        Device to run the model on.
+    """
+
+    def __init__(
+        self,
+        config: Optional[dict[str, Any]] = None,
+        device: Optional[torch.device] = None,
+    ) -> None:
+        super().__init__()
+        self.name = 'HBV 1.0'
+        self.config = config
+        self.initialize = False
+        self.warmup = 0
+        self.warmup_states = True
+        self.dynamic_params = []
+        self.dy_drop = 0.0
+        self.variables = ['prcp', 'tmean', 'pet']
+        self.routing = True
+        self.comprout = False
+        self.nearzero = 1e-5
+        self.nmul = 1
+        self.cache_states = False
+        self.device = device
+
+        self.states, self._state_cache = None, None
+        self.routing_len = 15
+        self.routing_state = None
+        self._routing_state_cache = None
+
+        self.state_names = [
+            'SNOWPACK',  # Snowpack storage
+            'MELTWATER',  # Meltwater storage
+            'SM',  # Soil moisture storage
+            'SUZ',  # Upper groundwater storage
+            'SLZ',  # Lower groundwater storage
+        ]
+        self.flux_names = [
+            'streamflow',  # Routed Streamflow
+            'srflow',  # Routed surface runoff
+            'ssflow',  # Routed subsurface flow
+            'gwflow',  # Routed groundwater flow
+            'AET_hydro',  # Actual ET
+            'PET_hydro',  # Potential ET
+            'SWE',  # Snow water equivalent
+            'streamflow_no_rout',  # Streamflow
+            'srflow_no_rout',  # Surface runoff
+            'ssflow_no_rout',  # Subsurface flow
+            'gwflow_no_rout',  # Groundwater flow
+            'recharge',  # Recharge
+            'excs',  # Excess stored water
+            'evapfactor',  # Evaporation factor
+            'tosoil',  # Infiltration
+            'percolation',  # Percolation
+            'BFI',  # Baseflow index
+        ]
+
+        self.parameter_bounds = {
+            'parBETA': [1.0, 6.0],
+            'parFC': [50, 1000],
+            'parK0': [0.05, 0.9],
+            'parK1': [0.01, 0.5],
+            'parK2': [0.001, 0.2],
+            'parLP': [0.2, 1],
+            'parPERC': [0, 10],
+            'parUZL': [0, 100],
+            'parTT': [-2.5, 2.5],
+            'parCFMAX': [0.5, 10],
+            'parCFR': [0, 0.1],
+            'parCWH': [0, 0.2],
+        }
+        self.routing_parameter_bounds = {
+            'route_a': [0, 2.9],
+            'route_b': [0, 6.5],
+        }
+
+        if not device:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        if config is not None:
+            # Overwrite defaults with config values.
+            self.warmup = config.get('warmup', self.warmup)
+            self.warmup_states = config.get('warmup_states', self.warmup_states)
+            self.dy_drop = config.get('dy_drop', self.dy_drop)
+            self.dynamic_params = config['dynamic_params'].get(
+                self.__class__.__name__, self.dynamic_params
+            )
+            self.variables = config.get('variables', self.variables)
+            self.routing = config.get('routing', self.routing)
+            self.comprout = config.get('comprout', self.comprout)
+            self.nearzero = config.get('nearzero', self.nearzero)
+            self.nmul = config.get('nmul', self.nmul)
+            self.cache_states = config.get('cache_states', False)
+            if 'parBETAET' in self.dynamic_params:
+                self.parameter_bounds['parBETAET'] = [0.3, 5]
+        self._set_parameters()
+
+    def get_routing_state(self) -> Optional[dict[str, torch.Tensor]]:
+        """Return cached routing carryover needed for restart.
+
+        Returns
+        -------
+        dict[str, torch.Tensor]
+            A dictionary containing the routing carryover states (Qsim_tail, Q0_tail, Q1_tail, Q2_tail).
+        """
+        return self._routing_state_cache
+
+    def load_routing_state(
+        self,
+        routing_state: Optional[dict[str, torch.Tensor]],
+    ) -> None:
+        """Load routing carryover for restart.
+
+        Parameters
+        ----------
+        routing_state
+            A dictionary containing the routing carryover states (Qsim_tail, Q0_tail, Q1_tail, Q2_tail).
+        """
+        if routing_state is None:
+            self.routing_state = None
+            return
+
+        if not isinstance(routing_state, dict):
+            raise ValueError("`routing_state` must be a dict or None.")
+
+        required = ("Qsim_tail", "Q0_tail", "Q1_tail", "Q2_tail")
+        for key in required:
+            if key not in routing_state:
+                raise ValueError(f"Missing routing state key: {key}")
+            if not isinstance(routing_state[key], torch.Tensor):
+                raise ValueError(f"Routing state `{key}` must be a tensor.")
+
+        self.routing_state = {
+            key: routing_state[key].detach().to(self.device, dtype=torch.float32)
+            for key in required
+        }
+
+    def _set_parameters(self) -> None:
+        """Get physical parameters."""
+        self.phy_param_names = self.parameter_bounds.keys()
+        if self.routing:
+            self.routing_param_names = self.routing_parameter_bounds.keys()
+        else:
+            self.routing_param_names = []
+
+        self.learnable_param_count = len(self.phy_param_names) * self.nmul + len(
+            self.routing_param_names
+        )
+
+    def _unpack_parameters(
+        self,
+        parameters: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Extract physical model and routing parameters from NN output.
+
+        Parameters
+        ----------
+        parameters
+            Unprocessed, learned parameters from a neural network.
+
+        Returns
+        -------
+        tuple[torch.Tensor, torch.Tensor]
+            Tuple of physical and routing parameters.
+        """
+        phy_param_count = len(self.parameter_bounds)
+
+        # Physical parameters
+        phy_params = torch.sigmoid(
+            parameters[:, :, : phy_param_count * self.nmul]
+        ).view(
+            parameters.shape[0],
+            parameters.shape[1],
+            phy_param_count,
+            self.nmul,
+        )
+        # Routing parameters
+        routing_params = None
+        if self.routing:
+            routing_params = torch.sigmoid(
+                parameters[-1, :, phy_param_count * self.nmul :],
+            )
+        return (phy_params, routing_params)
+
+    def _descale_phy_parameters(
+        self,
+        phy_params: torch.Tensor,
+        dy_list: list,
+    ) -> dict[str, torch.Tensor]:
+        """Descale physical parameters.
+
+        Parameters
+        ----------
+        phy_params
+            Normalized physical parameters.
+        dy_list
+            List of dynamic parameters.
+
+        Returns
+        -------
+        dict
+            Dictionary of descaled physical parameters.
+        """
+        nsteps = phy_params.shape[0]
+        ngrid = phy_params.shape[1]
+
+        param_dict = {}
+        pmat = torch.ones([1, ngrid, 1]) * self.dy_drop
+        for i, name in enumerate(self.parameter_bounds.keys()):
+            # NOTE:expand() instead of repeat() saves mem
+            staPar = phy_params[-1, :, i, :].unsqueeze(0).expand(nsteps, -1, -1)
+            if name in dy_list:
+                dynPar = phy_params[:, :, i, :]
+                drmask = torch.bernoulli(pmat).detach_().to(self.device)
+                comPar = dynPar * (1 - drmask) + staPar * drmask
+                param_dict[name] = change_param_range(
+                    param=comPar,
+                    bounds=self.parameter_bounds[name],
+                )
+            else:
+                param_dict[name] = change_param_range(
+                    param=staPar,
+                    bounds=self.parameter_bounds[name],
+                )
+        return param_dict
+
+    def forward(
+        self,
+        x_dict: dict[str, torch.Tensor],
+        parameters: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        """Forward pass.
+
+        Parameters
+        ----------
+        x_dict
+            Dictionary of input forcing data.
+        parameters
+            Unprocessed, learned parameters from a neural network.
+
+        Returns
+        -------
+        dict[str, torch.Tensor]
+            Dictionary of model outputs.
+        """
+        # Unpack input data.
+        x = x_dict['x_phy']
+        self.muwts = x_dict.get('muwts', None)
+        ngrid = x.shape[1]
+
+        # Unpack parameters.
+        phy_params, routing_params = self._unpack_parameters(parameters)
+        if self.routing:
+            self.routing_param_dict = self._descale_route_parameters(routing_params)
+
+        # Initialization
+        if self.warmup_states:
+            # Spin up states on the warmup window separately (no gradients)
+            warmup = self.warmup
+            pred_cutoff = 0
+        else:
+            # No state warmup: run the full model for warmup days, then drop
+            # those days from the outputs.
+            warmup = 0
+            pred_cutoff = self.warmup
+
+        if (not self.states) or (not self.cache_states):
+            current_states = self._init_states(ngrid)
+        else:
+            current_states = self.states
+
+        # Warmup model states - run the model only on warmup days first.
+        if warmup > 0:
+            with torch.no_grad():
+                phy_param_warmup_dict = self._descale_phy_parameters(
+                    phy_params[:warmup, :, :],
+                    dy_list=[],
+                )
+                # 1. Save current model settings
+                init_flag, route_flag = self.initialize, self.routing
+
+                # 2. Set temporary model settings for warmup
+                self.initialize, self.routing = True, False
+
+                current_states = self._PBM(
+                    x[:warmup, :, :],
+                    current_states,
+                    phy_param_warmup_dict,
+                )
+
+                # 3. Restore model settings
+                self.initialize, self.routing = init_flag, route_flag
+
+        # Run the model for remainder of sim period.
+        phy_params_dict = self._descale_phy_parameters(
+            phy_params[warmup:, :, :],
+            dy_list=self.dynamic_params,
+        )
+        fluxes, states = self._PBM(x[warmup:, :, :], current_states, phy_params_dict)
+
+        # Drop warmup period
+        fluxes = trim_warmup(fluxes, pred_cutoff, x.shape[0] - warmup)
+
+        # State caching
+        self._state_cache = tuple(s.detach() for s in states)
+
+        if self.cache_states:
+            self.states = self._state_cache
+            self.routing_state = self._routing_state_cache
+
+        return fluxes
+
+    def _PBM(
+        self,
+        forcing: torch.Tensor,
+        states: tuple,
+        full_param_dict: dict,
+    ) -> Union[tuple, dict[str, torch.Tensor]]:
+        """Run through process-based model (PBM).
+
+        Parameters
+        ----------
+        forcing
+            Input forcing data.
+        states
+            Initial model states.
+        full_param_dict
+            Dictionary of model parameters.
+
+        Returns
+        -------
+        Union[tuple, dict]
+            Tuple or dictionary of model outputs.
+        """
+        SNOWPACK, MELTWATER, SM, SUZ, SLZ = states
+
+        # Forcings
+        P = forcing[:, :, self.variables.index('prcp')]  # Precipitation
+        T = forcing[:, :, self.variables.index('tmean')]  # Mean air temp
+        PET = forcing[:, :, self.variables.index('pet')]  # Potential ET
+        nsteps, ngrid = P.shape
+
+        # Expand dims to accomodate for nmul models.
+        # NOTE:expand() instead of repeat() saves mem (don't do inplace writes)
+        Pm = P.unsqueeze(2).expand(-1, -1, self.nmul)
+        Tm = T.unsqueeze(2).expand(-1, -1, self.nmul)
+        PETm = PET.unsqueeze(-1).expand(-1, -1, self.nmul)
+
+        # Apply correction factor to precipitation
+        # P = parPCORR.repeat(nsteps, 1) * P
+
+        # Initialize time series of model variables in shape [time, basins, nmul].
+        Qsimmu = torch.zeros(Pm.size(), dtype=torch.float32, device=self.device) + 0.001
+        Q0_sim = (
+            torch.zeros(Pm.size(), dtype=torch.float32, device=self.device) + 0.0001
+        )
+        Q1_sim = (
+            torch.zeros(Pm.size(), dtype=torch.float32, device=self.device) + 0.0001
+        )
+        Q2_sim = (
+            torch.zeros(Pm.size(), dtype=torch.float32, device=self.device) + 0.0001
+        )
+
+        AET = torch.zeros(Pm.size(), dtype=torch.float32, device=self.device)
+        recharge_sim = torch.zeros(Pm.size(), dtype=torch.float32, device=self.device)
+        excs_sim = torch.zeros(Pm.size(), dtype=torch.float32, device=self.device)
+        evapfactor_sim = torch.zeros(Pm.size(), dtype=torch.float32, device=self.device)
+        tosoil_sim = torch.zeros(Pm.size(), dtype=torch.float32, device=self.device)
+        PERC_sim = torch.zeros(Pm.size(), dtype=torch.float32, device=self.device)
+        SWE_sim = torch.zeros(Pm.size(), dtype=torch.float32, device=self.device)
+
+        param_dict = {}
+        for t in range(nsteps):
+            # Get dynamic parameter values per timestep.
+            for key in full_param_dict.keys():
+                param_dict[key] = full_param_dict[key][t, :, :]
+
+            # Separate precipitation into liquid and solid components.
+            PRECIP = Pm[t, :, :]
+            RAIN = torch.mul(
+                PRECIP, (Tm[t, :, :] >= param_dict['parTT']).type(torch.float32)
+            )
+            SNOW = torch.mul(
+                PRECIP, (Tm[t, :, :] < param_dict['parTT']).type(torch.float32)
+            )
+
+            # Snow -------------------------------
+            SNOWPACK = SNOWPACK + SNOW
+            melt = param_dict['parCFMAX'] * (Tm[t, :, :] - param_dict['parTT'])
+            # melt[melt < 0.0] = 0.0
+            melt = torch.clamp(melt, min=0.0)
+            # melt[melt > SNOWPACK] = SNOWPACK[melt > SNOWPACK]
+            melt = torch.min(melt, SNOWPACK)
+            MELTWATER = MELTWATER + melt
+            SNOWPACK = SNOWPACK - melt
+            refreezing = (
+                param_dict['parCFR']
+                * param_dict['parCFMAX']
+                * (param_dict['parTT'] - Tm[t, :, :])
+            )
+            # refreezing[refreezing < 0.0] = 0.0
+            # refreezing[refreezing > MELTWATER] = MELTWATER[refreezing > MELTWATER]
+            refreezing = torch.clamp(refreezing, min=0.0)
+            refreezing = torch.min(refreezing, MELTWATER)
+            SNOWPACK = SNOWPACK + refreezing
+            MELTWATER = MELTWATER - refreezing
+            tosoil = MELTWATER - (param_dict['parCWH'] * SNOWPACK)
+            tosoil = torch.clamp(tosoil, min=0.0)
+            MELTWATER = MELTWATER - tosoil
+
+            # Soil and evaporation -------------------------------
+            soil_wetness = (SM / param_dict['parFC']) ** param_dict['parBETA']
+            # soil_wetness[soil_wetness < 0.0] = 0.0
+            # soil_wetness[soil_wetness > 1.0] = 1.0
+            soil_wetness = torch.clamp(soil_wetness, min=0.0, max=1.0)
+            recharge = (RAIN + tosoil) * soil_wetness
+
+            SM = SM + RAIN + tosoil - recharge
+
+            excess = SM - param_dict['parFC']
+            excess = torch.clamp(excess, min=0.0)
+            SM = SM - excess
+            # parBETAET only has effect when it is a dynamic parameter.
+            evapfactor = SM / (param_dict['parLP'] * param_dict['parFC'])
+            if 'parBETAET' in param_dict:
+                evapfactor = evapfactor ** param_dict['parBETAET']
+            evapfactor = torch.clamp(evapfactor, min=0.0, max=1.0)
+            ETact = PETm[t, :, :] * evapfactor
+            ETact = torch.min(SM, ETact)
+            SM = torch.clamp(SM - ETact, min=self.nearzero)
+
+            # Groundwater boxes -------------------------------
+            SUZ = SUZ + recharge + excess
+            PERC = torch.min(SUZ, param_dict['parPERC'])
+            SUZ = SUZ - PERC
+            Q0 = param_dict['parK0'] * torch.clamp(SUZ - param_dict['parUZL'], min=0.0)
+            SUZ = SUZ - Q0
+            Q1 = param_dict['parK1'] * SUZ
+            SUZ = SUZ - Q1
+            SLZ = SLZ + PERC
+            Q2 = param_dict['parK2'] * SLZ
+            SLZ = SLZ - Q2
+
+            Qsimmu[t, :, :] = Q0 + Q1 + Q2
+            Q0_sim[t, :, :] = Q0
+            Q1_sim[t, :, :] = Q1
+            Q2_sim[t, :, :] = Q2
+            AET[t, :, :] = ETact
+            SWE_sim[t, :, :] = SNOWPACK
+
+            recharge_sim[t, :, :] = recharge
+            excs_sim[t, :, :] = excess
+            evapfactor_sim[t, :, :] = evapfactor
+            tosoil_sim[t, :, :] = tosoil
+            PERC_sim[t, :, :] = PERC
+
+        # Get the average or weighted average using learned weights.
+        if self.muwts is None:
+            Qsimavg = Qsimmu.mean(-1)
+        else:
+            Qsimavg = (Qsimmu * self.muwts).sum(-1)
+
+        # Run routing
+        if self.routing:
+            tail_len = self.routing_len - 1
+
+            # Routing for all components or just the average.
+            if self.comprout:
+                # All components; reshape to [time, gages * num models]
+                Qsim = Qsimmu.view(nsteps, ngrid * self.nmul)
+            else:
+                # Average, then do routing.
+                Qsim = Qsimavg
+
+            # Prepare unrouted component series used for routing restart
+            Q0_base = Q0_sim.mean(-1)  # [time, gages]
+            Q1_base = Q1_sim.mean(-1)  # [time, gages]
+            Q2_base = Q2_sim.mean(-1)  # [time, gages]
+
+            # Prepend saved routing carryover if present
+            if self.routing_state is not None:
+                Qsim_in = torch.cat([self.routing_state["Qsim_tail"], Qsim], dim=0)
+                Q0_in = torch.cat([self.routing_state["Q0_tail"], Q0_base], dim=0)
+                Q1_in = torch.cat([self.routing_state["Q1_tail"], Q1_base], dim=0)
+                Q2_in = torch.cat([self.routing_state["Q2_tail"], Q2_base], dim=0)
+            else:
+                Qsim_in = Qsim
+                Q0_in = Q0_base
+                Q1_in = Q1_base
+                Q2_in = Q2_base
+
+            nsteps_route = Qsim_in.shape[0]
+
+            UH = uh_gamma(
+                self.routing_param_dict['route_a']
+                .repeat(nsteps_route, 1)
+                .unsqueeze(-1),
+                self.routing_param_dict['route_b']
+                .repeat(nsteps_route, 1)
+                .unsqueeze(-1),
+                lenF=self.routing_len,
+            )
+            rf = torch.unsqueeze(Qsim, -1).permute([1, 2, 0])  # [gages,vars,time]
+            UH = UH.permute([1, 2, 0])  # [gages,vars,time]
+            Qsrout_full = uh_conv(rf, UH).permute([2, 0, 1])
+
+            Qsrout = Qsrout_full[-nsteps:, :, :]
+
+            # Routing individually for Q0, Q1, and Q2, all w/ dims [gages,vars,time].
+            rf_Q0 = torch.unsqueeze(Q0_in, -1).permute([1, 2, 0])
+            Q0_rout_full = uh_conv(rf_Q0, UH).permute([2, 0, 1])
+            Q0_rout = Q0_rout_full[-nsteps:, :, :]
+
+            rf_Q1 = torch.unsqueeze(Q1_in, -1).permute([1, 2, 0])
+            Q1_rout_full = uh_conv(rf_Q1, UH).permute([2, 0, 1])
+            Q1_rout = Q1_rout_full[-nsteps:, :, :]
+
+            rf_Q2 = torch.unsqueeze(Q2_in, -1).permute([1, 2, 0])
+            Q2_rout_full = uh_conv(rf_Q2, UH).permute([2, 0, 1])
+            Q2_rout = Q2_rout_full[-nsteps:, :, :]
+
+            if self.comprout:
+                # Qs is now shape [time, gages, 1] after averaging models.
+                Qstemp = Qsrout.view(nsteps, ngrid, self.nmul)
+                if self.muwts is None:
+                    Qs = Qstemp.mean(-1, keepdim=True)
+                else:
+                    Qs = (Qstemp * self.muwts).sum(-1, keepdim=True)
+            else:
+                Qs = Qsrout
+
+            # Cache routing carryover for restart
+            if tail_len > 0:
+                self._routing_state_cache = {
+                    "Qsim_tail": Qsim_in[-tail_len:].detach(),
+                    "Q0_tail": Q0_in[-tail_len:].detach(),
+                    "Q1_tail": Q1_in[-tail_len:].detach(),
+                    "Q2_tail": Q2_in[-tail_len:].detach(),
+                }
+            else:
+                self._routing_state_cache = None
+
+        else:
+            # No routing, only output the average of all model sims.
+            Qs = torch.unsqueeze(Qsimavg, -1)
+            Q0_rout = Q1_rout = Q2_rout = None
+            self._routing_state_cache = None
+
+        states = (SNOWPACK, MELTWATER, SM, SUZ, SLZ)
+
+        if self.initialize:
+            # If initialize is True, only return warmed-up storages.
+            return states
+        else:
+            # Baseflow index (BFI) calculation
+            BFI_sim = (
+                100
+                * (torch.sum(Q2_rout, dim=0) / (torch.sum(Qs, dim=0) + self.nearzero))[
+                    :, 0
+                ]
+            )
+
+            # Return all sim results.
+            flux_dict = {
+                'streamflow': Qs,  # Routed Streamflow
+                'srflow': Q0_rout,  # Routed surface runoff
+                'ssflow': Q1_rout,  # Routed subsurface flow
+                'gwflow': Q2_rout,  # Routed groundwater flow
+                'AET_hydro': AET.mean(-1, keepdim=True),  # Actual ET
+                'PET_hydro': PETm.mean(-1, keepdim=True),  # Potential ET
+                'SWE': SWE_sim.mean(-1, keepdim=True),  # Snow water equivalent
+                'streamflow_no_rout': Qsim.unsqueeze(dim=2),  # Streamflow
+                'srflow_no_rout': Q0_sim.mean(-1, keepdim=True),  # Surface runoff
+                'ssflow_no_rout': Q1_sim.mean(-1, keepdim=True),  # Subsurface flow
+                'gwflow_no_rout': Q2_sim.mean(-1, keepdim=True),  # Groundwater flow
+                'recharge': recharge_sim.mean(-1, keepdim=True),  # Recharge
+                'excs': excs_sim.mean(-1, keepdim=True),  # Excess stored water
+                'evapfactor': evapfactor_sim.mean(
+                    -1, keepdim=True
+                ),  # Evaporation factor
+                'tosoil': tosoil_sim.mean(-1, keepdim=True),  # Infiltration
+                'percolation': PERC_sim.mean(-1, keepdim=True),  # Percolation
+                'BFI': BFI_sim,  # Baseflow index
+            }
+
+            return flux_dict, states

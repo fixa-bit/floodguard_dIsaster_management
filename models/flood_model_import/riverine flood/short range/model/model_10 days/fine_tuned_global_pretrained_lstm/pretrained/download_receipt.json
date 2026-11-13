@@ -1,0 +1,24 @@
+{
+  "repository": "EmilRyd/caravan_model",
+  "revision": "43f1ab45d2c3678e728b552919b898824e5f1069",
+  "files": [
+    {
+      "name": "config.yml",
+      "url": "https://huggingface.co/EmilRyd/caravan_model/resolve/43f1ab45d2c3678e728b552919b898824e5f1069/caravan_base/config.yml",
+      "sha256": "baaaf5459f521b85d3b1a885ea4dfa0df8fe0076c4ed396cd9760135837b9a37",
+      "bytes": 2610
+    },
+    {
+      "name": "train_data/train_data_scaler.yml",
+      "url": "https://huggingface.co/EmilRyd/caravan_model/resolve/43f1ab45d2c3678e728b552919b898824e5f1069/caravan_base/train_data/train_data_scaler.yml",
+      "sha256": "2f049713c5d77a3684ac6f04593c38eff21f2875a6aea228c8f06039dfa68e7b",
+      "bytes": 6385
+    },
+    {
+      "name": "model_epoch040.pt",
+      "url": "https://huggingface.co/EmilRyd/caravan_model/resolve/43f1ab45d2c3678e728b552919b898824e5f1069/caravan_base/model_epoch040.pt",
+      "sha256": "94a4f84aac309b778460b518c7d156f6f18d0aa7585a90a88be5b190aeadd104",
+      "bytes": 1161163
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "status": "complete",
+  "completed": {
+    "N-HiTS/config.yaml": [
+      "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\N-HiTS\\runs\\initial\\seed_42\\best.pt"
+    ],
+    "N-BEATSx/config.yaml": [
+      "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\N-BEATSx\\runs\\initial\\seed_42\\best.pt"
+    ],
+    "N-HiTS/config_lstm_control.yaml": [
+      "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\N-HiTS\\controls\\lstm\\runs\\initial\\seed_42\\best.pt"
+    ]
+  },
+  "configs": [
+    "N-HiTS/config.yaml",
+    "N-BEATSx/config.yaml",
+    "N-HiTS/config_lstm_control.yaml"
+  ],
+  "elapsed_seconds": 111.12306709999757
+}

@@ -1,0 +1,16 @@
+test_archive_rejects_future_availability_duplicates_and_wrong_dates (test_pipeline.ForcingTests.test_archive_rejects_future_availability_duplicates_and_wrong_dates) ... ok
+test_identical_member_quantiles_survive_mixture (test_pipeline.ForcingTests.test_identical_member_quantiles_survive_mixture) ... ok
+test_mapping_fits_train_only_and_keeps_temperature_identity (test_pipeline.ForcingTests.test_mapping_fits_train_only_and_keeps_temperature_identity) ... ok
+test_member_mixture_is_not_mean_of_quantiles (test_pipeline.ForcingTests.test_member_mixture_is_not_mean_of_quantiles) ... ok
+test_all_target_days_remain_inside_whole_year_and_monsoon (test_pipeline.LeakageTests.test_all_target_days_remain_inside_whole_year_and_monsoon) ... ok
+test_past_features_are_unchanged_by_future_discharge_or_modis (test_pipeline.LeakageTests.test_past_features_are_unchanged_by_future_discharge_or_modis) ... ok
+test_known_threshold_counts_and_flow_scores (test_pipeline.LearningAndMetricTests.test_known_threshold_counts_and_flow_scores) ... ok
+test_lstm_order_and_missing_target_loss (test_pipeline.LearningAndMetricTests.test_lstm_order_and_missing_target_loss) ... ok
+test_peak_timing_uses_dates (test_pipeline.LearningAndMetricTests.test_peak_timing_uses_dates) ... ok
+test_no_water_creates_no_flow (test_pipeline.PhysicalTests.test_no_water_creates_no_flow) ... ok
+test_water_balance_snow_and_restart (test_pipeline.PhysicalTests.test_water_balance_snow_and_restart) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.308s
+
+OK

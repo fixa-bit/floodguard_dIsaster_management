@@ -1,0 +1,40 @@
+{
+  "all_observed_targets_and_nan_locations_exactly_preserved": true,
+  "all_q_source_labels_preserved": true,
+  "original_discharge_table_sha256": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "published_weight_config_scaler_hashes_verified": true,
+  "all_raw_weather_hashes_verified": true,
+  "normalization_identical_to_published_global_scaler": true,
+  "training_validation_test_availability": [
+    {
+      "split": "train",
+      "samples": 1767,
+      "observed_target_pairs": 17625,
+      "partially_missing_target_windows": 9,
+      "input_missing_pct": 0.0
+    },
+    {
+      "split": "validation",
+      "samples": 356,
+      "observed_target_pairs": 3550,
+      "partially_missing_target_windows": 10,
+      "input_missing_pct": 0.0
+    },
+    {
+      "split": "test",
+      "samples": 1084,
+      "observed_target_pairs": 10795,
+      "partially_missing_target_windows": 9,
+      "input_missing_pct": 0.0
+    }
+  ],
+  "correctness_tests_passed": 8,
+  "synthetic_tests_are_not_accuracy_evidence": true,
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "pytorch": "2.15.0+cpu",
+  "numpy": "2.4.6",
+  "pandas": "3.1.0",
+  "sklearn": "1.9.1",
+  "matplotlib": "3.11.2",
+  "device": "cpu"
+}

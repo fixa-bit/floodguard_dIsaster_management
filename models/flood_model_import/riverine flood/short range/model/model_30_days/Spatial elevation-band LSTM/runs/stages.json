@@ -1,0 +1,20 @@
+{
+  "spatial": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Spatial elevation-band LSTM\\runs\\spatial\\seed_42\\best.pt",
+  "control": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Spatial elevation-band LSTM\\runs\\mean_control\\seed_42\\best.pt",
+  "seed": 42,
+  "train_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020
+  ],
+  "validation_years": [
+    2021
+  ],
+  "test_years": [
+    2022,
+    2023,
+    2024
+  ]
+}

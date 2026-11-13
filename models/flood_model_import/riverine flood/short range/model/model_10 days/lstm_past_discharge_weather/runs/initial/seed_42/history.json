@@ -1,0 +1,97 @@
+{
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_pinball": 0.3367691706613446,
+      "validation_pinball": 0.14023401779188235
+    },
+    {
+      "epoch": 2,
+      "train_pinball": 0.1265171335838365,
+      "validation_pinball": 0.10231020687751367
+    },
+    {
+      "epoch": 3,
+      "train_pinball": 0.0996882684057486,
+      "validation_pinball": 0.09507746270424883
+    },
+    {
+      "epoch": 4,
+      "train_pinball": 0.08244328454792077,
+      "validation_pinball": 0.08105034085226731
+    },
+    {
+      "epoch": 5,
+      "train_pinball": 0.07072832674802618,
+      "validation_pinball": 0.08177999581249668
+    },
+    {
+      "epoch": 6,
+      "train_pinball": 0.06498968241231662,
+      "validation_pinball": 0.0740087974659154
+    },
+    {
+      "epoch": 7,
+      "train_pinball": 0.06161012732792408,
+      "validation_pinball": 0.07145511961319077
+    },
+    {
+      "epoch": 8,
+      "train_pinball": 0.05978389143267422,
+      "validation_pinball": 0.07721032943104354
+    },
+    {
+      "epoch": 9,
+      "train_pinball": 0.05921969417033466,
+      "validation_pinball": 0.07200578772266146
+    },
+    {
+      "epoch": 10,
+      "train_pinball": 0.057575418315880686,
+      "validation_pinball": 0.0767770574965947
+    },
+    {
+      "epoch": 11,
+      "train_pinball": 0.05815697351541925,
+      "validation_pinball": 0.06526512824733492
+    },
+    {
+      "epoch": 12,
+      "train_pinball": 0.056292646074337316,
+      "validation_pinball": 0.07193801923536919
+    },
+    {
+      "epoch": 13,
+      "train_pinball": 0.05407619435968974,
+      "validation_pinball": 0.07287461054576955
+    },
+    {
+      "epoch": 14,
+      "train_pinball": 0.05395485540632661,
+      "validation_pinball": 0.07347657930263331
+    },
+    {
+      "epoch": 15,
+      "train_pinball": 0.05273000064090634,
+      "validation_pinball": 0.07132252349819936
+    },
+    {
+      "epoch": 16,
+      "train_pinball": 0.05204120056151498,
+      "validation_pinball": 0.07376952377003683
+    },
+    {
+      "epoch": 17,
+      "train_pinball": 0.05220328139434469,
+      "validation_pinball": 0.06668446662140565
+    },
+    {
+      "epoch": 18,
+      "train_pinball": 0.05158898821134939,
+      "validation_pinball": 0.06968908001419524
+    }
+  ],
+  "elapsed_seconds": 42.18971500000043,
+  "learning_rate": 0.001,
+  "source_hashes_unchanged": true
+}

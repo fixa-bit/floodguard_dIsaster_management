@@ -1,0 +1,23 @@
+{
+  "revision": "cf7449383ac5ff6041ec35cbd97b84c23dd559a0",
+  "url": "https://github.com/Nixtla/neuralforecast/tree/cf7449383ac5ff6041ec35cbd97b84c23dd559a0",
+  "repository": "Nixtla/neuralforecast",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "d392f3d2969e354d7e6aef8fc6df5590ef5c20eea4b946191bd76a6138b4e81c"
+    },
+    {
+      "path": "nbeats.py",
+      "sha256": "36bbeec6843517aa6ca6fcbc8c59fd9309ebf03fa817b7488355be99b0c7bab7"
+    },
+    {
+      "path": "nbeatsx.py",
+      "sha256": "b0e3826a5087d64fe7b77f48577bc3906cdd9b1a65e828d03b7c18d774c30117"
+    },
+    {
+      "path": "nhits.py",
+      "sha256": "0cfcc06f688ae872cdb5ef98a87d05812ddbfe2e31c3cee9cdb70f60201d1662"
+    }
+  ]
+}

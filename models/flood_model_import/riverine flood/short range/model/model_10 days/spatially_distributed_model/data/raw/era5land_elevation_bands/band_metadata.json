@@ -1,0 +1,56 @@
+{
+  "catchment_file": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\dataset\\chenab_marala\\processed\\marala\\catchment\\marala_upstream_catchment.geojson",
+  "catchment_sha256": "49efd115f5d3ce2d1241fb35adaaf48bf6c8d0705768ac93dc88fbd4f11ab651",
+  "weather_collection": "ECMWF/ERA5_LAND/DAILY_AGGR",
+  "weather_projection": {
+    "type": "Projection",
+    "crs": "EPSG:4326",
+    "transform": [
+      0.1,
+      0,
+      -180.05,
+      0,
+      -0.1,
+      90.05
+    ]
+  },
+  "dem_image": "MERIT/DEM/v1_0_3",
+  "dem_projection": {
+    "type": "Projection",
+    "crs": "EPSG:4326",
+    "transform": [
+      0.0008333333333333334,
+      0,
+      -180.00041666666667,
+      0,
+      -0.0008333333333333334,
+      84.99958333333333
+    ]
+  },
+  "method": "MERIT elevation/catchment indicators averaged to native ERA5-Land cells, multiplied by native cell area; weather weighted by resulting band areas",
+  "area_totals_m2": {
+    "b0_area_m2": 7053322645.9549885,
+    "b1_area_m2": 6452941035.405358,
+    "b2_area_m2": 8161428256.061101,
+    "b3_area_m2": 7116401105.121706
+  },
+  "area_fractions": [
+    0.24504237932840592,
+    0.22418427517823308,
+    0.2835395315043776,
+    0.24723381398898345
+  ],
+  "raster_catchment_area_km2": 28784.09304254315,
+  "geometric_catchment_area_km2": 28794.39010103411,
+  "elevation_edges_m": [
+    1500,
+    3000,
+    4500
+  ],
+  "bands": [
+    "<1500",
+    "1500-<3000",
+    "3000-4500",
+    ">4500"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "checkpoints": [
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Hindcast-forecast LSTM\\past_discharge\\runs\\initial\\seed_42\\best.pt"
+  ],
+  "seeds": [
+    42
+  ]
+}

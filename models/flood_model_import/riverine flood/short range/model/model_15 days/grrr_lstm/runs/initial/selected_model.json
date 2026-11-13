@@ -1,0 +1,19 @@
+{
+  "arm": "nan_gaps",
+  "checkpoint": "nan_gaps.pt",
+  "feature_gate": true,
+  "predictors": [
+    "past discharge with observation/fill flags",
+    "seasonal sine/cosine",
+    "two-day-lagged GRRR with availability flag"
+  ],
+  "normalization": {
+    "observed_mean": 898.9834729760075,
+    "observed_std": 793.7902105450426,
+    "grrr_mean": 727.1554315853658,
+    "grrr_std": 565.6482314896176
+  },
+  "lookback": 30,
+  "horizon": 15,
+  "operationally_validated": false
+}

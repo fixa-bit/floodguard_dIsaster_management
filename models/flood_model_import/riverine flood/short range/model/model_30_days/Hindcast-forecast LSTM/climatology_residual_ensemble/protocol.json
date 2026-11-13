@@ -1,0 +1,18 @@
+{
+  "config_sha256": "6b5e236558e0169c9b86b3be07cf44dac9353b57fa57e9ae853653ff00032a4c",
+  "frozen_before_training": true,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "sequential_seed_training": true,
+  "smoothing_window_chosen_before_test": 31,
+  "selection": "2021 scaled point MSE across leads 21-30",
+  "postprocessing": "2021 only; three fixed lead groups; no test data",
+  "test_evaluation_after_selection_only": true,
+  "no_test_driven_retry": true,
+  "source_sha256": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "parent_sha256": "c3fddfcc14f86adb742039efcfd390b436b680a6b693e7f3da07794a2daae7c4",
+  "missing_targets_remain_nan": true
+}

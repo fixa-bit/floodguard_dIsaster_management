@@ -1,0 +1,21 @@
+{
+  "frozen_before_model_training": true,
+  "period": "2016-01-01 through 2026-10-30; actual observations through 2026-10-23",
+  "seasons": {"winter": [12, 1, 2], "pre_monsoon": [3, 4, 5], "monsoon": [6, 7, 8, 9], "post_monsoon": [10, 11]},
+  "train": "2016-2021",
+  "validation": "2022",
+  "test": "2023-2026",
+  "feature_gate": {"minimum_train_pairs": 365, "minimum_train_pearson": 0.5, "minimum_season_pairs": 60, "minimum_season_pearson": 0.3, "minimum_passing_seasons": 3, "minimum_monthly_anomaly_pearson": 0.2},
+  "grrr_lag_days": 2,
+  "gap_calibration": "Nonnegative seasonal affine least squares, fitted only to training observed discharge and two-day-lagged GRRR; predictions clipped to zero. Never extrapolate past archive coverage, even with a lagged value available.",
+  "filled_target_weight": 0.2,
+  "observed_target_weight": 1.0,
+  "architecture": {"lookback": 30, "horizon": 15, "hidden_size": 16, "epochs": 15, "seed": 42, "optimizer": "Adam", "learning_rate": 0.003, "batch_size": 64},
+  "common_window_policy": "Same origins and observed targets in both arms; latest input observed, >=15 observed input dates in 30 days; full target window inside chronological split. Filling adds no extra scored origins.",
+  "checkpoint_selection": "Observed validation MSE only; filled validation targets never used.",
+  "primary_metric": "RMSE pooled across the same observed origin-target-lead pairs",
+  "clear_win": {"minimum_validation_rmse_improvement_fraction": 0.05, "minimum_test_rmse_improvement_fraction": 0.05, "paired_test_block_bootstrap_improvement_95pct_lower_gt": 0.0, "max_highflow_rmse_degradation_fraction": 0.02, "max_season_rmse_degradation_fraction": 0.02, "max_year_rmse_degradation_fraction": 0.02, "max_lead_rmse_degradation_fraction": 0.02, "max_sampled_peak_mae_degradation_fraction": 0.02},
+  "bootstrap": {"replicates": 2000, "block_days": 30, "seed": 1042, "method": "Paired circular moving blocks over complete target-date calendar, retaining all leads together; no synthetic target rows."},
+  "retention": "Keep the NaN arm unless every clear-win criterion passes. Retain experimental predictions/reports for audit but do not select failed filled checkpoint.",
+  "scope": "Retrospective research; historical publication latency, GRRR pretraining overlap, point-vs-daily-mean measurement equivalence, and operational availability are not established. No operational skill claim."
+}

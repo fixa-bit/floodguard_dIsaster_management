@@ -1,0 +1,13 @@
+{
+  "checkpoints": [
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Hindcast-forecast LSTM\\climatology_residual_ensemble\\runs\\initial\\seed_42\\best.pt",
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Hindcast-forecast LSTM\\climatology_residual_ensemble\\runs\\initial\\seed_43\\best.pt",
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Hindcast-forecast LSTM\\climatology_residual_ensemble\\runs\\initial\\seed_44\\best.pt"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "aggregation": "uniform mean"
+}

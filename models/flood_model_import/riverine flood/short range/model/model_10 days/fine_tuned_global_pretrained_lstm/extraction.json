@@ -1,0 +1,11 @@
+{
+  "earth_engine_project": "n8n-gmail-send-503521",
+  "catchment_file": "../../dataset/chenab_marala/processed/marala/catchment/marala_upstream_catchment.geojson",
+  "collection": "ECMWF/ERA5_LAND/DAILY_AGGR",
+  "hydroatlas_collection": "projects/sat-io/open-datasets/HydroAtlas/BasinAtlas/BasinATLAS_v10_lev12",
+  "start_year": 2015,
+  "end_year": 2024,
+  "chunk_days": 92,
+  "workers": 3,
+  "raw_directory": "data/raw"
+}

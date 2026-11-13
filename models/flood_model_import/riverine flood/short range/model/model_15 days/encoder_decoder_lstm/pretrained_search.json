@@ -1,0 +1,31 @@
+{
+  "checked_date": "2026-10-30",
+  "requested_architecture": "Encoder-decoder LSTM, whole 15-day horizon with separate days 7-15 reporting",
+  "selected": {
+    "checkpoint": "../pretrained_multibasin_lstm/runs/pretrained/seed_42/best.pt",
+    "origin": "Previously trained in this workspace on eight real observed CAMELS-US catchments",
+    "native_horizon_days": 10,
+    "architecture": "Separate hidden-size-32 encoder and decoder LSTMs, state handoff, 5 ordered quantiles",
+    "adaptation": "Extend lead embeddings from 10 to 15; insert past discharge/missingness encoder columns at zero weights; fine-tune all parameters",
+    "reason": "Known donor-only year history and matching weather feature meanings, recurrent dimensions and output head. No download needed. This is not an official global pretrained checkpoint."
+  },
+  "public_sources_reviewed": [
+    {
+      "name": "NeuralHydrology forecast model documentation",
+      "url": "https://neuralhydrology.readthedocs.io/en/latest/usage/models.html",
+      "finding": "Forecast encoder/decoder and state-handoff architectures are supported. This page is architecture documentation, not a compatible pretrained weight release."
+    },
+    {
+      "name": "NeuralHydrology fine-tuning tutorial",
+      "url": "https://neuralhydrology.readthedocs.io/en/latest/tutorials/finetuning.html",
+      "finding": "Documents how to fine-tune a previously trained run; does not identify an exact matching public 15-day seq2seq checkpoint."
+    },
+    {
+      "name": "Fine Flood Forecasts public global pretrained model",
+      "paper_url": "https://ccai-papers.s3.us-east-1.amazonaws.com/iclr2025/50/paper.pdf",
+      "repository_url": "https://github.com/EmilRyd/Fine-Flood-Forecasts",
+      "finding": "A genuine public global pretrained LSTM is available, but the paper describes a 365-day input and a single next-day output. It is not a drop-in 15-day encoder-decoder checkpoint. A separate global-LSTM module in this workspace is left untouched."
+    }
+  ],
+  "search_scope": "Targeted primary documentation/paper search plus inspection of existing local model checkpoints; not an exhaustive claim that no other pretrained seq2seq exists."
+}

@@ -1,0 +1,133 @@
+data:
+  daily_file: data/spatial_daily.csv
+  date_column: date
+  basin_column: basin_id
+  default_basin_id: marala
+  target_column: q_cumecs
+  dynamic_columns:
+  - mean_precipitation_mm
+  - mean_temperature_c
+  - mean_swe_mm
+  - mean_snowmelt_mm
+  static_file: null
+  static_columns: []
+  use_static: false
+  past_discharge: false
+  hindcast_length: 365
+  forecast_horizon: 10
+  calendar_features: true
+  forecast_mode: reanalysis_with_noise
+  forecast_file: null
+  forecast_date_column: date
+  forecast_lead_column: lead_day
+  forecast_available_at_column: null
+  issue_hour_utc: 24
+  forecast_columns:
+  - mean_precipitation_mm
+  - mean_temperature_c
+  reanalysis_columns:
+  - mean_precipitation_mm
+  - mean_temperature_c
+  noise:
+    std_at_lead_1: 0
+    std_growth_per_lead: 0
+    evaluation_seed: 12345
+splits:
+  train:
+  - 2016
+  - 2020
+  validation:
+  - 2021
+  - 2021
+  test:
+  - 2022
+  - 2024
+normalization:
+  inputs: standard
+  static: standard
+  flow_scale_cumecs: 1.0
+  standardize_log_flow: true
+model:
+  hidden_size: 64
+  num_layers: 1
+  dropout: 0.15
+  lead_embedding_size: 8
+  static_embedding_size: 8
+  quantiles:
+  - 0.05
+  - 0.25
+  - 0.5
+  - 0.75
+  - 0.95
+training:
+  output_dir: runs/mean_control
+  epochs: 30
+  batch_size: 64
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  patience: 6
+  min_delta: 0.0001
+  gradient_clip: 1.0
+  ensemble_size: 1
+  seeds:
+  - 42
+  device: cpu
+  cpu_threads: 2
+  flush_denormal: true
+finetuning:
+  output_dir: runs/finetuned
+  epochs: 10
+  learning_rate: 0.0001
+  freeze_hindcast: false
+  recompute_normalization: false
+evaluation:
+  output_dir: reports/initial
+  peak_percentile: 0.95
+  flood_threshold_cumecs: null
+  context_predictions:
+    original_8input_LSTM: ../lstm/reports/initial/model_predictions.csv
+    gradient_boosting: ../gradient_boosting/reports/initial/model_predictions.csv
+    Ensemble: ../ensemble/reports/initial/model_predictions.csv
+model_family: catchment_mean_control
+spatial:
+  mode: catchment_mean
+  band_ids:
+  - b0
+  - b1
+  - b2
+  - b3
+  history_variables:
+  - precipitation_mm
+  - temperature_c
+  - swe_mm
+  - snowmelt_mm
+  forecast_variables:
+  - precipitation_mm
+  - temperature_c
+  metadata_file: data/raw/era5land_elevation_bands_v2/band_metadata.json
+  control_config: config_mean_control.yaml
+  run_manifest: runs/stages.json
+  forecast_noise:
+    std_at_lead_1:
+    - 0.3
+    - 0.4
+    std_growth_per_lead:
+    - 0.15
+    - 0.2
+    clip_precipitation_at_zero: true
+  area_weights:
+  - 0.24504237932840592
+  - 0.22418427517823308
+  - 0.2835395315043776
+  - 0.24723381398898345
+  metadata_sha256: 7a25c7baf60be73dc6f94d785ab4d211a8c49eac02ea4f17451ecc647ca5ed60
+preparation:
+  raw_directory: data/raw/era5land_elevation_bands_v2
+  observed_daily_source: ../data/marala_daily.csv
+  start_year: 2015
+  end_year: 2024
+  reference_columns:
+    precipitation_mm: rain_era5_mm
+    temperature_c: temperature_c
+    swe_mm: swe_mm
+    snowmelt_mm: snowmelt_mm

@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "source_files_unchanged": true,
+  "rolling_prediction_rows": 18080,
+  "folds_and_final": [
+    {
+      "folder": "folds\\2021",
+      "daily_rows": 4018,
+      "max_recomputed_water_balance_error_mm": 5.607736497381666e-13,
+      "calibration_kge": 0.8518104896449623,
+      "de_converged": false,
+      "optimizer_generations": 120,
+      "lightgbm_models": 30
+    },
+    {
+      "folder": "folds\\2022",
+      "daily_rows": 4018,
+      "max_recomputed_water_balance_error_mm": 6.183942247162122e-13,
+      "calibration_kge": 0.8575390934198072,
+      "de_converged": false,
+      "optimizer_generations": 120,
+      "lightgbm_models": 30
+    },
+    {
+      "folder": "folds\\2023",
+      "daily_rows": 4018,
+      "max_recomputed_water_balance_error_mm": 5.826450433232822e-13,
+      "calibration_kge": 0.8550076878474608,
+      "de_converged": false,
+      "optimizer_generations": 120,
+      "lightgbm_models": 30
+    },
+    {
+      "folder": "folds\\2024",
+      "daily_rows": 4018,
+      "max_recomputed_water_balance_error_mm": 6.283862319378386e-13,
+      "calibration_kge": 0.8446639119016198,
+      "de_converged": false,
+      "optimizer_generations": 120,
+      "lightgbm_models": 30
+    },
+    {
+      "folder": "final",
+      "daily_rows": 4018,
+      "max_recomputed_water_balance_error_mm": 7.089329123743937e-13,
+      "calibration_kge": 0.8476780972928429,
+      "de_converged": false,
+      "optimizer_generations": 120,
+      "lightgbm_models": 30
+    }
+  ],
+  "reload_ensemble_check": {
+    "members": 2,
+    "max_quantile_difference_cumecs": 6.103515625e-05,
+    "data": "Two duplicate reanalysis trajectories with synthetic archive-format labels, execution test only; not real forecasts"
+  },
+  "unit_tests_passed": true
+}

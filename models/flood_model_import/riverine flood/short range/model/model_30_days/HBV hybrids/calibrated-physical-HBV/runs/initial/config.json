@@ -1,0 +1,30 @@
+{
+  "daily_file": "data/marala_daily.csv",
+  "source_daily_file": "../../../../evaluation comparison/common/data/marala_daily.csv",
+  "catchment_metadata": "../../../../dataset/chenab_marala/raw/marala/temperature/google_earth_engine/catchment_metadata.json",
+  "simulation_start": "2014-01-01",
+  "simulation_end": "2024-12-31",
+  "first_training_year": 2016,
+  "last_training_year": 2020,
+  "validation_years": [
+    2021,
+    2021
+  ],
+  "test_years": [
+    2022,
+    2024
+  ],
+  "warmup_days": 730,
+  "horizon": 30,
+  "history_days": 365,
+  "seed": 42,
+  "threads": 2,
+  "de_maxiter": 120,
+  "de_popsize": 8,
+  "de_tolerance": 0.001,
+  "output_dir": "runs/initial",
+  "validation_output_dir": "reports/validation",
+  "test_output_dir": "reports/initial",
+  "comparison_dir": "../../../../evaluation comparison/model_30_days/calibrated_physical_hbv",
+  "flood_percentile": 0.95
+}

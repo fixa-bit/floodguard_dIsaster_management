@@ -1,0 +1,71 @@
+{
+  "dynamic": {
+    "mean": [
+      3.18005236856517,
+      4.95015162924425
+    ],
+    "center": [
+      3.18005236856517,
+      4.95015162924425
+    ],
+    "scale": [
+      7.771945961244383,
+      8.876860056126892
+    ],
+    "count": [
+      29216,
+      29216
+    ]
+  },
+  "forecast": {
+    "mean": [
+      3.18005236856517,
+      4.95015162924425
+    ],
+    "center": [
+      3.18005236856517,
+      4.95015162924425
+    ],
+    "scale": [
+      7.771945961244383,
+      8.876860056126892
+    ],
+    "count": [
+      29216,
+      29216
+    ]
+  },
+  "flow": {
+    "mean": 3.526226454835616,
+    "std": 1.2419395475670325,
+    "training_log_mean": 3.526226454835616,
+    "scale": 1.0
+  },
+  "static": null,
+  "training_years": [
+    1985,
+    1986,
+    1987,
+    1988,
+    1989,
+    1990,
+    1991,
+    1992,
+    1993,
+    1994
+  ],
+  "schema": {
+    "dynamic_columns": [
+      "precipitation_mm",
+      "temperature_c"
+    ],
+    "forecast_columns": [
+      "precipitation_mm",
+      "temperature_c"
+    ],
+    "static_columns": [],
+    "use_static": false,
+    "past_discharge": false,
+    "calendar_features": true
+  }
+}

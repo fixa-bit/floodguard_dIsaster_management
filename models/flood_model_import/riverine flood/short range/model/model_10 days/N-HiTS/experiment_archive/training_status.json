@@ -1,0 +1,20 @@
+{
+  "status": "complete",
+  "completed": {
+    "nhits/config.yaml": [
+      "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\nhits\\runs\\initial\\seed_42\\best.pt"
+    ],
+    "nbeatsx/config.yaml": [
+      "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\nbeatsx\\runs\\initial\\seed_42\\best.pt"
+    ],
+    "nhits/config_lstm_control.yaml": [
+      "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\nhits\\controls\\lstm\\runs\\initial\\seed_42\\best.pt"
+    ]
+  },
+  "configs": [
+    "nhits/config.yaml",
+    "nbeatsx/config.yaml",
+    "nhits/config_lstm_control.yaml"
+  ],
+  "elapsed_seconds": 111.12306709999757
+}

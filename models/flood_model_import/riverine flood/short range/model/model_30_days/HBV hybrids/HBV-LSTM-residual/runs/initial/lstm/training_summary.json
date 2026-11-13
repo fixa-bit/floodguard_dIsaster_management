@@ -1,0 +1,16 @@
+{
+  "seed": 42,
+  "hidden_size": 48,
+  "configured_epochs": 65,
+  "epochs_run": 28,
+  "selected_epoch": 18,
+  "best_validation_pinball_scaled": 0.10583755178522421,
+  "training_sequences": 1797,
+  "validation_sequences": 336,
+  "test_issue_sequences": 1067,
+  "train_years": [2016, 2017, 2018, 2019, 2020],
+  "validation_year": 2021,
+  "test_years": [2022, 2023, 2024],
+  "lead30_observed_targets": 1055,
+  "hyperparameter_search_trials": 1
+}

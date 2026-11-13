@@ -1,0 +1,14 @@
+{
+  "values_cumecs": {
+    "train_q90": 2180.397187584,
+    "train_q95": 2520.199346688,
+    "train_q99": 3477.3087614976002
+  },
+  "event_threshold_cumecs": 2520.199346688,
+  "official_thresholds": {},
+  "training_derived_names": [
+    "train_q90",
+    "train_q95",
+    "train_q99"
+  ]
+}

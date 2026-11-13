@@ -1,0 +1,13 @@
+{
+  "checkpoints": [
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Encoder-decoder LSTM\\finetuned_15_to_30\\runs\\initial\\seed_42\\best.pt",
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Encoder-decoder LSTM\\finetuned_15_to_30\\runs\\initial\\seed_43\\best.pt",
+    "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_30_days\\Encoder-decoder LSTM\\finetuned_15_to_30\\runs\\initial\\seed_44\\best.pt"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "aggregation": "uniform mean"
+}

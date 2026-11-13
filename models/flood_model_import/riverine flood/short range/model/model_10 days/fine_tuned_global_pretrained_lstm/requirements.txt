@@ -1,0 +1,4 @@
+-r ../requirements.txt
+requests
+# Optional for downloading predictors; training/evaluation do not import ee.
+earthengine-api

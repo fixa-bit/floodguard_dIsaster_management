@@ -1,0 +1,234 @@
+attribute_means:
+  area: 568.9198673289442
+  aridity: 3.7351168976459372
+  ele_mt_sav: 753.6903616057936
+  frac_snow: 0.15539452472169463
+  glc_pc_s01: 2.7595031338559006
+  glc_pc_s02: 13.662279307424928
+  glc_pc_s03: 0.8027023778138991
+  glc_pc_s04: 25.72227719219614
+  glc_pc_s06: 7.689005522440717
+  glc_pc_s07: 0.001121380699168688
+  glc_pc_s08: 0.00037564198185366013
+  glc_pc_s09: 0.5312692049298328
+  glc_pc_s10: 0.02180538232822008
+  glc_pc_s11: 0.8726785025447823
+  glc_pc_s12: 6.235017286168057
+  glc_pc_s13: 8.776938124064667
+  glc_pc_s14: 3.3029117081768447
+  glc_pc_s15: 0.2042420598759427
+  glc_pc_s16: 23.52674289940954
+  glc_pc_s17: 1.1026534861834973
+  glc_pc_s18: 1.6846630652652212
+  glc_pc_s19: 0.3473437900794139
+  glc_pc_s20: 0.7275884273677186
+  glc_pc_s21: 0.33143857504073965
+  glc_pc_s22: 1.6700217921012936
+  gwt_cm_sav: 327.29021055291486
+  high_prec_dur: 1.2258416260900082
+  high_prec_freq: 0.04831667827648544
+  low_prec_dur: 4.392985842900255
+  low_prec_freq: 0.6240803802115
+  moisture_index: -0.4729712097691355
+  p_mean: 2.9724133459497732
+  pet_mean: 9.774681360804983
+  pnv_pc_s01: 1.9504741771426939
+  pnv_pc_s02: 2.04381424488405
+  pnv_pc_s03: 1.3159035705698319
+  pnv_pc_s04: 17.13954409031816
+  pnv_pc_s05: 26.744239304225946
+  pnv_pc_s06: 8.744653819505823
+  pnv_pc_s07: 1.2218870873299508
+  pnv_pc_s08: 14.836028011603139
+  pnv_pc_s09: 10.485252386608382
+  pnv_pc_s10: 8.667319376418243
+  pnv_pc_s11: 2.461780118703689
+  pnv_pc_s12: 2.0560371839381584
+  pnv_pc_s13: 1.3931418017040131
+  pnv_pc_s14: 0.47114376763152105
+  pnv_pc_s15: 0.4664362783743975
+  seasonality: 0.8137842350073448
+  sgr_dk_sav: 147.918126919062
+  slp_dg_sav: 68.54469442577071
+attribute_stds:
+  area: 467.86181914378227
+  aridity: 2.6390958846472596
+  ele_mt_sav: 756.7506461369934
+  frac_snow: 0.18040217773140155
+  glc_pc_s01: 12.181033753979158
+  glc_pc_s02: 25.701641649293336
+  glc_pc_s03: 4.91615490951731
+  glc_pc_s04: 35.19092550289616
+  glc_pc_s06: 18.87073845933814
+  glc_pc_s07: 0.05381369333614152
+  glc_pc_s08: 0.027420993189903313
+  glc_pc_s09: 3.769638700630044
+  glc_pc_s10: 0.4344883853948299
+  glc_pc_s11: 3.6146089723653385
+  glc_pc_s12: 16.17404450435845
+  glc_pc_s13: 18.924876580857937
+  glc_pc_s14: 10.765142108444214
+  glc_pc_s15: 1.349379174577032
+  glc_pc_s16: 32.61820118473907
+  glc_pc_s17: 6.4498481564992005
+  glc_pc_s18: 6.479707490199088
+  glc_pc_s19: 3.639119935936789
+  glc_pc_s20: 2.4368164245655954
+  glc_pc_s21: 2.84724217587009
+  glc_pc_s22: 7.230261653776061
+  gwt_cm_sav: 266.1129983546093
+  high_prec_dur: 0.14794816652085818
+  high_prec_freq: 0.011533474286234772
+  low_prec_dur: 2.1214751388540085
+  low_prec_freq: 0.10154340016830386
+  moisture_index: 0.3204373549834164
+  p_mean: 1.194026845987164
+  pet_mean: 5.602392677073762
+  pnv_pc_s01: 11.340558914806405
+  pnv_pc_s02: 11.857757192507218
+  pnv_pc_s03: 9.879563303233052
+  pnv_pc_s04: 32.81227393127412
+  pnv_pc_s05: 40.62352896181253
+  pnv_pc_s06: 24.638935821220493
+  pnv_pc_s07: 8.228698371692989
+  pnv_pc_s08: 29.291014513853202
+  pnv_pc_s09: 27.144882537900347
+  pnv_pc_s10: 24.658851054549284
+  pnv_pc_s11: 11.854962797176974
+  pnv_pc_s12: 11.874609556156951
+  pnv_pc_s13: 8.478250749103394
+  pnv_pc_s14: 4.6763078361767025
+  pnv_pc_s15: 5.112704091586911
+  seasonality: 0.4951761856764145
+  sgr_dk_sav: 183.61348434263672
+  slp_dg_sav: 65.78029969042842
+xarray_feature_scale:
+  coords: {}
+  attrs: {}
+  dims: {}
+  data_vars:
+    dewpoint_temperature_2m_mean:
+      dims: []
+      attrs: {}
+      data: 9.760117530822754
+    potential_evaporation_sum:
+      dims: []
+      attrs: {}
+      data: 8.714973449707031
+    snow_depth_water_equivalent_mean:
+      dims: []
+      attrs: {}
+      data: 243.40965270996094
+    streamflow:
+      dims: []
+      attrs: {}
+      data: 3.1146252155303955
+    surface_net_solar_radiation_mean:
+      dims: []
+      attrs: {}
+      data: 81.65731811523438
+    surface_net_thermal_radiation_mean:
+      dims: []
+      attrs: {}
+      data: 31.303680419921875
+    surface_pressure_mean:
+      dims: []
+      attrs: {}
+      data: 37.491294860839844
+    temperature_2m_mean:
+      dims: []
+      attrs: {}
+      data: 10.030847549438477
+    total_precipitation_sum:
+      dims: []
+      attrs: {}
+      data: 6.112135410308838
+    u_component_of_wind_10m_mean:
+      dims: []
+      attrs: {}
+      data: 1.5897055864334106
+    v_component_of_wind_10m_mean:
+      dims: []
+      attrs: {}
+      data: 1.6261322498321533
+    volumetric_soil_water_layer_1_mean:
+      dims: []
+      attrs: {}
+      data: 0.16372013092041016
+    volumetric_soil_water_layer_2_mean:
+      dims: []
+      attrs: {}
+      data: 0.16365350782871246
+    volumetric_soil_water_layer_3_mean:
+      dims: []
+      attrs: {}
+      data: 0.1593916267156601
+    volumetric_soil_water_layer_4_mean:
+      dims: []
+      attrs: {}
+      data: 0.17911246418952942
+xarray_feature_center:
+  coords: {}
+  attrs: {}
+  dims: {}
+  data_vars:
+    dewpoint_temperature_2m_mean:
+      dims: []
+      attrs: {}
+      data: 4.203444480895996
+    potential_evaporation_sum:
+      dims: []
+      attrs: {}
+      data: 9.98569107055664
+    snow_depth_water_equivalent_mean:
+      dims: []
+      attrs: {}
+      data: 38.065120697021484
+    streamflow:
+      dims: []
+      attrs: {}
+      data: 1.4859344959259033
+    surface_net_solar_radiation_mean:
+      dims: []
+      attrs: {}
+      data: 143.0999298095703
+    surface_net_thermal_radiation_mean:
+      dims: []
+      attrs: {}
+      data: -61.0275993347168
+    surface_pressure_mean:
+      dims: []
+      attrs: {}
+      data: 93.34571075439453
+    temperature_2m_mean:
+      dims: []
+      attrs: {}
+      data: 10.065256118774414
+    total_precipitation_sum:
+      dims: []
+      attrs: {}
+      data: 2.9278628826141357
+    u_component_of_wind_10m_mean:
+      dims: []
+      attrs: {}
+      data: 0.4269167482852936
+    v_component_of_wind_10m_mean:
+      dims: []
+      attrs: {}
+      data: 0.22281210124492645
+    volumetric_soil_water_layer_1_mean:
+      dims: []
+      attrs: {}
+      data: 0.3319549858570099
+    volumetric_soil_water_layer_2_mean:
+      dims: []
+      attrs: {}
+      data: 0.3350176215171814
+    volumetric_soil_water_layer_3_mean:
+      dims: []
+      attrs: {}
+      data: 0.3304527997970581
+    volumetric_soil_water_layer_4_mean:
+      dims: []
+      attrs: {}
+      data: 0.3591757118701935

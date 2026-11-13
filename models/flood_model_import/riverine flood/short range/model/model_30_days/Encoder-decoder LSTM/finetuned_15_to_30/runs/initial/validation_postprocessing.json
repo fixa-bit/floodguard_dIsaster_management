@@ -1,0 +1,59 @@
+{
+  "fitted_on": "2021 validation only",
+  "lead_groups": [
+    {
+      "leads": [
+        1,
+        10
+      ],
+      "alpha": 1.0,
+      "quantile_offsets_cumecs": [
+        11.139484405517578,
+        40.76289367675781,
+        84.2578125,
+        263.1859130859375,
+        495.357177734375
+      ],
+      "validation_pairs": 3350,
+      "validation_climatology_mse": 171448.9375,
+      "validation_blended_mse": 117872.328125
+    },
+    {
+      "leads": [
+        11,
+        20
+      ],
+      "alpha": 1.0,
+      "quantile_offsets_cumecs": [
+        15.6981840133667,
+        41.92827224731445,
+        92.09569549560547,
+        301.40167236328125,
+        479.4524841308594
+      ],
+      "validation_pairs": 3350,
+      "validation_climatology_mse": 165438.03125,
+      "validation_blended_mse": 104437.96875
+    },
+    {
+      "leads": [
+        21,
+        30
+      ],
+      "alpha": 1.0,
+      "quantile_offsets_cumecs": [
+        -3.9291138648986816,
+        27.612823486328125,
+        89.21229553222656,
+        314.4508056640625,
+        415.0443115234375
+      ],
+      "validation_pairs": 3357,
+      "validation_climatology_mse": 165008.25,
+      "validation_blended_mse": 100980.6640625
+    }
+  ],
+  "empirical_calibration": true,
+  "coverage_guarantee": false,
+  "selection_and_calibration_reuse_same_validation_year": true
+}

@@ -1,0 +1,274 @@
+{
+  "status": "complete",
+  "started_utc": "2026-10-30T09:47:16.066045+00:00",
+  "python": "3.11.9",
+  "area_km2": 28794.390101044257,
+  "observed_days": 3215,
+  "simulation_days": 4018,
+  "limitations": [
+    "No archived weather forecasts were supplied. Future ERA5-Land rainfall and temperature are realized reanalysis, so these are optimistic weather-driven hindcasts. Training/operations mismatch remains unquantified.",
+    "No authentic meteorological ensemble was found; this run has one reanalysis member. P10/P50/P90 quantify conditional residual uncertainty, not full weather, parameter or structural uncertainty. Genuine issued ensembles are supported by the archive input schema and are propagated separately through HBV and both corrections.",
+    "Rainfall quantile mapping uses training ERA5-Land vs CHIRPS v3. Temperature has no independent observed reference and uses an identity mapping against the same ERA5-Land series; independent temperature bias correction is unvalidated.",
+    "MOD10A1 exports actually available end in 2019. They contain mean NDSI, not fractional snow-covered area. MODIS is used as a quality-screened, two-day-delayed historical index and for rank diagnostics only. The snow fraction feature is an assumed HBV depletion curve. No independent MODIS validation covers the test monsoons.",
+    "No issued GloFAS forecasts were available; that baseline was not evaluated.",
+    "Observed discharge is not gap-filled. WAPDA historical observation times are largely unconfirmed; dates are aligned with UTC weather days by the existing table. Operational availability and reading/day alignment need validation.",
+    "These years have already been inspected in earlier workspace experiments. They are excluded from each fold's fitting but are not a globally untouched research holdout. Seasonal sample sizes are small and daily forecast windows overlap.",
+    "HBV is lumped, with a linear routing reservoir. Elevation bands, glacier ice melt, regulation and diversions are not resolved. Final AI-adjusted flow need not conserve water even when HBV does.",
+    "Mixture probabilities use equal member weights and a piecewise-linear conditional quantile function with constant tails outside P10/P90. Very rare exceedances and cross-lead event probabilities are not resolved by this approximation."
+  ],
+  "sources": {
+    "HBV": "https://hess.copernicus.org/articles/16/3315/2012/",
+    "MODIS": "https://nsidc.org/data/user-resources/help-center/what-ndsi-snow-cover-and-how-does-it-compare-fsc",
+    "LightGBM": "https://lightgbm.readthedocs.io/en/stable/Parameters.html"
+  },
+  "finished_utc": "2026-10-30T09:49:27.681569+00:00",
+  "inputs_unchanged": true,
+  "folds": [
+    {
+      "cutoff": "2019-12-31",
+      "training_rows": 1451,
+      "validation_rows": 357,
+      "forecast_rows": 113,
+      "lgbm_rounds": [
+        [
+          263,
+          188,
+          162
+        ],
+        [
+          207,
+          345,
+          350
+        ],
+        [
+          307,
+          327,
+          350
+        ],
+        [
+          276,
+          334,
+          82
+        ],
+        [
+          281,
+          346,
+          119
+        ],
+        [
+          210,
+          319,
+          156
+        ],
+        [
+          172,
+          350,
+          58
+        ],
+        [
+          137,
+          347,
+          6
+        ],
+        [
+          116,
+          348,
+          4
+        ],
+        [
+          122,
+          14,
+          8
+        ]
+      ],
+      "lstm_best_epoch": 9,
+      "final_refit": false,
+      "forecast_mode": "reanalysis_hindcast"
+    },
+    {
+      "cutoff": "2020-12-31",
+      "training_rows": 1817,
+      "validation_rows": 356,
+      "forecast_rows": 113,
+      "lgbm_rounds": [
+        [
+          344,
+          347,
+          262
+        ],
+        [
+          350,
+          325,
+          231
+        ],
+        [
+          111,
+          339,
+          189
+        ],
+        [
+          160,
+          349,
+          177
+        ],
+        [
+          103,
+          347,
+          200
+        ],
+        [
+          103,
+          312,
+          234
+        ],
+        [
+          106,
+          350,
+          134
+        ],
+        [
+          135,
+          218,
+          167
+        ],
+        [
+          106,
+          270,
+          105
+        ],
+        [
+          92,
+          231,
+          140
+        ]
+      ],
+      "lstm_best_epoch": 21,
+      "final_refit": false,
+      "forecast_mode": "reanalysis_hindcast"
+    },
+    {
+      "cutoff": "2021-12-31",
+      "training_rows": 2182,
+      "validation_rows": 356,
+      "forecast_rows": 113,
+      "lgbm_rounds": [
+        [
+          219,
+          256,
+          198
+        ],
+        [
+          183,
+          106,
+          236
+        ],
+        [
+          77,
+          73,
+          255
+        ],
+        [
+          57,
+          69,
+          229
+        ],
+        [
+          70,
+          68,
+          180
+        ],
+        [
+          58,
+          54,
+          283
+        ],
+        [
+          52,
+          61,
+          234
+        ],
+        [
+          51,
+          52,
+          261
+        ],
+        [
+          56,
+          58,
+          326
+        ],
+        [
+          48,
+          59,
+          146
+        ]
+      ],
+      "lstm_best_epoch": 4,
+      "final_refit": false,
+      "forecast_mode": "reanalysis_hindcast"
+    },
+    {
+      "cutoff": "2022-12-31",
+      "training_rows": 2547,
+      "validation_rows": 356,
+      "forecast_rows": 113,
+      "lgbm_rounds": [
+        [
+          299,
+          345,
+          260
+        ],
+        [
+          177,
+          320,
+          229
+        ],
+        [
+          195,
+          346,
+          210
+        ],
+        [
+          97,
+          345,
+          268
+        ],
+        [
+          111,
+          343,
+          223
+        ],
+        [
+          90,
+          350,
+          207
+        ],
+        [
+          121,
+          190,
+          120
+        ],
+        [
+          137,
+          186,
+          173
+        ],
+        [
+          175,
+          149,
+          202
+        ],
+        [
+          201,
+          350,
+          194
+        ]
+      ],
+      "lstm_best_epoch": 10,
+      "final_refit": false,
+      "forecast_mode": "reanalysis_hindcast"
+    }
+  ],
+  "probability_method": "Analytic equal-member mixture CDF, piecewise-linear conditional P10/P50/P90 with constant tails",
+  "verification_complete": true
+}

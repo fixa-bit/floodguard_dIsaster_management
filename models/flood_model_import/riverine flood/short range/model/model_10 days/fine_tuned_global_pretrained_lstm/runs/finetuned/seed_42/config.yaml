@@ -1,0 +1,64 @@
+data:
+  daily_file: data/marala_global_daily.csv
+  static_file: data/marala_static_attributes.csv
+  basin_id: marala
+  date_column: date
+  basin_column: basin_id
+  target_column: q_cumecs
+  hindcast_length: 365
+  forecast_horizon: 10
+  forecast_dynamic_inputs:
+  - total_precipitation_sum
+  - temperature_2m_mean
+  other_future_inputs: persist_issue_day
+pretrained:
+  checkpoint: pretrained/caravan_base/model_epoch040.pt
+  config: pretrained/caravan_base/config.yml
+  scaler: pretrained/caravan_base/train_data/train_data_scaler.yml
+reference:
+  config: ../config.yaml
+  checkpoint: ../lstm/runs/initial/seed_42/best.pt
+splits:
+  train:
+  - 2016
+  - 2020
+  validation:
+  - 2021
+  - 2021
+  test:
+  - 2022
+  - 2024
+training:
+  output_dir: runs/finetuned/seed_42
+  seed: 42
+  epochs: 25
+  batch_size: 32
+  recurrent_learning_rate: 1.0e-05
+  embedding_head_learning_rate: 5.0e-05
+  weight_decay: 1.0e-05
+  gradient_clip: 1.0
+  patience: 5
+  min_delta: 0.0001
+  cpu_threads: 2
+  flush_denormal: true
+  gradient_history_days: 60
+  freeze_recurrent: false
+  freeze_static_embedding: false
+preparation:
+  observed_daily_source: ../data/marala_daily.csv
+  raw_directory: data/raw
+  start_year: 2015
+  end_year: 2024
+  climate_years:
+  - 1981
+  - 2020
+  existing_feature_map:
+    snow_depth_water_equivalent_mean: swe_mm
+    temperature_2m_mean: temperature_c
+    dewpoint_temperature_2m_mean: dewpoint_c
+    total_precipitation_sum: rain_era5_mm
+    potential_evaporation_sum: pet_mm
+evaluation:
+  output_dir: reports/initial
+  peak_percentile: 0.95
+  flood_threshold_cumecs: null

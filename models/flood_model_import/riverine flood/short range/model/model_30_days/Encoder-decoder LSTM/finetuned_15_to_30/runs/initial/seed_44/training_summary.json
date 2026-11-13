@@ -1,0 +1,12 @@
+{
+  "seed": 44,
+  "seconds": 78.39290940000501,
+  "epochs": 38,
+  "selected_epoch": 26,
+  "selected_validation_mse": 0.14574517655450744,
+  "initial_smooth_climatology_validation_mse": 0.23738655178966642,
+  "selected_initial_baseline_only": false,
+  "parameters": 11830,
+  "training_samples": 1767,
+  "validation_samples": 336
+}

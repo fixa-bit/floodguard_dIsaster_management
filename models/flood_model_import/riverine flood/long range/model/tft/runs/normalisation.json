@@ -1,0 +1,29 @@
+{
+  "forcing_mean": {
+    "precip_era5land_mm": 1.040416278729164,
+    "temperature_c": 2.745277456475862,
+    "dewpoint_c": -3.5167586435459643,
+    "pet_mm": 2.563692728872718,
+    "snowmelt_mm": 0.6976167082762527,
+    "snow_depth_m": 3.9339490171364733,
+    "swe_mm": 1166.0520572678681,
+    "ssrd_wm2": 226.2228140532778
+  },
+  "forcing_std": {
+    "precip_era5land_mm": 0.9687737781666452,
+    "temperature_c": 8.1019310647206,
+    "dewpoint_c": 9.682937388466206,
+    "pet_mm": 1.3858713358588561,
+    "snowmelt_mm": 0.6377495075761915,
+    "snow_depth_m": 0.5102275148903156,
+    "swe_mm": 145.6189659213873,
+    "ssrd_wm2": 69.09232799673025
+  },
+  "q_log_mean": 5.648448821654925,
+  "q_log_std": 1.2632124889073257,
+  "log1p_vars": [
+    "precip_era5land_mm",
+    "snowmelt_mm"
+  ],
+  "statistics_period_end": "2013-12-31"
+}

@@ -1,0 +1,53 @@
+{
+  "daily_file": "../../../evaluation comparison/common/data/marala_daily.csv",
+  "modis_dir": "../../../dataset/chenab_marala/raw/marala/NDSI_Snow_Cover",
+  "catchment_metadata": "../../../dataset/chenab_marala/raw/marala/temperature/google_earth_engine/catchment_metadata.json",
+  "forecast_file": null,
+  "glofas_file": null,
+  "output_dir": "runs/2026-10-30",
+  "simulation_start": "2014-01-01",
+  "simulation_end": "2024-12-31",
+  "first_training_year": 2016,
+  "test_years": [
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "monsoon_months": [
+    6,
+    7,
+    8,
+    9
+  ],
+  "warmup_days": 730,
+  "horizon": 10,
+  "history_days": 60,
+  "seed": 42,
+  "threads": 2,
+  "quantiles": [
+    0.1,
+    0.5,
+    0.9
+  ],
+  "thresholds_cumecs": {},
+  "training_threshold_quantiles": [
+    0.9,
+    0.95,
+    0.99
+  ],
+  "modis_min_valid_fraction": 0.5,
+  "modis_latency_days": 2,
+  "modis_max_age_days": 7,
+  "snow_cover_scale_mm": 50.0,
+  "de_maxiter": 120,
+  "de_popsize": 8,
+  "de_tolerance": 0.001,
+  "lgbm_estimators": 350,
+  "lgbm_patience": 40,
+  "lstm_epochs": 65,
+  "lstm_patience": 10,
+  "lstm_hidden_size": 48,
+  "lstm_batch_size": 128,
+  "lstm_learning_rate": 0.001
+}

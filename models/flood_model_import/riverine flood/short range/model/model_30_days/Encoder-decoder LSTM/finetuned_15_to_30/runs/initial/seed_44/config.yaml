@@ -1,0 +1,116 @@
+data:
+  daily_file: data/marala_daily.csv
+  date_column: date
+  basin_column: basin_id
+  default_basin_id: marala
+  target_column: q_cumecs
+  dynamic_columns:
+  - precipitation_mm
+  - temperature_c
+  static_file: null
+  static_columns: []
+  use_static: false
+  past_discharge: true
+  hindcast_length: 365
+  forecast_horizon: 30
+  calendar_features: true
+  forecast_mode: reanalysis_with_noise
+  forecast_file: null
+  forecast_date_column: date
+  forecast_lead_column: lead_day
+  forecast_available_at_column: null
+  issue_hour_utc: 24
+  forecast_columns:
+  - precipitation_mm
+  - temperature_c
+  reanalysis_columns:
+  - precipitation_mm
+  - temperature_c
+  noise:
+    std_at_lead_1: 0.05
+    std_growth_per_lead: 0.025
+    evaluation_seed: 12345
+splits:
+  train:
+  - 2016
+  - 2020
+  validation:
+  - 2021
+  - 2021
+  test:
+  - 2022
+  - 2024
+normalization:
+  inputs: standard
+  static: standard
+  flow_scale_cumecs: 1.0
+  standardize_log_flow: true
+model:
+  hidden_size: 32
+  num_layers: 1
+  dropout: 0.15
+  lead_embedding_size: 8
+  static_embedding_size: 8
+  quantiles:
+  - 0.05
+  - 0.25
+  - 0.5
+  - 0.75
+  - 0.95
+  smooth_climatology_window: 31
+  parent_checkpoint: reference/parent_15day/best.pt
+  new_lead_initialization: repeat day-15 vector for days 16-30; all embeddings trainable
+training:
+  output_dir: runs/initial
+  epochs: 100
+  batch_size: 128
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  patience: 12
+  min_delta: 0.0001
+  gradient_clip: 1.0
+  ensemble_size: 3
+  seeds:
+  - 42
+  - 43
+  - 44
+  device: cpu
+  cpu_threads: 2
+  flush_denormal: true
+  point_mse_weight: 1.0
+  quantile_loss_weight: 0.15
+  residual_penalty: 0.02
+  late_lead_weight: 2.0
+  selection_leads:
+  - 21
+  - 30
+finetuning:
+  output_dir: runs/finetuned
+  epochs: 10
+  learning_rate: 0.0001
+  freeze_hindcast: false
+  recompute_normalization: false
+model_family: encoder_decoder_lstm_30day_finetuned_15_to_30
+evaluation:
+  output_dir: reports/initial
+  flood_percentile: 0.95
+  comparison_dir: ../../../../evaluation comparison/model_30_days/encoder_decoder_finetuned_15_to_30
+  report_leads:
+  - 1
+  - 10
+  - 15
+  - 20
+  - 30
+  weather_only_predictions: ../../Hindcast-forecast LSTM/scratch/reports/initial/predictions.csv
+  past_discharge_predictions: ../../Hindcast-forecast LSTM/past_discharge/reports/initial/predictions.csv
+  best_ensemble_predictions: ../../Hindcast-forecast LSTM/climatology_residual_ensemble/reports/initial/predictions.csv
+postprocessing:
+  lead_groups:
+  - - 1
+    - 10
+  - - 11
+    - 20
+  - - 21
+    - 30
+  fit_climatology_blend: true
+  calibrate_quantiles: true

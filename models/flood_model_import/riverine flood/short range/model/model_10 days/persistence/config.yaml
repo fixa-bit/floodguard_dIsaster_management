@@ -1,0 +1,171 @@
+data:
+  daily_file: data/marala_daily.csv
+  date_column: date
+  basin_column: basin_id
+  default_basin_id: marala
+  target_column: q_cumecs
+  dynamic_columns:
+  - rain_chirps_mm
+  - temperature_c
+  - swe_mm
+  - snow_depth_m
+  - snowmelt_mm
+  - dewpoint_c
+  - ssrd_wm2
+  - pet_mm
+  static_file: null
+  static_columns: []
+  use_static: false
+  past_discharge: false
+  hindcast_length: 365
+  forecast_horizon: 10
+  calendar_features: true
+  forecast_mode: reanalysis_with_noise
+  forecast_file: null
+  forecast_date_column: date
+  forecast_lead_column: lead_day
+  forecast_available_at_column: null
+  issue_hour_utc: 24
+  forecast_columns:
+  - precipitation_mm
+  - temperature_c
+  reanalysis_columns:
+  - rain_era5_mm
+  - temperature_c
+  noise:
+    std_at_lead_1: 0.05
+    std_growth_per_lead: 0.025
+    evaluation_seed: 12345
+splits:
+  train:
+  - 2016
+  - 2020
+  validation:
+  - 2021
+  - 2021
+  test:
+  - 2022
+  - 2024
+normalization:
+  inputs: standard
+  static: standard
+  flow_scale_cumecs: 1.0
+  standardize_log_flow: true
+model:
+  hidden_size: 64
+  num_layers: 1
+  dropout: 0.15
+  lead_embedding_size: 8
+  static_embedding_size: 8
+  quantiles:
+  - 0.05
+  - 0.25
+  - 0.5
+  - 0.75
+  - 0.95
+training:
+  output_dir: runs/initial
+  epochs: 30
+  batch_size: 64
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  patience: 6
+  min_delta: 0.0001
+  gradient_clip: 1.0
+  ensemble_size: 1
+  seeds:
+  - 42
+  - 43
+  - 44
+  device: cpu
+  cpu_threads: 2
+finetuning:
+  output_dir: runs/finetuned
+  epochs: 10
+  learning_rate: 0.0001
+  freeze_hindcast: false
+  recompute_normalization: false
+baselines:
+  output_dirs:
+    persistence: runs/initial
+    climatology: ../climatology/runs/initial
+    gradient_boosting: ../gradient_boosting/runs/initial
+  history_summary_windows:
+  - 1
+  - 7
+  - 30
+  - 90
+  - 365
+  boosting_iterations: 80
+  boosting_learning_rate: 0.05
+  boosting_max_leaf_nodes: 15
+  boosting_l2: 1.0
+ensemble:
+  output_dir: ../ensemble/runs/initial
+  members:
+  - LSTM
+  - gradient_boosting
+  fit_validation_weights: true
+  fixed_weights:
+  - 0.5
+  - 0.5
+evaluation:
+  output_dir: ../../../evaluation comparison/initial_lstm_baselines
+  model_output_dirs:
+    LSTM: ../lstm/reports/initial
+    persistence: reports/initial
+    climatology: ../climatology/reports/initial
+    gradient_boosting: ../gradient_boosting/reports/initial
+  peak_percentile: 0.95
+  flood_percentile: 0.95
+  flood_thresholds_cumecs: {}
+preparation:
+  basin_id: marala
+  target_sources:
+  - path: ../../../dataset/chenab_marala/processed/marala/discharge/marala_wapda_daily_inflow.csv
+    column: marala_inflow_cusecs
+    factor_to_cumecs: 0.028316846592
+    source: WAPDA
+    exclude_nonpositive: true
+  - path: ../../../dataset/chenab_marala/processed/marala/discharge/marala_ffd_2024_bulletin_discharge.csv
+    column: marala_inflow_1000_cusecs
+    factor_to_cumecs: 28.316846592
+    source: FFD
+    require:
+      date_status: matches_archive
+      observation_time: 06:00 PKT
+  - path: ../../../dataset/chenab_marala/processed/marala/discharge/marala_ffd_2025_bulletin_discharge.csv
+    column: marala_inflow_1000_cusecs
+    factor_to_cumecs: 28.316846592
+    source: FFD
+    require:
+      date_status: matches_archive
+      observation_time: 06:00 PKT
+  - path: ../../../dataset/chenab_marala/processed/marala/discharge/marala_ffd_2026_bulletin_discharge.csv
+    column: marala_inflow_1000_cusecs
+    factor_to_cumecs: 28.316846592
+    source: FFD
+    require:
+      observation_time: 06:00 PKT
+  dynamic_sources:
+  - path: ../../../dataset/chenab_marala/processed/marala/rainfall/chirps_v3_primary/marala_chirps_v3_final_rnl_daily_1990_2026.csv
+    columns:
+      precipitation_mm: rain_chirps_mm
+  - path: ../../../dataset/chenab_marala/raw/marala/rainfall/google_earth_engine/marala_daily_precipitation_1980_2024.csv
+    columns:
+      era5land_mm: rain_era5_mm
+  - path: ../../../dataset/chenab_marala/raw/marala/temperature/google_earth_engine/marala_daily_temperature_1980_2024.csv
+    columns:
+      era5land_temperature_2m_c: temperature_c
+  - path: ../../../dataset/chenab_marala/raw/marala/marala_daily_snow_1980_2024.csv
+    columns:
+      swe_mm: swe_mm
+      snow_depth_m: snow_depth_m
+      snowmelt_mm: snowmelt_mm
+  - path: ../../../dataset/chenab_marala/raw/marala/marala_daily_dewpoint_ssrd_1980_2024.csv
+    columns:
+      dewpoint_c: dewpoint_c
+      ssrd_wm2: ssrd_wm2
+  - path: ../../../dataset/chenab_marala/raw/marala/potential_evaporation_sum/marala_daily_pet_1980_2024.csv
+    columns:
+      pet_mm: pet_mm

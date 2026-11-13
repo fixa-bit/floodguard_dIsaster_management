@@ -1,0 +1,42 @@
+{
+  "source_data_sha256_before": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "source_data_sha256_after": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "local_data_sha256": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "local_data_byte_identical": true,
+  "parameters": {
+    "tt": -0.931361415952654,
+    "cfmax": 0.5007925855535196,
+    "sfcf": 1.4560507008651455,
+    "cfr": 0.06480931941528062,
+    "cwh": 0.0004226096880031588,
+    "fc": 794.8471457048213,
+    "beta": 0.507482905487906,
+    "lp": 0.9555017376817416,
+    "perc": 1.597956451349486,
+    "uzl": 28.70339334848407,
+    "k0": 0.9120432129962568,
+    "k1": 0.07029085232254265,
+    "k2": 0.0028465227111916236,
+    "routing_k": 0.15054010460206602
+  },
+  "calibration_kge": 0.8575390934198072,
+  "converged": false,
+  "training_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020
+  ],
+  "warmup_days": 730,
+  "validation_years": [
+    2021,
+    2021
+  ],
+  "test_years": [
+    2022,
+    2024
+  ],
+  "discharge_filled_or_modified": false,
+  "water_balance_max_abs_error_mm": 6.183942247162122e-13
+}

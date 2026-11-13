@@ -1,0 +1,26 @@
+data:
+  merged_daily: ../../model/multi_horizon_CRE/data/marala_daily.csv
+  date_column: date
+  target_column: q_cumecs
+  source_column: q_source
+  observed_source: WAPDA
+  train_years: [2016, 2021]
+  validation_years: [2022, 2023]
+  final_train_last_year: 2023
+  test_years: [2024]
+  input_coverage_minimum: 0.8
+  target_coverage_minimum: 0.9
+
+forecast:
+  horizons_days: [90, 180]
+  issue_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  issue_day: 1
+  flood_percentile: 0.75
+
+model:
+  ridge_alpha_candidates: [0.1, 1, 10, 100, 1000, 10000]
+  seed: 42
+
+outputs:
+  reports: reports
+  models: runs

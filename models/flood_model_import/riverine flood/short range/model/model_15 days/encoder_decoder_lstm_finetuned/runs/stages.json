@@ -1,0 +1,4 @@
+{
+  "finetuned": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_15 days\\encoder_decoder_lstm_finetuned\\runs\\initial\\seed_42\\best.pt",
+  "scratch": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_15 days\\encoder_decoder_lstm\\runs\\initial\\seed_42\\best.pt"
+}

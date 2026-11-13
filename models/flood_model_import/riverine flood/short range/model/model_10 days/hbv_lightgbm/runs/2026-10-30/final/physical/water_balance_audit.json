@@ -1,0 +1,7 @@
+{
+  "max_absolute_daily_error_mm": 7.089329123743937e-13,
+  "minimum_store_mm": 0.0,
+  "identity": "previous total + snowfall*sfcf + rainfall = next total + AET + routed runoff",
+  "modis_interpretation": "NDSI index, not observed snow area fraction; rank diagnostic only",
+  "snow_fraction_feature": "HBV-derived 1-exp(-snowpack/50mm); assumed depletion curve, not observed fraction"
+}

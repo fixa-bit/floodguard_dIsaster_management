@@ -1,0 +1,57 @@
+{
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_pinball": 0.16513997321589696,
+      "validation_pinball": 0.12607801079074418
+    },
+    {
+      "epoch": 2,
+      "train_pinball": 0.10577262627145986,
+      "validation_pinball": 0.11943200988769294
+    },
+    {
+      "epoch": 3,
+      "train_pinball": 0.09237789386901978,
+      "validation_pinball": 0.11711980633758415
+    },
+    {
+      "epoch": 4,
+      "train_pinball": 0.08517196506545252,
+      "validation_pinball": 0.12228768734277877
+    },
+    {
+      "epoch": 5,
+      "train_pinball": 0.08249092938273055,
+      "validation_pinball": 0.11930642389683384
+    },
+    {
+      "epoch": 6,
+      "train_pinball": 0.07548296562076692,
+      "validation_pinball": 0.1177881867052061
+    },
+    {
+      "epoch": 7,
+      "train_pinball": 0.07196250195906835,
+      "validation_pinball": 0.11859314337756532
+    },
+    {
+      "epoch": 8,
+      "train_pinball": 0.07039372446335218,
+      "validation_pinball": 0.12238314080021426
+    },
+    {
+      "epoch": 9,
+      "train_pinball": 0.06930462732167114,
+      "validation_pinball": 0.12126426379344235
+    },
+    {
+      "epoch": 10,
+      "train_pinball": 0.06860343830703386,
+      "validation_pinball": 0.12132674545135604
+    }
+  ],
+  "elapsed_seconds": 12.922680800000307,
+  "learning_rate": 0.0005,
+  "source_hashes_unchanged": true
+}

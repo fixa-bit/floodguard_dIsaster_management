@@ -1,0 +1,43 @@
+# Marala long-range TFT. Dates are inclusive. Issue date = last encoder day.
+encoder_days: 365
+horizon_days: 180
+quantiles: [0.1, 0.5, 0.9]
+
+modes:
+  # No weather after the issue date: a true long-lead forecast from basin state.
+  forecast:
+    future_forcing: []
+  # Future precipitation and temperature supplied as known inputs. In hindcast they
+  # are ERA5-Land ("perfect forcing"); in projection they would be bias-corrected
+  # CMIP6. P and T are the two most robust GCM variables.
+  climate_conditioned:
+    future_forcing: [precip_era5land_mm, temperature_c]
+  # Runs on GCM output alone: past and future inputs are precipitation and temperature
+  # only, and no past discharge (none exists in 2026-2040). Used for the projections.
+  projection:
+    past_forcing: [precip_era5land_mm, temperature_c]
+    past_discharge: false
+    future_forcing: [precip_era5land_mm, temperature_c]
+
+# Simulated GloFAS v5 target. Stops at 2015 so no test-year weather leaks in.
+pretrain:
+  train: {issues: ["1981-01-01", "2013-12-31"], targets: ["1980-01-01", "2013-12-31"]}
+  val:   {issues: ["2014-01-01", "2015-12-31"], targets: ["2014-01-01", "2015-12-31"]}
+
+# Observed Marala inflow target (WAPDA, then Sindh rim-station where WAPDA ends).
+finetune:
+  train: {issues: ["2016-03-01", "2021-12-31"], targets: ["2016-03-01", "2021-12-31"]}
+  val:   {issues: ["2022-01-01", "2023-12-31"], targets: ["2022-01-01", "2023-12-31"]}
+  test:  {issues: ["2024-01-01", "2026-12-31"], targets: ["2024-01-01", "2026-12-31"]}
+
+min_past_obs_coverage_90d: 0.8   # finetune/test issues need observed flow in 80% of the last 90 days
+min_valid_targets: 30            # an issue needs at least 30 observed target days in its window
+
+model: {d: 64, heads: 4, dropout: 0.15}
+
+training:
+  batch_size: 64
+  seeds: [11, 22, 33]
+  pretrain: {lr: 0.001, max_epochs: 40, patience: 6, issue_stride: 2}
+  finetune: {lr: 0.0003, max_epochs: 80, patience: 10, issue_stride: 1}
+  scratch:  {lr: 0.001, max_epochs: 80, patience: 10, issue_stride: 1}

@@ -1,0 +1,143 @@
+[
+  {
+    "order": 1,
+    "family": "Hindcast-forecast LSTM, including pretrained variants",
+    "folder": "Hindcast-forecast LSTM",
+    "status": "trained and evaluated; awaiting user feedback",
+    "completed_variant": "climatology_residual_ensemble",
+    "completed_variants": [
+      "scratch",
+      "past_discharge",
+      "climatology_residual_ensemble"
+    ],
+    "selected_epochs": [
+      4,
+      2,
+      10
+    ]
+  },
+  {
+    "order": 2,
+    "family": "Encoder-decoder LSTM",
+    "folder": "Encoder-decoder LSTM",
+    "status": "trained and evaluated; awaiting user feedback",
+    "completed_variants": [
+      "finetuned_15_to_30"
+    ],
+    "completed_variant": "finetuned_15_to_30",
+    "selected_epochs": [
+      9,
+      15,
+      26
+    ],
+    "training_seconds": 176.7818544000038
+  },
+  {
+    "order": 3,
+    "family": "delta-HBV, physical HBV and HBV residual hybrids",
+    "folder": "HBV hybrids",
+    "status": "delta-HBV, calibrated physical HBV and both HBV residual corrections trained and evaluated; awaiting feedback",
+    "completed_variant": "HBV-LightGBM-residual",
+    "completed_variants": [
+      "delta-HBV",
+      "calibrated-physical-HBV",
+      "HBV-LSTM-residual",
+      "HBV-LightGBM-residual"
+    ],
+    "completed_variant_runs": {
+      "delta-HBV": {
+        "selected_epoch": 80,
+        "training_seconds": 226.5816359
+      },
+      "calibrated-physical-HBV": {
+        "calibration_generations": 120,
+        "parameter_evaluations": 13552,
+        "converged": false
+      },
+      "HBV-LSTM-residual": {
+        "selected_epoch": 18,
+        "epochs_run": 28,
+        "day30_NSE": 0.7599053021194839,
+        "day30_flood_recall": 0.7450980392156863
+      },
+      "HBV-LightGBM-residual": {
+        "estimators_configured": 350,
+        "lead_models": 30,
+        "quantiles_per_lead": 3,
+        "day30_NSE": 0.780473,
+        "day30_flood_recall": 0.5294117647058824
+      }
+    },
+    "untrained_variants": []
+  },
+  {
+    "order": 4,
+    "family": "Spatial elevation-band LSTM",
+    "folder": "Spatial elevation-band LSTM",
+    "status": "trained and evaluated; elevation-band model and matched catchment-mean control complete",
+    "completed_variants": [
+      "elevation_band_lstm",
+      "catchment_mean_control"
+    ],
+    "completed_variant_runs": {
+      "elevation_band_lstm": {
+        "seed": 42,
+        "selected_epoch": 12,
+        "epochs_run": 18,
+        "training_seconds": 146.9188087,
+        "day30_NSE": 0.800851,
+        "day30_flood_recall": 0.39215686274509803
+      },
+      "catchment_mean_control": {
+        "seed": 42,
+        "selected_epoch": 18,
+        "epochs_run": 24,
+        "training_seconds": 67.9402427,
+        "day30_NSE": 0.850161,
+        "day30_flood_recall": 0.5294117647058824
+      }
+    }
+  },
+  {
+    "order": 5,
+    "family": "N-HiTS",
+    "folder": "N-HiTS",
+    "status": "trained and evaluated; awaiting feedback",
+    "completed_variant": "nhits_30_day",
+    "completed_variant_runs": {
+      "nhits_30_day": {
+        "seed": 42,
+        "selected_epoch": 3,
+        "epochs_run": 10,
+        "training_seconds": 12.524536,
+        "day30_NSE": 0.677726,
+        "day30_flood_precision": 0.25,
+        "day30_flood_recall": 0.19607843137254902
+      }
+    }
+  },
+  {
+    "order": 6,
+    "family": "N-BEATSx",
+    "folder": "N-BEATSx",
+    "status": "trained and evaluated; awaiting user feedback",
+    "completed_variant": "nbeatsx_30_day",
+    "completed_variant_runs": {
+      "nbeatsx_30_day": {
+        "seed": 42,
+        "selected_epoch": 3,
+        "epochs_run": 10,
+        "training_seconds": 12.9226808,
+        "day30_NSE": 0.564299,
+        "day30_KGE": 0.739895,
+        "day30_RMSE_cumecs": 520.343557,
+        "day30_flood_precision": 0.267442,
+        "day30_flood_recall": 0.45098,
+        "day30_quantile_90pct_coverage": 0.784,
+        "observed_test_targets": 1055,
+        "flood_test_targets": 51,
+        "climatology_day30_NSE": 0.792
+      }
+    }
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "daily_file": "data/marala_daily.csv",
+  "source_daily_file": "../../../../evaluation comparison/common/data/marala_daily.csv",
+  "modis_dir": "data/modis",
+  "catchment_metadata": "data/catchment_metadata.json",
+  "base_calibration": "reference/physical_base/calibration.json",
+  "forecast_file": null,
+  "glofas_file": null,
+  "simulation_start": "2014-01-01",
+  "simulation_end": "2024-12-31",
+  "first_training_year": 2016,
+  "last_training_year": 2020,
+  "validation_years": [
+    2021,
+    2021
+  ],
+  "test_years": [
+    2022,
+    2024
+  ],
+  "warmup_days": 730,
+  "horizon": 30,
+  "history_days": 60,
+  "seed": 42,
+  "threads": 2,
+  "quantiles": [
+    0.1,
+    0.5,
+    0.9
+  ],
+  "modis_min_valid_fraction": 0.5,
+  "modis_latency_days": 2,
+  "modis_max_age_days": 7,
+  "snow_cover_scale_mm": 50.0,
+  "lstm_epochs": 65,
+  "lstm_patience": 10,
+  "lstm_hidden_size": 48,
+  "lstm_batch_size": 128,
+  "lstm_learning_rate": 0.001,
+  "output_dir": "runs/initial",
+  "validation_output_dir": "reports/validation",
+  "test_output_dir": "reports/initial",
+  "comparison_dir": "../../../../evaluation comparison/model_30_days/hbv_lstm_residual"
+}

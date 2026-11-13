@@ -1,0 +1,35 @@
+sources:
+  record_url: https://zenodo.org/api/records/15529996
+  archive_name: basin_timeseries_v1p2_metForcing_obsFlow.zip
+  forcing: nldas
+  basins:
+  - '13340000'
+  - 06191500
+  - '12358500'
+  - '12414500'
+  - '06043500'
+  - '11528700'
+  - '12189500'
+  - '13235000'
+  raw_dir: data/raw/camels_us
+  pretrain_daily: data/camels_daily.csv
+  marala_source: ../../../evaluation comparison/common/data/marala_daily.csv
+  marala_daily: data/marala_daily.csv
+  marala_precipitation_column: rain_era5_mm
+  marala_temperature_column: temperature_c
+  minimum_training_observed_days_per_basin: 3000
+stages:
+  pretrain_config: config_pretrain.yaml
+  finetune_config: config_marala.yaml
+  scratch_config: config_scratch.yaml
+  manifest: runs/stages.json
+evaluation:
+  output_dir: ../../../evaluation comparison/pretrained_multibasin_lstm
+  high_flow_percentile: 0.95
+  flood_threshold_cumecs: null
+  include_original_model: true
+  original_config: ../lstm/config.yaml
+  original_checkpoint: ../lstm/runs/initial/seed_42/best.pt
+variant_stage: scratch
+variant_config: config.yaml
+pretrained_checkpoint: null

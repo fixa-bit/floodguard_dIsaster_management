@@ -1,0 +1,5 @@
+{
+  "pretrain": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_10 days\\pretrained_multibasin_lstm\\runs\\initial\\seed_42\\best.pt",
+  "finetune": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_10 days\\pretrained_multibasin_lstm_finetuned\\runs\\initial\\seed_42\\best.pt",
+  "scratch": "D:\\projects\\flood_model\\flood_model\\riverine flood\\short range\\model\\model_10 days\\lstm_two_input_scratch\\runs\\initial\\seed_42\\best.pt"
+}

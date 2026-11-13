@@ -1,0 +1,66 @@
+{
+  "dynamic": {
+    "mean": [
+      3.7717754692719043,
+      3.0950276707423843
+    ],
+    "center": [
+      3.7717754692719043,
+      3.0950276707423843
+    ],
+    "scale": [
+      6.6764236940723904,
+      8.08640011247925
+    ],
+    "count": [
+      1827,
+      1827
+    ]
+  },
+  "forecast": {
+    "mean": [
+      3.7717754692719043,
+      3.0950276707423843
+    ],
+    "center": [
+      3.7717754692719043,
+      3.0950276707423843
+    ],
+    "scale": [
+      6.6764236940723904,
+      8.08640011247925
+    ],
+    "count": [
+      1827,
+      1827
+    ]
+  },
+  "flow": {
+    "mean": 6.449190996174909,
+    "std": 0.8962175302238605,
+    "training_log_mean": 6.449190996174909,
+    "scale": 1.0
+  },
+  "static": null,
+  "training_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020
+  ],
+  "schema": {
+    "dynamic_columns": [
+      "precipitation_mm",
+      "temperature_c"
+    ],
+    "forecast_columns": [
+      "precipitation_mm",
+      "temperature_c"
+    ],
+    "static_columns": [],
+    "use_static": false,
+    "past_discharge": false,
+    "calendar_features": true
+  }
+}

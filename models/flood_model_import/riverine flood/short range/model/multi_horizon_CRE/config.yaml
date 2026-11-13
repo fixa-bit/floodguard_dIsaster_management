@@ -1,0 +1,43 @@
+experiment_name: cre_shared_vs_horizon_specific_poc
+
+data:
+  daily_file: data/marala_daily.csv
+  date_column: date
+  target_column: q_cumecs
+  source_column: q_source
+  observed_source: WAPDA
+  first_target_year: 2016
+  last_target_year: 2024
+
+forecast:
+  first_lead_day: 7
+  last_lead_day: 30
+  seasonal_climatology_window_days: 31
+  flood_percentile: 0.95
+  future_weather_mode: noisy_era5_reanalysis_proxy
+  reanalysis_columns: [rain_era5_mm, temperature_c]
+  noise_std_at_lead_1: 0.05
+  noise_growth_per_lead: 0.025
+
+validation:
+  method: expanding_window_by_target_year
+  first_validation_year: 2019
+  last_validation_year: 2024
+  minimum_training_years: 3
+  random_split: false
+
+model:
+  kind: ridge_residual_ensemble
+  shared_model_horizon_encoding: one_hot_plus_scaled_lead
+  separate_model: one_per_lead_day
+  ensemble_alphas: [1.0, 100.0, 1000.0]
+  seed: 42
+
+outputs:
+  root: runs/poc
+  comparison_root: ../../evaluation comparison/multi_horizon_CRE
+  predictions: ../../evaluation comparison/multi_horizon_CRE/oof_predictions.csv
+  scores_by_lead: ../../evaluation comparison/multi_horizon_CRE/scores_by_lead.csv
+  scores_by_horizon_band: ../../evaluation comparison/multi_horizon_CRE/scores_by_horizon_band.csv
+  scores_by_fold: ../../evaluation comparison/multi_horizon_CRE/scores_by_fold.csv
+  comparison_plot: ../../evaluation comparison/multi_horizon_CRE/shared_vs_separate_rmse.png

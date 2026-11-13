@@ -1,0 +1,48 @@
+{
+  "repository": "https://github.com/mhpi/hydrodl2",
+  "revision": "b163a3c0125c5188f730f379643437d83b4e5d35",
+  "model": "HBV 1.0, Feng et al. (2022), authors implementation",
+  "license": "PSU non-commercial software license; see LICENSE",
+  "files": [
+    {
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/mhpi/hydrodl2/b163a3c0125c5188f730f379643437d83b4e5d35/LICENSE",
+      "sha256": "c83181ea33681f6f0a40c2327a13c15db6d899190e49150965f4706b49972dbe"
+    },
+    {
+      "path": "README.md",
+      "url": "https://raw.githubusercontent.com/mhpi/hydrodl2/b163a3c0125c5188f730f379643437d83b4e5d35/README.md",
+      "sha256": "84fc65704f2df706841ef1bd7d553e393541aa2f785a6ea1138b5f701e755fc3"
+    },
+    {
+      "path": "src/hydrodl2/models/hbv/hbv.py",
+      "url": "https://raw.githubusercontent.com/mhpi/hydrodl2/b163a3c0125c5188f730f379643437d83b4e5d35/src/hydrodl2/models/hbv/hbv.py",
+      "sha256": "39c99d2c1507c625aa1cce20b0a26b21a3f80b368f6959c3d313e6ee4f141b01"
+    },
+    {
+      "path": "src/hydrodl2/models/base.py",
+      "url": "https://raw.githubusercontent.com/mhpi/hydrodl2/b163a3c0125c5188f730f379643437d83b4e5d35/src/hydrodl2/models/base.py",
+      "sha256": "292c56bc016c31512a7fd9793bc89c51538d496a59dd444cfa6334cee0282152"
+    },
+    {
+      "path": "src/hydrodl2/core/calc/__init__.py",
+      "url": "https://raw.githubusercontent.com/mhpi/hydrodl2/b163a3c0125c5188f730f379643437d83b4e5d35/src/hydrodl2/core/calc/__init__.py",
+      "sha256": "a730fce0cb6730d3dca56f6d14f4742cb2625b02df83ddf7dda84e9de2096d3f"
+    },
+    {
+      "path": "src/hydrodl2/core/calc/fdj.py",
+      "url": "https://raw.githubusercontent.com/mhpi/hydrodl2/b163a3c0125c5188f730f379643437d83b4e5d35/src/hydrodl2/core/calc/fdj.py",
+      "sha256": "17a97cc323a87974105b82a1beed777c31283a177b901bbd6e5886a91f603239"
+    },
+    {
+      "path": "src/hydrodl2/core/calc/uh_routing.py",
+      "url": "https://raw.githubusercontent.com/mhpi/hydrodl2/b163a3c0125c5188f730f379643437d83b4e5d35/src/hydrodl2/core/calc/uh_routing.py",
+      "sha256": "a2305d337ca895efe3323e8fabe20421b84e511355d0aab67eb4d3b657b67c0a"
+    },
+    {
+      "path": "src/hydrodl2/core/calc/utils.py",
+      "url": "https://raw.githubusercontent.com/mhpi/hydrodl2/b163a3c0125c5188f730f379643437d83b4e5d35/src/hydrodl2/core/calc/utils.py",
+      "sha256": "c129eba9f9a4757ab4ff40cc117f8c479a905d88336f324ed8f14a68eff8e17d"
+    }
+  ]
+}

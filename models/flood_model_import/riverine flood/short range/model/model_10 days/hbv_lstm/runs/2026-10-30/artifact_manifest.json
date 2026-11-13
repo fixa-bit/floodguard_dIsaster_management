@@ -1,0 +1,1122 @@
+{
+  "config.json": {
+    "bytes": 1189,
+    "sha256": "b0bec3d736647f9dce6ef18585a13e7fcc1b86335409afbadef7a2925b39aa75"
+  },
+  "data\\daily_inputs.csv": {
+    "bytes": 871717,
+    "sha256": "20dfa0ea692ba79d78a4478fa5db64204818884f5fc1598e6c3e92b8fa8b9f8d"
+  },
+  "final\\complete.json": {
+    "bytes": 720,
+    "sha256": "0fcf95a86c8cb0e6f98bf042ca04671e9e290205bd69c031893393c3e97b8106"
+  },
+  "final\\forcing\\pet_climatology.json": {
+    "bytes": 11557,
+    "sha256": "fae56d8b07681fff3af80032f80728c159b185f8c0b571c0f3408bb6d7c336fe"
+  },
+  "final\\forcing\\quantile_mapping.json": {
+    "bytes": 253291,
+    "sha256": "4760f73a16b2627606af0f1493e8e7443face3b04ae1c70ac0bb5bda9e794404"
+  },
+  "final\\forecasts\\hbv_trajectories.csv.gz": {
+    "bytes": 1554,
+    "sha256": "165aa3fac3d2b914d302bb1bf2a42a8a34bcf1a6fcf7bc9768558fc22c75c840"
+  },
+  "final\\forecasts\\hydrographs.csv": {
+    "bytes": 9170,
+    "sha256": "8d175322b003e7574a741e70c937c60f731a0d6a6b866429bacd02e0b598b72b"
+  },
+  "final\\forecasts\\member_hydrographs.csv.gz": {
+    "bytes": 1096,
+    "sha256": "05da6262347afa3b601d52523151816a774f3c54533d3c0bf1a0205ad69042e7"
+  },
+  "final\\models\\features.json": {
+    "bytes": 4111,
+    "sha256": "8139245743b9b21dfca12d353b201fe1d9888c69ef74cfc580cb4d5f21ad639c"
+  },
+  "final\\models\\lightgbm\\feature_importance.csv": {
+    "bytes": 131695,
+    "sha256": "5209927b993ae0a4e98f2de5899a2c22b5686e3786f2b3e7df494e456d7107cf"
+  },
+  "final\\models\\lightgbm\\lead_01_q10.txt": {
+    "bytes": 445044,
+    "sha256": "06a5f9edbc966df94d32827483e6f84c4feb9a21f81ca7ccb6792ca45f6f9f28"
+  },
+  "final\\models\\lightgbm\\lead_01_q50.txt": {
+    "bytes": 509869,
+    "sha256": "d29a8f2d9d420eeb0716fdc1f9e9baa4fd66398b38b3bab3a5738146fc6b26bf"
+  },
+  "final\\models\\lightgbm\\lead_01_q90.txt": {
+    "bytes": 389670,
+    "sha256": "051a1724b3891e1095da1b77af27798bac2630265ca1176569685c45c58b189c"
+  },
+  "final\\models\\lightgbm\\lead_02_q10.txt": {
+    "bytes": 265711,
+    "sha256": "97daf5b7a4b259b5ce855284ccc4bf830bda35118e42a8cfedf716d6f7797d39"
+  },
+  "final\\models\\lightgbm\\lead_02_q50.txt": {
+    "bytes": 473596,
+    "sha256": "e6c3b8375c98dc5db27cf3dfde1b88572ae0843e31d82243089b8f6306a88113"
+  },
+  "final\\models\\lightgbm\\lead_02_q90.txt": {
+    "bytes": 343478,
+    "sha256": "81f864bb21ace89a29463002ae7259a34621f138cd9f260536d50b44c44a5043"
+  },
+  "final\\models\\lightgbm\\lead_03_q10.txt": {
+    "bytes": 291708,
+    "sha256": "7c752d43ce07ac1e4d1b0c6f2ae365d8ea2e889acc8db7acbed0b29712df685e"
+  },
+  "final\\models\\lightgbm\\lead_03_q50.txt": {
+    "bytes": 511652,
+    "sha256": "eae9dbab5e65afdaf2a93eb789b3909e319172c9de0342e00adaaecc1ace4712"
+  },
+  "final\\models\\lightgbm\\lead_03_q90.txt": {
+    "bytes": 315010,
+    "sha256": "bf75a656d930fdc727bbec9f3faae250b8df43d6e935798d072e47f017f20940"
+  },
+  "final\\models\\lightgbm\\lead_04_q10.txt": {
+    "bytes": 149162,
+    "sha256": "5fed575f7593dc673f8adfe9ae5947fe1fa37491a134fdf38a12d9a8a2e8f4df"
+  },
+  "final\\models\\lightgbm\\lead_04_q50.txt": {
+    "bytes": 510597,
+    "sha256": "9bfb309e1979222a2a4539703eb4be9cbab3542c9354a8b50c19a70bc81ff189"
+  },
+  "final\\models\\lightgbm\\lead_04_q90.txt": {
+    "bytes": 400902,
+    "sha256": "b482510713b6a536776265e1ae270b2a40fb6a57ff4e2c85aca1ca212bb7e372"
+  },
+  "final\\models\\lightgbm\\lead_05_q10.txt": {
+    "bytes": 169298,
+    "sha256": "648f54bbeb70fb3580da6f15655f319a4525c083fa58c22aa2e7d5b2d481c59c"
+  },
+  "final\\models\\lightgbm\\lead_05_q50.txt": {
+    "bytes": 507750,
+    "sha256": "d4ee2d2d8516812a1e54397d5bff1772e7f495b6d2e10eeb6e13e319c36f8bfe"
+  },
+  "final\\models\\lightgbm\\lead_05_q90.txt": {
+    "bytes": 334652,
+    "sha256": "0c5c4f053c0d65806dc917a7b930ccf88be2519657545c79c3cf01eb8d787e99"
+  },
+  "final\\models\\lightgbm\\lead_06_q10.txt": {
+    "bytes": 138906,
+    "sha256": "44b5281ab351509b77fe693f8cdbee16aa80a28f4c94c799679fe37c7892c477"
+  },
+  "final\\models\\lightgbm\\lead_06_q50.txt": {
+    "bytes": 518444,
+    "sha256": "1abbbc6695091f7803a6c747c87c75589a83ca8f9065b5a3370492d20a3bb8ab"
+  },
+  "final\\models\\lightgbm\\lead_06_q90.txt": {
+    "bytes": 310760,
+    "sha256": "8ed5410564dbcbad994910c8d4f4c6a42616fac7c239b6150738550c61f549a1"
+  },
+  "final\\models\\lightgbm\\lead_07_q10.txt": {
+    "bytes": 183858,
+    "sha256": "f8951d10f1b661f5276a0e4f19c6d75200449382862ecb02c0d0aab9eafcf3cc"
+  },
+  "final\\models\\lightgbm\\lead_07_q50.txt": {
+    "bytes": 285142,
+    "sha256": "921f3fc6ebdacecc0383d4dbffce61f3450e302c47529e1d79397638dd0172e8"
+  },
+  "final\\models\\lightgbm\\lead_07_q90.txt": {
+    "bytes": 182961,
+    "sha256": "98364efbf0fedc51f32c4c17ac3b17d7aedd758383ca6f5a4ada01de378c1c7f"
+  },
+  "final\\models\\lightgbm\\lead_08_q10.txt": {
+    "bytes": 206855,
+    "sha256": "0fb6f7f5331ce44ddc714fef228546f553ca680acb1fb446edd216b1aa121fee"
+  },
+  "final\\models\\lightgbm\\lead_08_q50.txt": {
+    "bytes": 280006,
+    "sha256": "1a4405ae1e7a1f622b339b2882e29092cc04924c01a9ee462257a7a9796d8987"
+  },
+  "final\\models\\lightgbm\\lead_08_q90.txt": {
+    "bytes": 260474,
+    "sha256": "95c3178ac7c59a5b7cfc1c360220b26f5bd2cf7d00b123aa697c0bbfc5903263"
+  },
+  "final\\models\\lightgbm\\lead_09_q10.txt": {
+    "bytes": 262301,
+    "sha256": "29282843957215f66466191590b09c093685c980896b5c35e70fe3c98c1365d0"
+  },
+  "final\\models\\lightgbm\\lead_09_q50.txt": {
+    "bytes": 225995,
+    "sha256": "2235b7755f637f7123ca84bca6f49b29f83986787f3ddb3e6fcc648c1d9af732"
+  },
+  "final\\models\\lightgbm\\lead_09_q90.txt": {
+    "bytes": 302983,
+    "sha256": "941b75510bbfddc1541e30ee4d8ec2b0a2b539047b4b15444f988bcea063eb01"
+  },
+  "final\\models\\lightgbm\\lead_10_q10.txt": {
+    "bytes": 300421,
+    "sha256": "8f29f070be5f129f9683c40a102351f596e28361cc823ce2e6e5ecd80c628e1f"
+  },
+  "final\\models\\lightgbm\\lead_10_q50.txt": {
+    "bytes": 517911,
+    "sha256": "2b8ed7152a23c14b76a67d99e8bbabd30bed31aa9c21831f92baab704461794f"
+  },
+  "final\\models\\lightgbm\\lead_10_q90.txt": {
+    "bytes": 291465,
+    "sha256": "6ef3599c58b58375a0d2b19ed7943ca9e9e9227e3743b705a8b7b2b3c8ae3f61"
+  },
+  "final\\models\\lightgbm\\metadata.json": {
+    "bytes": 3328,
+    "sha256": "785cfc4a8a0a842a7f99811d42504b575ee065ad52d3342a0ce8f4601670bc5b"
+  },
+  "final\\models\\lstm\\best.pt": {
+    "bytes": 170185,
+    "sha256": "47dd33c754bb42de5c0315dc5770673920c0ff61a4c8781f0b4170685aac8a95"
+  },
+  "final\\models\\lstm\\history.json": {
+    "bytes": 1170,
+    "sha256": "cbe2017761b60a75d5387130d1e4bf9f67de085a8959d4b7707672113c5dd2b4"
+  },
+  "final\\physical\\calibration.json": {
+    "bytes": 15579,
+    "sha256": "5c3421a351f2059f0d9f772fc7475fa2764de00ce5fed0072b65c3dd639f2eb0"
+  },
+  "final\\physical\\calibration_history.csv": {
+    "bytes": 5257,
+    "sha256": "20453c5003303fe53194ca019361cdf625601e4ebe8a80e9c1fe5b719b756800"
+  },
+  "final\\physical\\daily_states.csv": {
+    "bytes": 1100986,
+    "sha256": "0310ab0af792a4d9a80f0534d3a3dbee403c1d04df3643e0f0ed5f2dfc34a4de"
+  },
+  "final\\physical\\modis_diagnostic_by_year.csv": {
+    "bytes": 268,
+    "sha256": "f4954266d66f809cf9b4600fbf1efe8d8160d937e7742d378035e200b269ce48"
+  },
+  "final\\physical\\modis_snow_diagnostic.csv": {
+    "bytes": 218524,
+    "sha256": "c4ae4510d870ef352fa24e87d5d2f33a6501e71979ad71ac29fff1fe64a158e5"
+  },
+  "final\\physical\\water_balance_audit.json": {
+    "bytes": 392,
+    "sha256": "0db929db82b855e6cecb250cf9513f93043974c0cd2b6ba58dc7c0a865a5f64a"
+  },
+  "final\\sample_splits.csv": {
+    "bytes": 253486,
+    "sha256": "478b3fd405c03bc63e995a8af30741f06fa7142ed46e6e076fd77f473c2f916c"
+  },
+  "final\\thresholds.json": {
+    "bytes": 313,
+    "sha256": "f7593eabf1c3c72a98a7382db6ebe8200fd82e67b9fec42a78fa4c07ae10fe6f"
+  },
+  "folds\\2021\\complete.json": {
+    "bytes": 717,
+    "sha256": "a8b44c450bcf3340ace9a700ce6533562d6b7ccbb476f030924a8f54603ca7bb"
+  },
+  "folds\\2021\\forcing\\pet_climatology.json": {
+    "bytes": 11562,
+    "sha256": "3066518c79506d1bb57d7e3333bb7056aac3c01b85696daeacf33907a8cbe11d"
+  },
+  "folds\\2021\\forcing\\quantile_mapping.json": {
+    "bytes": 253502,
+    "sha256": "64f5620def8f40160ca03fb11d2c52a127d933083846e5ed0fff71191d64817d"
+  },
+  "folds\\2021\\forecasts\\hbv_trajectories.csv.gz": {
+    "bytes": 92866,
+    "sha256": "2ffe12380534ae0e20a9860998720bc3012a200a8648f6e83e4e49e5249452f1"
+  },
+  "folds\\2021\\forecasts\\hydrographs.csv": {
+    "bytes": 950363,
+    "sha256": "6d26d794cad64afe2b6fe5b64df6fa7fbe3c3aa7d816a5aca0ea92f0fa8985aa"
+  },
+  "folds\\2021\\forecasts\\member_hydrographs.csv.gz": {
+    "bytes": 135299,
+    "sha256": "3cc0e00c7d42431eb7fb811c4f2f570d6938b1f06d08713c680ed5cc059e8eeb"
+  },
+  "folds\\2021\\models\\features.json": {
+    "bytes": 4111,
+    "sha256": "8139245743b9b21dfca12d353b201fe1d9888c69ef74cfc580cb4d5f21ad639c"
+  },
+  "folds\\2021\\models\\lightgbm\\feature_importance.csv": {
+    "bytes": 127742,
+    "sha256": "017f11e90f16f0c78fc33c1c58c515185572b7ebb3f1451d7d028ddacf6084c0"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_01_q10.txt": {
+    "bytes": 368899,
+    "sha256": "db0e43ba6ebad71d96db156d942698e16ca5f925f959a91d978784e2c4c56ff7"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_01_q50.txt": {
+    "bytes": 279286,
+    "sha256": "f181428a12a6a5bd1f9e02097426cc8056f812505ca215e8f34bd9d1efab5294"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_01_q90.txt": {
+    "bytes": 236607,
+    "sha256": "99430f06e3ff9221794c1607919cb965c42c87ce1764f240f5a0b0c4dbfc0f4b"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_02_q10.txt": {
+    "bytes": 293003,
+    "sha256": "85a6c350943ce78115b12b34984a5a07e8a611b890c5dc5a54c1f03fc12d6c81"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_02_q50.txt": {
+    "bytes": 506266,
+    "sha256": "9758df7206aa517416b6eaef464c75f0cce6dead2239c192acfcbca542a4fe7c"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_02_q90.txt": {
+    "bytes": 513854,
+    "sha256": "18d7c6950bcd6ea9c3abeaaa4d17740406d3d0384c20d9ca1785b7129fd9baa3"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_03_q10.txt": {
+    "bytes": 437922,
+    "sha256": "03031be5060e7c6b4961022ed6987af292a3d2679c7bd62c660e4b1bdd0ff9d1"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_03_q50.txt": {
+    "bytes": 480460,
+    "sha256": "d553da5a363a7d76f6d83aa536593f223a2da58a0151e9444ff1bf8b88bb1dcb"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_03_q90.txt": {
+    "bytes": 517669,
+    "sha256": "01a711976e1a4adf84af39526a14bcdb2f85adae8bd4b20fcfdaeb213ed78ae9"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_04_q10.txt": {
+    "bytes": 395368,
+    "sha256": "48c5d7caa3850cc80a0bf3371c685c7a083e8995344ec131c38b5ea7ec683b6c"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_04_q50.txt": {
+    "bytes": 490186,
+    "sha256": "54c6703975149a3fd353e56340924e4b0cfa69e7a2b4d1a139be9c5ca62b4ac1"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_04_q90.txt": {
+    "bytes": 127299,
+    "sha256": "a48a110b41f8710a6a570e58872a524970a18e79f4bb72858609a91cce4bb97b"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_05_q10.txt": {
+    "bytes": 400290,
+    "sha256": "7f7cfd172baadea7739d0b93a0e30efad7f3f704ad8d25a2b9cc2d2affb2517a"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_05_q50.txt": {
+    "bytes": 507481,
+    "sha256": "1ed7e8ec5604d4ec9976b6b21e77c310a13672431867b573697e68587b64cfb3"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_05_q90.txt": {
+    "bytes": 180943,
+    "sha256": "91f247d43ba492ca2c770ce6e40dac102abdf0d83f5b76971f399cf7b087ab6a"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_06_q10.txt": {
+    "bytes": 294158,
+    "sha256": "d1aef1f223e17839ac504898a6764c607e755b6d7372df59978c3bee0a2b33da"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_06_q50.txt": {
+    "bytes": 468727,
+    "sha256": "81b3e7f833b5cdb06bc99d85fd1cafb7212c4fa97d0daf456a4739900b764f05"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_06_q90.txt": {
+    "bytes": 234585,
+    "sha256": "f5d7071a05a2ef0612f0281110fb219752a4c39395d947939294947639fadd53"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_07_q10.txt": {
+    "bytes": 237746,
+    "sha256": "db0d3d5281ffd7bb6c92602dbd1ca5f170c4d0910665c14eab5c358ed0309649"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_07_q50.txt": {
+    "bytes": 512054,
+    "sha256": "dd1af1632f75e76b5f8f059058b6f392f58423f56b2562301db229f820d361d3"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_07_q90.txt": {
+    "bytes": 92677,
+    "sha256": "c7ea3a4863ae28fd1e28c1a603837cd42645576bddbfac34bd1c7385f7f26e4a"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_08_q10.txt": {
+    "bytes": 187298,
+    "sha256": "e9ba8119731c61803c9fe7b685e0523ecb388e8cf3abcc673ed25c9b0cf95a02"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_08_q50.txt": {
+    "bytes": 509675,
+    "sha256": "4dd5cb3eb4227d53514850b71032a74baf1a92406568745857a41966a2642072"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_08_q90.txt": {
+    "bytes": 17152,
+    "sha256": "f3f56f2d5b20d24c35238cd44dad181d92325fd6884a0a0a3743d51b1f76966e"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_09_q10.txt": {
+    "bytes": 158185,
+    "sha256": "37333dda222dcda637fb4432b91c5dd0a1ee1d8c8ba7a12c39bd40465e7207aa"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_09_q50.txt": {
+    "bytes": 511823,
+    "sha256": "4d3ac8a615e8f0b536b010e2383b214e0246ec32a245efe45238fa0775bfbac1"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_09_q90.txt": {
+    "bytes": 13835,
+    "sha256": "76054d4dee67d4134b13aa6a7514f23fabfa8ed217e725bd0da0875ef577906d"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_10_q10.txt": {
+    "bytes": 169174,
+    "sha256": "bc12b28a580e926895e7c65887c805e834c9b5d373984c04b6f8a8f1a0ca717d"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_10_q50.txt": {
+    "bytes": 28812,
+    "sha256": "dbc95211aea8299caec0572282cfa940c4df78c3b5360f9df2055c5226232dd1"
+  },
+  "folds\\2021\\models\\lightgbm\\lead_10_q90.txt": {
+    "bytes": 19511,
+    "sha256": "bea28fe9204a9ebc4b9b79a4064c58538b2e70e6af193ac5bcfe1c373cd7cf3b"
+  },
+  "folds\\2021\\models\\lightgbm\\metadata.json": {
+    "bytes": 3321,
+    "sha256": "131dcaface827fa5248e01487930fa8f43c0a5ff53ede931e59d70d6190cacbc"
+  },
+  "folds\\2021\\models\\lstm\\best.pt": {
+    "bytes": 170185,
+    "sha256": "c0f41d76adee3237bf3eb7130426dc93447e8395cf4f0dc94bae1ee7f2315290"
+  },
+  "folds\\2021\\models\\lstm\\history.json": {
+    "bytes": 2514,
+    "sha256": "6114c4f6ad0009ed73769e82ec469ca1d7236b2af26a5c58b97465ba6983f476"
+  },
+  "folds\\2021\\physical\\calibration.json": {
+    "bytes": 15578,
+    "sha256": "0fc66d82ca5bf8962e98a493f588ae337d8e187fdf39fc860c175766891a8f6e"
+  },
+  "folds\\2021\\physical\\calibration_history.csv": {
+    "bytes": 5253,
+    "sha256": "03a31bb1ac3b5a7cfb940607148abe136ddd8252b40f0875a99bcdbe569c4c2f"
+  },
+  "folds\\2021\\physical\\daily_states.csv": {
+    "bytes": 1093498,
+    "sha256": "15506d084ca344eb3353c2295c4389fdb834d3de37503f1a3803d63a002fbc4c"
+  },
+  "folds\\2021\\physical\\modis_diagnostic_by_year.csv": {
+    "bytes": 272,
+    "sha256": "7e081e4e9f920d3073b191a142a7e22a58bd498f564213f65db23a66549e9e27"
+  },
+  "folds\\2021\\physical\\modis_snow_diagnostic.csv": {
+    "bytes": 214244,
+    "sha256": "d973bb9bc8725553e7f229ed2c45132c1286eef831ff817db92068c7e9c8088f"
+  },
+  "folds\\2021\\physical\\water_balance_audit.json": {
+    "bytes": 392,
+    "sha256": "53c1ad071c364d756a57847a923bbcb2af66e65d4c17552ae94abbdb230db1c5"
+  },
+  "folds\\2021\\sample_splits.csv": {
+    "bytes": 254843,
+    "sha256": "cf6049e0478fd5e50e64ed031d9b18cdd726f6cc6b376baae188b7f3daaaa696"
+  },
+  "folds\\2021\\thresholds.json": {
+    "bytes": 301,
+    "sha256": "ede9515bb607b85916293c87f6f0fba35db542733273ac36ed18f3ecf2b30513"
+  },
+  "folds\\2022\\complete.json": {
+    "bytes": 726,
+    "sha256": "0cdaaf0596810160c1d091be5efb73801d4732cca9d0b806a3088b1bec548d43"
+  },
+  "folds\\2022\\forcing\\pet_climatology.json": {
+    "bytes": 11545,
+    "sha256": "5faea6b20966dc011d39ed15d54ff5ec3d801fdf425767d146b138b5668a27a6"
+  },
+  "folds\\2022\\forcing\\quantile_mapping.json": {
+    "bytes": 253503,
+    "sha256": "e47c1c687ea0ffb31086cfb78a1c7b1d51464d3606604241a6719775a456278c"
+  },
+  "folds\\2022\\forecasts\\hbv_trajectories.csv.gz": {
+    "bytes": 90941,
+    "sha256": "f2b2f749719527aa6a71c2c61ac9f62682ad692424dbf76c35fd2752153266ed"
+  },
+  "folds\\2022\\forecasts\\hydrographs.csv": {
+    "bytes": 994098,
+    "sha256": "496c922f0c433a867f798456c3d868e14d220723c0f582c3550a280b9b4b3d57"
+  },
+  "folds\\2022\\forecasts\\member_hydrographs.csv.gz": {
+    "bytes": 135388,
+    "sha256": "8ba009c1047739e63a49dbe4b6b528124756d6341e759fc77e9f8c4027de614c"
+  },
+  "folds\\2022\\models\\features.json": {
+    "bytes": 4111,
+    "sha256": "8139245743b9b21dfca12d353b201fe1d9888c69ef74cfc580cb4d5f21ad639c"
+  },
+  "folds\\2022\\models\\lightgbm\\feature_importance.csv": {
+    "bytes": 131109,
+    "sha256": "3f951b8cc5dc0ead8891cb7c2ac430e57affbc14cfc2a121e9166be3f541064a"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_01_q10.txt": {
+    "bytes": 503649,
+    "sha256": "c3066f14a3fb6880266e3f2386abe0bd235a3f06de014f42db0c4e2ebbf2cd22"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_01_q50.txt": {
+    "bytes": 511318,
+    "sha256": "a5295da8dd424d930ffc5733d3d209f9f14b7975383bc97cafbc81618dd1ed3a"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_01_q90.txt": {
+    "bytes": 390236,
+    "sha256": "7f1df1c7e896aba18a9d85ef5189c387258a87c684f7c629e69b5d6dda3cdc47"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_02_q10.txt": {
+    "bytes": 513490,
+    "sha256": "aa7bc4f2cede8d14d01bb2f79f8eaaf339622b35c4ac8553a992c20addb0ad83"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_02_q50.txt": {
+    "bytes": 478765,
+    "sha256": "d901a206952c1f7def71ed55d139dbc16f2906fe3333be28fbe8275eb0138714"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_02_q90.txt": {
+    "bytes": 344320,
+    "sha256": "6558382b2b5b2e45bcf2d2d3fc906e34bb49de4e5f1ff1a3ff2f6d23d8c2f9b9"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_03_q10.txt": {
+    "bytes": 165277,
+    "sha256": "c85f4313660b39a2bfbee39bb6d677c8542248370a0d9276caca1c4f80e722d3"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_03_q50.txt": {
+    "bytes": 499267,
+    "sha256": "3dd19837c3176b40c15eef7802ed34d518161548ecfa1ce6fb9715561b4f73fa"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_03_q90.txt": {
+    "bytes": 283385,
+    "sha256": "86b5fb39c04c072758a38f7308f697ebf4b1ca911c8c675f6db24a436d3e3d14"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_04_q10.txt": {
+    "bytes": 235554,
+    "sha256": "b072ce642cc75191ae37c1880e162da2a2b42b088f5ad36c36a7ac532818d431"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_04_q50.txt": {
+    "bytes": 514515,
+    "sha256": "9e70299e4247159580d59a4e438b7483b545a36635c67b8cba9122e06a6dc4c4"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_04_q90.txt": {
+    "bytes": 265451,
+    "sha256": "568b4e75f517d11297934c32192485b91fe216d5e08ff6065862449598363d71"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_05_q10.txt": {
+    "bytes": 150728,
+    "sha256": "537001f2f69927759121e6f9c0c8a9ffc8e57763ac20ccf01e11cc339ae3751e"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_05_q50.txt": {
+    "bytes": 511655,
+    "sha256": "601c9344c4b165aee2412f3d7a3b2b4750efb2de2345b9bd6d2de1f122eaa3a1"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_05_q90.txt": {
+    "bytes": 299149,
+    "sha256": "082f0dde887eafd7158f289ee05fdce5fc72c510b4ba08e831f48db79123e7d8"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_06_q10.txt": {
+    "bytes": 150369,
+    "sha256": "56b1876633d2ef5f48260816848851afb444fbcd9f3af79367d531e398c89c4a"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_06_q50.txt": {
+    "bytes": 460294,
+    "sha256": "e741d6e809c2090b215269c1e6a60409cd6b2a4a999bdb70433f34f2a8350224"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_06_q90.txt": {
+    "bytes": 348414,
+    "sha256": "f41cca87b707a849ad0ad2765e494bb98a80eea84bcaca7cb2f18aac0fd22b5a"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_07_q10.txt": {
+    "bytes": 153409,
+    "sha256": "9ad07051cbc8623149bee1f930f21da699b0c856ba62dbff4709f646a7073277"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_07_q50.txt": {
+    "bytes": 515265,
+    "sha256": "08f8b77eb03112d342545d250c48ff02e1dee6e0d4e3510629ae7e1630f620b8"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_07_q90.txt": {
+    "bytes": 202611,
+    "sha256": "2af6523850d5937c4784f6b0cb1bd470b8ed54dc5af5d53c4385bc47aadf5015"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_08_q10.txt": {
+    "bytes": 196595,
+    "sha256": "a615fa4cc8fb9a8c461366447d4445c6f27007bdfd164371a42efff04fa43091"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_08_q50.txt": {
+    "bytes": 324388,
+    "sha256": "2388c8d9db64c57c452ae5443ad63f9a8368fb57b54b0a335d19e17e016a94d8"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_08_q90.txt": {
+    "bytes": 250648,
+    "sha256": "e63430c9abc8dae5b27ae9c003c1414a9496918c016bc8914117be10a8e1200f"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_09_q10.txt": {
+    "bytes": 153394,
+    "sha256": "4b6cd8331261fc9dc3e722a13a011a2fe1aae267326f96fef0d9a8cec863dc1a"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_09_q50.txt": {
+    "bytes": 400083,
+    "sha256": "09cfd4613d3361dbac143e40ebc79d32a4aff1d1b0fe37207aa865640eef6100"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_09_q90.txt": {
+    "bytes": 160649,
+    "sha256": "1ac29f2f6cb5687f2df0dfddbc8da44aff780b2f0e30a101c1a58c274742e9d5"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_10_q10.txt": {
+    "bytes": 131510,
+    "sha256": "a5d822b1b85fa7b9da0cb322ae297297a1f0d5ed818adec8e182ef2bc9bac38a"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_10_q50.txt": {
+    "bytes": 343177,
+    "sha256": "563c2cee393ccf5442c8006716d86ea70f960753e308946b6f49e3d9e3478ad4"
+  },
+  "folds\\2022\\models\\lightgbm\\lead_10_q90.txt": {
+    "bytes": 211650,
+    "sha256": "825bd93315915145764461e88084591d6965e9e9f6ba79d006ea9a355321ef34"
+  },
+  "folds\\2022\\models\\lightgbm\\metadata.json": {
+    "bytes": 3329,
+    "sha256": "a98b5ac3d3f9b9a9a7838760ba136a9ed7bf66b861012101689dc46fc53a4d45"
+  },
+  "folds\\2022\\models\\lstm\\best.pt": {
+    "bytes": 170185,
+    "sha256": "9160cbae3cd72d4cf38437d46550c865729cc5801d2381b4891cc6107c4226c5"
+  },
+  "folds\\2022\\models\\lstm\\history.json": {
+    "bytes": 4109,
+    "sha256": "973024dce137b9cfff41a69e0a92b493912ba43d56b9a8048c9017880fe35a5b"
+  },
+  "folds\\2022\\physical\\calibration.json": {
+    "bytes": 15569,
+    "sha256": "2ea575a5c0b188396cf0d4601c43664dc971c66c35625494924ccbffe75d5f2d"
+  },
+  "folds\\2022\\physical\\calibration_history.csv": {
+    "bytes": 5246,
+    "sha256": "cfd815b80a0d1e550a6ff14236c62ad03daa4ce4acde950fd2bee33e59125faf"
+  },
+  "folds\\2022\\physical\\daily_states.csv": {
+    "bytes": 1093944,
+    "sha256": "772facf84422ab9e759eb011c7a623204c3167662a08f5835239d9518f307f37"
+  },
+  "folds\\2022\\physical\\modis_diagnostic_by_year.csv": {
+    "bytes": 271,
+    "sha256": "fc2915ecc3e34968743ba21e383bcd2204c1f43eab82808a8abd8dc106e2f98a"
+  },
+  "folds\\2022\\physical\\modis_snow_diagnostic.csv": {
+    "bytes": 212417,
+    "sha256": "59f24e50265747fe2b15e60cc2ba916c3948613548d369fa8749389249d1187d"
+  },
+  "folds\\2022\\physical\\water_balance_audit.json": {
+    "bytes": 392,
+    "sha256": "763898e18f7bcc9609ac5b6896ca4cf29a23a43167fc088e886a0e318409a282"
+  },
+  "folds\\2022\\sample_splits.csv": {
+    "bytes": 254478,
+    "sha256": "ffd917f849e191f7b2b317659ddd4efa967c550900381715137633b1398455cf"
+  },
+  "folds\\2022\\thresholds.json": {
+    "bytes": 307,
+    "sha256": "3db21015f196351cf5dd01f306f4c8f38eb78d2ef199bb050297f1c823e90a24"
+  },
+  "folds\\2023\\complete.json": {
+    "bytes": 710,
+    "sha256": "52e138025eaed1433fc867335ef6cb0208120da552e29c1d7edb15967ccd6d35"
+  },
+  "folds\\2023\\forcing\\pet_climatology.json": {
+    "bytes": 11539,
+    "sha256": "72174bb23c8d2ff107935bbfd05e7e7da66306472c8b19e27f06f27163f1deee"
+  },
+  "folds\\2023\\forcing\\quantile_mapping.json": {
+    "bytes": 253478,
+    "sha256": "61ff49ba6cb89e77322eac865f6a90a31c7afe51374505e8b08f36ba3d01bde2"
+  },
+  "folds\\2023\\forecasts\\hbv_trajectories.csv.gz": {
+    "bytes": 90789,
+    "sha256": "f385b9235012931bfd7f28de0b3f06e219b6b6e7037695f4030d883be0556243"
+  },
+  "folds\\2023\\forecasts\\hydrographs.csv": {
+    "bytes": 977297,
+    "sha256": "4957174f319877021fd16e0e722013c47a3e2436433949f7057f1474f487c8cf"
+  },
+  "folds\\2023\\forecasts\\member_hydrographs.csv.gz": {
+    "bytes": 135537,
+    "sha256": "7af282d7559b81ac00aa0391a84b965e48479a68328732a0dd86d2ab7ca5f13d"
+  },
+  "folds\\2023\\models\\features.json": {
+    "bytes": 4111,
+    "sha256": "8139245743b9b21dfca12d353b201fe1d9888c69ef74cfc580cb4d5f21ad639c"
+  },
+  "folds\\2023\\models\\lightgbm\\feature_importance.csv": {
+    "bytes": 129580,
+    "sha256": "f7526f9d8f128137c1cf307cf9e684a3ed10d89c3a4ebe283511e0a7dde84c8e"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_01_q10.txt": {
+    "bytes": 326029,
+    "sha256": "7cdb69e34c05eda98bd9145c62a8372ad17a5b33b6e7a4d51d06d1299dbd1787"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_01_q50.txt": {
+    "bytes": 379994,
+    "sha256": "961dfbe8eae5c3739042b62b098f6c743c1fc821eb316cc0cc769e8a5cec8649"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_01_q90.txt": {
+    "bytes": 297882,
+    "sha256": "118bc76ea77008fc46758330e7eb472cedc6d15867dcd03960b18562ffa8389d"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_02_q10.txt": {
+    "bytes": 273842,
+    "sha256": "b8be8e9acf349e200c5d5ae2d4c0b59c79cfc6fce10f19728c1b22bc2852a311"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_02_q50.txt": {
+    "bytes": 162533,
+    "sha256": "1802ccf1feea1f325ac8850ae7d986d8544cb380667693582b575afd2be401a3"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_02_q90.txt": {
+    "bytes": 353510,
+    "sha256": "cc59c4082a2a00398db4f73fcc395755703da7394eba68e0a7675bee294fad20"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_03_q10.txt": {
+    "bytes": 119991,
+    "sha256": "6a8cffe27ce5604ad76ef8d0cda419ef12f3b48320c27d0b1cac4aad9e3ef162"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_03_q50.txt": {
+    "bytes": 114781,
+    "sha256": "d0893a9963b7483130e2f73175ab462b1624d5d79623298c6f314ab0a4add3f0"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_03_q90.txt": {
+    "bytes": 381412,
+    "sha256": "fece410092c0e97846e48f76aef4179c14b10d16da091f1d42baf2ad67b75efe"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_04_q10.txt": {
+    "bytes": 91236,
+    "sha256": "c43f9bb6ed9e530648d5ea668e95feee0d0751b3bdf83561d5eff6168d77de65"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_04_q50.txt": {
+    "bytes": 109075,
+    "sha256": "218d763c351c232a3b841c225409bb2e852f6354f4b190721bbcc1aeb35f51b7"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_04_q90.txt": {
+    "bytes": 341919,
+    "sha256": "0082379bc87cd8a0e5f65f40d6a48176f22f0b8bdbfa17eb1a503b7f0ffd9a9a"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_05_q10.txt": {
+    "bytes": 110006,
+    "sha256": "8a1bc13991e61049266e60a817e7d84f307e9ed29c3f5b19af110c1976736174"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_05_q50.txt": {
+    "bytes": 107837,
+    "sha256": "876fb76cf731e262d77390742d63712afc12bd54123f4c80dbbeaed14e1fe37f"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_05_q90.txt": {
+    "bytes": 270594,
+    "sha256": "84a9517b4cc88226ad7f505070ac6d8fd941c3f56e0799cd50149cb93d34f882"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_06_q10.txt": {
+    "bytes": 92325,
+    "sha256": "582ee9b2168a32efbe74ddfca4a87e9c46eea5df35deae6f56c20b5c518f55e7"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_06_q50.txt": {
+    "bytes": 87201,
+    "sha256": "bd2b1e3f5bbe6d6bd00c58d653d921c82c20dabe95666c5f62524d6ff7496107"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_06_q90.txt": {
+    "bytes": 421917,
+    "sha256": "004d06c2ac66709a0ae9206190b51e101be3fd1ef2bbf80a1929602dce162beb"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_07_q10.txt": {
+    "bytes": 83973,
+    "sha256": "3480e60efb7a140f56b403f952ea8242ecabcc7422669e85bb543bb48e219f99"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_07_q50.txt": {
+    "bytes": 97491,
+    "sha256": "f2d9f393788d38d48815d70d46501f0fd70317f66e3ba391917300433d677555"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_07_q90.txt": {
+    "bytes": 349854,
+    "sha256": "225d456a2fd1d98fad8555a7e875afb25726dcea5ecbee90c23323cc503cbdce"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_08_q10.txt": {
+    "bytes": 82407,
+    "sha256": "62cad349acb84b9a9c1edaa38d11d36f227ce9e2fd7268eedc22723d75cb2978"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_08_q50.txt": {
+    "bytes": 84478,
+    "sha256": "5d4b49383a7acc63cfcd556d9636eedcd1443e14f13f162aa87b7bf5c1fd658c"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_08_q90.txt": {
+    "bytes": 389246,
+    "sha256": "28df610647f393dd5eeed0b02222ba312efaad3aee362a2e6c1339b8890c6961"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_09_q10.txt": {
+    "bytes": 89609,
+    "sha256": "9a66670679e1aa38064ff5512320c7715bb2f09ee330f4032b9504f193a08b58"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_09_q50.txt": {
+    "bytes": 93018,
+    "sha256": "963da16c3610733be3768d2966b5c95cfd6fa443024d24a616fb325dc2eaac6e"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_09_q90.txt": {
+    "bytes": 484498,
+    "sha256": "cea0001a98ef35b952fe99e7766a7698b1782a5d8c15ba05d7b72a678dd98ac7"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_10_q10.txt": {
+    "bytes": 78394,
+    "sha256": "c291bd6878aeb32f1d6227d27149422f9294f4fd40451ff849d92c31f6213d32"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_10_q50.txt": {
+    "bytes": 94392,
+    "sha256": "74c5140f13304472b805b856bdbcdd964304af5dbc2ba3e1e339ec25a65d03de"
+  },
+  "folds\\2023\\models\\lightgbm\\lead_10_q90.txt": {
+    "bytes": 220778,
+    "sha256": "925983eb5d182962f883c8680dbf9c16676dbd7e928329081c2cca6cf14f428a"
+  },
+  "folds\\2023\\models\\lightgbm\\metadata.json": {
+    "bytes": 3314,
+    "sha256": "dd72aec0d850cd6975632527d56081ac3341a28fb72eb7800a7587e27fcb252b"
+  },
+  "folds\\2023\\models\\lstm\\best.pt": {
+    "bytes": 170185,
+    "sha256": "bc3c1b82361c0502cca45013c02bdb9e20b6afec1fbb5214ebdb9bfb9a686bee"
+  },
+  "folds\\2023\\models\\lstm\\history.json": {
+    "bytes": 1844,
+    "sha256": "acc748a13d73681c8e6b3cc4bc9eab0e3510be58ee21d1aa2559d68f9442fd15"
+  },
+  "folds\\2023\\physical\\calibration.json": {
+    "bytes": 15579,
+    "sha256": "cd09cf34f2a8385351d98bd44dc4e8fbc61a805895e6fe84a16bb90b66d369d1"
+  },
+  "folds\\2023\\physical\\calibration_history.csv": {
+    "bytes": 5252,
+    "sha256": "34ebeb652ca274c1f366e6adfcd0578cdde1a100adf3fe763d9cd0cb2b540acd"
+  },
+  "folds\\2023\\physical\\daily_states.csv": {
+    "bytes": 1101296,
+    "sha256": "9612db926b3997dd77b7dabad46e60e6afbf923232cc1eed7424f80986cf3214"
+  },
+  "folds\\2023\\physical\\modis_diagnostic_by_year.csv": {
+    "bytes": 271,
+    "sha256": "031b09a604448d055c02f036ba6ddea114b92b51fa9a8368807704f81fa88124"
+  },
+  "folds\\2023\\physical\\modis_snow_diagnostic.csv": {
+    "bytes": 212393,
+    "sha256": "e55429fd37c85550abd45591b4359e19f5afc4145d8c0436c03bd272b987c046"
+  },
+  "folds\\2023\\physical\\water_balance_audit.json": {
+    "bytes": 392,
+    "sha256": "1a47c31a16ece06846e8c20267832912a55465d41a608724f10faeee5ad06406"
+  },
+  "folds\\2023\\sample_splits.csv": {
+    "bytes": 254113,
+    "sha256": "f415e5c91da0570ed8e2196e1d44ff523586e50a47d122f8b50a4188f09b1dcc"
+  },
+  "folds\\2023\\thresholds.json": {
+    "bytes": 303,
+    "sha256": "58be292bea4bea6e4151a3d101332c0fc57370b579d3228f5e2140bdf41eefd0"
+  },
+  "folds\\2024\\complete.json": {
+    "bytes": 725,
+    "sha256": "c0d8afed249c3c00639ccf66f7bb9bfda69fab786a223bf141e5cd00088d8dd4"
+  },
+  "folds\\2024\\forcing\\pet_climatology.json": {
+    "bytes": 11568,
+    "sha256": "a4e213c8485f70b38d93fc2b1a4f7751350755b2d6879a94024b5db1d0085c16"
+  },
+  "folds\\2024\\forcing\\quantile_mapping.json": {
+    "bytes": 253479,
+    "sha256": "06303df472489046361d0c79f1a7d21d74c1ee001c5e78d52b3b288d06cb8a85"
+  },
+  "folds\\2024\\forecasts\\hbv_trajectories.csv.gz": {
+    "bytes": 90987,
+    "sha256": "ff8dbf35bbd9f9c09cc93a51c03d0b981e7bc1d17310ed28e91b57c9aedffe9a"
+  },
+  "folds\\2024\\forecasts\\hydrographs.csv": {
+    "bytes": 974499,
+    "sha256": "61605bf45ad6d7b348bbd2b237784f87f9845c7d979630e079457c4ec5b2b0b9"
+  },
+  "folds\\2024\\forecasts\\member_hydrographs.csv.gz": {
+    "bytes": 135307,
+    "sha256": "6fdadcd987a31e6889d66ed2ac4b19fbb0b0d2cc8a3137435636f68f8a0ca82e"
+  },
+  "folds\\2024\\models\\features.json": {
+    "bytes": 4111,
+    "sha256": "8139245743b9b21dfca12d353b201fe1d9888c69ef74cfc580cb4d5f21ad639c"
+  },
+  "folds\\2024\\models\\lightgbm\\feature_importance.csv": {
+    "bytes": 131780,
+    "sha256": "2a76841dc8e9e8a1fd489e4007f8a81682e7659268c8e6533baa5629b6019da0"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_01_q10.txt": {
+    "bytes": 445275,
+    "sha256": "45c34c475098984439b5fbc58a5fbde6b39ea877bcc291d593d78cbcff44f453"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_01_q50.txt": {
+    "bytes": 509275,
+    "sha256": "95cef005b90d90d22a4d79ceb5ccf638ee86f444c073b46481b9dd9c37676d42"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_01_q90.txt": {
+    "bytes": 389943,
+    "sha256": "3e7a3990410f73a43e2e8f8d32c0f66bb286bb71ce6431bb9ca722b4322fac34"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_02_q10.txt": {
+    "bytes": 266004,
+    "sha256": "a5c600465c6836f4c371304102f4d9ae6a64438754cd748a14fbdb3faecb4a33"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_02_q50.txt": {
+    "bytes": 472220,
+    "sha256": "85df3eff32e4ea93ff7498619fe4e5a08ac6e70cdb18c80342f6af138ceafed2"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_02_q90.txt": {
+    "bytes": 343164,
+    "sha256": "50b9a14e199e66fad3635731100cf6fb9a753c799a544f06866b79191b88f3e8"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_03_q10.txt": {
+    "bytes": 292006,
+    "sha256": "6b70e1a0516043f695da60f4b846f7b267857aac419b6a7c3c2e0c4bb5e33008"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_03_q50.txt": {
+    "bytes": 510438,
+    "sha256": "e13c4598891e9fa8cfc0f9c618373678b6120f94c1d9cba19e69de9375c3b81b"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_03_q90.txt": {
+    "bytes": 315052,
+    "sha256": "9c9777c15e691bb9a856227b955bff5273e4011ea53d053514cb4f6522e3ea81"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_04_q10.txt": {
+    "bytes": 149282,
+    "sha256": "bf34ec1b2bfe48cbfc7ce8399dc52d0b87192a5aa5dffaaa2ee1095056e63dca"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_04_q50.txt": {
+    "bytes": 509205,
+    "sha256": "770bdb7a6c1ce5c05320f479da094f6acf392f2409e9fa17e51aa7a36b30723f"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_04_q90.txt": {
+    "bytes": 400748,
+    "sha256": "1c505e4c4c445297bb37d85a5427ebcc2663a61e52a99d599a4be3a08468fdbb"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_05_q10.txt": {
+    "bytes": 169529,
+    "sha256": "42fae7e42b61531c84a499ea2ef9d8d30cad2cd19131786a68dbf763b757c6f7"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_05_q50.txt": {
+    "bytes": 507007,
+    "sha256": "8ace94814b5c6291841a6052f124a326bcf8ed0e7c8c42686359a98194a427f4"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_05_q90.txt": {
+    "bytes": 334205,
+    "sha256": "1456c6835ed9ee5deeb595dab29bb1230209cd9b8ff626d25290e17c41a2f1a7"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_06_q10.txt": {
+    "bytes": 139022,
+    "sha256": "e2a6281cdfdfc2bdca2b4e76613e6337b0e582dc7ad0b758c4078dbce5bd6d9e"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_06_q50.txt": {
+    "bytes": 517191,
+    "sha256": "a91414cbd5c88637105799f5c1945ed0dbb2cfe8a202f8d74f954f2f88d12575"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_06_q90.txt": {
+    "bytes": 310644,
+    "sha256": "047862e77326ca5609289829bfb56819aa9c947d9ba7030ae0455e91d81cc598"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_07_q10.txt": {
+    "bytes": 183840,
+    "sha256": "2ca4c6839a487773abac2ffc11e6d2ebe3a629cd36f551e40e2717b34f8a8ec4"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_07_q50.txt": {
+    "bytes": 285104,
+    "sha256": "487a02f66e077ddcb4ea0b006e1f9584b0143154808b33ac34ff2299422415b2"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_07_q90.txt": {
+    "bytes": 182680,
+    "sha256": "c445bfa88a8c53eca2f46d2be042ef05273eaa0a1d2378bc7ffcebc25be0135c"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_08_q10.txt": {
+    "bytes": 207054,
+    "sha256": "9d3cbe830d214d8d7209b12c6ec4a93dbdc1c3b5886db8c653933ca510a69045"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_08_q50.txt": {
+    "bytes": 279118,
+    "sha256": "a0294df287396860f0424a5e48de5122bc7d047c042d0ca7ccee6c8b45fb9e1f"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_08_q90.txt": {
+    "bytes": 260395,
+    "sha256": "8bf3a703f28cff2881b19a6b8b06b26803c880f957a6d34eeb625e89a04f6571"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_09_q10.txt": {
+    "bytes": 262604,
+    "sha256": "afe9d992ebc576f0b131413f8401e4d840531104a34b90554c686035243f3e11"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_09_q50.txt": {
+    "bytes": 225223,
+    "sha256": "63aacd661ca8ac6a78cabe309fa23faae6ee23af8f21e6feabff9d358a548c59"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_09_q90.txt": {
+    "bytes": 302275,
+    "sha256": "e64f463c0927ee4c6526ee41dc173b1088b1a60ac0cbf17118806f7c5702da97"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_10_q10.txt": {
+    "bytes": 300677,
+    "sha256": "32ee68b065e602869606bcb6af85535bec23845031261bc98a43b9b70c960407"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_10_q50.txt": {
+    "bytes": 517451,
+    "sha256": "f8c6d3d6450e2c12a2fc23cdf27bba360653609d093edc2e6e63fbd17b68a884"
+  },
+  "folds\\2024\\models\\lightgbm\\lead_10_q90.txt": {
+    "bytes": 291020,
+    "sha256": "faa3f1bfeffc0fcb5d3a3199d6e4a272075c8f5b2cf3a770d5d5a7f99678255a"
+  },
+  "folds\\2024\\models\\lightgbm\\metadata.json": {
+    "bytes": 3328,
+    "sha256": "785cfc4a8a0a842a7f99811d42504b575ee065ad52d3342a0ce8f4601670bc5b"
+  },
+  "folds\\2024\\models\\lstm\\best.pt": {
+    "bytes": 170185,
+    "sha256": "70a15b003ddb69b34b6d091826644970f5d42b2acbc6e300d73200fb683fb7cf"
+  },
+  "folds\\2024\\models\\lstm\\history.json": {
+    "bytes": 2639,
+    "sha256": "773cebc7fb3d1bbf7d97bb5f004766065dffaadd18dacfe1890ae2db2ac0848b"
+  },
+  "folds\\2024\\physical\\calibration.json": {
+    "bytes": 15570,
+    "sha256": "11ef3425aaa9307348f9b78b53f6d588fe7db5cd3e144cdd94a39004acac2e4d"
+  },
+  "folds\\2024\\physical\\calibration_history.csv": {
+    "bytes": 5245,
+    "sha256": "2efa9c044a9951640a564bff065fa0b9f5ee88968db8ce3c695e14971e944b6c"
+  },
+  "folds\\2024\\physical\\daily_states.csv": {
+    "bytes": 1105600,
+    "sha256": "0de8563095c74d09f5b9151bd3cf20861015c6c2ed5a01a8ec24ffbfe67a5c29"
+  },
+  "folds\\2024\\physical\\modis_diagnostic_by_year.csv": {
+    "bytes": 271,
+    "sha256": "46ceaea52ab72a4729ea7e73b429cec3e54a177966f42012c1cdeb10daf76e4f"
+  },
+  "folds\\2024\\physical\\modis_snow_diagnostic.csv": {
+    "bytes": 212279,
+    "sha256": "76c79adea6720471f4c2a67c30fdd410438df695246de15df0613d4c4875fb0f"
+  },
+  "folds\\2024\\physical\\water_balance_audit.json": {
+    "bytes": 392,
+    "sha256": "c4e7f7678e8d19c35fbeac3870b359467884663dcd639b10192c9bf895fe55d8"
+  },
+  "folds\\2024\\sample_splits.csv": {
+    "bytes": 253748,
+    "sha256": "c863e0e3a0164094a3e7354626f1020beda209a24ce636ac6e58a03d91be027a"
+  },
+  "folds\\2024\\thresholds.json": {
+    "bytes": 303,
+    "sha256": "7ec9748487752788b8eaaece92b31ce7832fdc849cce08189f5b5c4606424db7"
+  },
+  "input_manifest.json": {
+    "bytes": 4534,
+    "sha256": "f57cec9860d0ccc9db1649bc42c6fc20c4707f2ece95f2e5ced8e2d7c5f53594"
+  },
+  "REPORT.md": {
+    "bytes": 6355,
+    "sha256": "58aeccc1468499424c215f04d67335d1911034952694e2b7f846d4895944ebfb"
+  },
+  "reports\\baseline_comparison.csv": {
+    "bytes": 4267,
+    "sha256": "6bf34daab5caff86eba5dd1c83d305c25243251512daaee38901dd7cc3172892"
+  },
+  "reports\\hydrograph_2021_lead05.png": {
+    "bytes": 204210,
+    "sha256": "d39e710130dbc1690baf2e53c6fdc9d1ad488b831ffaf96383fa0654f11a1190"
+  },
+  "reports\\hydrograph_2022_lead05.png": {
+    "bytes": 247652,
+    "sha256": "9160ea78927185fc031e73261e2d7af1bb03c46d62639837eaf9a03c164032b0"
+  },
+  "reports\\hydrograph_2023_lead05.png": {
+    "bytes": 237617,
+    "sha256": "35807e759fa801c769de141e835364780464a101e54082245722ef5bb388e102"
+  },
+  "reports\\hydrograph_2024_lead05.png": {
+    "bytes": 208923,
+    "sha256": "4f27f307918ee28ac0889e476342b7151a1d1fa7f3f407ba8dfe2c9efa584c20"
+  },
+  "reports\\mean_q95_threshold_scores.csv": {
+    "bytes": 381,
+    "sha256": "ff09b801dd8b5f0d664bac31379e219ce31e6d3deb6a034b6b30f3fc126e9edf"
+  },
+  "reports\\mean_scores_across_leads.csv": {
+    "bytes": 524,
+    "sha256": "726efe7837d67f542c288b1b97ef9f170cf518125deaa726fc7146585237690d"
+  },
+  "reports\\peak_events.csv": {
+    "bytes": 42039,
+    "sha256": "9204cb3d2ccf7400ae9673348f2e651b38552bdb142dd01fce98d7f6ef808d41"
+  },
+  "reports\\quantile_calibration.csv": {
+    "bytes": 16425,
+    "sha256": "aa65c1ddc874b317f65f24d77770d0f5bf0312f11a5784bda1a1eb673e621f0f"
+  },
+  "reports\\rolling_predictions.csv.gz": {
+    "bytes": 539985,
+    "sha256": "7c42d88e7d2a1b3a84dd12889b08616c29f61c001312d8cc607f1a269e91cb9a"
+  },
+  "reports\\scores_by_lead.csv": {
+    "bytes": 6456,
+    "sha256": "1a65b5e6ace7dfbc8c63af623f54ae30f72ea03b5f257935d664f6146268ae25"
+  },
+  "reports\\scores_by_season_and_lead.csv": {
+    "bytes": 26236,
+    "sha256": "3c4252a572fd3cc7302d40ea585c98066465bb7a9f7738f4062f1367cf7a282f"
+  },
+  "reports\\skill_by_lead.png": {
+    "bytes": 162479,
+    "sha256": "423a87823063ed78ab1b04dc6e5fa22de576fb8f449a4ac737fe0f85a2125206"
+  },
+  "reports\\threshold_scores_by_lead.csv": {
+    "bytes": 12490,
+    "sha256": "24db4f89795698cc3177e2209cab080712ef36c6d3e8027ff3e82a6d4dd55ae7"
+  },
+  "reports\\threshold_scores_by_season_and_lead.csv": {
+    "bytes": 54616,
+    "sha256": "215ad5c618de2d84e668f3c1c67b23e03b0e46b31649188b2eae1c35cb3e607c"
+  },
+  "requirements-lock.txt": {
+    "bytes": 1713,
+    "sha256": "cf975c83433162b42472234c0670d48f47ca40650adc94360c1aa1e7f7d133ab"
+  },
+  "run_manifest.json": {
+    "bytes": 6766,
+    "sha256": "a9cf603e2496563ce8456056a7d28a8348b7a7aa4e178045817db1fca6dce52c"
+  },
+  "source\\__init__.py": {
+    "bytes": 82,
+    "sha256": "346f3a8d3866ffae47ee95344452bcf2972344158c06ce264ddf84b96ed28e82"
+  },
+  "source\\data.py": {
+    "bytes": 11514,
+    "sha256": "5b5a3c313f9ee182a6cf5caeae0227852bf186c54d2b57862f2428c1176d57ee"
+  },
+  "source\\evaluation.py": {
+    "bytes": 9852,
+    "sha256": "76fa805d4ad122563a0a2928a6393e43f72aa3f87350f53d17d8ddf5bb694be4"
+  },
+  "source\\forcing.py": {
+    "bytes": 8778,
+    "sha256": "5d7c90258942474ccdbbe0d906fb7436a832094a253a6b15f1977766e758bde9"
+  },
+  "source\\IMPROVEMENTS.md": {
+    "bytes": 4418,
+    "sha256": "7e58458abb17bb6f2446a3f8bbada6b3e023e21ed09f1fa7ab064363cbdbd5af"
+  },
+  "source\\learning.py": {
+    "bytes": 9003,
+    "sha256": "08eeaafaa2d83d5e4281b3c0ea4382766741d35f0f43dded2f44980b67b29af8"
+  },
+  "source\\physical.py": {
+    "bytes": 4997,
+    "sha256": "be02578bbe01b9ab8b6dbccc332f03294c273801466b1773588db11805ff4956"
+  },
+  "source\\predict.py": {
+    "bytes": 6260,
+    "sha256": "074475a7d8033ccbb693950330064793ce19ba442f89fefafc87a529acf0d97b"
+  },
+  "source\\README.md": {
+    "bytes": 9394,
+    "sha256": "f8ada965e5afd929c48ade4a434b04c7f9df61996fad073c74102e9f525b4e05"
+  },
+  "source\\tests\\test_pipeline.py": {
+    "bytes": 7950,
+    "sha256": "4c1ea8c8460d93919c5fe19993d6ef38390300a765be8b9d20329b4059f7629c"
+  },
+  "source\\train.py": {
+    "bytes": 26439,
+    "sha256": "f86a27cce5259b1919bd0a97b1e30a9067101193094ad0c798907836c9700e0c"
+  },
+  "source\\verify.py": {
+    "bytes": 10846,
+    "sha256": "8e7cbd200bd8388270fec622eef41add16a26f629ef138eb75bae3e4c47ad35c"
+  },
+  "verification\\unit_tests.txt": {
+    "bytes": 1581,
+    "sha256": "1d290313fb3061fed8c8fe50ffc28a39aa6a22657138b0ea4a3b3a0809c3be81"
+  },
+  "verification\\verification.json": {
+    "bytes": 1824,
+    "sha256": "682d5fecf486ad956ff522a493b1316516d0986e5c27000e61ae71fd770c9f39"
+  }
+}

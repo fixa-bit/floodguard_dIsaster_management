@@ -1,0 +1,76 @@
+{
+  "dynamic": {
+    "mean": [
+      3.7678076268658094,
+      3.068018690830575,
+      1157.442592198912,
+      1.3593178579796275
+    ],
+    "center": [
+      3.7678076268658094,
+      3.068018690830575,
+      1157.442592198912,
+      1.3593178579796275
+    ],
+    "scale": [
+      6.6714375203061405,
+      8.07906690944391,
+      134.13110604653826,
+      1.711923354134669
+    ],
+    "count": [
+      1827,
+      1827,
+      1827,
+      1827
+    ]
+  },
+  "forecast": {
+    "mean": [
+      3.7678076268658094,
+      3.068018690830575
+    ],
+    "center": [
+      3.7678076268658094,
+      3.068018690830575
+    ],
+    "scale": [
+      6.6714375203061405,
+      8.07906690944391
+    ],
+    "count": [
+      1827,
+      1827
+    ]
+  },
+  "flow": {
+    "mean": 6.449190996174909,
+    "std": 0.8962175302238605,
+    "training_log_mean": 6.449190996174909,
+    "scale": 1.0
+  },
+  "static": null,
+  "training_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020
+  ],
+  "schema": {
+    "dynamic_columns": [
+      "mean_precipitation_mm",
+      "mean_temperature_c",
+      "mean_swe_mm",
+      "mean_snowmelt_mm"
+    ],
+    "forecast_columns": [
+      "mean_precipitation_mm",
+      "mean_temperature_c"
+    ],
+    "static_columns": [],
+    "use_static": false,
+    "past_discharge": false,
+    "calendar_features": true
+  }
+}

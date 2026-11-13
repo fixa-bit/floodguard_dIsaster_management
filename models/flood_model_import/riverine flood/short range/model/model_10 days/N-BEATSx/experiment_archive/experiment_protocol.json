@@ -1,0 +1,55 @@
+{
+  "frozen_before_training": true,
+  "train": [
+    2016,
+    2020
+  ],
+  "validation": [
+    2021,
+    2021
+  ],
+  "test": [
+    2022,
+    2024
+  ],
+  "forecast_horizon": 10,
+  "hindcast_length": 365,
+  "past_discharge": true,
+  "model_families": [
+    "nhits",
+    "nbeatsx",
+    "lstm_matched_control"
+  ],
+  "seed": 42,
+  "no_hpo_sweep": true,
+  "test_not_used_for_selection": true,
+  "daily_sha256": "d21788d62afc9e54d8e2aa6e1f27dcc244ef3b6a1a734249650abd84ccdbe11f",
+  "config_hashes": {
+    "nhits\\config.yaml": "95de0481c3cf1af062c183f50312db161ba6f7d1ba0e2dbcaeadd7f75fc69a61",
+    "nbeatsx\\config.yaml": "95a0a710faf553eed4899a887e06eeb337ece3c1b13050bccc98e6dd0e71ab71",
+    "nhits\\config_lstm_control.yaml": "73592296232db61997c7ddcc49007df714cdb8d728b86a729f69b334ccfe64d5"
+  },
+  "upstream": {
+    "revision": "cf7449383ac5ff6041ec35cbd97b84c23dd559a0",
+    "url": "https://github.com/Nixtla/neuralforecast/tree/cf7449383ac5ff6041ec35cbd97b84c23dd559a0",
+    "repository": "Nixtla/neuralforecast",
+    "files": [
+      {
+        "path": "LICENSE",
+        "sha256": "d392f3d2969e354d7e6aef8fc6df5590ef5c20eea4b946191bd76a6138b4e81c"
+      },
+      {
+        "path": "nbeats.py",
+        "sha256": "36bbeec6843517aa6ca6fcbc8c59fd9309ebf03fa817b7488355be99b0c7bab7"
+      },
+      {
+        "path": "nbeatsx.py",
+        "sha256": "b0e3826a5087d64fe7b77f48577bc3906cdd9b1a65e828d03b7c18d774c30117"
+      },
+      {
+        "path": "nhits.py",
+        "sha256": "0cfcc06f688ae872cdb5ef98a87d05812ddbfe2e31c3cee9cdb70f60201d1662"
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+data:
+  merged_daily: ../../model/multi_horizon_CRE/data/marala_daily.csv
+  glofas_daily: ../../dataset/chenab_marala/processed/marala/discharge/simulated/marala_glofas_historical_daily.csv
+  date_column: date
+  observed_target: q_cumecs
+  observed_source: WAPDA
+  simulated_target: glofas_v5_0_m3_s
+  simulated_first_year: 1980
+  simulated_last_year: 2015
+  observed_train_first_year: 2016
+  observed_validation_years: [2022, 2023]
+  observed_final_train_last_year: 2023
+  observed_test_years: [2024]
+  input_coverage_minimum: 0.8
+  target_coverage_minimum: 0.9
+
+forecast:
+  horizons_days: [90, 180]
+  issue_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  issue_day: 1
+  flood_percentile: 0.75
+
+model:
+  hidden_layer_sizes: [16]
+  pretrain_epochs: 40
+  finetune_epochs_to_check: [1, 2, 3, 5, 8, 12, 16, 24, 32, 40]
+  alpha: 0.02
+  learning_rate_init: 0.001
+  seed: 42
+
+outputs:
+  directory: reports
+  model_directory: runs
