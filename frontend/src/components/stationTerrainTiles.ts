@@ -16,9 +16,34 @@ export const stationCatalogElevation = (id:string) => cachedIndex?.station_eleva
 // Elevation bytes stay in memory so tiles preloaded in the background (for the
 // next monitoring stop) are served instantly when the map asks for them. Remote
 // tiles beyond the project's cache are also kept in persistent browser storage.
-const maxCachedTiles = 700;
+const maxCachedTiles = 2000;   // a long river flight's elevation, about 60 MB
 const remoteTerrainCache = "floodguard-terrain-v1";
 const tileBytes = new Map<string, Promise<ArrayBuffer>>();
+
+// Bad pixels in the public elevation data would stand up as needles in the 3D
+// terrain; the filter that removes them runs in a worker, off the main thread.
+let despiker: Worker | null = null;
+try { despiker = new Worker(new URL("./terrariumDespike.worker.ts", import.meta.url), { type: "module" }); } catch { despiker = null; }
+const despiking = new Map<number, (bytes: ArrayBuffer) => void>();
+let nextDespike = 0;
+if (despiker) {
+  despiker.onmessage = (event: MessageEvent<{ id: number; bytes: ArrayBuffer }>) => {
+    despiking.get(event.data.id)?.(event.data.bytes);
+    despiking.delete(event.data.id);
+  };
+}
+function despike(bytes: ArrayBuffer, zoom: number): Promise<ArrayBuffer> {
+  const worker = despiker;
+  if (!worker) return despikeTerrarium(bytes, zoom);
+  return new Promise((resolve) => {
+    const id = nextDespike++;
+    despiking.set(id, resolve);
+    // A copy goes to the worker, so the tile is still here if the worker fails.
+    worker.postMessage({ id, bytes: bytes.slice(0), zoom });
+    worker.addEventListener("error", () => { if (despiking.delete(id)) resolve(bytes); }, { once: true });
+  });
+}
+
 function cachedTileBytes(url:string) {
   const hit=tileBytes.get(url);
   if (hit) {tileBytes.delete(url);tileBytes.set(url,hit);return hit;}
@@ -26,9 +51,8 @@ function cachedTileBytes(url:string) {
     if(!response.ok)throw new Error(`HTTP ${response.status}`);
     return response.arrayBuffer();
   });
-  // Bad pixels in the public elevation data would stand up as needles in the 3D terrain.
   const zoom=Number(/(\d+)\/\d+\/\d+\.png$/.exec(url)?.[1] ?? 0);
-  const pending=fetched.then(bytes => despikeTerrarium(bytes,zoom));
+  const pending=fetched.then(bytes => despike(bytes,zoom));
   tileBytes.set(url,pending);
   pending.catch(() => {if(tileBytes.get(url)===pending)tileBytes.delete(url);});
   for (const key of tileBytes.keys()) {if(tileBytes.size<=maxCachedTiles)break;tileBytes.delete(key);}
@@ -68,8 +92,11 @@ maplibregl.addProtocol("station-dem",async (params, controller) => {
 });
 
 /** Fetch elevation tiles ("z/x/y.png") into memory ahead of the camera. */
-export async function preloadTerrainTiles(keys:string[]) {
+export async function preloadTerrainTiles(keys:string[], remoteOnly=false) {
   const manifest=await tileIndex();
+  // With `remoteOnly` (background warming), tiles the project ships are left
+  // for when they are needed: they load in milliseconds anyway.
+  const wanted=[...new Set(keys)].filter(key => Number(key.split("/")[0])<=13 && !(remoteOnly && manifest.tiles[key]));
   // Twelve at a time: tiles beyond the project's cache come from a server that answers slowly but in parallel.
-  await inBatches([...new Set(keys)].filter(key => Number(key.split("/")[0])<=13),key => cachedTileBytes(tileUrl(manifest,key)),12);
+  await inBatches(wanted,key => cachedTileBytes(tileUrl(manifest,key)),12);
 }

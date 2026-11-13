@@ -1,5 +1,8 @@
+import type { FeatureCollection } from "geojson";
+import * as maplibregl from "maplibre-gl";
 import type { FlyToOptions, Map as MapLibreMap, PaddingOptions } from "maplibre-gl";
-import { backdropTileKeys, imageryBackdropMaxZoom, preloadImageryBackdrop, preloadImageryTiles } from "./imageryTiles";
+import { backdropTileKeys, imageryBackdropMaxZoom, imageryOutsidePack, preloadImageryBackdrop, preloadImageryTiles } from "./imageryTiles";
+import { courseLength, fromMercator, riverCourse, riverNetwork, smoothCourse, toMercator, type MercatorPoint } from "./riverRoute";
 import { preloadTerrainTiles } from "./stationTerrainTiles";
 
 // Cinematic camera for monitoring mode. Each hop is one continuous low glide,
@@ -27,7 +30,7 @@ export interface TourStation { id: string; longitude: number; latitude: number; 
 
 const closeZoom = 10;     // stop zoom for a station without a known catchment
 const minStopZoom = 5.6, maxStopZoom = 9.6;
-const closeUpZoom = 11.4, closeUpPitch = 64;   // the 3D view of the station itself
+const closeUpZoom = 11.6, closeUpPitch = 64;   // the 3D view of the station itself
 const travelMargin = 0.15;    // how far above the lower of the two views a hop flies, in zoom levels
 const maxTravelSpans = 3.5;   // a longer hop rises until it is this many screen widths long
 // The highest camera zoom at which the always-loaded coarse imagery is the detail the view asks for.
@@ -43,7 +46,8 @@ const tourRegion: [number, number, number, number] = [52, 16, 88, 44];
 const tourHorizon: [number, number, number, number] = [25, 0, 115, 55];   // zoom 4 and 5 only: the far edge of a tilted view
 const tourBackdrop = () => preloadImageryBackdrop(tourRegion, tourHorizon);
 const maxWayTiles = 700;   // most elevation tiles loaded for the ground one flight passes over
-const maxLevelTiles = 1100;   // most imagery tiles one level of detail of a flight may need to be loaded at all
+const maxLevelTiles = 6000;   // most imagery tiles one level of detail of a flight may need to be loaded at all
+const maxGpuRouteTiles = 1000;   // most of them loaded onto the graphics card ahead of the flight
 const tourMaxDetail = 13;   // the finest imagery zoom the tour uses (the measured footprints stop there too)
 const diagnostics = new URLSearchParams(window.location.search).get("mapDiagnostics") === "1";
 
@@ -80,12 +84,13 @@ function arrivalBearing(from: [number, number] | null, to: [number, number]) {
  * sits a third of the way from the catchment's middle toward the station, so
  * stations sharing one large basin still get their own view.
  */
-function stopCamera(map: MapLibreMap, station: TourStation, from: [number, number] | null) {
+function stopCamera(map: MapLibreMap, station: TourStation, from: [number, number] | null, heading?: number) {
   const padding = stationCameraPadding(map);
   const { clientWidth: width, clientHeight: height } = map.getContainer();
   const point: [number, number] = [station.longitude, station.latitude];
   if (station.closeUp && !station.flat) {
-    return { center: point, zoom: closeUpZoom, pitch: closeUpPitch, bearing: arrivalBearing(from, point), padding, flat: false, closeUp: true };
+    // Arriving along a river, the camera lands looking along it.
+    return { center: point, zoom: closeUpZoom, pitch: closeUpPitch, bearing: heading ?? arrivalBearing(from, point), padding, flat: false, closeUp: true };
   }
   let center = point, zoom = closeZoom;
   if (station.catchment) {
@@ -103,8 +108,189 @@ function stopCamera(map: MapLibreMap, station: TourStation, from: [number, numbe
   return { center, zoom, pitch: width < 700 ? 42 : 50, bearing: arrivalBearing(from, center), padding, flat: false, closeUp: false };
 }
 type StopCamera = ReturnType<typeof stopCamera>;
-/** Where a flight starts: the camera's centre, zoom and bearing. */
-type CameraView = { center: [number, number]; zoom: number; bearing: number };
+/** Where a flight starts: the camera's centre, zoom and bearing (and tilt, when known). */
+type CameraView = { center: [number, number]; zoom: number; bearing: number; pitch?: number };
+
+// River flights. In the 3D tour the camera travels from one station to the next
+// along the river between them, looking ahead along the water: it lifts off the
+// station, glides down (or up) the river at a height that keeps the ground
+// moving at an even, unhurried pace, and settles on the next station looking
+// along the river it arrived on. Where the water route is far longer than the
+// direct one (stations on rivers that only meet hundreds of kilometres away),
+// it flies the same way along a straight line instead.
+
+let rivers: ReturnType<typeof riverNetwork> | null = null;
+const routes = new Map<string, Route>();
+/** The river lines the tour follows (the map's river features); call again when they change. */
+export function setTourRivers(lines: FeatureCollection) {
+  rivers = lines.features.length ? riverNetwork(lines) : null;
+  routes.clear();
+}
+
+type Route = { points: MercatorPoint[]; alongRiver: boolean; length: number };
+const maxRiverDetour = 2;   // a river route at most this many times the direct distance is followed
+const routeKey = (from: [number, number], to: [number, number]) => [...from, ...to].map((value) => value.toFixed(3)).join(",");
+/** The ground route between two points (longitude, latitude): along the river when it links them, else straight. */
+function hopRoute(from: [number, number], to: [number, number]): Route {
+  const key = routeKey(from, to), known = routes.get(key);
+  if (known) return known;
+  const a = toMercator(...from), b = toMercator(...to), direct = Math.hypot(b[0] - a[0], b[1] - a[1]);
+  const course = rivers ? riverCourse(rivers, from, to) : null, along = course ? courseLength(course) : Infinity;
+  const route = course && along <= maxRiverDetour * direct + 1e-5 ? { points: course, alongRiver: true, length: along }
+    : { points: [a, b], alongRiver: false, length: direct };
+  routes.set(key, route);
+  return route;
+}
+
+/** Compass heading (0 = north) from one Mercator point to another. */
+const headingBetween = (a: MercatorPoint, b: MercatorPoint) => Math.atan2(b[0] - a[0], a[1] - b[1]) * 180 / Math.PI;
+const kilometres = (km: number) => km / (40_075 * Math.cos(30 * Math.PI / 180));
+/** The heading the route arrives on, averaged over its last few kilometres. */
+function arrivalHeading(route: Route) {
+  if (route.length < kilometres(1)) return undefined;
+  const smooth = smoothCourse(route.points, 120, Math.min(kilometres(3), route.length / 12));
+  return headingBetween(smooth[Math.max(0, smooth.length - 1 - Math.ceil(smooth.length * Math.min(0.5, kilometres(8) / route.length)))], smooth[smooth.length - 1]);
+}
+
+/**
+ * The stop at `to`, reached from the point `from` (longitude, latitude; null when
+ * the tour starts there). With `travel`, the camera comes from another station
+ * along a route rather than descending from the overview.
+ */
+function planStop(map: MapLibreMap, to: TourStation, from: [number, number] | null, travel: boolean) {
+  const target: [number, number] = [to.longitude, to.latitude];
+  const route = travel && !to.flat && from && rivers ? hopRoute(from, target) : null;
+  return { stop: stopCamera(map, to, from, route ? arrivalHeading(route) : undefined), route };
+}
+
+/** The stop and, for a 3D flight between stations, the track the camera follows to it from `start`. */
+function planHop(map: MapLibreMap, start: CameraView, to: TourStation) {
+  // From far above the stop (the overview) the camera descends rather than travelling.
+  const { stop, route } = planStop(map, to, start.center, start.zoom > closeUpZoom - 3);
+  return { stop, track: route ? cameraTrack(map, start, stop, route) : null };
+}
+
+const cameraView = (map: MapLibreMap): CameraView =>
+  ({ center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing: map.getBearing(), pitch: map.getPitch() });
+
+type TrackPoint = { point: MercatorPoint; zoom: number; pitch: number; bearing: number };
+type Track = { duration: number; cruiseZoom: number; at(progress: number): TrackPoint };
+const rampShare = 0.27;   // share of the flight spent speeding up, and again slowing down
+const cruiseScreenSpeed = 0.6;   // screen heights of ground per second while cruising
+
+/** Share of the distance covered at time `u` (0 to 1): a smooth start, an even cruise, a smooth stop. */
+function travelled(u: number) {
+  const r = rampShare, total = 1 - r;
+  const ramp = (t: number) => t / 2 - r / (2 * Math.PI) * Math.sin(Math.PI * t / r);
+  if (u <= r) return ramp(u) / total;
+  if (u >= 1 - r) return 1 - ramp(1 - u) / total;
+  return (r / 2 + (u - r)) / total;
+}
+
+/**
+ * The camera's whole flight along `route` from `start` to `stop`, worked out in
+ * advance: its duration, and for any moment its centre on the route, zoom, tilt
+ * and heading. The same track flies the camera and tells the preload which tiles
+ * the flight will show.
+ */
+function cameraTrack(map: MapLibreMap, start: CameraView, stop: StopCamera, route: Route): Track {
+  const height = Math.max(1, map.getContainer().clientHeight);
+  const screens = (length: number, zoom: number) => length * 512 * 2 ** zoom / height;   // ground length in screen heights
+  const cruiseShare = 1 - 2 * rampShare, cruiseDistanceShare = cruiseShare / (1 - rampShare);
+  // Longer routes take longer, up to 18 s, and are flown higher so the ground still passes at an even pace.
+  let duration = clamp(6 + route.length / kilometres(1) * 0.012, 8, 18);
+  const lowest = Math.min(start.zoom, stop.zoom) - 0.5;
+  let cruiseZoom = Math.log2(cruiseScreenSpeed * duration * cruiseShare / screens(route.length * cruiseDistanceShare, 0));
+  if (cruiseZoom > lowest) {
+    // A short hop at the lowest cruising height: shorten the flight to keep the pace.
+    cruiseZoom = lowest;
+    duration = clamp(screens(route.length * cruiseDistanceShare, cruiseZoom) / (cruiseScreenSpeed * cruiseShare), 6, 18);
+  }
+  cruiseZoom = Math.max(6.2, cruiseZoom);
+  // The camera's path is the route smoothed at the scale of a quarter screen at cruising height,
+  // so it follows the river's sweep without its every bend.
+  const screenAtCruise = height / (512 * 2 ** cruiseZoom);
+  const path = smoothCourse(route.points, 700, route.alongRiver ? screenAtCruise * 0.25 : 0);
+  const step = route.length > 0 ? 1 / (path.length - 1) : 0;
+  const pointAt = (share: number): MercatorPoint => {
+    const position = clamp(share, 0, 1) * (path.length - 1), index = Math.min(path.length - 2, Math.floor(position)), t = position - index;
+    return [path[index][0] + (path[index + 1][0] - path[index][0]) * t, path[index][1] + (path[index + 1][1] - path[index][1]) * t];
+  };
+  // Heading: the direction from a little behind to a well ahead of the camera's
+  // point (half a screen at cruising height), unwrapped and smoothed again so turns are gentle.
+  const lookAhead = route.length > 0 ? Math.min(0.35, screenAtCruise * 0.5 / route.length) : 0;
+  const headings: number[] = [];
+  for (let index = 0; index < path.length; index++) {
+    const share = index * step, heading = headingBetween(pointAt(share - lookAhead * 0.3), pointAt(share + lookAhead));
+    headings.push(index ? headings[index - 1] + wrap(heading - headings[index - 1]) : heading);
+  }
+  const spread = Math.max(1, Math.round(path.length * lookAhead * 0.6));
+  const smoothHeadings = headings.map((_, index) => {
+    let sum = 0, weight = 0;
+    for (let offset = -spread * 2; offset <= spread * 2; offset++) {
+      const at = clamp(index + offset, 0, headings.length - 1), w = Math.exp(-(offset * offset) / (2 * spread * spread));
+      sum += headings[at] * w; weight += w;
+    }
+    return sum / weight;
+  });
+  const headingAt = (share: number) => {
+    const position = clamp(share, 0, 1) * (headings.length - 1), index = Math.min(headings.length - 2, Math.floor(position));
+    return smoothHeadings[index] + (smoothHeadings[index + 1] - smoothHeadings[index]) * (position - index);
+  };
+  // Over open country the tilt eases off at great heights, so the horizon stays near.
+  const cruisePitch = clamp(46 + (cruiseZoom - 6.5) * 4.5, 46, 62);
+  const startPitch = start.pitch ?? stop.pitch;
+  const lift = (u: number) => smootherstep(clamp(u / (rampShare + 0.08), 0, 1));
+  const land = (u: number) => smootherstep(clamp((u - (1 - rampShare - 0.08)) / (rampShare + 0.08), 0, 1));
+  // At a stop the station sits left of centre, clear of its details panel; in
+  // flight the panel is closed, so the river is brought to the middle of the
+  // screen. The map's centre point is drawn this many pixels right of the
+  // screen's middle (negative: left).
+  const offset = (stop.padding.left - stop.padding.right) / 2;
+  return {
+    duration: duration * 1000,
+    cruiseZoom,
+    at(u) {
+      const share = travelled(clamp(u, 0, 1)), up = lift(u), down = land(u);
+      const zoom = start.zoom + (cruiseZoom - start.zoom) * up + (stop.zoom - cruiseZoom) * down;
+      const pitch = startPitch + (cruisePitch - startPitch) * up + (stop.pitch - cruisePitch) * down;
+      // Turn from the view it leaves to the river ahead while lifting off, and onto the stop's view while landing.
+      const along = headingAt(share);
+      let bearing = start.bearing + wrap(along - start.bearing) * up;
+      bearing += wrap(stop.bearing - bearing) * down;
+      // Shift the map centre sideways so the river's point is drawn mid-screen while cruising.
+      const [x, y] = pointAt(share), shift = offset * (up - down) / (512 * 2 ** zoom), turn = bearing * Math.PI / 180;
+      return { point: [x + Math.cos(turn) * shift, y + Math.sin(turn) * shift], zoom, pitch, bearing };
+    },
+  };
+}
+
+/** Flies `track` to `stop`; resolves false if something else (user, another move) interrupted it. */
+async function trackFlight(map: MapLibreMap, track: Track, stop: StopCamera) {
+  if (diagnostics) map.getContainer().dataset.monitoringFlight = JSON.stringify({ river: true, cruise: +track.cruiseZoom.toFixed(2), ms: Math.round(track.duration) });
+  const began = performance.now();
+  let elevation: number | null = null, last = began;
+  map.setTransformCameraUpdate((next) => {
+    const now = performance.now(), u = clamp((now - began) / track.duration, 0, 1);
+    const { point, zoom, pitch, bearing } = track.at(u);
+    const center = new maplibregl.LngLat(...fromMercator(point));
+    // The ground under the camera's point, followed gently so valleys and ridges never jolt it;
+    // near the end it settles on the elevation the map itself lands on.
+    const ground = map.queryTerrainElevation(center);
+    if (ground !== null && Number.isFinite(ground)) {
+      elevation = elevation === null ? ground : elevation + (ground - elevation) * (1 - Math.exp(-(now - last) / 700));
+    }
+    last = now;
+    const settle = smootherstep(clamp((u - 0.85) / 0.15, 0, 1));
+    return { center, zoom, pitch, bearing, elevation: elevation === null ? next.elevation : elevation + (next.elevation - elevation) * settle };
+  });
+  try {
+    const { center, zoom, pitch, bearing, padding } = stop;
+    return await cameraStep(map, { center, zoom, pitch, bearing, padding, duration: track.duration, easing: (t) => t });
+  } finally {
+    map.setTransformCameraUpdate(null);
+  }
+}
 
 /**
  * How the flight from `start` to `stop` is flown: its travel height (`apex`, a
@@ -234,7 +420,6 @@ function holdOrbit(map: MapLibreMap, station: TourStation, stop: StopCamera, dur
  * the camera actually landed at the stop.
  */
 export async function runMonitoringHop(map: MapLibreMap, station: TourStation, isCurrent: () => boolean) {
-  const stop = stopCamera(map, station, map.getCenter().toArray() as [number, number]);
   // A flight nobody loaded the route for (a station picked by hand mid-tour) keeps to the backdrop.
   if (preloadedFor !== station.id) { flightDetail.set(station.id, detailFloor); routePlanned.delete(station.id); }
   followDetail(map, station.id, "flight");
@@ -245,9 +430,13 @@ export async function runMonitoringHop(map: MapLibreMap, station: TourStation, i
   // and a stalled frame as the camera starts to move reads as a jolt.
   await steadyFrames();
   if (!isCurrent()) return false;
-  // A flight whose route was planned from a measured stop glides low; before
-  // any stop has been measured it rises to where the always-loaded coarse imagery suffices.
-  const landed = await cinematicFlight(map, stop, routePlanned.has(station.id)) && isCurrent();
+  // Planned from exactly where the camera is now, so the flight starts without a jump.
+  const { stop, track } = planHop(map, cameraView(map), station);
+  // Between stations the 3D tour follows the river; from the overview (and in
+  // the 2D tour) it flies one smooth arc. A flight whose route was planned from
+  // a measured stop glides low; before any stop has been measured it rises to
+  // where the always-loaded coarse imagery suffices.
+  const landed = await (track ? trackFlight(map, track, stop) : cinematicFlight(map, stop, routePlanned.has(station.id))) && isCurrent();
   if (isCurrent()) followDetail(map, station.id, "stop");
   if (landed) {
     measureStopFootprint(map, stop);
@@ -285,6 +474,18 @@ export function prepareMonitoringTour() {
 export function endMonitoringTour(map: MapLibreMap) {
   detailFollows = null;
   setImageryMaxzoom(map, null);
+  setTourTileCache(map, false);
+}
+
+// While touring, the imagery's cache of ready-to-draw tiles on the graphics card
+// holds about three times its usual number (some 3500 tiles at full-HD), so a
+// long river flight's preloaded tiles are still there when the camera reaches them.
+let usualCacheLevels: number | null = null;
+function setTourTileCache(map: MapLibreMap, touring: boolean) {
+  const tiles = (map as unknown as { style?: { tileManagers?: Record<string, { _maxTileCacheZoomLevels: number | null }> } }).style?.tileManagers?.[imagerySourceId];
+  if (!tiles) return;
+  usualCacheLevels ??= tiles._maxTileCacheZoomLevels ?? 28;
+  tiles._maxTileCacheZoomLevels = touring ? usualCacheLevels * 3 : usualCacheLevels;
 }
 
 // The detail cap. With 3D terrain the map swaps a sharper imagery tile in within
@@ -315,6 +516,7 @@ function setImageryMaxzoom(map: MapLibreMap, level: number | null) {
 
 function followDetail(map: MapLibreMap, station: string, phase: "flight" | "stop") {
   detailFollows = { map, station, phase };
+  setTourTileCache(map, true);
   applyDetailCap();
 }
 
@@ -516,9 +718,19 @@ function stopTiles(stop: StopCamera, target: [number, number]) {
  * them: the stop footprint carried along the flight's own path, at the zoom and
  * heading the camera has at each point. Empty before any landing has been measured.
  */
-function flightTiles(map: MapLibreMap, start: CameraView, stop: StopCamera) {
+function flightTiles(map: MapLibreMap, start: CameraView, stop: StopCamera, track: Track | null) {
   const footprint = footprintFor(stop), terrain = new Set<string>(), detail = new Set<string>();
   if (!footprint) return { terrain: [], detail: [] };
+  if (track) {
+    // About three views for every screen of ground the camera crosses.
+    const count = Math.round(clamp(track.duration / 1000 * cruiseScreenSpeed * 3 + 10, 12, 160));
+    for (let index = 0; index <= count; index++) {
+      const { point, zoom, bearing } = track.at(index / count);
+      for (const key of footprintKeys(footprint.terrain, point, bearing - footprint.bearing, zoom - footprint.zoom)) terrain.add(key);
+      for (const key of footprintKeys(footprint.detail, point, bearing - footprint.bearing, zoom - footprint.zoom)) detail.add(key);
+    }
+    return { terrain: [...terrain], detail: [...detail] };
+  }
   const { apex, spans, curve, turn, bank } = flightPlan(map, start, stop, true);
   const from = mercator(...start.center), to = mercator(...stop.center);
   // About three views for every screen the camera crosses, so neighbouring views overlap.
@@ -552,11 +764,10 @@ export function preloadMonitoringHop(map: MapLibreMap, from: TourStation | null,
   const satellite = imageryShown(map);
   const backdrop = satellite ? tourBackdrop() : Promise.resolve();
   // The flight leaves from where the hold's slow pass ends, or from the camera as it is now.
-  const center = map.getCenter().toArray() as [number, number];
-  const start: CameraView = from && heldView?.id === from.id ? { center, zoom: heldView.zoom, bearing: heldView.bearing }
-    : { center, zoom: map.getZoom(), bearing: map.getBearing() };
-  const stop = stopCamera(map, to, center), target = mercator(...stop.center);
-  const tiles = stopTiles(stop, target), way = flightTiles(map, start, stop);
+  const now = cameraView(map);
+  const start: CameraView = from && heldView?.id === from.id ? { ...now, zoom: heldView.zoom, bearing: heldView.bearing } : now;
+  const { stop, track } = planHop(map, start, to), target = mercator(...stop.center);
+  const tiles = stopTiles(stop, target), way = flightTiles(map, start, stop, track);
   const stopTerrain = byDistance(tiles.terrain, target), stopImagery = byDistance(tiles.detail, target);
   // What the flight needs beyond the stop's own tiles (elevation and imagery tiles are separate sets).
   const stopTerrainKeys = new Set(stopTerrain), stopImageryKeys = new Set(stopImagery);
@@ -597,7 +808,10 @@ export function preloadMonitoringHop(map: MapLibreMap, from: TourStation | null,
     for (let level = coarse + 1; level <= tourMaxDetail; level++) {
       const keys = atLevel(route, level);
       if (keys.length > maxLevelTiles) break;
-      await preloadImagery(map, keys, 12, true);
+      // The first stretch goes onto the graphics card; a long river route's
+      // remainder waits in memory, a few milliseconds from the screen, as the
+      // camera only meets it at the far edge of the view.
+      await Promise.all([preloadImagery(map, keys.slice(0, maxGpuRouteTiles), 12, true), preloadImageryTiles(keys.slice(maxGpuRouteTiles), 12)]);
       raiseDetail(flightDetail, to.id, level);
     }
   };
@@ -623,21 +837,19 @@ export function preloadMonitoringHop(map: MapLibreMap, from: TourStation | null,
 export function monitoringTourTiles(map: MapLibreMap, stations: TourStation[]) {
   recallFootprints(map);
   const imagery = new Set<string>(backdropTileKeys(tourRegion, tourHorizon)), terrain = new Set<string>();
-  const overview: CameraView = { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing: map.getBearing() };
+  const overview = cameraView(map);
   const addRoute = (keys: string[]) => {
     for (let level = firstLevel; level <= tourMaxDetail; level++) for (const key of atLevel(keys, level)) imagery.add(key);
   };
   stations.forEach((to, index) => {
     const count = stations.length, from = stations[(index - 1 + count) % count], before = stations[(index - 2 + count) % count];
-    const stop = stopCamera(map, to, [from.longitude, from.latitude]), target = mercator(...stop.center);
-    const tiles = stopTiles(stop, target);
-    for (const key of tiles.terrain) terrain.add(key);
-    addRoute(tiles.detail);
     const starts = [count > 1 ? departureView(map, from, before) : null, index === 0 ? overview : null];
     for (const start of starts) {
       if (!start) continue;
-      const way = flightTiles(map, start, stop);
-      for (const key of way.terrain) terrain.add(key);
+      const { stop, track } = planHop(map, start, to);
+      const tiles = stopTiles(stop, mercator(...stop.center)), way = flightTiles(map, start, stop, track);
+      for (const key of [...tiles.terrain, ...way.terrain]) terrain.add(key);
+      addRoute(tiles.detail);
       addRoute(way.detail);
     }
   });
@@ -646,8 +858,8 @@ export function monitoringTourTiles(map: MapLibreMap, stations: TourStation[]) {
 
 /** The view a flight from `from` leaves from: where the hold's slow pass there ends (`before` is the stop before it). */
 function departureView(map: MapLibreMap, from: TourStation, before: TourStation): CameraView {
-  const held = stopCamera(map, from, [before.longitude, before.latitude]), end = orbitEnd(held);
-  return { center: held.center, zoom: end.zoom, bearing: end.bearing ?? held.bearing };
+  const held = planStop(map, from, [before.longitude, before.latitude], true).stop, end = orbitEnd(held);
+  return { center: held.center, zoom: end.zoom, bearing: end.bearing ?? held.bearing, pitch: end.pitch ?? held.pitch };
 }
 
 // After the first landing, quietly fetch the imagery and terrain for every stop
@@ -669,9 +881,10 @@ export function warmMonitoringTour(map: MapLibreMap, stations: TourStation[], fr
         const to = order[index], from = previous(index);
         if (warmedStations.has(to.id)) continue;
         await hopPreload.catch(() => undefined);
-        const stop = stopCamera(map, to, [from.longitude, from.latitude]), target = mercator(...stop.center);
+        const stop = planStop(map, to, [from.longitude, from.latitude], true).stop, target = mercator(...stop.center);
         const tiles = stopTiles(stop, target);
-        await Promise.all([to.flat ? Promise.resolve() : preloadTerrainTiles(png(tiles.terrain)), preloadImagery(map, byDistance(tiles.detail, target), 4)]);
+        // Only what the app does not ship: shipped tiles load from disk in milliseconds when needed.
+        await Promise.all([to.flat ? Promise.resolve() : preloadTerrainTiles(png(tiles.terrain), true), preloadImagery(map, await imageryOutsidePack(byDistance(tiles.detail, target)), 4)]);
         warmedStations.add(to.id);
       }
       for (let index = 0; index < order.length && isActive(); index++) {
@@ -679,8 +892,8 @@ export function warmMonitoringTour(map: MapLibreMap, stations: TourStation[], fr
         if (warmedFlights.has(key) || from.id === to.id) continue;
         await hopPreload.catch(() => undefined);
         const before = index > 1 ? order[index - 2] : index === 1 ? stations[fromIndex] : stations[(fromIndex - 1 + stations.length) % stations.length];
-        const stop = stopCamera(map, to, [from.longitude, from.latitude]);
-        const way = flightTiles(map, departureView(map, from, before), stop);
+        const start = departureView(map, from, before), { stop, track } = planHop(map, start, to);
+        const way = flightTiles(map, start, stop, track);
         // Every level the hop's own preload steps through, as far as it would go.
         const levels: string[] = [];
         for (let level = 8; level <= tourMaxDetail; level++) {
@@ -689,8 +902,8 @@ export function warmMonitoringTour(map: MapLibreMap, stations: TourStation[], fr
           levels.push(...keys);
         }
         await Promise.all([
-          to.flat ? Promise.resolve() : preloadTerrainTiles(png(way.terrain.slice(0, maxWayTiles))),
-          preloadImagery(map, levels, 4),
+          to.flat ? Promise.resolve() : preloadTerrainTiles(png(way.terrain.slice(0, maxWayTiles)), true),
+          preloadImagery(map, await imageryOutsidePack(levels), 4),
         ]);
         warmedFlights.add(key);
       }

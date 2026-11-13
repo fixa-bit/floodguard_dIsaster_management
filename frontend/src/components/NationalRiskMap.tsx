@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePopulationLayers } from './usePopulationLayers';
 import { useMapBasemap, type MapBasemap } from "./useMapBasemap";
 import { StationTerrainStudio } from "./StationTerrainStudio";
-import { endMonitoringTour, monitoringTourTiles, preloadMonitoringHop, prepareMonitoringTour, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
+import { endMonitoringTour, monitoringTourTiles, preloadMonitoringHop, prepareMonitoringTour, setTourRivers, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
 import { cachedImageryTiles, imageryAttribution, imageryBackdropMaxZoom } from "./imageryTiles";
 import {
   activeCatchmentCasingPaint, activeCatchmentFillPaint, activeCatchmentGlowPaint, activeCatchmentLabel, activeCatchmentLinePaint,
@@ -692,10 +692,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   })), [monitoring?.stations]);
   const stationCatchmentsRef = useRef(stationCatchments);
   stationCatchmentsRef.current = stationCatchments;
-  // For now only the tour's first three stations go on to a 3D view of the station itself.
+  // The 3D tour shows every station itself, close up in 3D; the 2D tour frames each station's catchment.
   const toTourStation = (station: { id: string; longitude: number; latitude: number }) =>
     ({ id: station.id, longitude: station.longitude, latitude: station.latitude, catchment: stationCatchmentsRef.current.get(station.id),
-      closeUp: rotationStationsRef.current.slice(0, 3).some((item) => item.id === station.id), flat: monitoringViewRef.current === "2d" });
+      closeUp: true, flat: monitoringViewRef.current === "2d" });
   // Station polling replaces the array every refresh; only a change in the stations themselves restarts the tour timing.
   const rotationKey = rotationStations.map((station) => station.id).join("|");
   const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
@@ -867,6 +867,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const riverLabelData = useMemo(() => riverLabelLines(waterData.lines), [waterData.lines]);
   const waterDataRef = useRef(waterData);
   waterDataRef.current = waterData;
+  // The 3D monitoring tour flies from station to station along these rivers.
+  useEffect(() => { setTourRivers(waterData.lines); }, [waterData.lines]);
 
   const riverStatusLines = useMemo(() => {
     const riverLines = waterData.lines.features.map((feature) => {

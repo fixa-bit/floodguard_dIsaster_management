@@ -56,7 +56,7 @@ async function fetchImagery(key: string) {
   return persistentTileBytes(`${sentinel}${key}.jpg`, sentinelCache);
 }
 
-const maxMemoryTiles = 1500;
+const maxMemoryTiles = 5000;   // about 100 MB: a long river flight's tiles
 const memory = new Map<string, Promise<ArrayBuffer>>();
 function imageryBytes(key: string) {
   const hit = memory.get(key);
@@ -106,6 +106,15 @@ let backdropLoaded: Promise<void> | null = null;
  */
 export function preloadImageryBackdrop(region: Region, horizon: Region = region) {
   return backdropLoaded ??= preloadImageryTiles(backdropTileKeys(region, horizon), 8);
+}
+
+/** The imagery tiles ("z/x/y") among `keys` that the app does not ship in its local pack. */
+export async function imageryOutsidePack(keys: string[]) {
+  const index = await pack();
+  return keys.filter((key) => {
+    const [z, x, y] = key.split("/").map(Number);
+    return z > sentinelMaxZoom || !inPack(index, z, x, y);
+  });
 }
 
 /** Loads imagery tiles (keys "z/x/y") into the caches ahead of the camera. */
