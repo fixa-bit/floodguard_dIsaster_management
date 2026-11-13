@@ -20,7 +20,7 @@ if (new URLSearchParams(window.location.search).get("mapDiagnostics") === "1") {
   (window as unknown as { __imageryStats: typeof stats }).__imageryStats = stats;
 }
 
-const maxMemoryTiles = 600;
+const maxMemoryTiles = 1500;
 const memory = new Map<string, Promise<ArrayBuffer>>();
 function imageryBytes(key: string) {
   const hit = memory.get(key);
@@ -43,6 +43,28 @@ maplibregl.addProtocol("cached-imagery", async (params, controller) => {
   if (waited < 40) stats.instant++; else { stats.waited++; stats.waitedMs += Math.round(waited); }
   return { data };
 });
+
+/** Highest zoom of the always-ready backdrop imagery that sits under the detailed tiles. */
+export const imageryBackdropMaxZoom = 7;
+let backdropLoaded: Promise<void> | null = null;
+/**
+ * Loads the coarse imagery for the whole region [west, south, east, north] once.
+ * The map draws it beneath the detailed tiles, so wherever the camera goes there
+ * is already a picture to sharpen rather than an empty tile to fill.
+ */
+export function preloadImageryBackdrop([west, south, east, north]: [number, number, number, number]) {
+  return backdropLoaded ??= (() => {
+    const keys: string[] = [];
+    const row = (latitude: number, scale: number) => Math.floor((1 - Math.asinh(Math.tan(latitude * Math.PI / 180)) / Math.PI) / 2 * scale);
+    for (let z = 4; z <= imageryBackdropMaxZoom; z++) {
+      const scale = 2 ** z;
+      for (let x = Math.floor((west + 180) / 360 * scale); x <= Math.floor((east + 180) / 360 * scale); x++) {
+        for (let y = row(north, scale); y <= row(south, scale); y++) keys.push(`${z}/${x}/${y}`);
+      }
+    }
+    return preloadImageryTiles(keys, 8);
+  })();
+}
 
 /** Loads imagery tiles (keys "z/x/y") into the caches ahead of the camera. */
 export function preloadImageryTiles(keys: string[], concurrency = 12) {

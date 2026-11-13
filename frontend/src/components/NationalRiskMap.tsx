@@ -7,7 +7,7 @@ import { usePopulationLayers } from './usePopulationLayers';
 import { useMapBasemap, type MapBasemap } from "./useMapBasemap";
 import { StationTerrainStudio } from "./StationTerrainStudio";
 import { preloadMonitoringHop, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
-import { cachedImageryTiles } from "./imageryTiles";
+import { cachedImageryTiles, imageryBackdropMaxZoom } from "./imageryTiles";
 import {
   activeCatchmentCasingPaint, activeCatchmentFillPaint, activeCatchmentGlowPaint, activeCatchmentLabel, activeCatchmentLinePaint,
   catchmentAreaFillPaint, catchmentAreaGlowPaint, catchmentAreaLabel, catchmentAreaLinePaint, catchmentLabelPoint, catchmentSpotlight, catchmentSpotlightPaint,
@@ -82,6 +82,9 @@ const baseStyle: StyleSpecification = {
   version: 8,
   glyphs: "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
   sources: {
+    // The same imagery at coarse zoom only. It is always loaded, so the detailed
+    // tiles above sharpen an existing picture instead of filling an empty tile.
+    "global-satellite-backdrop": { type: "raster", tiles: [cachedImageryTiles], tileSize: 256, maxzoom: imageryBackdropMaxZoom },
     "global-satellite-basemap": {
       type: "raster",
       // Esri World Imagery, served through the persistent local tile cache.
@@ -93,10 +96,17 @@ const baseStyle: StyleSpecification = {
   layers: [
     { id: "background", type: "background", paint: { "background-color": "#07171b" } },
     {
+      id: "global-satellite-backdrop",
+      type: "raster",
+      source: "global-satellite-backdrop",
+      paint: { "raster-opacity": 0.94, "raster-saturation": 0.18, "raster-contrast": 0.08, "raster-fade-duration": 0 },
+    },
+    {
       id: "global-satellite-basemap",
       type: "raster",
       source: "global-satellite-basemap",
-      paint: { "raster-opacity": 0.94, "raster-saturation": 0.18, "raster-contrast": 0.08 },
+      // A longer cross-fade, so detail eases in over the backdrop.
+      paint: { "raster-opacity": 0.94, "raster-saturation": 0.18, "raster-contrast": 0.08, "raster-fade-duration": 450 },
     },
   ],
 };
@@ -596,6 +606,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const [monitoringError, setMonitoringError] = useState<string | null>(null);
   const [stationMapInstance, setStationMapInstance] = useState<MapLibreMap | null>(null);
   const [stationRotationEnabled, setStationRotationEnabled] = useState(false);
+  // The monitoring tour's camera: tilted flights over 3D terrain, or a flat, north-up 2D map.
+  const [monitoringView, setMonitoringView] = useState<"3d" | "2d">("3d");
+  const monitoringViewRef = useRef(monitoringView);
+  monitoringViewRef.current = monitoringView;
   const [requestedMonitoringRiver, setMonitoringRiver] = useState("All");
   const monitoringRiver = studyActive ? "All" : requestedMonitoringRiver;
   const [requestedCatchmentId, setCatchmentId] = useState("");
@@ -681,7 +695,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   // For now only the tour's first three stations go on to a 3D view of the station itself.
   const toTourStation = (station: { id: string; longitude: number; latitude: number }) =>
     ({ id: station.id, longitude: station.longitude, latitude: station.latitude, catchment: stationCatchmentsRef.current.get(station.id),
-      closeUp: rotationStationsRef.current.slice(0, 3).some((item) => item.id === station.id) });
+      closeUp: rotationStationsRef.current.slice(0, 3).some((item) => item.id === station.id), flat: monitoringViewRef.current === "2d" });
   // Station polling replaces the array every refresh; only a change in the stations themselves restarts the tour timing.
   const rotationKey = rotationStations.map((station) => station.id).join("|");
   const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
@@ -724,7 +738,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         if (!hop) void preloadMonitoringHop(map, null, toTourStation(station));
         // A flight cut short (a drag, a resize) still counts as arriving: the
         // station's stats appear and the hold timer runs, so the tour never stalls.
-        void runMonitoringHop(map, toTourStation(station), () => current).catch(() => false).then(() => {
+        void runMonitoringHop(map, toTourStation(station), () => current).catch((error) => { console.error("Monitoring hop failed", error); return false; }).then(() => {
           if (!current || mapRef.current !== map || selectedStationIdRef.current !== station.id) return;
           setMonitoringArrival(station.id);
           setStationTicketArrival({ stationId: station.id, map });
@@ -766,7 +780,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       map.off("style.load", focusStation);
       if (cameraMoveEnd) map.off("moveend", cameraMoveEnd);
     };
-  }, [stationMapInstance, selectedStationId, selectedMonitoringStation?.latitude, selectedMonitoringStation?.longitude, stationRotationEnabled]);
+  }, [stationMapInstance, selectedStationId, selectedMonitoringStation?.latitude, selectedMonitoringStation?.longitude, stationRotationEnabled, monitoringView]);
 
   // Hold each monitoring stop for 10 s after the camera lands, preloading the
   // next hop's terrain and imagery meanwhile (waiting up to 4 s more if needed).
@@ -1099,9 +1113,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       minZoom: 0,
       maxZoom: 15,
       maxPitch: 70,
-      // Keep more decoded tiles in memory (default 5 zoom levels' worth) so
-      // recently seen stops and flight paths redraw without refetching.
-      maxTileCacheZoomLevels: 9,
+      // Keep many decoded tiles on the graphics card (default 5 zoom levels' worth),
+      // so the monitoring tour's stops and flight paths, once seen or preloaded,
+      // are drawn at once instead of loading again tile by tile.
+      maxTileCacheZoomLevels: 28,
       attributionControl: false,
     });
     // A picked click must not also open an overlapping layer's feature inspector.
@@ -1917,7 +1932,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         </div>}
         <output ref={coordinateReadoutRef} className="map-coordinate-readout" aria-label="Map cursor coordinates" aria-live="off" hidden />
         {mapOverlay && <div className="map-command-overlay">{mapOverlay}</div>}
-        <StationTerrainStudio mapRef={mapRef} selectedStationId={selectedStationId} onSelectStation={selectStation} onEnter={()=>{setMapControlsOpen(false);setLayers(current=>({...current,water:true}));}} monitoring={stationRotationEnabled}/>
+        <StationTerrainStudio mapRef={mapRef} selectedStationId={selectedStationId} onSelectStation={selectStation} onEnter={()=>{setMapControlsOpen(false);setLayers(current=>({...current,water:true}));}} monitoring={stationRotationEnabled && monitoringView === "3d"}/>
         <div className="map-layer-control">
           <button className="map-layer-toggle" data-tour-target="gis-map-layers-toggle" type="button" aria-label="Toggle map layers" title="Map layers" aria-expanded={mapControlsOpen} onClick={() => setMapControlsOpen((current) => !current)}><Layers3 size={14} /><span>Map layers</span>{mapControlsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</button>
           {coordinatePicking && <div className="coordinate-pick-status"><span role="status"><MousePointer2 size={14} /> Coordinate selection</span><button type="button" title="Cancel coordinate selection" aria-label="Cancel coordinate selection" onClick={() => setPickingMode(false)}><X size={14} /></button></div>}
@@ -1933,9 +1948,14 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
                 setStationRotationEnabled((enabled) => !enabled);
               }}>
               <RadioTower size={15} />
-              <span><strong>{stationRotationEnabled ? "Monitoring mode on" : "Monitoring mode off"}</strong><small>{stationRotationEnabled ? "Holds each station for 10 seconds in 3D terrain" : "Turn on to cycle through river stations"}</small></span>
+              <span><strong>{stationRotationEnabled ? "Monitoring mode on" : "Monitoring mode off"}</strong><small>{stationRotationEnabled ? (monitoringView === "3d" ? "Holds each station for 10 seconds in 3D terrain" : "Holds each station for 10 seconds on the flat map") : "Turn on to cycle through river stations"}</small></span>
               <i aria-hidden="true" />
             </button>
+            {stationRotationEnabled && <div className="map-basemap-options station-monitoring-view" role="group" aria-label="Monitoring camera">
+              {(["3d", "2d"] as const).map((value) => <button key={value} type="button" aria-pressed={monitoringView === value}
+                title={value === "3d" ? "Tilted flights over 3D terrain, with station close-ups" : "Flat, north-up map without terrain"}
+                onClick={() => setMonitoringView(value)}>{value === "3d" ? "3D terrain" : "2D map"}</button>)}
+            </div>}
             {stationRotationEnabled && <span className="station-monitoring-progress" role="status">
               {selectedStationId && rotationStations.some((station) => station.id === selectedStationId)
                 ? `Station ${rotationStations.findIndex((station) => station.id === selectedStationId) + 1} of ${rotationStations.length}`

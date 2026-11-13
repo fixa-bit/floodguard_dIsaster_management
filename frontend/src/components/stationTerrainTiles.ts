@@ -66,5 +66,6 @@ maplibregl.addProtocol("station-dem",async (params, controller) => {
 /** Fetch elevation tiles ("z/x/y.png") into memory ahead of the camera. */
 export async function preloadTerrainTiles(keys:string[]) {
   const manifest=await tileIndex();
-  await inBatches([...new Set(keys)].filter(key => Number(key.split("/")[0])<=13),key => cachedTileBytes(tileUrl(manifest,key)));
+  // Twelve at a time: tiles beyond the project's cache come from a server that answers slowly but in parallel.
+  await inBatches([...new Set(keys)].filter(key => Number(key.split("/")[0])<=13),key => cachedTileBytes(tileUrl(manifest,key)),12);
 }

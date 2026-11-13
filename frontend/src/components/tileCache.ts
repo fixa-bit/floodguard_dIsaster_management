@@ -11,14 +11,28 @@ export async function persistentTileBytes(url: string, cacheName: string): Promi
       if (hit) return await hit.arrayBuffer();
     } catch { /* storage unavailable or blocked: fall through to the network */ }
   }
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const bytes = await response.arrayBuffer();
+  const bytes = await fetchTileBytes(url);
+  const contentType = bytes.contentType;
   if (storage) {
-    const copy = new Response(bytes.slice(0), { headers: { "Content-Type": response.headers.get("Content-Type") ?? "application/octet-stream" } });
+    const copy = new Response(bytes.data.slice(0), { headers: { "Content-Type": contentType } });
     void storage.open(cacheName).then((cache) => cache.put(url, copy)).catch(() => undefined);
   }
-  return bytes;
+  return bytes.data;
+}
+
+/** One tile from the network. A failed request is tried twice more, so a passing network error does not leave a hole in the map. */
+async function fetchTileBytes(url: string) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) return { data: await response.arrayBuffer(), contentType: response.headers.get("Content-Type") ?? "application/octet-stream" };
+      // A missing tile will not appear on a second try.
+      if (response.status === 404 || attempt === 2) throw new Error(`HTTP ${response.status}`);
+    } catch (error) {
+      if (attempt === 2 || (error instanceof Error && error.message === "HTTP 404")) throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 350 * (attempt + 1)));
+  }
 }
 
 /** Deletes persistent caches whose name starts with `prefix`, except `keep`. */
