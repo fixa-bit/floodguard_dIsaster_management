@@ -678,8 +678,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   })), [monitoring?.stations]);
   const stationCatchmentsRef = useRef(stationCatchments);
   stationCatchmentsRef.current = stationCatchments;
+  // For now only the tour's first three stations go on to a 3D view of the station itself.
   const toTourStation = (station: { id: string; longitude: number; latitude: number }) =>
-    ({ id: station.id, longitude: station.longitude, latitude: station.latitude, catchment: stationCatchmentsRef.current.get(station.id) });
+    ({ id: station.id, longitude: station.longitude, latitude: station.latitude, catchment: stationCatchmentsRef.current.get(station.id),
+      closeUp: rotationStationsRef.current.slice(0, 3).some((item) => item.id === station.id) });
   // Station polling replaces the array every refresh; only a change in the stations themselves restarts the tour timing.
   const rotationKey = rotationStations.map((station) => station.id).join("|");
   const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
@@ -720,8 +722,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         setMonitoringArrival(null);
         const hop = Boolean(previous?.monitoring && previous.id !== station.id);
         if (!hop) void preloadMonitoringHop(map, null, toTourStation(station));
-        void runMonitoringHop(map, toTourStation(station), () => current).then((landed) => {
-          if (!current || !landed || mapRef.current !== map || selectedStationIdRef.current !== station.id) return;
+        // A flight cut short (a drag, a resize) still counts as arriving: the
+        // station's stats appear and the hold timer runs, so the tour never stalls.
+        void runMonitoringHop(map, toTourStation(station), () => current).catch(() => false).then(() => {
+          if (!current || mapRef.current !== map || selectedStationIdRef.current !== station.id) return;
           setMonitoringArrival(station.id);
           setStationTicketArrival({ stationId: station.id, map });
           map.getContainer().dataset.monitoringArrival = station.id;

@@ -1,11 +1,15 @@
 /* Station panel as a monitoring console (RiverStationInspector).
-   Same mint-on-deep-teal palette as the rest of FloodGuard; glass cards stay flat. */
+   Same mint-on-deep-teal palette as the rest of FloodGuard; glass cards stay flat.
+   The cards always fit the panel: RiverStationInspector sizes them, so nothing scrolls. */
+@property --console-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
 .station-console {
   --console-ink: #f2fffc;
   --console-text: #dffefa;
   --console-muted: #9fbfc0;
   --console-label: #93d3cb;
-  --console-line: rgba(125, 232, 219, .24);
+  --console-line: rgba(125, 232, 219, .22);
+  --console-edge: rgba(170, 240, 230, .16);
   --console-accent: #50f5d0;
   --console-calm: #50f5d0;
   --console-watch: #ffd02f;
@@ -13,58 +17,93 @@
   --console-danger: #ff4d61;
   color: var(--console-text);
 }
-
-/* Header: eyebrow, station name, basin line and the flood-category pill. */
-.station-console .console-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.station-console .console-eyebrow { display: block; color: var(--console-label); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.station-console h3 { margin: 3px 0 2px; color: var(--console-ink); font-size: 22px; letter-spacing: -.01em; }
+/* Header: eyebrow, station name, basin line, the flood-category pill, refresh and close,
+   on its own strip of glass so it reads over bright terrain. */
+.station-console .console-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 10px 7px 16px;
+  border: 1px solid var(--console-edge); border-radius: 12px; background: linear-gradient(160deg, rgba(10, 38, 42, .74), rgba(3, 15, 18, .82));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 10px 30px rgba(0, 0, 0, .28); backdrop-filter: blur(14px) saturate(150%);
+  animation: console-slide 520ms cubic-bezier(.2, .8, .2, 1) both; }
+.station-console .console-eyebrow { display: block; color: var(--console-label); font-size: 9px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.station-console h3 { margin: 2px 0 1px; font-size: 22px; line-height: 1.15; letter-spacing: -.015em; color: var(--console-ink);
+  background: linear-gradient(92deg, #ffffff 0%, #d9fff7 45%, #7ff5dc 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .45)); }
 .station-console .console-subtitle { margin: 0; color: #a7c9c5; font-size: 11px; line-height: 1.4; }
-.station-console .console-header-side { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.station-console .console-status { padding: 5px 11px; border: 1px solid currentColor; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; white-space: nowrap;
-  animation: console-status-in 900ms cubic-bezier(.2, .8, .2, 1) 120ms both; }
+.station-console .console-header-side { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.station-console .console-status { margin-right: 4px; padding: 5px 12px; border: 1px solid currentColor; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; white-space: nowrap;
+  backdrop-filter: blur(8px); animation: console-status-in 900ms cubic-bezier(.2, .8, .2, 1) 120ms both; }
 .station-console .console-status[data-tone="calm"] { color: var(--console-calm); background: rgba(80, 245, 208, .1); box-shadow: 0 0 18px rgba(80, 245, 208, .18); }
 .station-console .console-status[data-tone="watch"] { color: var(--console-watch); background: rgba(255, 208, 47, .1); box-shadow: 0 0 18px rgba(255, 208, 47, .2); }
 .station-console .console-status[data-tone="warning"] { color: var(--console-warning); background: rgba(255, 154, 61, .12); box-shadow: 0 0 18px rgba(255, 154, 61, .22); }
 .station-console .console-status[data-tone="danger"] { color: var(--console-danger); background: rgba(255, 77, 97, .14); box-shadow: 0 0 22px rgba(255, 77, 97, .3); }
 .station-console .console-status[data-tone="neutral"] { color: #c8dfdd; background: rgba(200, 223, 221, .08); }
+.station-console .console-header-side button { border-radius: 50%; transition: background 160ms, color 160ms, transform 160ms; }
+.station-console .console-header-side button:hover:not(:disabled) { background: rgba(80, 245, 208, .14); color: #ffffff; }
+.station-console .console-refresh:hover:not(:disabled) svg { transform: rotate(60deg); }
+.station-console .console-refresh svg { transition: transform 300ms ease; }
+.station-console .console-refresh:disabled { opacity: .7; }
 
-/* Scrolling body, so no card is ever clipped. */
-.station-console .console-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin-right: -6px; padding: 2px 6px 6px 0; scrollbar-width: thin; }
+/* When the readings were stored, on the same line as the tabs. */
+.station-console .station-details-tabs { align-items: center; margin: 6px 2px 8px; border-bottom-color: rgba(170, 240, 230, .14); text-shadow: 0 1px 6px rgba(0, 0, 0, .7);
+  animation: console-slide 520ms cubic-bezier(.2, .8, .2, 1) 40ms both; }
+.station-console .console-stored { min-width: 0; margin-left: auto; overflow: hidden; color: var(--console-muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Six-column grid: hero full width, three reading cards, two lists, station card, drawer. */
+/* Card area. It never shows a scrollbar: the cards are fitted to this height. */
+.station-console .console-body { flex: 1 1 auto; min-height: 0; overflow: hidden auto; overscroll-behavior: contain; padding: 2px 1px 0; scrollbar-width: none; }
+.station-console .console-body::-webkit-scrollbar { display: none; }
+
+/* Six-column grid: hero full width, three reading cards, two lists, station strip. */
 .station-console .console-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.station-console .console-grid[data-page="1"] > [data-on-page="2"], .station-console .console-grid[data-page="2"] > [data-on-page="1"] { display: none; }
 .station-console .console-card {
-  position: relative; grid-column: span 6; min-width: 0; padding: 11px 12px;
-  border: 1px solid var(--console-line); border-radius: 10px;
-  background: linear-gradient(150deg, rgba(16, 54, 58, .74), rgba(4, 20, 24, .82));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 10px 26px rgba(0, 0, 0, .22);
-  backdrop-filter: blur(12px) saturate(140%);
-  animation: console-rise 560ms cubic-bezier(.2, .8, .2, 1) var(--rise-delay, 0ms) both;
+  position: relative; grid-column: span 6; min-width: 0; padding: 11px 14px 10px 16px;
+  border: 1px solid var(--console-edge); border-radius: 12px;
+  background: linear-gradient(160deg, rgba(10, 38, 42, .72), rgba(3, 15, 18, .8));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 10px 30px rgba(0, 0, 0, .28);
+  backdrop-filter: blur(14px) saturate(150%);
+  transition: border-color 220ms ease, box-shadow 220ms ease, translate 220ms ease;
+  /* Each ticket slides in from the right, one after another. */
+  animation: console-slide 620ms cubic-bezier(.2, .8, .2, 1) var(--rise-delay, 0ms) both;
 }
-/* A thin light along each card's top edge, like the rim of a glass panel. */
-.station-console .console-card::before { position: absolute; inset: 0 12px auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(125, 232, 219, .55), transparent); content: ""; }
+.station-console .console-card:hover { border-color: rgba(125, 232, 219, .42); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 14px 34px rgba(0, 0, 0, .32), 0 0 20px rgba(80, 245, 208, .08); translate: 0 -1px; }
+/* A slim accent down the left edge of each ticket. */
+.station-console .console-card::before { position: absolute; inset: 12px auto 12px 0; width: 2px; border-radius: 0 2px 2px 0; background: linear-gradient(180deg, var(--console-accent), rgba(80, 245, 208, .12)); opacity: .85; content: ""; }
+/* One sweep of light across each card, right to left, as it settles. */
+.station-console .console-card::after { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; content: "";
+  background: linear-gradient(105deg, transparent 46%, rgba(200, 255, 245, .1) 50%, transparent 54%) 0% 0 / 300% 100% no-repeat;
+  animation: console-sheen 1200ms ease-out calc(var(--rise-delay, 0ms) + 420ms) both; }
 .station-console .console-kpi { display: flex; flex-direction: column; gap: 3px; grid-column: span 2; }
 .station-console .console-list { grid-column: span 3; }
 
-.station-console .console-label { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; color: var(--console-label); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.station-console .console-value { display: block; color: var(--console-ink); font-size: 18px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.station-console .console-value-hero { margin: 4px 0 7px; font-size: 30px; letter-spacing: -.01em; text-shadow: 0 0 22px rgba(80, 245, 208, .22); }
+.station-console .console-label { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; color: var(--console-label); font-size: 9px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+.station-console .console-label > svg { flex-shrink: 0; color: var(--console-accent); opacity: .9; }
+.station-console .console-value { display: block; color: var(--console-ink); font-size: 20px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .station-console small, .station-console .console-time { color: var(--console-muted); font-size: 10px; line-height: 1.4; }
-.station-console .console-subline { color: #a7c9c5; font-size: 10px; line-height: 1.45; }
+.station-console .console-subline { color: #a7c9c5; font-size: 10px; line-height: 1.4; }
 .station-console .console-subline b { color: #e6fffa; font-weight: 600; }
-.station-console .river-data-source { display: block; color: #7fa9a6; font-size: 9px; line-height: 1.4; }
+.station-console .river-data-source { display: block; overflow: hidden; color: #7fa9a6; font-size: 9px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
 .station-console .river-data-source a { color: #7fe8d3; }
+.station-console .console-kpi > .river-data-source:first-of-type { margin-top: auto; padding-top: 3px; }
 .station-console .console-empty, .station-console .console-note { margin: 4px 0; color: #a7c9c5; font-size: 10px; }
 
 /* Live indicator with a soft pulse. */
 .station-console .console-live { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; color: var(--console-accent); font-size: 9px; letter-spacing: .1em; }
 .station-console .console-live i { width: 6px; height: 6px; border-radius: 50%; background: var(--console-accent); animation: console-pulse 2.2s ease-out infinite; }
 
-/* Hero: the current discharge beside its hydrograph. */
-.station-console .console-hero { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.35fr); align-items: start; gap: 14px; }
+/* Hero: the current discharge beside its hydrograph, with a light travelling round its border. */
+.station-console .console-hero { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.35fr); align-items: start; gap: 18px; padding: 13px 14px 11px 16px;
+  background:
+    radial-gradient(80% 110% at 0% 0%, rgba(80, 245, 208, .1), transparent 60%),
+    linear-gradient(160deg, rgba(11, 42, 46, .76), rgba(3, 15, 18, .84)); }
+.station-console .console-hero::after { inset: -1px; padding: 1px; background: conic-gradient(from var(--console-angle), transparent 0 70%, rgba(80, 245, 208, .7) 84%, rgba(234, 255, 251, .85) 87%, transparent 94%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: console-orbit 7s linear infinite; }
 .station-console .console-hero-reading { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.station-console .console-trend { display: inline-flex; align-items: center; gap: 4px; width: fit-content; margin-bottom: 4px; padding: 3px 9px; border: 1px solid var(--console-line); border-radius: 999px;
-  background: rgba(255, 255, 255, .04); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.station-console .console-value-hero { margin: 4px 0 7px; font-size: 32px; font-weight: 650; letter-spacing: -.02em;
+  background: linear-gradient(180deg, #ffffff 20%, #a8fbe9 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 16px rgba(80, 245, 208, .3)); }
+.station-console .console-trend { display: inline-flex; align-items: center; gap: 4px; width: fit-content; margin-bottom: 4px; padding: 3px 10px; border: 1px solid var(--console-line); border-radius: 999px;
+  background: rgba(255, 255, 255, .05); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; animation: console-pop 520ms cubic-bezier(.2, .9, .3, 1.2) 420ms both; }
 .station-console .console-trend small { margin-left: 4px; font-weight: 500; }
 .station-console .console-trend[data-direction="falling"] { color: #7dffe0; }
 .station-console .console-trend[data-direction="rising"] { color: #ffd76a; border-color: rgba(255, 215, 106, .35); }
@@ -75,52 +114,61 @@
 .station-console .console-hero-chart .source-chart-context, .station-console .console-hero-chart .source-chart-axis-title,
 .station-console .console-hero-chart .source-chart-date-title { display: none; }
 .station-console .console-hero-chart .source-chart-area { grid-template-columns: 36px minmax(0, 1fr); gap: 4px; }
-.station-console .console-hero-chart .source-forecast-chart, .station-console .console-hero-chart .source-chart-axis { height: 96px; }
-.station-console .console-hero-chart .source-forecast-chart { background: rgba(2, 16, 18, .5); border-color: rgba(125, 232, 219, .18); border-radius: 6px; }
+.station-console .console-hero-chart .source-forecast-chart, .station-console .console-hero-chart .source-chart-axis { height: var(--chart-height, 100px); }
+/* The hydrograph draws itself in from the left. */
+.station-console .console-hero-chart .source-forecast-chart { background: rgba(2, 16, 18, .5); border-color: rgba(125, 232, 219, .18); border-radius: 8px;
+  animation: console-wipe 1100ms cubic-bezier(.3, .7, .2, 1) 380ms both; }
 .station-console .console-hero-chart .source-chart-dates { height: 14px; margin-top: 3px; font-size: 8px; }
 .station-console .console-hero-chart .source-chart-empty { min-height: 60px; font-size: 9px; }
 
 /* Rainfall: one small bar chart instead of a ticket per day (observed bars softer than forecast). */
-.station-console .console-rain-bars { display: flex; align-items: flex-end; gap: 3px; height: 46px; margin: 8px 0 16px; padding: 0; background: none; border: 0; }
+.station-console .console-rain-bars { display: flex; align-items: flex-end; gap: 3px; height: 40px; margin: 6px 0 15px; padding: 0; background: none; border: 0; }
 .station-console .console-rain-bars > div { position: relative; display: flex; flex: 1; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; min-height: 0; padding: 0; background: none; border: 0; }
-.station-console .console-rain-bars i { width: 100%; max-width: 12px; height: var(--bar); border-radius: 3px 3px 1px 1px; background: linear-gradient(180deg, #50f5d0, rgba(80, 245, 208, .3));
+.station-console .console-rain-bars i { width: 100%; max-width: 12px; height: var(--bar); border-radius: 3px 3px 1px 1px; background: linear-gradient(180deg, #50f5d0, rgba(80, 245, 208, .3)); box-shadow: 0 0 8px rgba(80, 245, 208, .25);
   transform-origin: bottom; animation: console-bar 640ms cubic-bezier(.2, .8, .2, 1) var(--bar-delay, 0ms) both; }
-.station-console .console-rain-bars > div[data-phase="observed"] i { background: linear-gradient(180deg, rgba(159, 210, 204, .85), rgba(159, 210, 204, .25)); }
+.station-console .console-rain-bars > div[data-phase="observed"] i { background: linear-gradient(180deg, rgba(159, 210, 204, .85), rgba(159, 210, 204, .25)); box-shadow: none; }
 .station-console .console-rain-bars small { position: absolute; bottom: -14px; color: #7fa9a6; font-size: 8px; }
 
-/* Lists: one row per signal, gauge or model, with a status dot. */
-.station-console .console-list ul { display: grid; margin: 0 0 4px; padding: 0; list-style: none; }
-.station-console .console-list li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 6px 1px;
-  border-bottom: 1px solid rgba(125, 232, 219, .1); animation: console-row 420ms ease-out var(--row-delay, 0ms) both; }
+/* Lists: one row per signal, gauge or model, with a status dot (and a probability meter for signals). */
+.station-console .console-list ul { display: grid; margin: 0 0 3px; padding: 0; list-style: none; }
+.station-console .console-list li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 2px 8px; padding: 4px 1px;
+  border-bottom: 1px solid rgba(125, 232, 219, .1); animation: console-row 460ms cubic-bezier(.2, .8, .2, 1) var(--row-delay, 0ms) both; }
 .station-console .console-list li:last-child { border-bottom: 0; }
 .station-console .console-list li strong { display: block; color: #eafffb; font-size: 11px; }
 .station-console .console-list li small { display: block; font-size: 9px; }
-.station-console .console-list li b { color: #c8dfdd; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-align: right; font-variant-numeric: tabular-nums; }
+.station-console .console-list li b { padding: 2px 7px; border-radius: 999px; background: rgba(255, 255, 255, .05); color: #c8dfdd; font-size: 9px; font-weight: 700; letter-spacing: .05em; text-align: right; font-variant-numeric: tabular-nums; }
 .station-console .console-dot { width: 8px; height: 8px; border-radius: 50%; background: #9fbfc0; box-shadow: 0 0 0 3px rgba(159, 191, 192, .12); }
 .station-console [data-tone="calm"].console-dot { background: var(--console-calm); box-shadow: 0 0 0 3px rgba(80, 245, 208, .14), 0 0 10px rgba(80, 245, 208, .5); }
 .station-console [data-tone="watch"].console-dot { background: var(--console-watch); box-shadow: 0 0 0 3px rgba(255, 208, 47, .16), 0 0 10px rgba(255, 208, 47, .5); }
 .station-console [data-tone="warning"].console-dot { background: var(--console-warning); box-shadow: 0 0 0 3px rgba(255, 154, 61, .16), 0 0 10px rgba(255, 154, 61, .5); }
 .station-console [data-tone="danger"].console-dot { background: var(--console-danger); box-shadow: 0 0 0 3px rgba(255, 77, 97, .18), 0 0 12px rgba(255, 77, 97, .6); }
 .station-console [data-tone="muted"].console-dot { background: #5d7776; box-shadow: none; }
-.station-console .console-list b[data-tone="calm"] { color: var(--console-calm); }
-.station-console .console-list b[data-tone="watch"] { color: var(--console-watch); }
-.station-console .console-list b[data-tone="warning"] { color: var(--console-warning); }
-.station-console .console-list b[data-tone="danger"] { color: var(--console-danger); }
+.station-console .console-list b[data-tone="calm"] { color: var(--console-calm); background: rgba(80, 245, 208, .1); }
+.station-console .console-list b[data-tone="watch"] { color: var(--console-watch); background: rgba(255, 208, 47, .1); }
+.station-console .console-list b[data-tone="warning"] { color: var(--console-warning); background: rgba(255, 154, 61, .12); }
+.station-console .console-list b[data-tone="danger"] { color: var(--console-danger); background: rgba(255, 77, 97, .14); }
 .station-console .console-list b[data-tone="muted"] { color: #7f9998; }
+.station-console .console-meter { grid-column: 2 / -1; height: 3px; overflow: hidden; border-radius: 2px; background: rgba(125, 232, 219, .12); }
+.station-console .console-meter::after { display: block; width: var(--meter, 0%); height: 100%; border-radius: inherit; background: currentColor; box-shadow: 0 0 8px currentColor; content: "";
+  transform-origin: left; animation: console-meter 900ms cubic-bezier(.2, .8, .2, 1) calc(var(--row-delay, 0ms) + 160ms) both; }
+.station-console .console-meter { color: #9fbfc0; }
+.station-console .console-meter[data-tone="calm"] { color: var(--console-calm); }
+.station-console .console-meter[data-tone="watch"] { color: var(--console-watch); }
+.station-console .console-meter[data-tone="warning"] { color: var(--console-warning); }
+.station-console .console-meter[data-tone="danger"] { color: var(--console-danger); }
 
-/* Station card: identity facts beside the river network. */
-.station-console .console-station { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 4px 16px; }
-.station-console .console-station > .console-label, .station-console .console-about { grid-column: 1 / -1; }
-.station-console .console-facts { display: grid; gap: 7px; margin: 0; }
+/* Station strip: identity facts beside the river network, then the two detail sheets. */
+.station-console .console-station { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.1fr) auto; align-items: start; gap: 8px 16px; }
+.station-console .console-facts { display: grid; gap: 6px; margin: 0; }
 .station-console .console-facts div { display: grid; gap: 1px; }
 .station-console .console-facts dt { color: #8fbfb9; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
 .station-console .console-facts dd { margin: 0; color: #eafffb; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
 .station-console .console-network { display: grid; align-content: start; gap: 6px; min-width: 0; }
 .station-console .console-network .console-label { margin: 0; }
 .station-console .river-upstream-stations { display: flex; flex-wrap: wrap; gap: 5px; }
-.station-console .river-upstream-stations button { margin: 0; padding: 3px 9px; border: 1px solid rgba(125, 232, 219, .3); border-radius: 999px; background: rgba(80, 245, 208, .08);
-  color: #bff8ec; font-size: 10px; text-decoration: none; cursor: pointer; transition: background 160ms, border-color 160ms; }
-.station-console .river-upstream-stations button:hover { border-color: rgba(125, 232, 219, .6); background: rgba(80, 245, 208, .16); }
+.station-console .river-upstream-stations button { margin: 0; padding: 3px 10px; border: 1px solid rgba(125, 232, 219, .3); border-radius: 999px; background: rgba(80, 245, 208, .08);
+  color: #bff8ec; font-size: 10px; text-decoration: none; cursor: pointer; transition: background 160ms, border-color 160ms, translate 160ms; }
+.station-console .river-upstream-stations button:hover { border-color: rgba(125, 232, 219, .65); background: rgba(80, 245, 208, .18); translate: 0 -1px; }
 .station-console details summary { display: flex; align-items: center; gap: 5px; color: #9fd2cc; font-size: 10px; font-weight: 600; list-style: none; cursor: pointer; }
 .station-console details summary::-webkit-details-marker { display: none; }
 .station-console details summary svg { transition: transform 200ms ease; }
@@ -129,44 +177,75 @@
 .station-console .console-chain li:not(:last-child)::after { margin-left: 6px; color: #6f9896; content: "›"; }
 .station-console .console-chain button { padding: 0; background: none; border: 0; color: var(--console-accent); font-size: 10px; cursor: pointer; }
 .station-console .console-chain button[aria-current] { color: #ffffff; font-weight: 700; }
-.station-console .console-about { margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(125, 232, 219, .1); }
-.station-console .console-about p, .station-console .console-about li { margin: 6px 0 0; color: #b5cecb; font-size: 10px; line-height: 1.45; }
-.station-console .console-about ul { margin: 0; padding-left: 16px; }
+.station-console .console-actions { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+.station-console .console-actions button { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border: 1px solid rgba(125, 232, 219, .26); border-radius: 8px;
+  background: rgba(255, 255, 255, .04); color: #c9f3ec; font-size: 10px; font-weight: 600; cursor: pointer; transition: background 160ms, border-color 160ms, color 160ms; }
+.station-console .console-actions button:hover { border-color: rgba(125, 232, 219, .6); background: rgba(80, 245, 208, .14); color: #ffffff; }
+.station-console .console-actions svg { color: var(--console-accent); }
 
-/* Drawer with every model statistic, closed by default. */
-.station-console .console-more summary { justify-content: space-between; }
-.station-console .console-more summary .console-label { margin: 0; }
-.station-console .console-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 12px; margin: 10px 0 0; }
-.station-console .console-metrics div { min-width: 0; }
+/* Page switch, shown only when the panel is too short for every card at once. */
+.station-console .console-pager { display: flex; flex: 0 0 auto; justify-content: center; gap: 6px; padding-top: 8px; }
+.station-console .console-pager button { position: relative; overflow: hidden; padding: 4px 12px; border: 1px solid rgba(125, 232, 219, .24); border-radius: 999px; background: rgba(4, 20, 24, .6);
+  color: #a7c9c5; font-size: 10px; font-weight: 600; cursor: pointer; backdrop-filter: blur(8px); transition: color 160ms, border-color 160ms, background 160ms; }
+.station-console .console-pager button[aria-pressed="true"] { border-color: rgba(125, 232, 219, .6); background: rgba(80, 245, 208, .14); color: #ffffff; }
+/* The active page's pill fills while its turn runs. */
+.station-console .console-pager button[aria-pressed="true"]::after { position: absolute; inset: auto 0 0; height: 2px; background: var(--console-accent); content: ""; transform-origin: left; animation: console-meter 5s linear both; }
+.station-console:hover .console-pager button::after, .station-console:focus-within .console-pager button::after { animation-play-state: paused; }
+
+/* Detail sheet: slides up over the cards for the long reads. */
+.station-console .console-sheet { position: absolute; z-index: 2; inset: auto 14px 14px; display: flex; flex-direction: column; max-height: calc(100% - 150px); padding: 12px 14px;
+  border: 1px solid rgba(125, 232, 219, .4); border-radius: 14px; background: linear-gradient(160deg, rgba(14, 50, 54, .97), rgba(3, 16, 19, .98));
+  box-shadow: 0 -18px 50px rgba(0, 0, 0, .5), 0 0 30px rgba(80, 245, 208, .1); backdrop-filter: blur(18px);
+  animation: console-sheet-in 420ms cubic-bezier(.2, .8, .2, 1) both; }
+.station-console .console-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(125, 232, 219, .14); }
+.station-console .console-sheet-head .console-label { margin: 0; }
+.station-console .console-sheet-head button { display: grid; width: 26px; height: 26px; place-items: center; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .06); color: #dffefa; cursor: pointer; }
+.station-console .console-sheet-head button:hover { background: rgba(80, 245, 208, .18); }
+.station-console .console-sheet-body { min-height: 0; overflow: hidden auto; padding-top: 8px; scrollbar-width: none; }
+.station-console .console-sheet-body::-webkit-scrollbar { display: none; }
+.station-console .console-about p, .station-console .console-about li { margin: 0 0 6px; color: #c4dcd9; font-size: 11px; line-height: 1.5; }
+.station-console .console-about ul { margin: 0; padding-left: 16px; }
+.station-console .console-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 0; }
+.station-console .console-metrics div { min-width: 0; padding: 6px 8px; border: 1px solid rgba(125, 232, 219, .12); border-radius: 8px; background: rgba(255, 255, 255, .03);
+  animation: console-row 380ms ease-out var(--row-delay, 0ms) both; }
 .station-console .console-metrics dt { color: #8fbfb9; font-size: 9px; overflow-wrap: anywhere; }
 .station-console .console-metrics dd { margin: 1px 0 0; color: #eafffb; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .station-console .console-model-note { margin: 8px 0 0; color: var(--console-muted); font-size: 9px; line-height: 1.45; }
 .station-console .console-model-note b { color: #c8dfdd; }
 
-.station-console .console-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(125, 232, 219, .16); }
-.station-console .console-footer span { color: var(--console-muted); font-size: 9px; }
 .station-console button:focus-visible, .station-console summary:focus-visible { outline: 2px solid #f8d96a; outline-offset: 2px; }
 
 /* With a station open, keep the terrain studio clear of the panel's header (as the map's home button moves),
    leaving room for that button. */
 .river-monitoring-layout.has-station .station-terrain-studio { right: calc(min(calc(42vw + clamp(40px, 5vw, 96px) + 24px), 740px) + 44px); }
 
-@keyframes console-rise { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
-@keyframes console-row { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+@keyframes console-slide { from { opacity: 0; transform: translateX(56px); filter: blur(5px); } 60% { filter: blur(0); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes console-sheen { from { background-position: 0% 0; } to { background-position: 100% 0; } }
+@keyframes console-orbit { to { --console-angle: 360deg; } }
+@keyframes console-wipe { from { clip-path: inset(0 100% 0 0 round 8px); } to { clip-path: inset(0 0 0 0 round 8px); } }
+@keyframes console-pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
+@keyframes console-row { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
 @keyframes console-bar { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes console-meter { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes console-pulse { 0% { box-shadow: 0 0 0 0 rgba(80, 245, 208, .55); } 70% { box-shadow: 0 0 0 7px rgba(80, 245, 208, 0); } 100% { box-shadow: 0 0 0 0 rgba(80, 245, 208, 0); } }
 @keyframes console-status-in { 0% { opacity: 0; transform: scale(.9); filter: brightness(1.7); } 60% { opacity: 1; transform: scale(1.03); } 100% { transform: none; filter: none; } }
+@keyframes console-sheet-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .station-console .console-card, .station-console .console-list li, .station-console .console-rain-bars i,
-  .station-console .console-status, .station-console .console-live i { animation: none; }
+  .station-console .console-header, .station-console .station-details-tabs, .station-console .console-card, .station-console .console-card::after, .station-console .console-list li,
+  .station-console .console-rain-bars i, .station-console .console-status, .station-console .console-live i, .station-console .console-trend,
+  .station-console .console-meter::after, .station-console .console-hero-chart .source-forecast-chart, .station-console .console-metrics div,
+  .station-console .console-sheet, .station-console .console-pager button::after { animation: none; }
+  .station-console .console-hero::after { display: none; }
 }
 
 @media (max-width: 700px) {
   .river-monitoring-layout.has-station .station-terrain-studio { right: 52px; }
-  .station-console .console-scroll { overflow: visible; margin-right: 0; padding-right: 0; }
+  .station-console .console-body { overflow: visible; padding: 0; }
+  .station-console .console-stored { display: none; }
   .station-console .console-grid { grid-template-columns: minmax(0, 1fr); }
   .station-console .console-card, .station-console .console-kpi, .station-console .console-list { grid-column: 1; }
   .station-console .console-hero, .station-console .console-station { grid-template-columns: minmax(0, 1fr); }
   .station-console .console-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .station-console .console-sheet { position: fixed; inset: auto 12px 12px; max-height: 70vh; }
 }

@@ -6,14 +6,19 @@ import { preloadTerrainTiles } from "./stationTerrainTiles";
 // camera lifts off and rises until the next station is in view, easing to a
 // flatter overview tilt and banking toward the direction of travel, then lands
 // in a tilted 3D view framing the station's whole catchment, facing the way it
-// arrived. While a stop is held the camera orbits slowly. Tiles for the next
-// hop are preloaded during the stop.
+// arrived. While a stop is held the camera tours it: a slow orbit that tilts and
+// drifts closer. Leaving, it pulls well back so both stations sit in a wide
+// overview before it travels. Tiles for the next hop are preloaded during the stop.
 
-/** `catchment` is the station's catchment bounding box [west, south, east, north]. */
-export interface TourStation { id: string; longitude: number; latitude: number; catchment?: [number, number, number, number] }
+/**
+ * `catchment` is the station's catchment bounding box [west, south, east, north].
+ * With `closeUp`, the stop goes on from the catchment view to a 3D view of the station itself.
+ */
+export interface TourStation { id: string; longitude: number; latitude: number; catchment?: [number, number, number, number]; closeUp?: boolean }
 
 const closeZoom = 10;     // stop zoom for a station without a known catchment
 const minStopZoom = 5.6, maxStopZoom = 9.6;
+const closeUpZoom = 11.4, closeUpPitch = 64;   // the 3D view of the station itself
 const cruisePitch = 30;   // tilt at the top of the arc, so the overview reads like a map
 const maxBank = 22;       // how far the camera turns toward the travel direction mid-flight
 const arrivalTurn = 20;   // landing bearing for a due east or west arrival
@@ -81,8 +86,29 @@ function overviewZoom(map: MapLibreMap, from: [number, number], to: [number, num
   const free = Math.max(160, Math.min(width - padding.left - padding.right, height - padding.top - padding.bottom));
   const [x0, y0] = mercator(...from), [x1, y1] = mercator(...to);
   const distance = Math.hypot(x1 - x0, y1 - y0) * 512;
-  const fit = distance > 0 ? Math.log2(0.42 * free / distance) : closeZoom;
-  return Math.min(closeZoom - 1.6, Math.max(4.8, fit));
+  const fit = distance > 0 ? Math.log2(0.3 * free / distance) : closeZoom;
+  return Math.min(closeZoom - 2.4, Math.max(4.3, fit));
+}
+
+/** Top-of-arc zoom for a hop: a wide overview, always well above both the view it leaves and the stop. */
+function hopApex(map: MapLibreMap, from: [number, number], to: [number, number], startZoom: number, stopZoom: number) {
+  return Math.max(3.6, Math.min(overviewZoom(map, from, to), Math.min(startZoom, stopZoom) - 0.9, Math.max(startZoom, stopZoom) - 1.7));
+}
+
+/**
+ * The flyTo `curve` whose arc peaks at zoom `apex`. flyTo's `minZoom` only caps
+ * how far a flight zooms out and never deepens it, so the rise to the overview
+ * is set through the curve (a higher curve zooms out further) and `minZoom`
+ * stays as the cap.
+ */
+function flightCurve(map: MapLibreMap, from: [number, number], to: [number, number], startZoom: number, stopZoom: number, apex: number) {
+  const { clientWidth: width, clientHeight: height } = map.getContainer();
+  const [x0, y0] = mercator(...from), [x1, y1] = mercator(...to);
+  // Path length in screen spans at the starting zoom.
+  const path = Math.hypot(x1 - x0, y1 - y0) * 512 * 2 ** startZoom / Math.max(width, height, 1);
+  const peak = 2 ** (startZoom - apex), end = 2 ** (startZoom - stopZoom);
+  if (path < 1e-6 || peak <= Math.max(1, end)) return 1.42;
+  return Math.max(1.42, Math.sqrt((Math.sqrt(peak * peak - 1) + Math.sqrt(peak * peak - end * end)) / path));
 }
 
 /** Runs one camera move; resolves false if something else (user, another move) interrupted it. */
@@ -110,9 +136,9 @@ function cameraStep(map: MapLibreMap, step: FlyToOptions & { center: [number, nu
 async function cinematicFlight(map: MapLibreMap, stop: ReturnType<typeof stopCamera>) {
   const here = map.getCenter().toArray() as [number, number];
   const startZoom = map.getZoom(), startPitch = map.getPitch(), startBearing = map.getBearing();
-  const apex = Math.min(overviewZoom(map, here, stop.center), Math.max(startZoom, stop.zoom) - 1.2);
+  const apex = hopApex(map, here, stop.center, startZoom, stop.zoom);
   const climb = Math.max(0, startZoom - apex) + Math.max(0, stop.zoom - apex);
-  const duration = clamp(2600 + climb * 420, 4000, 8000);
+  const duration = clamp(2600 + climb * 420, 4500, 9000);
   const turn = wrap(stop.bearing - startBearing);
   const direction = travelHeading(here, stop.center);
   const bank = direction === null ? 0 : clamp(wrap(direction - (startBearing + turn / 2)) * 0.35, -maxBank, maxBank);
@@ -123,21 +149,35 @@ async function cinematicFlight(map: MapLibreMap, stop: ReturnType<typeof stopCam
     return { pitch: startPitch + (stop.pitch - startPitch) * k - dip * arc, bearing: startBearing + turn * k + bank * arc };
   });
   try {
-    return await cameraStep(map, { ...stop, minZoom: apex, duration, easing: smootherstep }, true);
+    return await cameraStep(map, { ...stop, curve: flightCurve(map, here, stop.center, startZoom, stop.zoom, apex), minZoom: apex, duration, easing: smootherstep }, true);
   } finally {
     map.setTransformCameraUpdate(null);
   }
 }
 
-/** A slow drone orbit while a stop is held; skipped when the viewer prefers reduced motion. */
+/** A slow drone pass while a stop is held: it orbits, tilts and drifts closer. Skipped when the viewer prefers reduced motion. */
 function holdOrbit(map: MapLibreMap, stop: ReturnType<typeof stopCamera>) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  map.easeTo({ bearing: stop.bearing + Math.sign(stop.bearing || 1) * 8, zoom: stop.zoom + 0.12, duration: 9500, easing: easeInOutSine, essential: true });
+  map.easeTo({ bearing: stop.bearing + Math.sign(stop.bearing || 1) * 16, pitch: stop.pitch + 4, zoom: stop.zoom + 0.2,
+    duration: 9500, easing: easeInOutSine, essential: true });
+}
+
+/**
+ * The station in 3D: after a short look at the whole catchment the camera
+ * descends to the station, tilted steeply so the terrain around it stands up,
+ * and circles it until the tour moves on.
+ */
+async function stationCloseUp(map: MapLibreMap, station: TourStation, stop: ReturnType<typeof stopCamera>, isCurrent: () => boolean) {
+  const side = Math.sign(stop.bearing || 1), point: [number, number] = [station.longitude, station.latitude];
+  const view = { center: stop.center, padding: stop.padding };
+  if (!await cameraStep(map, { ...view, zoom: stop.zoom + 0.06, pitch: stop.pitch, bearing: stop.bearing + side * 4, duration: 2000, easing: easeInOutSine }) || !isCurrent()) return;
+  if (!await cameraStep(map, { ...view, center: point, zoom: closeUpZoom, pitch: closeUpPitch, bearing: stop.bearing + side * 26, duration: 3400, easing: smootherstep }) || !isCurrent()) return;
+  map.easeTo({ bearing: stop.bearing + side * 58, zoom: closeUpZoom + 0.2, duration: 7000, easing: easeInOutSine, essential: true });
 }
 
 /**
  * Flies the camera to a monitoring stop from wherever it is, then starts the
- * hold orbit. Stops early once `isCurrent()` turns false; resolves true when
+ * hold orbit (or, for a close-up station, the descent to its 3D view). Stops early once `isCurrent()` turns false; resolves true when
  * the camera actually landed at the stop.
  */
 export async function runMonitoringHop(map: MapLibreMap, station: TourStation, isCurrent: () => boolean) {
@@ -145,7 +185,8 @@ export async function runMonitoringHop(map: MapLibreMap, station: TourStation, i
   const landed = await cinematicFlight(map, stop) && isCurrent();
   if (landed) {
     measureStopFootprint(map);
-    holdOrbit(map, stop);
+    if (station.closeUp && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) void stationCloseUp(map, station, stop, isCurrent);
+    else holdOrbit(map, stop);
   }
   return landed;
 }
@@ -254,11 +295,17 @@ function stopTiles(stop: ReturnType<typeof stopCamera>, target: [number, number]
 export function preloadMonitoringHop(map: MapLibreMap, from: TourStation | null, to: TourStation) {
   const { previous, stop, target } = plannedStop(map, from, to);
   const tiles = stopTiles(stop, target);
+  if (to.closeUp) {
+    // The 3D view of the station itself, which follows the catchment view.
+    const point = mercator(to.longitude, to.latitude), z = Math.floor(closeUpZoom);
+    tiles.terrain.push(...tilesAround(point, z - 1, 1), ...tilesAround(point, z, 2));
+    tiles.detail.push(...tilesAround(point, z, 2), ...tilesAround(point, z + 1, 3));
+  }
   const stopTerrain = byDistance(tiles.terrain, target), stopDetail = byDistance(tiles.detail, target);
   const overviewTerrain: string[] = [], overviewDetail: string[] = [], descentTerrain: string[] = [], descentDetail: string[] = [];
   if (previous) {
     // Same top-of-arc zoom the flight will use.
-    const zoom = Math.min(overviewZoom(map, previous.center, stop.center), Math.max(previous.zoom, stop.zoom) - 1.2);
+    const zoom = hopApex(map, previous.center, stop.center, previous.zoom, stop.zoom);
     const start = mercator(...previous.center);
     const { clientWidth: width, clientHeight: height } = map.getContainer();
     const margin = Math.max(width, height) / 2 / (512 * 2 ** zoom);

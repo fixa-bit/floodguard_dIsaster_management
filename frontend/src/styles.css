@@ -2039,7 +2039,7 @@ body { color: var(--ink); background: #071114; }
 .river-panel-error { color: #a51f32; font-size: 11px; }
 .river-monitoring-layout .map-workspace { min-width: 0; }
 .river-station-inspector { position: absolute; z-index: 6; top: 12px; right: clamp(40px, 5vw, 96px); bottom: 12px; display: flex; flex-direction: column; width: min(620px, 42vw); min-width: 0; padding: 14px; color: #dffefa; background: transparent; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none; max-height: calc(100vh - 24px); overflow: hidden; }
-.overview-command-canvas .river-station-inspector { max-height: calc(100vh - 24px); padding-top: 78px; padding-bottom: 12px; }
+.overview-command-canvas .river-station-inspector { max-height: calc(100vh - 24px); padding-top: var(--console-top, 78px); padding-bottom: var(--console-bottom, 12px); }
 .river-station-inspector #station-details-panel { flex: 1 1 auto; min-height: 0; }
 .river-station-inspector > footer { flex: 0 0 auto; margin-top: auto; padding-top: 6px; font-size: 9px; }
 .river-station-inspector .station-details-tabs { margin: 2px 0 8px; }
