@@ -6,7 +6,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePopulationLayers } from './usePopulationLayers';
 import { useMapBasemap, type MapBasemap } from "./useMapBasemap";
 import { StationTerrainStudio } from "./StationTerrainStudio";
-import { endMonitoringTour, monitoringTourTiles, preloadMonitoringHop, prepareMonitoringTour, setTourRivers, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
+import { TourRouteRail } from "./TourRouteRail";
+import { endMonitoringTour, monitoringTourTiles, preloadMonitoringHop, prepareMonitoringTour, setTourRivers, setTourSequence, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
 import { cachedImageryTiles, imageryAttribution, imageryBackdropMaxZoom } from "./imageryTiles";
 import {
   activeCatchmentCasingPaint, activeCatchmentFillPaint, activeCatchmentGlowPaint, activeCatchmentLabel, activeCatchmentLinePaint,
@@ -685,23 +686,34 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
 
   const rotationStationsRef = useRef(rotationStations);
   rotationStationsRef.current = rotationStations;
-  // Monitoring stops frame the station's whole catchment, so the tour needs each catchment's bounds.
+  // The tour goes catchment by catchment, opening each with a view of the whole catchment, so it needs each station's catchment.
   const stationCatchments = useMemo(() => new Map((monitoring?.stations ?? []).flatMap((station) => {
     const catchment = catchmentMapData.features.find((feature) => booleanPointInPolygon([station.longitude, station.latitude], feature));
-    return catchment ? [[station.id, bbox(catchment) as [number, number, number, number]] as const] : [];
+    return catchment ? [[station.id, { id: String(catchment.properties?.basin_id ?? ""), name: String(catchment.properties?.name ?? ""), bounds: bbox(catchment) as [number, number, number, number] }] as const] : [];
   })), [monitoring?.stations]);
   const stationCatchmentsRef = useRef(stationCatchments);
   stationCatchmentsRef.current = stationCatchments;
   // The 3D tour shows every station itself, close up in 3D; the 2D tour frames each station's catchment.
-  const toTourStation = (station: { id: string; longitude: number; latitude: number }) =>
-    ({ id: station.id, longitude: station.longitude, latitude: station.latitude, catchment: stationCatchmentsRef.current.get(station.id),
-      closeUp: true, flat: monitoringViewRef.current === "2d" });
+  const toTourStation = (station: { id: string; longitude: number; latitude: number }) => {
+    const catchment = stationCatchmentsRef.current.get(station.id);
+    return { id: station.id, longitude: station.longitude, latitude: station.latitude, catchment: catchment?.bounds, catchmentId: catchment?.id || undefined,
+      closeUp: true, flat: monitoringViewRef.current === "2d" };
+  };
+  // The tour plans each landing to face the way it will leave, so it needs the whole order.
+  useEffect(() => { setTourSequence(rotationStations.map(toTourStation)); }, [rotationStations, stationCatchments, monitoringView]);
   // Station polling replaces the array every refresh; only a change in the stations themselves restarts the tour timing.
   const rotationKey = rotationStations.map((station) => station.id).join("|");
   const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
+  // While the camera shows a catchment's establishing shot, the route rail lights the catchment up.
+  const [tourShowingCatchment, setTourShowingCatchment] = useState(false);
+  const tourRailStations = useMemo(() => rotationStations.map((station) => {
+    const catchment = stationCatchments.get(station.id);
+    return { id: station.id, name: station.name, catchmentId: catchment?.id || undefined, catchmentName: catchment?.name };
+  }), [rotationStations, stationCatchments]);
   useEffect(() => {
     if (stationRotationEnabled) return;
     setMonitoringArrival(null);
+    setTourShowingCatchment(false);
     // The tour held the imagery back to what was loaded; outside it the map loads freely again.
     if (stationMapInstance) endMonitoringTour(stationMapInstance);
   }, [stationRotationEnabled, stationMapInstance]);
@@ -749,7 +761,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         if (!hop) void preloadMonitoringHop(map, null, toTourStation(station));
         // A flight cut short (a drag, a resize) still counts as arriving: the
         // station's stats appear and the hold timer runs, so the tour never stalls.
-        void runMonitoringHop(map, toTourStation(station), () => current).catch((error) => { console.error("Monitoring hop failed", error); return false; }).then(() => {
+        void runMonitoringHop(map, toTourStation(station), () => current, (showing) => { if (current) setTourShowingCatchment(showing); }).catch((error) => { console.error("Monitoring hop failed", error); return false; }).then(() => {
           if (!current || mapRef.current !== map || selectedStationIdRef.current !== station.id) return;
           setMonitoringArrival(station.id);
           setStationTicketArrival({ stationId: station.id, map });
@@ -1948,6 +1960,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         <output ref={coordinateReadoutRef} className="map-coordinate-readout" aria-label="Map cursor coordinates" aria-live="off" hidden />
         {mapOverlay && <div className="map-command-overlay">{mapOverlay}</div>}
         <StationTerrainStudio mapRef={mapRef} selectedStationId={selectedStationId} onSelectStation={selectStation} onEnter={()=>{setMapControlsOpen(false);setLayers(current=>({...current,water:true}));}} monitoring={stationRotationEnabled && monitoringView === "3d"}/>
+        {stationRotationEnabled && <TourRouteRail stations={tourRailStations} currentId={selectedStationId}
+          arrived={monitoringArrival === selectedStationId} showingCatchment={tourShowingCatchment} />}
         <div className="map-layer-control">
           <button className="map-layer-toggle" data-tour-target="gis-map-layers-toggle" type="button" aria-label="Toggle map layers" title="Map layers" aria-expanded={mapControlsOpen} onClick={() => setMapControlsOpen((current) => !current)}><Layers3 size={14} /><span>Map layers</span>{mapControlsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</button>
           {coordinatePicking && <div className="coordinate-pick-status"><span role="status"><MousePointer2 size={14} /> Coordinate selection</span><button type="button" title="Cancel coordinate selection" aria-label="Cancel coordinate selection" onClick={() => setPickingMode(false)}><X size={14} /></button></div>}

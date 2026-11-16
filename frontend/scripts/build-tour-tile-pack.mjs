@@ -8,12 +8,13 @@
 //     hold, each flight between stops at every level of detail, the first flight
 //     in from the overview, and the coarse backdrop. Writes public/station-imagery/plan.json.
 //
-//   node scripts/build-tour-tile-pack.mjs [--dry-run]
+//   node scripts/build-tour-tile-pack.mjs [--dry-run] [--prune]
 //     Downloads the planned tiles that are missing: Sentinel-2 cloudless imagery
 //     (EOX, CC BY 4.0) into public/station-imagery, Terrarium elevation into
-//     public/station-terrain. Existing tiles are never downloaded again.
+//     public/station-terrain. Existing tiles are never downloaded again. With
+//     --prune, imagery tiles the plan no longer uses are deleted.
 import { createHash } from "node:crypto";
-import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -33,6 +34,11 @@ const argument = (name, fallback) => {
   return index >= 0 && process.argv[index + 1] ? process.argv[index + 1] : fallback;
 };
 const exists = (path) => access(path).then(() => true, () => false);
+/** Every file under `root`, as full paths. */
+async function listFiles(root) {
+  const entries = await readdir(root, { withFileTypes: true, recursive: true });
+  return entries.filter((entry) => entry.isFile()).map((entry) => join(entry.parentPath ?? entry.path, entry.name));
+}
 const byTile = (a, b) => {
   const [az, ax, ay] = a.split("/").map(Number), [bz, bx, by] = b.split("/").map(Number);
   return az - bz || ax - bx || ay - by;
@@ -172,6 +178,16 @@ async function build() {
   }, "imagery");
   const present = [];
   for (const key of planned.imagery) if (await exists(imageryFile(key))) present.push(key);
+  if (process.argv.includes("--prune")) {
+    // Imagery the tour no longer draws (the pack is the tour's alone; terrain is never pruned,
+    // as the station terrain studio uses it too).
+    const wanted = new Set(planned.imagery.map(imageryFile));
+    let pruned = 0;
+    for (const file of await listFiles(imageryRoot)) {
+      if (file.endsWith(".jpg") && !wanted.has(file)) { await rm(file); pruned++; }
+    }
+    console.log(`Pruned ${pruned} imagery tiles the tour no longer uses.`);
+  }
   await writeFile(imageryManifestPath, `${JSON.stringify({
     source: `${imagerySource}/{z}/{y}/{x}.jpg`,
     credit: "Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017)",

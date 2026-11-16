@@ -1,0 +1,184 @@
+/* The monitoring tour's route: a small station rail beside the map controls. */
+.tour-route-rail {
+  --rail-mint: #50f5d0;
+  --rail-dim: rgba(196, 236, 228, .34);
+  --rail-x: 14px;   /* where the line runs, from the panel's left edge */
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  bottom: 60px;
+  left: 238px;
+  display: flex;
+  width: 148px;
+  max-height: max-content;
+  flex-direction: column;
+  padding: 8px 8px 6px 0;
+  border: 1px solid rgba(125, 232, 219, .22);
+  border-radius: 8px;
+  /* A plain tinted panel, no backdrop blur: blurring the moving 3D map behind it costs frames. */
+  background: rgba(6, 20, 23, .8);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .28);
+  color: #d7efea;
+  pointer-events: none;
+  /* Its own compositor layer, with layout and paint kept inside it, so the map
+     redrawing underneath every frame never makes the browser redo the rail. */
+  contain: layout paint style;
+  will-change: transform;
+  animation: tour-route-in .45s ease-out both;
+}
+.overview-command-canvas .tour-route-rail { top: 188px; bottom: 118px; }
+
+.tour-route-rail header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 2px 6px 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(125, 232, 219, .14);
+}
+.tour-route-rail header span { color: rgba(196, 236, 228, .7); font-size: 8.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.tour-route-rail header b { color: var(--rail-mint); font-size: 11px; font-variant-numeric: tabular-nums; }
+.tour-route-rail header small { color: rgba(196, 236, 228, .55); font-size: 9px; font-weight: 600; }
+
+.tour-route-rail ol { margin: 0; padding: 0; list-style: none; }
+.tour-route-rail > ol { min-height: 0; overflow: hidden; padding-bottom: 2px; }
+
+/* Catchment heading: a small diamond on the line and the catchment's name. */
+.tour-route-catchment {
+  position: relative;
+  padding: 5px 0 2px 26px;
+  color: rgba(196, 236, 228, .42);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color .4s ease;
+}
+.tour-route-catchment::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: calc(var(--rail-x) - 3px);
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(196, 236, 228, .45);
+  background: rgba(6, 20, 23, .9);
+  transform: rotate(45deg);
+  transition: background .4s ease, border-color .4s ease, box-shadow .4s ease;
+}
+/* The stretch of line from the previous group down to this catchment's diamond. */
+.tour-route-catchment::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  height: 10px;
+  left: calc(var(--rail-x) - 1px);
+  width: 2px;
+  border-radius: 1px;
+  background: rgba(196, 236, 228, .16);
+  transition: background .5s ease;
+}
+.tour-route-group:first-child .tour-route-catchment::after { display: none; }
+.tour-route-group[data-reached] .tour-route-catchment::after { background: rgba(80, 245, 208, .55); }
+.tour-route-group[data-reached]:not([data-active]) .tour-route-catchment::before { border-color: rgba(80, 245, 208, .7); }
+.tour-route-group[data-active] .tour-route-catchment { color: rgba(196, 236, 228, .75); }
+.tour-route-catchment[data-showing] { color: var(--rail-mint); }
+.tour-route-catchment[data-showing]::before { border-color: var(--rail-mint); background: var(--rail-mint); box-shadow: 0 0 8px rgba(80, 245, 208, .8); }
+
+/* A station: its dot on the line, and its name. */
+.tour-route-stop {
+  position: relative;
+  display: flex;
+  min-height: 19px;
+  align-items: center;
+  padding-left: 26px;
+  color: var(--rail-dim);
+  font-size: 10px;
+  line-height: 1.15;
+  transition: color .4s ease;
+}
+.tour-route-stop span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The line: each station draws the stretch above it, so the line fills in up to the current station. */
+.tour-route-stop::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  bottom: 50%;
+  left: calc(var(--rail-x) - 1px);
+  width: 2px;
+  border-radius: 1px;
+  background: rgba(196, 236, 228, .16);
+  transition: background .5s ease;
+}
+.tour-route-stop i {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--rail-x) - 4px);
+  width: 8px;
+  height: 8px;
+  box-sizing: border-box;
+  border: 1.5px solid rgba(196, 236, 228, .4);
+  border-radius: 50%;
+  background: rgba(6, 20, 23, .95);
+  transform: translateY(-50%);
+  transition: background .4s ease, border-color .4s ease, box-shadow .4s ease, transform .4s ease;
+}
+.tour-route-stop[data-state="done"] { color: rgba(196, 236, 228, .6); }
+.tour-route-stop[data-state="done"]::before,
+.tour-route-stop[data-state="here"]::before,
+.tour-route-stop[data-state="approaching"]::before { background: rgba(80, 245, 208, .55); }
+.tour-route-stop[data-state="done"] i { border-color: rgba(80, 245, 208, .7); background: rgba(80, 245, 208, .55); }
+.tour-route-stop[data-state="here"],
+.tour-route-stop[data-state="approaching"] { color: #f2fffc; font-weight: 700; }
+.tour-route-stop[data-state="here"] i {
+  border-color: #eafff9;
+  background: var(--rail-mint);
+  box-shadow: 0 0 0 3px rgba(80, 245, 208, .22), 0 0 10px rgba(80, 245, 208, .85);
+  transform: translateY(-50%) scale(1.25);
+}
+.tour-route-stop[data-state="approaching"] i {
+  border-color: var(--rail-mint);
+  animation: tour-route-approach 1.4s ease-in-out infinite;
+}
+
+@keyframes tour-route-approach {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(80, 245, 208, .55); }
+  50% { box-shadow: 0 0 0 5px rgba(80, 245, 208, 0); }
+}
+@keyframes tour-route-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-route-rail, .tour-route-stop[data-state="approaching"] i { animation: none; }
+}
+/* Narrower screens leave little map between the controls and the station panel:
+   the rail becomes a slim column of dots, naming only the current station beside its dot. */
+@media (max-width: 1599px) {
+  .tour-route-rail { width: 30px; padding-right: 0; overflow: visible; }
+  .tour-route-rail header { justify-content: center; padding: 0 0 6px; }
+  .tour-route-rail header span { display: none; }
+  .tour-route-rail header b { font-size: 10px; }
+  .tour-route-rail header small { display: block; font-size: 8px; text-align: center; }
+  .tour-route-rail > ol { overflow: visible; mask-image: none; }
+  .tour-route-catchment { height: 9px; padding: 3px 0 0; font-size: 0; }
+  .tour-route-catchment::before { top: 4px; }
+  .tour-route-stop { min-height: 15px; }
+  .tour-route-stop span { display: none; }
+  .tour-route-stop[data-current] span {
+    position: absolute;
+    left: 26px;
+    display: block;
+    padding: 2px 7px;
+    border: 1px solid rgba(80, 245, 208, .35);
+    border-radius: 999px;
+    background: rgba(6, 20, 23, .86);
+    font-size: 10px;
+  }
+}
+/* No room beside the map controls on a phone-width screen. */
+@media (max-width: 760px) {
+  .tour-route-rail { display: none; }
+}
