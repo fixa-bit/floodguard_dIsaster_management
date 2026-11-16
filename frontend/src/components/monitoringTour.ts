@@ -37,7 +37,7 @@ export interface TourStation {
 // holds it for a few seconds with a slow drift, then descends to the first
 // station; it then moves from station to station within the catchment, along
 // the river where one links them, before rising to the next catchment.
-const catchmentHold = 6000;   // how long the establishing shot of a catchment is held, in ms
+const catchmentHold = 3500;   // how long the establishing shot of a catchment is held, in ms
 const orbitTurn = 14;         // how far the slow pass at a station turns, in degrees
 
 let sequence: TourStation[] = [];
@@ -266,7 +266,7 @@ const cameraView = (map: MapLibreMap): CameraView =>
 type TrackPoint = { point: MercatorPoint; zoom: number; pitch: number; bearing: number };
 type Track = { duration: number; cruiseZoom: number; at(progress: number): TrackPoint };
 const rampShare = 0.27;   // share of the flight spent speeding up, and again slowing down
-const cruiseScreenSpeed = 0.5;   // screen heights of ground per second while cruising: an unhurried glide
+const cruiseScreenSpeed = 0.7;   // screen heights of ground per second while cruising: an unhurried glide
 
 /** Share of the distance covered at time `u` (0 to 1): a smooth start, an even cruise, a smooth stop. */
 function travelled(u: number) {
@@ -288,13 +288,13 @@ function cameraTrack(map: MapLibreMap, start: CameraView, stop: StopCamera, rout
   const screens = (length: number, zoom: number) => length * 512 * 2 ** zoom / height;   // ground length in screen heights
   const cruiseShare = 1 - 2 * rampShare, cruiseDistanceShare = cruiseShare / (1 - rampShare);
   // Longer routes take longer, up to 20 s, and are flown higher so the ground still passes at an even pace.
-  let duration = clamp(6 + route.length / kilometres(1) * 0.014, 8, 20);
+  let duration = clamp(4.5 + route.length / kilometres(1) * 0.009, 6, 13);
   const lowest = Math.min(start.zoom, stop.zoom) - 0.5;
   let cruiseZoom = Math.log2(cruiseScreenSpeed * duration * cruiseShare / screens(route.length * cruiseDistanceShare, 0));
   if (cruiseZoom > lowest) {
     // A short hop at the lowest cruising height: shorten the flight to keep the pace.
     cruiseZoom = lowest;
-    duration = clamp(screens(route.length * cruiseDistanceShare, cruiseZoom) / (cruiseScreenSpeed * cruiseShare), 7, 20);
+    duration = clamp(screens(route.length * cruiseDistanceShare, cruiseZoom) / (cruiseScreenSpeed * cruiseShare), 5, 13);
   }
   cruiseZoom = Math.max(6.2, cruiseZoom);
   // The camera's path is the route smoothed at the scale of more than half a
@@ -357,7 +357,7 @@ function cameraTrack(map: MapLibreMap, start: CameraView, stop: StopCamera, rout
   };
 }
 
-const turnSmoothing = 1.3;   // seconds over which the camera's turns are smoothed
+const turnSmoothing = 1.0;   // seconds over which the camera's turns are smoothed
 
 /** Gaussian smoothing of a series with `sigma` (in samples), the window narrowing to nothing at both ends so the ends stay put. */
 function gaussian(values: number[], sigma: number) {
@@ -434,7 +434,7 @@ function flightPlan(map: MapLibreMap, start: CameraView, stop: StopCamera, groun
   const turn = wrap(stop.bearing - start.bearing);
   // Unhurried: about 0.6 s per zoom level climbed or descended, and long enough
   // that the camera never turns faster than about 15° a second.
-  const duration = clamp(Math.max(2400 + climb * 600 + reach * 2 ** apex * 1800, Math.abs(turn) * 105), 4500, 12000);
+  const duration = clamp(Math.max(1800 + climb * 420 + reach * 2 ** apex * 1400, Math.abs(turn) * 70), 3500, 8500);
   // No banking: a level camera reads as calm over a wall-sized screen.
   const bank = 0;
   return { apex, spans, curve, duration, turn, bank };
@@ -580,7 +580,7 @@ export async function runMonitoringHop(map: MapLibreMap, station: TourStation, i
     measureStopFootprint(map, stop);
     // The station's details open as the camera lands; the slow pass waits for them to settle.
     heldView = { id: station.id, zoom: orbitEnd(stop).zoom, bearing: orbitEnd(stop).bearing ?? stop.bearing };
-    void steadyFrames().then((waited) => { if (isCurrent()) holdOrbit(map, station, stop, 9500 - waited); });
+    void steadyFrames().then((waited) => { if (isCurrent()) holdOrbit(map, station, stop, 6500 - waited); });
   }
   return landed;
 }

@@ -826,7 +826,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     const timer = window.setTimeout(() => {
       void Promise.race([preloaded, new Promise((resolve) => window.setTimeout(resolve, 4000))])
         .then(() => { if (active) setSelectedStationId(next.id); });
-    }, 10000);
+    }, 7000);
     return () => { active = false; window.clearTimeout(startPreload); window.clearTimeout(timer); };
   }, [stationMapInstance, stationRotationEnabled, selectedStationId, monitoringArrival, rotationKey]);
 
@@ -1977,7 +1977,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
                 setStationRotationEnabled((enabled) => !enabled);
               }}>
               <RadioTower size={15} />
-              <span><strong>{stationRotationEnabled ? "Monitoring mode on" : "Monitoring mode off"}</strong><small>{stationRotationEnabled ? (monitoringView === "3d" ? "Holds each station for 10 seconds in 3D terrain" : "Holds each station for 10 seconds on the flat map") : "Turn on to cycle through river stations"}</small></span>
+              <span><strong>{stationRotationEnabled ? "Monitoring mode on" : "Monitoring mode off"}</strong><small>{stationRotationEnabled ? (monitoringView === "3d" ? "Holds each station for 7 seconds in 3D terrain" : "Holds each station for 7 seconds on the flat map") : "Turn on to cycle through river stations"}</small></span>
               <i aria-hidden="true" />
             </button>
             {stationRotationEnabled && <div className="map-basemap-options station-monitoring-view" role="group" aria-label="Monitoring camera">
