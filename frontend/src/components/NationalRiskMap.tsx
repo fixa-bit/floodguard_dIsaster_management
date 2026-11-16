@@ -606,7 +606,23 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const [monitoring, setMonitoring] = useState<RiverMonitoringResponse | null>(null);
   const [monitoringError, setMonitoringError] = useState<string | null>(null);
   const [stationMapInstance, setStationMapInstance] = useState<MapLibreMap | null>(null);
-  const [stationRotationEnabled, setStationRotationEnabled] = useState(false);
+  // The station panel slides in on landing and, when the tour moves on, slides
+  // out again (kept on screen for its exit animation) rather than vanishing.
+  const showStationTicket = Boolean(selectedStationId && stationTicketArrival?.stationId === selectedStationId && stationTicketArrival.map === stationMapInstance);
+  const [leavingTicket, setLeavingTicket] = useState<string | null>(null);
+  const shownTicketRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (showStationTicket) { shownTicketRef.current = selectedStationId; setLeavingTicket(null); return; }
+    const left = shownTicketRef.current;
+    shownTicketRef.current = null;
+    if (!left || !stationRotationEnabled) { setLeavingTicket(null); return; }
+    setLeavingTicket(left);
+    const timer = window.setTimeout(() => setLeavingTicket(null), 750);
+    return () => window.clearTimeout(timer);
+  }, [showStationTicket, selectedStationId]);
+  // Before the effect above has run, the panel that was showing is already the one leaving (no blank frame between).
+  const departingTicket = leavingTicket ?? (!showStationTicket ? shownTicketRef.current : null);
+  const [stationRotationEnabled, setStationRotationEnabled] = useState(true);
   // The monitoring tour's camera: tilted flights over 3D terrain, or a flat, north-up 2D map.
   const [monitoringView, setMonitoringView] = useState<"3d" | "2d">("3d");
   const monitoringViewRef = useRef(monitoringView);
@@ -706,6 +722,49 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
   // While the camera shows a catchment's establishing shot, the route rail lights the catchment up.
   const [tourShowingCatchment, setTourShowingCatchment] = useState(false);
+  // In the 3D tour the catchment is highlighted only while its establishing shot is on screen.
+  // The highlight fades in and out slowly. MapLibre's own paint transitions would leave the
+  // layers draped on the 3D terrain repainting tile by tile (blocks of brightness), so the
+  // fade is driven here instead: one opacity step per frame, which repaints every tile together.
+  const catchmentOpacities = useRef(new Map<string, number>());
+  const catchmentFade = useRef({ level: 1, frame: 0 });
+  useEffect(() => {
+    const map = stationMapInstance;
+    if (!map) return;
+    const paint = map as unknown as { getPaintProperty(id: string, property: string): unknown; setPaintProperty(id: string, property: string, value: unknown): void };
+    const layers = ["active-monitoring-catchment-spotlight", "active-monitoring-catchment-fill", "active-monitoring-catchment-glow",
+      "active-monitoring-catchment-casing", "active-monitoring-catchment-line", "active-monitoring-catchment-label"];
+    const setLevel = (level: number) => {
+      for (const id of layers) {
+        const layer = map.getLayer(id);
+        if (!layer) continue;
+        for (const property of layer.type === "symbol" ? ["text-opacity", "icon-opacity"] : [`${layer.type}-opacity`]) {
+          const key = `${id}:${property}`, current = paint.getPaintProperty(id, property);
+          if (!catchmentOpacities.current.has(key)) catchmentOpacities.current.set(key, typeof current === "number" ? current : 1);
+          const value = +(catchmentOpacities.current.get(key)! * level).toFixed(4);
+          if (current === value || (current === undefined && value === 1)) continue;
+          paint.setPaintProperty(id, `${property}-transition`, { duration: 0, delay: 0 });
+          paint.setPaintProperty(id, property, value);
+        }
+      }
+    };
+    const fade = catchmentFade.current;
+    const target = stationRotationEnabled && monitoringView === "3d" && !tourShowingCatchment ? 0 : 1;
+    cancelAnimationFrame(fade.frame);
+    const from = fade.level, duration = target ? 1500 : 2200, began = performance.now();
+    const step = () => {
+      const t = Math.min(1, (performance.now() - began) / duration), eased = t * t * (3 - 2 * t);
+      fade.level = from + (target - from) * eased;
+      setLevel(fade.level);
+      if (t < 1) fade.frame = requestAnimationFrame(step);
+    };
+    if (from === target) setLevel(target);
+    else fade.frame = requestAnimationFrame(step);
+    // Layers added again later (a style reload) take the current level at once.
+    const reapply = () => setLevel(fade.level);
+    map.on("styledata", reapply);
+    return () => { cancelAnimationFrame(fade.frame); map.off("styledata", reapply); };
+  }, [stationMapInstance, stationRotationEnabled, monitoringView, tourShowingCatchment]);
   const tourRailStations = useMemo(() => rotationStations.map((station) => {
     const catchment = stationCatchments.get(station.id);
     return { id: station.id, name: station.name, catchmentId: catchment?.id || undefined, catchmentName: catchment?.name };
@@ -1947,7 +2006,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   return (
     <section className={`national-map-panel ${expanded ? "national-map-expanded" : ""}`}>
       <header className="map-panel-header">
-        <div><span><MapPinned size={18} /></span><div><h2>Pakistan National Flood Risk &amp; Operations Map</h2><p>{metadata ? `${metadata.returned_feature_count} districts · observed ${new Date(metadata.observed_at).toLocaleString()}` : "Loading national coverage"}</p></div></div>
+        <div><span><MapPinned size={18} /></span><div><h2>Pakistan National Flood Risk &amp; Operations Map</h2><p>{metadata ? `${metadata.returned_feature_count} districts Â· observed ${new Date(metadata.observed_at).toLocaleString()}` : "Loading national coverage"}</p></div></div>
         <div className="map-header-meta"><StatusBadge value={metadata?.data_mode ?? "LOADING"} /><span><Database size={13} /> {metadata?.cache_status ?? "waiting"}</span></div>
       </header>
       <div className={`river-monitoring-layout ${selectedStationId || (layers.catchments && selectedCatchment) ? "has-station" : ""}`}>
@@ -1989,7 +2048,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
               {selectedStationId && rotationStations.some((station) => station.id === selectedStationId)
                 ? `Station ${rotationStations.findIndex((station) => station.id === selectedStationId) + 1} of ${rotationStations.length}`
                 : `${rotationStations.length} stations available`}
-              {rotationStations.length === 1 ? " · one station in this selection" : " · live stats shown beside the map"}
+              {rotationStations.length === 1 ? " Â· one station in this selection" : " Â· live stats shown beside the map"}
             </span>}
           </div>
           <div className="map-basemap-control" role="group" aria-label="Map background">
@@ -2063,9 +2122,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           <details className="sar-water-control">
             <summary><strong><Waves size={14} /> Satellite water extent</strong></summary>
             <label className="sar-example-selection"><span>Suggested location</span><select aria-label="Satellite analysis location" value={sarSelection} disabled={sarBusy} onChange={(event) => { sarPickRef.current = false; setPickingMode(false); setSarSelection(event.target.value); }}>
-              <option value="historical">Pakistan · 28 Jun 2017 (example)</option>
-              <option value="permanent">Pakistan · permanent-water comparison</option>
-              <option value="map">Recent imagery · choose on map</option>
+              <option value="historical">Pakistan Â· 28 Jun 2017 (example)</option>
+              <option value="permanent">Pakistan Â· permanent-water comparison</option>
+              <option value="map">Recent imagery Â· choose on map</option>
             </select></label>
             {sarSelection !== "map" ? <>
               <small>Historical example with a visible model prediction. No imagery download needed.</small>
@@ -2091,7 +2150,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
                   <label><input type="checkbox" checked={sarEventBackground} onChange={event => setSarEventBackground(event.target.checked)} /><span>Use event-date radar background</span></label>
                   <button className="sar-compare-button" type="button" onClick={() => setSarValidationOpen(true)}>Compare imagery, labels & accuracy</button>
                 </>}
-                {sarView === "errors" && <small>Cyan: correct water · Pink: missed water · Orange: false detection · Gray: excluded</small>}
+                {sarView === "errors" && <small>Cyan: correct water Â· Pink: missed water Â· Orange: false detection Â· Gray: excluded</small>}
                 {sarOverlay.validation && <small>{sarEventBackground ? `Inside the box: event radar from ${sarOverlay.during_date}.` : "Context basemap may show a different date."}</small>}
               </div>
               <SarWaterSummary result={sarOverlay} />
@@ -2266,7 +2325,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         <p>HydroBASINS level 5; full transboundary sub-basin, simplified for display.</p>
         <footer><a href="https://www.hydrosheds.org/products/hydrobasins" target="_blank" rel="noreferrer">HydroBASINS / HydroSHEDS</a></footer>
       </aside>}
-      {selectedStationId && stationTicketArrival?.stationId === selectedStationId && stationTicketArrival.map === stationMapInstance && <RiverStationInspector stationId={selectedStationId} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => { setStationTicketArrival(null); setSelectedStationId(null); }} onSelect={selectStation} flowUnit={flowUnit} />}
+      {(showStationTicket || departingTicket) && <RiverStationInspector key={showStationTicket ? selectedStationId! : departingTicket!} leaving={!showStationTicket} stationId={showStationTicket ? selectedStationId! : departingTicket!} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => { setStationTicketArrival(null); setSelectedStationId(null); }} onSelect={selectStation} flowUnit={flowUnit} />}
       </div>
       {sarValidationOpen && sarOverlay?.validation && <SarValidationView result={sarOverlay} onClose={() => setSarValidationOpen(false)} />}
       <footer className="map-provenance">
@@ -2275,3 +2334,4 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     </section>
   );
 }
+

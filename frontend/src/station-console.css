@@ -67,10 +67,6 @@
 .station-console .console-card:hover { border-color: rgba(125, 232, 219, .42); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 14px 34px rgba(0, 0, 0, .32), 0 0 20px rgba(80, 245, 208, .08); translate: 0 -1px; }
 /* A slim accent down the left edge of each ticket. */
 .station-console .console-card::before { position: absolute; inset: 12px auto 12px 0; width: 2px; border-radius: 0 2px 2px 0; background: linear-gradient(180deg, var(--console-accent), rgba(80, 245, 208, .12)); opacity: .85; content: ""; }
-/* One sweep of light across each card, right to left, as it settles. */
-.station-console .console-card::after { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; content: "";
-  background: linear-gradient(105deg, transparent 46%, rgba(200, 255, 245, .1) 50%, transparent 54%) 0% 0 / 300% 100% no-repeat;
-  animation: console-sheen 1200ms ease-out calc(var(--rise-delay, 0ms) + 420ms) both; }
 .station-console .console-kpi { display: flex; flex-direction: column; gap: 3px; grid-column: span 2; }
 .station-console .console-list { grid-column: span 3; }
 
@@ -220,7 +216,6 @@
 .river-monitoring-layout.has-station .station-terrain-studio { right: calc(min(calc(42vw + clamp(40px, 5vw, 96px) + 24px), 740px) + 44px); }
 
 @keyframes console-slide { from { opacity: 0; transform: translateX(56px); filter: blur(5px); } 60% { filter: blur(0); } to { opacity: 1; transform: none; filter: none; } }
-@keyframes console-sheen { from { background-position: 0% 0; } to { background-position: 100% 0; } }
 @keyframes console-orbit { to { --console-angle: 360deg; } }
 @keyframes console-wipe { from { clip-path: inset(0 100% 0 0 round 8px); } to { clip-path: inset(0 0 0 0 round 8px); } }
 @keyframes console-pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
@@ -232,7 +227,7 @@
 @keyframes console-sheet-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .station-console .console-header, .station-console .station-details-tabs, .station-console .console-card, .station-console .console-card::after, .station-console .console-list li,
+  .station-console .console-header, .station-console .station-details-tabs, .station-console .console-card, .station-console .console-list li,
   .station-console .console-rain-bars i, .station-console .console-status, .station-console .console-live i, .station-console .console-trend,
   .station-console .console-meter::after, .station-console .console-hero-chart .source-forecast-chart, .station-console .console-metrics div,
   .station-console .console-sheet, .station-console .console-pager button::after { animation: none; }
@@ -249,3 +244,9 @@
   .station-console .console-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .station-console .console-sheet { position: fixed; inset: auto 12px 12px; max-height: 70vh; }
 }
+
+/* Leaving a station: the panel slides back out to the right and fades, the reverse of its entrance. */
+.station-console[data-leaving] { pointer-events: none; animation: console-leave .55s cubic-bezier(.45, 0, .7, .3) forwards !important; }
+@keyframes console-leave { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateX(64px); filter: blur(4px); } }
+@media (prefers-reduced-motion: reduce) { .station-console[data-leaving] { animation: console-fade-out .3s linear forwards !important; } }
+@keyframes console-fade-out { to { opacity: 0; } }

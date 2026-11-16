@@ -188,7 +188,9 @@ function RainBars({ station }: { station: RiverMonitoringStation }) {
   </div>;
 }
 
-export function RiverStationInspector({ stationId, data, error, refreshing, onRefresh, onClose, onSelect, flowUnit = "cumecs" }: {
+export function RiverStationInspector({ stationId, data, error, refreshing, onRefresh, onClose, onSelect, flowUnit = "cumecs", leaving = false }: {
+  /** The panel is on its way out (the tour is leaving the station): it slides away instead of vanishing. */
+  leaving?: boolean;
   stationId: string;
   data: RiverMonitoringResponse | null;
   error: string | null;
@@ -235,7 +237,7 @@ export function RiverStationInspector({ stationId, data, error, refreshing, onRe
   const hasAbout = Boolean(station && (station.why_selected || station.facts.length > 0));
   const hasStats = metrics.length > 0 || providers.some((provider) => provider.note);
 
-  return <><aside ref={panelRef} className="river-station-inspector station-console" aria-label="River station details" hidden={forecastOpen}
+  return <><aside ref={panelRef} className="river-station-inspector station-console" aria-label="River station details" hidden={forecastOpen} data-leaving={leaving || undefined} aria-hidden={leaving || undefined}
     onPointerEnter={() => { engaged.current = true; }} onPointerLeave={() => { engaged.current = false; }}
     onFocus={() => { engaged.current = true; }} onBlur={() => { engaged.current = false; }}>
     <header className="console-header">

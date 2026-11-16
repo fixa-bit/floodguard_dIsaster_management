@@ -1,24 +1,25 @@
-/* The monitoring tour's route: a small station rail beside the map controls. */
+/* The monitoring tour's route: a small station rail beside the map controls.
+   Collapsed it shows the previous, current and next station; expanded, the
+   whole route, sized by how near each station is to the current one. */
 .tour-route-rail {
   --rail-mint: #50f5d0;
-  --rail-dim: rgba(196, 236, 228, .34);
   --rail-x: 14px;   /* where the line runs, from the panel's left edge */
   position: absolute;
   z-index: 2;
   top: 12px;
-  bottom: 60px;
   left: 238px;
   display: flex;
-  width: 148px;
-  max-height: max-content;
+  width: 156px;
+  max-height: calc(100% - 72px);
   flex-direction: column;
-  padding: 8px 8px 6px 0;
-  border: 1px solid rgba(125, 232, 219, .22);
+  padding: 6px 8px 8px 0;
+  border: 1px solid rgba(125, 232, 219, .24);
   border-radius: 8px;
-  /* A plain tinted panel, no backdrop blur: blurring the moving 3D map behind it costs frames. */
   background: rgba(6, 20, 23, .8);
-  box-shadow: 0 6px 22px rgba(0, 0, 0, .28);
-  color: #d7efea;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .3);
+  color: #e6f8f4;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
+  /* Only the heading takes the pointer, so the map underneath stays draggable. */
   pointer-events: none;
   /* Its own compositor layer, with layout and paint kept inside it, so the map
      redrawing underneath every frame never makes the browser redo the rail. */
@@ -26,19 +27,30 @@
   will-change: transform;
   animation: tour-route-in .45s ease-out both;
 }
-.overview-command-canvas .tour-route-rail { top: 188px; bottom: 118px; }
+.overview-command-canvas .tour-route-rail { top: 188px; max-height: calc(100% - 306px); }
 
-.tour-route-rail header {
+/* Heading: a button that expands or collapses the route. */
+.tour-route-heading {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 0 2px 6px 10px;
-  margin-bottom: 4px;
-  border-bottom: 1px solid rgba(125, 232, 219, .14);
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 4px 6px;
+  padding: 3px 4px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-shadow: none;
+  cursor: pointer;
+  pointer-events: auto;
 }
-.tour-route-rail header span { color: rgba(196, 236, 228, .7); font-size: 8.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.tour-route-rail header b { color: var(--rail-mint); font-size: 11px; font-variant-numeric: tabular-nums; }
-.tour-route-rail header small { color: rgba(196, 236, 228, .55); font-size: 9px; font-weight: 600; }
+.tour-route-heading:hover { background: rgba(80, 245, 208, .1); }
+.tour-route-heading:focus-visible { outline: 2px solid var(--rail-mint); outline-offset: 1px; }
+.tour-route-heading span { color: #dff6f1; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.tour-route-heading b { margin-left: auto; color: var(--rail-mint); font-size: 11.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tour-route-heading small { color: rgba(214, 240, 234, .7); font-size: 9.5px; font-weight: 700; }
+.tour-route-heading svg { flex-shrink: 0; color: rgba(214, 240, 234, .75); }
 
 .tour-route-rail ol { margin: 0; padding: 0; list-style: none; }
 .tour-route-rail > ol { min-height: 0; overflow: hidden; padding-bottom: 2px; }
@@ -47,9 +59,9 @@
 .tour-route-catchment {
   position: relative;
   padding: 5px 0 2px 26px;
-  color: rgba(196, 236, 228, .42);
-  font-size: 8px;
-  font-weight: 700;
+  color: rgba(214, 240, 234, .7);
+  font-size: 8.5px;
+  font-weight: 800;
   letter-spacing: .1em;
   line-height: 1.2;
   text-transform: uppercase;
@@ -77,29 +89,36 @@
   left: calc(var(--rail-x) - 1px);
   width: 2px;
   border-radius: 1px;
-  background: rgba(196, 236, 228, .16);
+  background: rgba(214, 240, 234, .22);
   transition: background .5s ease;
 }
 .tour-route-group:first-child .tour-route-catchment::after { display: none; }
+.tour-route-nearby > .tour-route-catchment::after { background: rgba(80, 245, 208, .55); }
 .tour-route-group[data-reached] .tour-route-catchment::after { background: rgba(80, 245, 208, .55); }
 .tour-route-group[data-reached]:not([data-active]) .tour-route-catchment::before { border-color: rgba(80, 245, 208, .7); }
-.tour-route-group[data-active] .tour-route-catchment { color: rgba(196, 236, 228, .75); }
-.tour-route-catchment[data-showing] { color: var(--rail-mint); }
+.tour-route-group[data-active] .tour-route-catchment,
+.tour-route-nearby > .tour-route-catchment { color: #f2fffc; }
+.tour-route-catchment[data-showing] { color: var(--rail-mint) !important; }
 .tour-route-catchment[data-showing]::before { border-color: var(--rail-mint); background: var(--rail-mint); box-shadow: 0 0 8px rgba(80, 245, 208, .8); }
 
 /* A station: its dot on the line, and its name. */
 .tour-route-stop {
   position: relative;
   display: flex;
-  min-height: 19px;
+  min-height: 18px;
   align-items: center;
   padding-left: 26px;
-  color: var(--rail-dim);
-  font-size: 10px;
+  color: rgba(214, 240, 234, .62);
+  font-size: 9.5px;
+  font-weight: 600;
   line-height: 1.15;
-  transition: color .4s ease;
+  transition: color .4s ease, font-size .35s ease, min-height .35s ease;
 }
 .tour-route-stop span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The two stations either side of the current one stand out a little from the rest. */
+.tour-route-stop:is([data-near="1"], [data-near="2"]) { min-height: 20px; color: rgba(232, 248, 244, .9); font-size: 10.5px; font-weight: 700; }
+/* The current station, a bit larger than all the others. */
+.tour-route-stop[data-current] { min-height: 26px; color: #fff; font-size: 13px; font-weight: 800; }
 /* The line: each station draws the stretch above it, so the line fills in up to the current station. */
 .tour-route-stop::before {
   content: "";
@@ -109,9 +128,10 @@
   left: calc(var(--rail-x) - 1px);
   width: 2px;
   border-radius: 1px;
-  background: rgba(196, 236, 228, .16);
+  background: rgba(214, 240, 234, .22);
   transition: background .5s ease;
 }
+.tour-route-nearby > .tour-route-stop:first-child::before { top: 50%; }
 .tour-route-stop i {
   position: absolute;
   top: 50%;
@@ -125,23 +145,33 @@
   transform: translateY(-50%);
   transition: background .4s ease, border-color .4s ease, box-shadow .4s ease, transform .4s ease;
 }
-.tour-route-stop[data-state="done"] { color: rgba(196, 236, 228, .6); }
 .tour-route-stop[data-state="done"]::before,
 .tour-route-stop[data-state="here"]::before,
 .tour-route-stop[data-state="approaching"]::before { background: rgba(80, 245, 208, .55); }
 .tour-route-stop[data-state="done"] i { border-color: rgba(80, 245, 208, .7); background: rgba(80, 245, 208, .55); }
-.tour-route-stop[data-state="here"],
-.tour-route-stop[data-state="approaching"] { color: #f2fffc; font-weight: 700; }
 .tour-route-stop[data-state="here"] i {
   border-color: #eafff9;
   background: var(--rail-mint);
   box-shadow: 0 0 0 3px rgba(80, 245, 208, .22), 0 0 10px rgba(80, 245, 208, .85);
-  transform: translateY(-50%) scale(1.25);
+  transform: translateY(-50%) scale(1.35);
 }
 .tour-route-stop[data-state="approaching"] i {
   border-color: var(--rail-mint);
+  transform: translateY(-50%) scale(1.2);
   animation: tour-route-approach 1.4s ease-in-out infinite;
 }
+/* Collapsed: "prev" and "next" captions beside the neighbouring stations. */
+.tour-route-stop[data-role]::after {
+  margin-left: auto;
+  padding-left: 6px;
+  color: rgba(214, 240, 234, .45);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.tour-route-stop[data-role="prev"]::after { content: "prev"; }
+.tour-route-stop[data-role="next"]::after { content: "next"; }
 
 @keyframes tour-route-approach {
   0%, 100% { box-shadow: 0 0 0 0 rgba(80, 245, 208, .55); }
@@ -154,29 +184,10 @@
 @media (prefers-reduced-motion: reduce) {
   .tour-route-rail, .tour-route-stop[data-state="approaching"] i { animation: none; }
 }
-/* Narrower screens leave little map between the controls and the station panel:
-   the rail becomes a slim column of dots, naming only the current station beside its dot. */
+/* Narrower screens leave little map between the controls and the station panel. */
 @media (max-width: 1599px) {
-  .tour-route-rail { width: 30px; padding-right: 0; overflow: visible; }
-  .tour-route-rail header { justify-content: center; padding: 0 0 6px; }
-  .tour-route-rail header span { display: none; }
-  .tour-route-rail header b { font-size: 10px; }
-  .tour-route-rail header small { display: block; font-size: 8px; text-align: center; }
-  .tour-route-rail > ol { overflow: visible; mask-image: none; }
-  .tour-route-catchment { height: 9px; padding: 3px 0 0; font-size: 0; }
-  .tour-route-catchment::before { top: 4px; }
-  .tour-route-stop { min-height: 15px; }
-  .tour-route-stop span { display: none; }
-  .tour-route-stop[data-current] span {
-    position: absolute;
-    left: 26px;
-    display: block;
-    padding: 2px 7px;
-    border: 1px solid rgba(80, 245, 208, .35);
-    border-radius: 999px;
-    background: rgba(6, 20, 23, .86);
-    font-size: 10px;
-  }
+  .tour-route-rail { width: 138px; }
+  .tour-route-stop[data-current] { font-size: 12px; }
 }
 /* No room beside the map controls on a phone-width screen. */
 @media (max-width: 760px) {

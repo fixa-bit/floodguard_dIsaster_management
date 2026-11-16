@@ -37,8 +37,8 @@ export interface TourStation {
 // holds it for a few seconds with a slow drift, then descends to the first
 // station; it then moves from station to station within the catchment, along
 // the river where one links them, before rising to the next catchment.
-const catchmentHold = 3500;   // how long the establishing shot of a catchment is held, in ms
-const orbitTurn = 14;         // how far the slow pass at a station turns, in degrees
+const catchmentHold = 2000;   // how long the establishing shot of a catchment is held, in ms
+const orbitTurn = 35;         // how far the slow pass at a station turns, in degrees
 
 let sequence: TourStation[] = [];
 /** The tour's stations in order; the camera plans each landing to face the way it will leave. */
@@ -434,7 +434,7 @@ function flightPlan(map: MapLibreMap, start: CameraView, stop: StopCamera, groun
   const turn = wrap(stop.bearing - start.bearing);
   // Unhurried: about 0.6 s per zoom level climbed or descended, and long enough
   // that the camera never turns faster than about 15° a second.
-  const duration = clamp(Math.max(1800 + climb * 420 + reach * 2 ** apex * 1400, Math.abs(turn) * 70), 3500, 8500);
+  const duration = clamp(Math.max(1500 + climb * 330 + reach * 2 ** apex * 1200, Math.abs(turn) * 55), 3000, 7000);
   // No banking: a level camera reads as calm over a wall-sized screen.
   const bank = 0;
   return { apex, spans, curve, duration, turn, bank };
