@@ -2164,7 +2164,9 @@ body { color: var(--ink); background: #071114; }
 .station-monitoring-toggle[aria-pressed="true"] > i::after { transform: translateX(11px); background: #50f5d0; }
 .station-monitoring-toggle:disabled { opacity: .5; cursor: not-allowed; }
 .station-monitoring-view { margin-top: 3px; }
-.station-monitoring-view button { min-height: 26px; padding: 3px 8px; font-size: 10px; }
+.station-monitoring-view button { min-height: 22px; padding: 2px 6px; font-size: 9px; }
+.map-basemap-options:not(.station-monitoring-view) button { min-height: 28px; padding: 4px 7px; font-size: 10px; }
+.station-monitoring-view button[aria-pressed="true"], .map-basemap-options:not(.station-monitoring-view) button[aria-pressed="true"] { color: #1f1905; background: #f8d96a; border-color: #f8d96a; }
 .station-monitoring-toggle:focus-visible { outline: 2px solid #f8d96a; outline-offset: 3px; }
 .map-layer-control .river-network-select { display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 4px; margin-top: 7px; }
 .river-network-select select { min-width: 0; width: 100%; padding: 4px; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }

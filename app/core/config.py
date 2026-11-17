@@ -66,6 +66,14 @@ class Settings(BaseSettings):
     ai_review_automatic: str = Field(default="none", pattern=r"^(none|label|portal)$")
     ai_review_manual_default: str = Field(default="portal", pattern=r"^(label|portal)$")
     knowledge_dir: str = "knowledge"
+    # n8n flood alarm workflow (automation/n8n). The API key stays on the server; the
+    # app reads runs and edits the alarm data tables through app/services/n8n_alarm.py.
+    n8n_api_url: str = "http://localhost:5678/api/v1"
+    n8n_api_key: SecretStr = SecretStr("")
+    n8n_editor_url: str = "http://localhost:5678"
+    n8n_webhook_url: str = "http://localhost:5678/webhook"
+    n8n_alarm_workflow_name: str = "FloodGuard – Flood alarm & escalation"
+    n8n_timeout_seconds: float = 15.0
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

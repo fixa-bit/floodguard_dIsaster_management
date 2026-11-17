@@ -1,0 +1,41 @@
+# FloodGuard n8n in Docker, at http://localhost:5678.
+#
+#   powershell -ExecutionPolicy Bypass -File automation/n8n/start-n8n-docker.ps1
+#
+# (The script carries over data from the native install the first time, then runs
+#  `docker compose up -d`. After that, plain `docker compose -f automation/n8n/docker-compose.yml up -d`
+#  works too.)
+#
+# Everything n8n stores (account, workflows, data tables, executions, encryption key)
+# lives in the "floodguard_n8n_data" Docker volume. The container restarts by itself
+# whenever Docker Desktop is running.
+name: floodguard-n8n
+
+services:
+  n8n:
+    image: n8nio/n8n:2.47.7          # keep in step with the version the data was created with
+    container_name: floodguard-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_PORT=5678
+      - N8N_HOST=localhost
+      - WEBHOOK_URL=http://localhost:5678/
+      - N8N_SECURE_COOKIE=false          # plain http on localhost
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_PERSONALIZATION_ENABLED=false
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - GENERIC_TIMEZONE=Asia/Karachi
+      - TZ=Asia/Karachi
+    # The FloodGuard backend running on Windows is reachable from n8n as
+    # http://host.docker.internal:<port>, not localhost.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
+    name: floodguard_n8n_data
+    external: true   # created by start-n8n-docker.ps1 (which fills it from the native install)

@@ -3,7 +3,7 @@
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel, Field
 
 from app.reports.flood_events import LEVELS, STATION_RIVER
@@ -114,8 +114,70 @@ def _file(report_id: str, kind: str):
 
 
 @router.get("/view")
-def view_report(id: str):
-    return FileResponse(_file(id, "html"), media_type="text/html")
+def view_report(id: str, layout: Literal["standard", "notebook"] = "standard"):
+    path = _file(id, "html")
+    if layout == "notebook":
+        html = path.read_text(encoding="utf-8")
+        notebook_style = """
+<script>document.documentElement.dataset.theme = 'light';</script>
+<style id="floodguard-notebook-layout">
+body{padding:0!important;background:#e8edef!important;overflow:hidden}
+#report{display:none}
+#floodguard-book{height:calc(100vh - 74px);min-height:460px;margin-top:48px;overflow:hidden}
+#floodguard-book-track{display:flex;gap:20px;height:100%;transition:transform .25s ease}
+.floodguard-spread{display:grid;grid-template-columns:1fr 1fr;flex:0 0 100%;height:100%;background:#fff;box-shadow:0 5px 22px rgba(15,30,36,.18);border:1px solid #cbd3d6}
+.floodguard-page{height:100%;min-width:0;overflow:auto;padding:26px 28px;background:#fff}
+.floodguard-page+.floodguard-page{border-left:1px solid #cbd3d6;box-shadow:inset 9px 0 14px -14px #52636a}
+@media(max-width:760px){#floodguard-book{height:calc(100vh - 74px)}.floodguard-spread{grid-template-columns:1fr}.floodguard-page:nth-child(2){display:none}.floodguard-page{padding:18px}}
+</style>
+"""
+        html = html.replace("</head>", notebook_style + "</head>", 1)
+        notebook_script = """
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const report = document.getElementById('report');
+  if (!report) return;
+  const book = document.createElement('div'); book.id = 'floodguard-book';
+  const track = document.createElement('div'); track.id = 'floodguard-book-track'; book.appendChild(track);
+  document.body.appendChild(book);
+  const pages = [];
+  let spread, page;
+  const newPage = () => {
+    if (pages.length % 2 === 0) {
+      spread = document.createElement('div'); spread.className = 'floodguard-spread'; track.appendChild(spread);
+    }
+    page = document.createElement('div'); page.className = 'floodguard-page'; spread.appendChild(page); pages.push(page);
+  };
+  newPage();
+  [...report.children].forEach((block) => {
+    page.appendChild(block);
+    if (page.scrollHeight > page.clientHeight + 2 && page.children.length > 1) {
+      page.removeChild(block); newPage(); page.appendChild(block);
+    }
+  });
+  if (pages.length % 2) { const blank = document.createElement('div'); blank.className = 'floodguard-page'; spread.appendChild(blank); }
+  report.remove();
+  const spreads = [...track.children]; let current = 0;
+  const update = () => {
+    track.style.transform = `translateX(-${current * (book.clientWidth + 20)}px)`;
+    window.parent.postMessage({ type: 'floodguard-notebook-state', current, total: spreads.length }, '*');
+  };
+  window.addEventListener('message', (event) => {
+    if (event.source !== window.parent || !event.data) return;
+    if (event.data.type === 'floodguard-notebook-state') update();
+    if (event.data.type === 'floodguard-notebook-move') {
+      current = Math.max(0, Math.min(spreads.length - 1, current + Number(event.data.direction || 0)));
+      update();
+    }
+  });
+  window.addEventListener('resize', update);
+  update();
+});
+</script>
+"""
+        html = html.replace("</body>", notebook_script + "</body>", 1)
+        return HTMLResponse(html)
+    return FileResponse(path, media_type="text/html")
 
 
 @router.get("/download")

@@ -1,4 +1,4 @@
-import { AlertTriangle, CalendarClock, CheckCircle2, Download, ExternalLink, FileText, FlaskConical, Loader2, Plus, Radar, RefreshCw, Settings2, Sparkles, Trash2, Undo2, Waves, X } from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle2, ChevronLeft, ChevronRight, Download, ExternalLink, FileText, FlaskConical, Loader2, Plus, Radar, RefreshCw, Settings2, Sparkles, Trash2, Undo2, Waves, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { API_BASE_URL } from "../config";
@@ -65,6 +65,7 @@ interface ReportOptions {
 interface EventGroup { eventNo: string; dir: string; river: string; peak: string; status: string; isTest: boolean; versions: GeneratedReport[] }
 
 const fileUrl = (id: string, path: "view" | "download") => `${API_BASE_URL}/generated-reports/${path}?id=${encodeURIComponent(id)}`;
+const previewUrl = (id: string) => `${fileUrl(id, "view")}&layout=notebook`;
 const when = (iso: string) => new Date(iso).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const day = (iso: string) => new Date(iso).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 const levelTone = (level = "") => /Very high|Exceptionally|High/.test(level) ? "crit" : /Medium/.test(level) ? "serious" : /Low/.test(level) ? "warn" : "watch";
@@ -81,6 +82,7 @@ export function ReportsCenter() {
   const [reviewId, setReviewId] = useState<string | null>(null);
   const [eventView, setEventView] = useState<"real" | "test">("real");
   const [testOpen, setTestOpen] = useState(false);
+  const [expandedDailyReports, setExpandedDailyReports] = useState<Set<string>>(() => new Set());
 
   const load = useCallback(async () => {
     try {
@@ -90,6 +92,7 @@ export function ReportsCenter() {
         apiFetch<ReportJob[]>("/generated-reports/jobs"),
       ]);
       setReports(list);
+      setExpandedDailyReports(new Set(list.filter((report) => report.kind === "daily").map((report) => report.id)));
       setOptions(opts);
       setJob((current) => current ?? jobs.find((j) => j.status === "running") ?? null);
       setError(null);
@@ -107,7 +110,13 @@ export function ReportsCenter() {
       try {
         const next = await apiFetch<ReportJob>(`/generated-reports/jobs/${job.id}`);
         setJob(next);
-        if (next.status !== "running") void load();
+        if (next.status !== "running") {
+          if (next.status === "done" && next.kind === "daily") {
+            setExpandedDailyReports(new Set(next.reports.map((report) => report.id)));
+            setTab("daily");
+          }
+          void load();
+        }
       } catch { /* keep polling */ }
     }, 3000);
     return () => window.clearInterval(timer);
@@ -117,7 +126,13 @@ export function ReportsCenter() {
   const start = async (path: string, body: object) => {
     setError(null);
     try {
-      setJob(await apiFetch<ReportJob>(path, { method: "POST", body: JSON.stringify(body) }));
+      const nextJob = await apiFetch<ReportJob>(path, { method: "POST", body: JSON.stringify(body) });
+      setJob(nextJob);
+      if (nextJob.status === "done" && nextJob.kind === "daily") {
+        setExpandedDailyReports(new Set(nextJob.reports.map((report) => report.id)));
+        setTab("daily");
+        void load();
+      }
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start report generation");
@@ -154,7 +169,7 @@ export function ReportsCenter() {
     <div className="rp">
       <div className="rp-tabs" role="tablist" aria-label="Report type">
         <button type="button" role="tab" aria-selected={tab === "daily"} className={tab === "daily" ? "on" : ""} onClick={() => setTab("daily")}>
-          <FileText size={18} /><span><b>Daily reports</b><small>National situation, every day</small></span><em>{dailyReports.length}</em>
+          <FileText size={18} /><span><b>Daily flood reports</b><small>National report for each day</small></span><em>{dailyReports.length}</em>
         </button>
         <button type="button" role="tab" aria-selected={tab === "events"} className={tab === "events" ? "on" : ""} onClick={() => setTab("events")}>
           <Waves size={18} /><span><b>Flood event reports</b><small>One flood, from start to end</small></span><em>{groups.length}</em>
@@ -165,10 +180,10 @@ export function ReportsCenter() {
       {error && <div className="rp-banner rp-banner-failed" role="alert"><AlertTriangle size={16} /><span>{error}</span><button type="button" className="rp-icon" aria-label="Dismiss" onClick={() => setError(null)}><X size={14} /></button></div>}
 
       {tab === "daily" ? (
-        <section className="rp-lane" aria-label="Daily reports">
+        <section className="rp-lane" aria-label="Daily flood reports">
           <header className="rp-head">
             <div>
-              <h2>Daily Flood Situation Report</h2>
+              <h2>Daily Flood Report</h2>
               <p>The national flood situation for the 24 hours ending 06:00 PKT: rivers, forecasts, rainfall, satellite and impact.</p>
               <div className="rp-facts">
                 <span><CalendarClock size={14} />{options?.schedule.enabled ? <>Automatic every day at {options.schedule.time_pkt} PKT{options.schedule.next_run && <> · next {when(options.schedule.next_run)}</>}</> : "Automatic schedule is off"}</span>
@@ -215,6 +230,22 @@ export function ReportsCenter() {
                     {r.headline && <p>{r.headline}</p>}
                   </div>
                   <ReportActions id={r.id} ai={r.ai} onReview={() => setReviewId(r.id)} onDelete={() => void remove(r.id, r.title)} meta={`${r.generated ?? when(r.created_at)}`} />
+                  <details
+                    className="rp-daily-preview"
+                    open={expandedDailyReports.has(r.id)}
+                    onToggle={(event) => {
+                      const isOpen = event.currentTarget.open;
+                      setExpandedDailyReports((current) => {
+                        const next = new Set(current);
+                        if (isOpen) next.add(r.id);
+                        else next.delete(r.id);
+                        return next;
+                      });
+                    }}
+                  >
+                    <summary>{expandedDailyReports.has(r.id) ? "Hide this day’s full report" : "View this day’s full report"}</summary>
+                    <NotebookPreview reportId={r.id} title={`${day(r.created_at)} flood report`} />
+                  </details>
                 </li>
               ))}
             </ul>
@@ -285,6 +316,40 @@ export function ReportsCenter() {
           onRun={async (body) => { if (await start("/generated-reports/flood-event", body)) { setTestOpen(false); setEventView("test"); } }}
         />
       )}
+    </div>
+  );
+}
+
+function NotebookPreview({ reportId, title }: { reportId: string; title: string }) {
+  const frame = useRef<HTMLIFrameElement>(null);
+  const [spread, setSpread] = useState(0);
+  const [spreadCount, setSpreadCount] = useState(1);
+
+  useEffect(() => {
+    const receive = (event: MessageEvent) => {
+      if (event.source !== frame.current?.contentWindow || event.data?.type !== "floodguard-notebook-state") return;
+      setSpread(Number(event.data.current) || 0);
+      setSpreadCount(Math.max(1, Number(event.data.total) || 1));
+    };
+    window.addEventListener("message", receive);
+    frame.current?.contentWindow?.postMessage({ type: "floodguard-notebook-state" }, "*");
+    return () => window.removeEventListener("message", receive);
+  }, []);
+
+  const move = (direction: -1 | 1) => frame.current?.contentWindow?.postMessage({ type: "floodguard-notebook-move", direction }, "*");
+  const requestState = () => frame.current?.contentWindow?.postMessage({ type: "floodguard-notebook-state" }, "*");
+
+  return (
+    <div className="rp-notebook">
+      <div className="rp-notebook-toolbar" aria-label="Report page controls">
+        <b>📖 Notebook pages</b>
+        <span>Spread {spread + 1} of {spreadCount}</span>
+        <div>
+          <button type="button" disabled={spread === 0} onClick={() => move(-1)}><ChevronLeft size={16} />Previous spread</button>
+          <button type="button" disabled={spread >= spreadCount - 1} onClick={() => move(1)}>Next spread<ChevronRight size={16} /></button>
+        </div>
+      </div>
+      <iframe ref={frame} title={title} src={previewUrl(reportId)} loading="lazy" onLoad={requestState} />
     </div>
   );
 }

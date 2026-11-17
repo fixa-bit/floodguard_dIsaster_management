@@ -21,13 +21,12 @@ const guides: CaseGuide[] = [
   {
     id: "riverine", title: "Riverine Short-Term",
     datasets: [
-      { name: "Dashboard risk summary", fields: "highest_risk_probability; falls back to the selected location's flood_probability" },
-      { name: "River responses for configured locations", fields: "discharge_cumecs, forecast_discharge_next_24h_cumecs, status" },
+      { name: "FFD Marala bulletins (models/marala_station_forecast)", fields: "Measured inflow and outflow at 06:00 PKT, 322 days from 2024-07-18 to 2026-10-15, each with source URL and SHA-256" },
     ],
-    engineered: ["Maximum current and next-24-hour modeled discharge across available locations."],
-    method: "Summarizes current and next-day river discharge from dashboard responses. No XGBoost model runs for this card.",
-    output: "Discharge summary and a separate Chenab — Marala and Ravi — Jassar example graph, not a forecast calculated from these inputs.",
-    future: ["Collect hourly station discharge, rainfall forecasts, and verified flood thresholds with timestamps.", "Train and test a simple persistence or regression baseline, then compare the experimental XGBoost discharge model against it on real held-out station data.", "Add upstream release and lagged-flow features only when those histories are reliable."],
+    engineered: ["Log inflow and its 1-, 2-, 3- and 7-day lags and changes", "3- and 7-day mean, spread and maximum; outflow/inflow ratio; season sine and cosine"],
+    method: "Marala station gauge forecast v1. Per lead, candidates (persistence, trends, training median, ridge, XGBoost) were fitted on 2024, chosen on 2025 and tested once on 2026. The +1 d and +7 d models are ridge regressions on log change; the +3 d choice is the training median, which lost to persistence on the 2026 test.",
+    output: "Real model output: inflow at Marala 1, 3 and 7 days after the latest reading the model was run on, with ±1 held-out RMSE, plus the full 2026 held-out comparison. Research only, not deployment eligible.",
+    future: ["Re-run the saved model on each new FFD bulletin so the forecast stays current.", "Add observed upstream Akhnur flow, reservoir releases and archived rainfall forecasts as inputs.", "Collect more year-round seasons before claiming rare-flood skill; compare the imported 10- to 30-day LSTM models on the same measured target."],
   },
   {
     id: "flash", title: "Flash Flood",
@@ -35,9 +34,9 @@ const guides: CaseGuide[] = [
       { name: "Weather responses for configured locations", fields: "rainfall_current_mm, forecast_rainfall_next_6h_mm, forecast_rainfall_next_24h_mm, soil_moisture_percent" },
     ],
     engineered: ["Maximum current and forecast rainfall, and mean soil moisture across available locations."],
-    method: "Summarizes rainfall and soil moisture from dashboard responses. No trained flash-flood model or catchment GIS features run on this page.",
-    output: "Rainfall and soil moisture summary. Catchment interval curves are example data, not measured flood probabilities.",
-    future: ["Assemble short-interval rain gauges, catchment outlines, terrain slope, and dated flash-flood events.", "Start with a threshold or logistic-regression baseline; compare LightGBM only after collecting enough labeled examples."],
+    method: "Summarizes rainfall and soil moisture from dashboard responses. A trained LightGBM 20 km grid model (imported flood_model, next-24 h report-onset chance) exists in the project but is not connected to live inputs.",
+    output: "Rainfall and soil moisture summary. The graph is dummy output, not a model result.",
+    future: ["Build a daily IMERG rainfall and ERA5-Land grid feed matching the LightGBM inputs, then show its daily top-5% cells on the map.", "Use archived rainfall forecasts to measure how much of its test skill (PR-AUC 0.062 vs 0.035) survives real forecast error."],
   },
   {
     id: "urban", title: "Urban Flooding",
@@ -105,7 +104,7 @@ export function PredictiveInputsDialog({ data, onClose }: { data: DashboardData;
     <div className="predictive-inputs-dialog" role="dialog" aria-modal="true" aria-labelledby="predictive-inputs-title" ref={dialog}>
       <header><div><span className="predictive-inputs-eyebrow">Predictive Risk Views</span><h2 id="predictive-inputs-title">Inputs, method & future scope</h2></div><button type="button" aria-label="Close inputs and model" onClick={onClose}><X size={19} /></button></header>
       <div className="predictive-inputs-body">
-        <p className="predictive-inputs-notice">This version summarizes current dashboard inputs. The interval graphs use stored example series. Model experiments in the repository do not generate these displayed series.</p>
+        <p className="predictive-inputs-notice">Only the Riverine view shows real model output (Marala station gauge forecast). All other graphs are dummy output; their current-input summaries are live dashboard data.</p>
         <div className="predictive-inputs-tabs" role="tablist" aria-label="Risk category">
           {guides.map((item) => <button key={item.id} type="button" role="tab" aria-selected={selected === item.id} onClick={() => setSelected(item.id)}>{item.title}</button>)}
         </div>
@@ -118,7 +117,7 @@ export function PredictiveInputsDialog({ data, onClose }: { data: DashboardData;
             <h4>Engineered features</h4><ul>{guide.engineered.map((item) => <li key={item}>{item}</li>)}</ul>
             <h4>Model or method used now</h4><p>{guide.method}</p>
             <h4>Output shown</h4><p>{guide.output}</p>
-            <p className="predictive-inputs-source">Example graph data: {examples.length ? `${examples.length} stored points; demonstration source ${String(examples[0]?.point_metadata.simulation_source ?? "unknown")}.` : "No series loaded."}</p>
+            <p className="predictive-inputs-source">{selected === "riverine" ? "Graph data: saved outputs of models/marala_station_forecast (latest sealed run)." : `Dummy graph data: ${examples.length ? `${examples.length} stored points from ${String(examples[0]?.point_metadata.simulation_source ?? "unknown")}.` : "no series loaded."}`}</p>
           </div>
           <aside className="predictive-inputs-future"><h3>Future scope</h3><ul>{guide.future.map((item) => <li key={item}>{item}</li>)}</ul></aside>
         </section>

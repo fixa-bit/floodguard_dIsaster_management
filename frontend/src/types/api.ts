@@ -638,3 +638,55 @@ export interface MaralaMonthlyModelData {
     }>;
   };
 }
+
+export interface StationForecastMetrics {
+  rows: number;
+  rmse_cumecs: number;
+  mae_cumecs: number;
+  bias_cumecs: number;
+  nse: number;
+  flood_events_days: number;
+  hits: number;
+  misses: number;
+  false_alarms: number;
+  flood_recall: number | null;
+  flood_precision: number | null;
+  peak_actual_cumecs: number;
+  prediction_at_peak_cumecs: number;
+  peak_error_percent: number;
+  peak_target_date: string;
+  peak_timing_error_days: number;
+}
+
+export interface StationForecastCandidate {
+  candidate: string;
+  inflow_cumecs: number;
+}
+
+export interface MaralaStationForecastData {
+  model_name: string;
+  status: string;
+  deployment_eligible: boolean;
+  trained_at: string;
+  computed_at: string;
+  run_id: string;
+  target: string;
+  station: { id: string; name: string; river: string };
+  data: { measured_days: number; years: Record<string, number>; first_day: string; last_day: string };
+  evaluation: { selection: string; test: string; production_refit: string };
+  thresholds_cumecs: Record<string, number>;
+  threshold_source: string;
+  origin: { observed_at: string; inflow_cumecs: number; source_url: string };
+  history: Array<{ observed_at: string; inflow_cumecs: number | null; source_url: string }>;
+  forecasts: Array<{ horizon_days: number; target_at: string; champion: StationForecastCandidate; best_learned: StationForecastCandidate }>;
+  skill: Array<{
+    horizon_days: number;
+    champion: { candidate: string; family: string };
+    best_learned: { candidate: string; family: string };
+    test: { champion: StationForecastMetrics; best_learned: StationForecastMetrics; persistence: StationForecastMetrics };
+    rmse_improvement_over_persistence_percent: number;
+    beats_persistence: boolean;
+  }>;
+  holdout: Array<{ horizon_days: number; origin_at: string; target_at: string; actual: number | null; champion: number | null; best_learned: number | null; persistence: number | null }>;
+  limitations: string[];
+}

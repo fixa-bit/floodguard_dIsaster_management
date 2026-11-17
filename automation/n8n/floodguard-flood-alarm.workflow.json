@@ -1,0 +1,2210 @@
+{
+  "name": "FloodGuard – Flood alarm & escalation",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## FloodGuard flood alarm & escalation\nReceives flood forecasts from the FloodGuard portal, decides an **alarm level** per forecast, keeps one alarm per forecast target in **`flood_alarms`**, and alerts by level:\n\n| Level | From risk_class | Channels | Starts at |\n|---|---|---|---|\n| 1 Watch | Watch / Moderate / Medium | Slack | Tier 1 |\n| 2 Warning | High | Slack + Gmail | Tier 1 |\n| 3 Danger | Very / Extremely high | Slack + Gmail + WhatsApp | Tier 1 |\n| 4 Extreme | Extreme | Slack + Gmail + WhatsApp | Tier 2 |\n\nProbability ≥ 85 % raises a Warning-or-worse by one level. People come from the **`duty_roster`** table (on-duty officers per tier); a tier with nobody on duty is skipped. Unacknowledged alarms climb a tier (District → PDMA → NDMA) every 15–60 min; the **Acknowledge** link in each alert stops that.\n\nTables: `flood_alarms` (alarms) · `alarm_events` (audit trail) · `alarm_notifications` (every delivery) · `duty_roster` (who is on duty, with Gmail / WhatsApp toggles per person) · `alert_channels` (Slack / Gmail / WhatsApp toggles per level). Every alarm event is also posted to the FloodGuard backend.\n\n**Edit settings** (Slack channels, callback URL, intervals) in **Alarm settings**.\n**Gmail & WhatsApp**: wired but switched off until credentials are added (logged as `pending_auth`).\n**First run**: click **Execute workflow** on *Set up & test* (bottom left): it creates the tables, fills the example roster and channels, then sends dummy forecasts.",
+        "height": 480,
+        "width": 700,
+        "color": 4
+      },
+      "id": "b7e76359-8d62-581b-8477-3bbbfbd708ef",
+      "name": "About this workflow",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -520
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "flood-forecast",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "14a37671-ccd0-5573-8bbf-0cc3a53057e3",
+      "name": "Forecast webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        240
+      ],
+      "webhookId": "580a51e9-799b-5e24-9d23-de175c19aad5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Dummy flood forecasts in the portal's model-forecast format, for testing\n// before the portal is connected. Each run raises, escalates or clears alarms.\nconst now = new Date();\nconst at = (hours) => new Date(now.getTime() + hours * 3600000).toISOString();\nconst meta = { simulation_source: 'n8n_dummy_flood_forecast', model_status: 'dummy' };\nreturn [\n  { model_case: 'riverine', target_id: 'balloki', target_name: 'Balloki', issued_at: at(0), valid_at: at(12), horizon_hours: 12,\n    value: 2950, value_unit: 'cumecs', probability: 0.72, risk_class: 'High', model_name: 'xgboost_riverine_baseline_v1', point_metadata: meta },\n  { model_case: 'flash', target_id: 'hill_torrents', target_name: 'Hill torrents', issued_at: at(0), valid_at: at(3), horizon_hours: 3,\n    value: 91, value_unit: 'probability_percent', probability: 0.91, risk_class: 'Extreme', model_name: 'lightgbm_flash_flood_baseline_v1', point_metadata: meta },\n  { model_case: 'urban', target_id: 'lahore_grid', target_name: 'Lahore urban grid', issued_at: at(0), valid_at: at(6), horizon_hours: 6,\n    value: 48, value_unit: 'susceptibility_percent', probability: 0.48, risk_class: 'Moderate', model_name: 'urban_flood_susceptibility_v1', point_metadata: meta },\n  { model_case: 'riverine', target_id: 'trimmu', target_name: 'Trimmu', issued_at: at(0), valid_at: at(24), horizon_hours: 24,\n    value: 610, value_unit: 'cumecs', probability: 0.12, risk_class: 'Normal', model_name: 'xgboost_riverine_baseline_v1', point_metadata: meta },\n  { model_case: 'seasonal', target_id: 'national_basin', target_name: 'Indus national basin', issued_at: at(0), valid_at: at(720), horizon_hours: 720,\n    value: 81, value_unit: 'risk_percent', probability: 0.81, risk_class: 'Extremely high', model_name: 'seasonal_outlook_v1', point_metadata: meta },\n].map((json) => ({ json }));\n"
+      },
+      "id": "3ab37ef6-a0a4-5bf3-a7ba-1b24a441542d",
+      "name": "Dummy flood forecasts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2100,
+        1420
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "15281d23-d80f-538b-9417-d6683730e00e",
+      "name": "Escalation check",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "flood-alarm/ack",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0be72e35-f756-52b4-b99d-b2c4c5b0bf16",
+      "name": "Acknowledge link",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        720
+      ],
+      "webhookId": "71636b85-f9c5-53e6-a515-45c0e33ce8e9"
+    },
+    {
+      "parameters": {
+        "jsCode": "// FloodGuard flood alarm settings: edit here. Every run of this workflow\n// (portal webhook, dummy test, escalation check) starts from these values.\nconst settings = {\n  // Public base URL of this n8n instance, used in the \"acknowledge\" link in every alert.\n  n8nBaseUrl: 'http://localhost:5678',\n  // Shared secret the portal must send in an \"x-floodguard-key\" header. Empty = no check (local testing only).\n  webhookSecret: '',\n  // FloodGuard API endpoint that receives every alarm event (raised, escalated, acknowledged, ...).\n  // Empty = off. The default is the mock in the \"setup & test helpers\" workflow.\n  backendCallbackUrl: 'http://localhost:5678/webhook/mock-backend',\n  backendCallbackKey: '',   // sent as \"x-floodguard-key\" when set\n\n  // Alarm levels, from the portal's risk_class. A probability at or above\n  // `probabilityBump` raises a Warning-or-worse forecast by one level.\n  levels: {\n    0: { name: 'Normal',  emoji: '🟢', color: '#2e7d32' },\n    1: { name: 'Watch',   emoji: '🟡', color: '#f9a825' },\n    2: { name: 'Warning', emoji: '🟠', color: '#ef6c00' },\n    3: { name: 'Danger',  emoji: '🔴', color: '#c62828' },\n    4: { name: 'Extreme', emoji: '🚨', color: '#6a1b9a' },\n  },\n  riskClassLevels: {\n    normal: 0, low: 0, minimal: 0,\n    watch: 1, moderate: 1, medium: 1,\n    high: 2,\n    'very high': 3, 'extremely high': 3, severe: 3,\n    extreme: 4, 'exceptionally high': 4, critical: 4,\n  },\n  probabilityBump: 0.85,\n\n  // The tier of recipients each level starts at. `channels` is only the fallback:\n  // the alert_channels data table (Slack / Gmail / WhatsApp toggle per level) wins.\n  routing: {\n    1: { channels: ['slack'], startTier: 1 },\n    2: { channels: ['slack', 'gmail'], startTier: 1 },\n    3: { channels: ['slack', 'gmail', 'whatsapp'], startTier: 1 },\n    4: { channels: ['slack', 'gmail', 'whatsapp'], startTier: 2 },\n  },\n  // A repeat forecast at the same (or a lower) level re-alerts only after this many minutes.\n  reminderAfterMinutes: { 1: 360, 2: 120, 3: 60, 4: 30 },\n  // An open (unacknowledged) alarm moves up one tier after this many minutes without acknowledgement.\n  escalateAfterMinutes: { 2: 60, 3: 30, 4: 15 },\n\n  // Escalation tiers. The people (email, WhatsApp) come from the duty_roster\n  // data table: whoever is marked on duty at a tier gets that tier's alerts.\n  // slackWebhookUrl: a Slack \"Incoming Webhook\" URL for that tier's channel\n  // (the default points at the local mock in the \"setup & test helpers\" workflow).\n  tiers: {\n    1: { name: 'District duty officers', slackChannel: '#flood-district-ops',\n         slackWebhookUrl: 'http://localhost:5678/webhook/mock-slack' },\n    2: { name: 'PDMA provincial control room', slackChannel: '#pdma-control-room',\n         slackWebhookUrl: 'http://localhost:5678/webhook/mock-slack' },\n    3: { name: 'NDMA national command', slackChannel: '#ndma-command',\n         slackWebhookUrl: 'http://localhost:5678/webhook/mock-slack' },\n  },\n\n  // Channels. Gmail and WhatsApp are wired but switched off until their\n  // credentials are added (next stage); their alerts are logged as \"pending_auth\".\n  channels: {\n    slack:    { enabled: true },\n    // Gmail sends through smtp.gmail.com with an app password (SMTP credential on \"Send Gmail\").\n    // fromEmail: the Gmail address that credential signs in as.\n    gmail:    { enabled: false, fromEmail: '', fromName: 'FloodGuard alarms', note: 'Gmail app password (SMTP credential) pending' },\n    whatsapp: { enabled: false, note: 'WhatsApp Business Cloud credential pending', phoneNumberId: '' },\n  },\n};\n\nconst ran = (name) => { try { return $(name).isExecuted; } catch { return false; } };\nlet trigger = 'forecast-test';\nlet forecasts = [];\nif (ran('Escalation check')) {\n  trigger = 'escalation';\n} else if (ran('Acknowledge link')) {\n  trigger = 'acknowledge';\n} else if (ran('Forecast webhook')) {\n  trigger = 'forecast-webhook';\n  const request = $('Forecast webhook').first().json;\n  const body = request.body ?? {};\n  forecasts = Array.isArray(body) ? body : Array.isArray(body.forecasts) ? body.forecasts : [body];\n  if (settings.webhookSecret && request.headers?.['x-floodguard-key'] !== settings.webhookSecret) {\n    // Wrong or missing key: nothing is raised, and the reply says why.\n    return [{ json: { trigger, receivedAt: new Date().toISOString(), settings, forecasts: [], rejected: 'missing or wrong x-floodguard-key header', httpStatus: 401 } }];\n  }\n} else {\n  forecasts = $input.all().map((item) => item.json);\n}\nreturn [{ json: { trigger, receivedAt: new Date().toISOString(), settings, forecasts } }];\n"
+      },
+      "id": "1939fa55-3e43-52b5-bb72-ac0263316d00",
+      "name": "Alarm settings",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "duty_roster"
+        },
+        "returnAll": true
+      },
+      "id": "e0ddd5a6-b85f-5fcd-ba98-97a282d0fc1d",
+      "name": "Load duty roster",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        480
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "alert_channels"
+        },
+        "returnAll": true
+      },
+      "id": "1c97ddbd-3f65-53a1-89e0-04acea9fceab",
+      "name": "Load alert channels",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        780,
+        480
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Who gets what, from two data tables:\n//   duty_roster     people on duty, each with a Gmail and a WhatsApp toggle\n//                   (turn one off for someone who only has email or only WhatsApp)\n//   alert_channels  one row per alarm level with a Slack / Gmail / WhatsApp toggle\nconst { settings } = $('Alarm settings').first().json;\nconst toggle = (value, fallback) => value === true || String(value).toLowerCase() === 'true' ? true\n  : value === false || String(value).toLowerCase() === 'false' ? false : fallback;\nconst roster = $('Load duty roster').all().map((item) => item.json)\n  .filter((person) => person.name && toggle(person.on_duty, false))\n  .map((person) => {\n    const email = String(person.email ?? '').trim(), whatsapp = String(person.whatsapp ?? '').trim();\n    // A missing toggle column (older table) counts as on.\n    const gmail = Boolean(email) && toggle(person.gmail_on, true);\n    const wa = Boolean(whatsapp) && toggle(person.whatsapp_on, true);\n    return { name: person.name, role: person.role ?? '', tier: Number(person.tier) || 1,\n      email: gmail ? email : '', whatsapp: wa ? whatsapp : '', reachable: gmail || wa };\n  });\n// Channels per level: the alert_channels table, else settings.routing (level 0 = the all-clear).\nconst fallback = { 0: ['slack', 'gmail'] };\nfor (const [level, route] of Object.entries(settings.routing)) fallback[level] = route.channels;\nconst levelChannels = { ...fallback };\nconst fromTable = [];\nfor (const { json: row } of $('Load alert channels').all()) {\n  if (row.level === undefined || row.level === null || row.level === '') continue;\n  const level = Number(row.level);\n  levelChannels[level] = ['slack', 'gmail', 'whatsapp'].filter((channel) => toggle(row[channel], false));\n  fromTable.push(level);\n}\nreturn [{ json: { roster, onDuty: roster.length, levelChannels, levelChannelsFrom: fromTable.length ? 'alert_channels table' : 'settings' } }];\n"
+      },
+      "id": "39cc2c4a-645d-5100-9f76-eac588c37ece",
+      "name": "Duty roster",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Alarm settings').first().json.trigger }}",
+                    "rightValue": "forecast",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Forecast"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Alarm settings').first().json.trigger }}",
+                    "rightValue": "escalation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Escalation"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Alarm settings').first().json.trigger }}",
+                    "rightValue": "acknowledge",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Acknowledge"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e8e9b668-b7e6-5d67-b517-bd255a7acfc9",
+      "name": "Which input?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1220,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One item per forecast: validated, labelled and given an alarm level.\nconst { settings, forecasts, receivedAt } = $('Alarm settings').first().json;\nconst caseLabels = {\n  flash: 'Flash flood', riverine: 'Riverine flood', urban: 'Urban flooding',\n  upstream: 'Upstream inflow', seasonal: 'Seasonal flood outlook',\n};\nconst out = [];\nforecasts.forEach((raw, index) => {\n  const f = raw ?? {};\n  const problems = [];\n  const targetId = String(f.target_id ?? f.station_id ?? '').trim();\n  const targetName = String(f.target_name ?? f.station_name ?? targetId).trim();\n  const modelCase = String(f.model_case ?? f.flood_type ?? 'riverine').trim().toLowerCase();\n  if (!targetId) problems.push('target_id is missing');\n  let probability = f.probability == null ? null : Number(f.probability);\n  if (probability != null && probability > 1) probability = probability / 100;   // accept percentages too\n  if (probability != null && (!Number.isFinite(probability) || probability < 0 || probability > 1)) problems.push('probability must be 0-1');\n  const riskClass = String(f.risk_class ?? '').trim();\n  let level = settings.riskClassLevels[riskClass.toLowerCase()];\n  if (level == null) {\n    if (probability != null) level = probability >= 0.8 ? 3 : probability >= 0.6 ? 2 : probability >= 0.35 ? 1 : 0;\n    else problems.push(`unknown risk_class \"${riskClass}\" and no probability`);\n  }\n  if (level != null && level >= 2 && level < 4 && probability != null && probability >= settings.probabilityBump) level += 1;\n  const value = f.value == null ? null : Number(f.value);\n  out.push({ json: {\n    index,\n    valid: problems.length === 0,\n    problems,\n    alarm_key: `${modelCase}:${targetId}`,\n    model_case: modelCase,\n    case_label: caseLabels[modelCase] ?? modelCase,\n    target_id: targetId,\n    target_name: targetName,\n    risk_class: riskClass || (level != null ? settings.levels[level].name : ''),\n    level: level ?? 0,\n    level_name: settings.levels[level ?? 0].name,\n    probability,\n    value: Number.isFinite(value) ? value : null,\n    value_unit: String(f.value_unit ?? ''),\n    issued_at: String(f.issued_at ?? receivedAt),\n    valid_at: String(f.valid_at ?? f.issued_at ?? receivedAt),\n    horizon_hours: Number(f.horizon_hours ?? 0),\n    model_name: String(f.model_name ?? ''),\n    source: String(f.point_metadata?.simulation_source ?? f.source ?? 'portal'),\n    // Identifies this exact forecast: the portal's id when it sends one, else its issue time and content.\n    ref: String(f.id ?? f.forecast_id ?? f.alert_id ?? `${f.issued_at ?? ''}|${riskClass}|${f.value ?? ''}|${f.probability ?? ''}`),\n  } });\n});\nreturn out;\n"
+      },
+      "id": "c5c7689f-eb17-55d6-8f4a-7710a46f94b3",
+      "name": "Normalize & classify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        200
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "flood_alarms"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "neq",
+              "keyValue": "resolved"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "c4e44476-bc27-5050-9f02-4d85b2df7b6c",
+      "name": "Load open alarms",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1820,
+        200
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// What to do with each forecast, given the alarms already open:\n//   raise           new alarm (Watch or worse)          -> alert\n//   escalate_level  forecast worse than the open alarm  -> alert at once\n//   reminder        same/lower level, reminder interval passed -> alert again\n//   update          same/lower level, within the interval -> record only\n//   resolve         back to Normal while an alarm is open -> all-clear alert\n//   record          Normal and nothing open              -> nothing to do\n//   invalid         forecast failed validation           -> reported back only\n//   duplicate       this exact forecast was already processed -> ignored\n// Alarms that need people (Warning and worse) start at the first tier that has\n// someone on duty in the duty_roster table; skipped tiers are noted.\nconst { settings } = $('Alarm settings').first().json;\nconst roster = $('Duty roster').first().json.roster ?? [];\nconst now = new Date(), nowIso = now.toISOString();\nconst minutesSince = (iso) => iso ? (now - new Date(iso)) / 60000 : Infinity;\nconst open = new Map($('Load open alarms').all().map((i) => i.json).filter((r) => r.alarm_id).map((r) => [r.alarm_key, r]));\nconst tierName = (tier) => settings.tiers[tier]?.name ?? `Tier ${tier}`;\nconst maxTier = Math.max(...Object.keys(settings.tiers).map(Number));\nconst staffed = (tier) => roster.some((person) => person.tier === tier && person.reachable);\nconst seen = new Set();\n\nreturn $('Normalize & classify').all().filter(({ json: f }) => f.index !== undefined).map(({ json: f }) => {\n  if (!f.valid) return { json: { ...f, action: 'invalid', notify: false } };\n  const existing = open.get(f.alarm_key);\n  const refKey = `${f.alarm_key}#${f.ref}`;\n  if (seen.has(refKey) || (existing && existing.last_forecast_ref === f.ref)) {\n    return { json: { ...f, action: 'duplicate', notify: false, alarm_id: existing?.alarm_id ?? null } };\n  }\n  seen.add(refKey);\n  const routing = settings.routing[Math.max(1, f.level)];\n  let action, tier, alarm;\n  if (f.level === 0) {\n    action = existing ? 'resolve' : 'record';\n  } else if (!existing) {\n    action = 'raise';\n  } else if (f.level > Number(existing.level)) {\n    action = 'escalate_level';\n  } else {\n    action = minutesSince(existing.last_notified_at) >= (settings.reminderAfterMinutes[existing.level] ?? 120) ? 'reminder' : 'update';\n  }\n  if (action === 'record') return { json: { ...f, action, notify: false } };\n\n  const base = existing ?? {\n    alarm_id: `FG-${f.model_case}-${f.target_id}-${now.getTime().toString(36)}`.toUpperCase(),\n    status: 'open', tier: routing.startTier, escalations: 0, notify_count: 0,\n    first_raised_at: nowIso, last_notified_at: '', acknowledged_by: '', acknowledged_at: '', resolved_at: '',\n  };\n  // A worse forecast reopens an acknowledged alarm and never lowers its tier.\n  const level = action === 'resolve' ? Number(existing.level) : action === 'update' || action === 'reminder' ? Math.max(f.level, Number(existing?.level ?? 0)) : f.level;\n  tier = Math.max(Number(base.tier) || 1, settings.routing[Math.max(1, level)].startTier);\n  // Nobody on duty at that tier: move on to the next tier that has someone.\n  const skippedTiers = [];\n  if (level >= 2 && action !== 'resolve') {\n    while (tier < maxTier && !staffed(tier)) { skippedTiers.push(tier); tier += 1; }\n  }\n  const notify = ['raise', 'escalate_level', 'reminder', 'resolve'].includes(action);\n  alarm = {\n    ...base,\n    alarm_key: f.alarm_key, model_case: f.model_case, case_label: f.case_label,\n    target_id: f.target_id, target_name: f.target_name,\n    level, level_name: settings.levels[level].name,\n    forecast_level: f.level, risk_class: f.risk_class,\n    probability: f.probability, value: f.value, value_unit: f.value_unit,\n    issued_at: f.issued_at, valid_at: f.valid_at, horizon_hours: f.horizon_hours,\n    model_name: f.model_name, source: f.source,\n    status: action === 'resolve' ? 'resolved' : action === 'escalate_level' ? 'open' : base.status,\n    resolved_at: action === 'resolve' ? nowIso : base.resolved_at,\n    tier, tier_name: tierName(tier),\n    notify_count: Number(base.notify_count || 0) + (notify ? 1 : 0),\n    last_notified_at: notify ? nowIso : base.last_notified_at,\n    last_forecast_at: nowIso,\n    last_forecast_ref: f.ref,\n    last_action: action,\n  };\n  // Later forecasts in the same batch see this alarm as the open one.\n  open.set(f.alarm_key, alarm);\n  return { json: { ...alarm, action, notify, previous_level: existing ? Number(existing.level) : null, skipped_tiers: skippedTiers } };\n});\n"
+      },
+      "id": "3ff86cb9-9a8f-59bd-9748-235bfff2844d",
+      "name": "Decide action",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        200
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "flood_alarms"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "open"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "4517aae4-c990-503b-bb07-912bc785d597",
+      "name": "Load unacknowledged alarms",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        520
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Open alarms nobody has acknowledged in time move up one tier of recipients,\n// skipping tiers with nobody on duty. An alarm whose tier has nobody on duty\n// (someone went off duty) moves on at once.\nconst { settings } = $('Alarm settings').first().json;\nconst roster = $('Duty roster').first().json.roster ?? [];\nconst now = new Date(), nowIso = now.toISOString();\nconst maxTier = Math.max(...Object.keys(settings.tiers).map(Number));\nconst staffed = (tier) => roster.some((person) => person.tier === tier && person.reachable);\nconst due = [];\nfor (const { json: row } of $input.all()) {\n  if (!row.alarm_id || row.status !== 'open') continue;\n  const level = Number(row.level), tier = Number(row.tier) || 1;\n  const after = settings.escalateAfterMinutes[level];\n  if (!after || tier >= maxTier) continue;\n  const minutes = (now - new Date(row.last_notified_at || row.first_raised_at)) / 60000;\n  const unstaffed = !staffed(tier);\n  if (minutes < after && !unstaffed) continue;\n  let next = tier + 1;\n  const skippedTiers = unstaffed ? [tier] : [];\n  while (next < maxTier && !staffed(next)) { skippedTiers.push(next); next += 1; }\n  due.push({ json: {\n    ...row,\n    tier: next, tier_name: settings.tiers[next]?.name ?? `Tier ${next}`,\n    escalations: Number(row.escalations || 0) + 1,\n    notify_count: Number(row.notify_count || 0) + 1,\n    last_notified_at: nowIso, last_action: 'escalate_tier',\n    action: 'escalate_tier', notify: true, unacknowledged_minutes: Math.round(minutes),\n    escalation_reason: unstaffed ? `nobody on duty at tier ${tier}` : `not acknowledged for ${Math.round(minutes)} min`,\n    skipped_tiers: skippedTiers,\n  } });\n}\nreturn due;   // nothing due: the run stops here\n"
+      },
+      "id": "cce6e162-aa9f-51e0-9882-066f64bdfd10",
+      "name": "Due for escalation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "flood_alarms"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "alarm_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Acknowledge link').first().json.query?.alarm_id ?? '' }}"
+            },
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "open"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "acknowledged",
+            "acknowledged_by": "={{ $('Acknowledge link').first().json.query?.by || 'link in alert' }}",
+            "acknowledged_at": "={{ $now.toISO() }}",
+            "last_action": "acknowledge"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "acknowledged_by",
+              "displayName": "acknowledged_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "acknowledged_at",
+              "displayName": "acknowledged_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_action",
+              "displayName": "last_action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6928a28c-9823-5fba-8485-d5c74bf6bfc8",
+      "name": "Mark acknowledged",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        820
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ (() => {\n  const row = $json;\n  const ok = Boolean(row.alarm_id);\n  const title = ok ? 'Alarm acknowledged' : 'Alarm not found';\n  const body = ok\n    ? `<p><b>${row.alarm_id}</b> (${row.level_name} – ${row.target_name}) is acknowledged by <b>${row.acknowledged_by}</b>.</p><p>It will not be escalated further. A worse forecast will still raise it again.</p>`\n    : `<p>No alarm matches <b>${$('Acknowledge link').first().json.query?.alarm_id ?? '(no id)'}</b>.</p>`;\n  return `<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>${title}</title></head>\n<body style=\"font-family:Arial,sans-serif;max-width:520px;margin:48px auto;padding:0 16px;color:#123\">\n<h2 style=\"color:${ok ? '#2e7d32' : '#c62828'}\">${title}</h2>${body}<p style=\"color:#777;font-size:12px\">FloodGuard flood alarm</p></body></html>`;\n})() }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "4b9d0233-e07e-551b-9301-2e08753d6491",
+      "name": "Acknowledgement page",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1820,
+        820
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// The alarm as stored in the flood_alarms data table (only its columns).\nconst columns = ['alarm_id', 'alarm_key', 'status', 'level', 'level_name', 'risk_class', 'model_case', 'target_id',\n  'target_name', 'value', 'value_unit', 'probability', 'issued_at', 'valid_at', 'model_name', 'source', 'tier',\n  'tier_name', 'escalations', 'notify_count', 'first_raised_at', 'last_forecast_at', 'last_notified_at',\n  'last_action', 'last_forecast_ref', 'acknowledged_by', 'acknowledged_at', 'resolved_at'];\nconst numbers = new Set(['level', 'value', 'probability', 'tier', 'escalations', 'notify_count']);\n// Duplicates, invalid and normal-only forecasts leave the stored alarm as it is.\nreturn $input.all()\n  .filter((item) => item.json.alarm_id && !['duplicate', 'invalid', 'record'].includes(item.json.action))\n  .map((item) => {\n    const row = {};\n    for (const column of columns) {\n      const value = item.json[column];\n      row[column] = numbers.has(column) ? (value == null || value === '' ? 0 : Number(value)) : (value == null ? '' : String(value));\n    }\n    return { json: row, pairedItem: item.pairedItem };\n  });\n"
+      },
+      "id": "fbdb4cf9-2b2e-5c73-9324-dcbecbf34d47",
+      "name": "Alarm row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2940,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "flood_alarms"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "alarm_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.alarm_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b31a51ca-c435-5eb3-8101-1a25f7c32038",
+      "name": "Save alarm",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3160,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// The reply to the portal: what happened to each forecast it sent, with an\n// HTTP status: 202 accepted, 400 nothing usable, 401 wrong key.\nconst run = $('Alarm settings').first().json;\nif (run.trigger !== 'forecast-webhook') return [];\nconst decisions = $('Decide action').all().map((i) => i.json).filter((d) => d.target_id !== undefined);\nconst usable = decisions.filter((d) => d.action !== 'invalid');\nconst http_status = run.httpStatus ?? (usable.length ? 202 : 400);\nreturn [{ json: {\n  http_status,\n  ...(run.rejected ? { rejected: run.rejected } : {}),\n  ...(!run.rejected && !usable.length ? { error: decisions.length ? 'no valid forecast in the request' : 'no forecasts in the request' } : {}),\n  duplicates: decisions.filter((d) => d.action === 'duplicate').length,\n  received: decisions.length,\n  alerts_sent: decisions.filter((d) => d.notify).length,\n  alarms: decisions.map((d) => ({\n    target: d.target_name, model_case: d.model_case, level: d.level, level_name: d.level_name,\n    action: d.action, alarm_id: d.alarm_id ?? null, tier: d.tier ?? null, problems: d.problems?.length ? d.problems : undefined,\n  })),\n} }];\n"
+      },
+      "id": "cb25f2e0-71e0-5916-b354-1661aeec2f0e",
+      "name": "Reply summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": "={{ $json.http_status }}"
+        }
+      },
+      "id": "cc65941d-133c-5fc1-a4d1-a155e56dc4d2",
+      "name": "Reply to portal",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2600,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// The audit trail: one alarm_events row per change of an alarm's state.\nconst names = {\n  raise: 'raised', escalate_level: 'level_escalated', reminder: 'reminder_sent', update: 'forecast_updated',\n  resolve: 'resolved', escalate_tier: 'tier_escalated',\n};\nconst at = new Date().toISOString();\nconst events = [];\nfor (const { json: a } of $input.all()) {\n  if (!a.alarm_id) continue;\n  const acknowledged = !a.action && a.last_action === 'acknowledge';\n  const event = acknowledged ? 'acknowledged' : names[a.action];\n  if (!event) continue;\n  const base = { alarm_id: a.alarm_id, level: Number(a.level) || 0, tier: Number(a.tier) || 1 };\n  for (const tier of a.skipped_tiers ?? []) {\n    events.push({ json: { ...base, event: 'no_recipient', actor: 'n8n', detail: `nobody on duty at tier ${tier} with email or WhatsApp switched on; moved on`, at } });\n  }\n  events.push({ json: { ...base, event,\n    actor: acknowledged ? String(a.acknowledged_by || 'link in alert') : 'n8n',\n    detail: acknowledged ? 'acknowledged from the alert link'\n      : a.action === 'escalate_tier' ? `${a.escalation_reason}; now with ${a.tier_name}`\n      : `${a.level_name}${a.previous_level != null && a.previous_level !== a.level ? ` (was level ${a.previous_level})` : ''} · ${a.risk_class || ''} · ${a.target_name}`,\n    at } });\n}\nreturn events;\n"
+      },
+      "id": "cee6c8d1-2d7d-5a13-b516-aebde509b5f7",
+      "name": "Alarm events",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2940,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "alarm_events"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "2c4dbd10-c75c-5b04-84db-5c34c11834ca",
+      "name": "Log event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3160,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// What the FloodGuard backend is told: every alarm event of this run, in one call.\nconst run = $('Alarm settings').first().json;\nif (!run.settings.backendCallbackUrl) return [];\nconst events = $input.all().map((item) => item.json).filter((event) => event.alarm_id);\nif (!events.length) return [];\nreturn [{ json: {\n  url: run.settings.backendCallbackUrl,\n  key: run.settings.backendCallbackKey ?? '',\n  body: { source: 'n8n-flood-alarm', trigger: run.trigger, sent_at: new Date().toISOString(),\n    events: events.map(({ alarm_id, event, level, tier, actor, detail, at }) => ({ alarm_id, event, level, tier, actor, detail, at })) },\n} }];\n"
+      },
+      "id": "b6f716c7-5fa1-50e5-ae5d-cd22ff9a1be5",
+      "name": "Callback payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3380,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-floodguard-key",
+              "value": "={{ $json.key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "8c3cd917-a2be-531f-ba36-49258669343b",
+      "name": "Backend callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3600,
+        860
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// The backend call goes into alarm_notifications like any other delivery.\nconst request = $('Callback payload').first().json;\nconst result = $input.first().json;\nconst error = result.error;\nreturn [{ json: {\n  alarm_id: request.body.events.map((event) => event.alarm_id).filter((id, i, all) => all.indexOf(id) === i).join(', ').slice(0, 250),\n  action: 'callback', level: Math.max(...request.body.events.map((event) => event.level)), tier: 0,\n  channel: 'backend', recipient: request.url, status: error ? 'failed' : 'sent',\n  detail: error ? String(error.message ?? JSON.stringify(error)).slice(0, 500) : `${request.body.events.length} events`,\n  message: JSON.stringify(request.body).slice(0, 1500), sent_at: new Date().toISOString(),\n} }];\n"
+      },
+      "id": "604ec32d-2cba-5585-9434-54d6a75f48d5",
+      "name": "Callback log row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3820,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One message per channel and recipient for every alarm that needs an alert.\n// Email and WhatsApp go to whoever is on duty at the tier (duty_roster table);\n// a channel with nobody on duty is logged as \"no_recipient\".\nconst { settings } = $('Alarm settings').first().json;\nconst { roster = [], levelChannels = {} } = $('Duty roster').first().json;\nconst ackBase = `${settings.n8nBaseUrl}/webhook/flood-alarm/ack`;\nconst out = [];\nfor (const { json: a } of $input.all()) {\n  if (!a.notify) continue;\n  const level = settings.levels[a.level] ?? settings.levels[0];\n  const pct = a.probability == null || a.probability === '' ? 'n/a' : `${Math.round(Number(a.probability) * 100)}%`;\n  const value = a.value == null || a.value === '' ? '' : `${a.value} ${String(a.value_unit).replace(/_/g, ' ')}`;\n  const headline = {\n    raise: `${level.emoji} ${level.name.toUpperCase()}: ${a.case_label ?? a.model_case} forecast at ${a.target_name}`,\n    escalate_level: `${level.emoji} ESCALATED to ${level.name.toUpperCase()}: ${a.case_label ?? a.model_case} at ${a.target_name}`,\n    reminder: `${level.emoji} REMINDER (${level.name}): ${a.case_label ?? a.model_case} at ${a.target_name} is still forecast`,\n    resolve: `${settings.levels[0].emoji} ALL CLEAR: ${a.case_label ?? a.model_case} at ${a.target_name} is back to normal`,\n    escalate_tier: `${level.emoji} UNACKNOWLEDGED ${level.name.toUpperCase()} alarm escalated to ${a.tier_name}: ${a.target_name}`,\n  }[a.action] ?? `${level.emoji} ${a.target_name}`;\n  const ackUrl = `${ackBase}?alarm_id=${encodeURIComponent(a.alarm_id)}`;\n  const lines = [\n    headline,\n    `Risk: ${a.risk_class || level.name} · alarm level ${a.level} (${level.name}) · probability ${pct}`,\n    value && `Forecast value: ${value}`,\n    `Valid at: ${a.valid_at}${a.horizon_hours ? ` (+${a.horizon_hours} h)` : ''} · model ${a.model_name || 'n/a'}`,\n    a.action === 'escalate_tier' ? `Escalated because: ${a.escalation_reason}; now with ${a.tier_name}.` : `Recipients: ${a.tier_name} (tier ${a.tier})`,\n    a.skipped_tiers?.length ? `Skipped tier ${a.skipped_tiers.join(', ')}: nobody on duty with email or WhatsApp switched on.` : '',\n    `Alarm ID: ${a.alarm_id}`,\n    a.action !== 'resolve' && `Acknowledge: ${ackUrl}`,\n  ].filter(Boolean);\n  const text = lines.join('\\n');\n  const html = `<div style=\"font-family:Arial,sans-serif;max-width:560px\">\n<div style=\"background:${level.color};color:#fff;padding:12px 16px;border-radius:6px 6px 0 0;font-weight:bold\">${headline}</div>\n<div style=\"border:1px solid #ddd;border-top:0;padding:12px 16px;border-radius:0 0 6px 6px;line-height:1.5\">\n${lines.slice(1).filter((l) => !l.startsWith('Acknowledge')).map((l) => `<div>${l}</div>`).join('\\n')}\n${a.action !== 'resolve' ? `<p><a href=\"${ackUrl}\" style=\"background:${level.color};color:#fff;padding:8px 14px;border-radius:4px;text-decoration:none\">Acknowledge alarm</a></p>` : ''}\n<p style=\"color:#777;font-size:12px\">FloodGuard flood alarm · ${new Date().toISOString()}</p></div></div>`;\n\n  // Tier escalations go to the new tier only; everything else to every tier up to the alarm's.\n  const tiers = a.action === 'escalate_tier' ? [a.tier] : Array.from({ length: a.tier }, (_, i) => i + 1);\n  // Channels switched on for this level in alert_channels (an all-clear uses the level 0 row).\n  const channels = levelChannels[a.action === 'resolve' ? 0 : a.level] ?? [];\n  for (const tierNumber of tiers) {\n    const tier = settings.tiers[tierNumber];\n    if (!tier) continue;\n    for (const channel of channels) {\n      const config = settings.channels[channel] ?? {};\n      const onDuty = roster.filter((person) => person.tier === tierNumber);\n      const recipients = channel === 'slack' ? [tier.slackChannel]\n        : (channel === 'gmail' ? onDuty.map((person) => person.email) : onDuty.map((person) => person.whatsapp)).filter(Boolean);\n      // Nobody on duty with this channel switched on: record it rather than send nothing silently.\n      for (const recipient of recipients.length ? recipients : ['(nobody on duty)']) {\n        let status = 'ready';\n        if (!recipients.length) status = 'no_recipient';\n        else if (!config.enabled) status = 'pending_auth';\n        else if (channel === 'slack' && !tier.slackWebhookUrl) status = 'not_configured';\n        else if (channel === 'whatsapp' && !config.phoneNumberId) status = 'not_configured';\n        else if (channel === 'gmail' && !config.fromEmail) status = 'not_configured';\n        out.push({ json: {\n          alarm_id: a.alarm_id, action: a.action, level: a.level, level_name: a.level_name, tier: tierNumber,\n          channel, recipient, ready: status === 'ready', delivery_status: status,\n          delivery_detail: status === 'pending_auth' ? (config.note ?? 'credential pending') : status === 'not_configured' ? 'no destination configured'\n            : status === 'no_recipient' ? `nobody on duty at tier ${tierNumber} with ${channel === 'gmail' ? 'Gmail' : 'WhatsApp'} switched on` : '',\n          slack_webhook_url: channel === 'slack' ? tier.slackWebhookUrl : '',\n          whatsapp_phone_number_id: config.phoneNumberId ?? '',\n          email_from: channel === 'gmail' && config.fromEmail ? `${config.fromName ?? 'FloodGuard alarms'} <${config.fromEmail}>` : '',\n          subject: headline.replace(/^[^A-Za-z]+/, ''), text, html,\n        } });\n      }\n    }\n  }\n}\nreturn out;\n"
+      },
+      "id": "77fd7bbb-d54c-5847-a7ab-6998015c77c5",
+      "name": "Build messages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2940,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "slack",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.ready }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Slack"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "gmail",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.ready }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Gmail"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "whatsapp",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.ready }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "WhatsApp"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Not sent (pending / no one on duty)"
+        }
+      },
+      "id": "507e7999-0e50-5d36-9f31-931eae764bbb",
+      "name": "Route by channel",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3160,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.slack_webhook_url }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json.text, unfurl_links: false }) }}",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "9131252c-42f1-5e69-811e-378df0506615",
+      "name": "Send Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3400,
+        220
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "send",
+        "fromEmail": "={{ $json.email_from }}",
+        "toEmail": "={{ $json.recipient }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "both",
+        "text": "={{ $json.text }}",
+        "html": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "47442378-c16d-510a-b61e-40c70ce55357",
+      "name": "Send Gmail",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        3400,
+        380
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "disabled": true,
+      "notes": "Gmail over SMTP. To switch on: add an SMTP credential (smtp.gmail.com, port 465, SSL, your Gmail address + app password) here, enable this node, then in Alarm settings set channels.gmail.fromEmail and enabled = true."
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $json.whatsapp_phone_number_id }}",
+        "recipientPhoneNumber": "={{ $json.recipient }}",
+        "textBody": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "id": "d38a0a28-11fb-59e4-a2e3-0344d11de737",
+      "name": "Send WhatsApp",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        3400,
+        540
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "disabled": true,
+      "notes": "Credential pending. To switch on: add a WhatsApp Business Cloud credential here, enable this node, then set channels.whatsapp.phoneNumberId and enabled = true in Alarm settings."
+    },
+    {
+      "parameters": {
+        "jsCode": "// One row per delivery attempt for the alarm_notifications data table.\nreturn $input.all().map((item, index) => {\n  const message = $('Build messages').itemMatching(index).json;\n  const result = item.json;\n  let status = result.delivery_status;\n  let detail = result.delivery_detail ?? '';\n  if (message.ready && result.text === message.text && result.channel === message.channel) {\n    // The send node handed the message straight through: it is switched off (disabled) in the workflow.\n    status = 'failed';\n    detail = `${message.channel} send node is disabled in the workflow`;\n  } else if (message.ready) {\n    const error = result.error;\n    status = error ? 'failed' : 'sent';\n    detail = error ? String(error.message ?? error.description ?? JSON.stringify(error)).slice(0, 500)\n      : String(result.id ?? result.messageId ?? result.messages?.[0]?.id ?? result.data ?? 'delivered').slice(0, 200);\n  }\n  return { json: {\n    alarm_id: message.alarm_id, action: message.action, level: Number(message.level) || 0, tier: Number(message.tier) || 1,\n    channel: message.channel, recipient: message.recipient, status, detail: detail || '',\n    message: message.text.slice(0, 1500), sent_at: new Date().toISOString(),\n  } };\n});\n"
+      },
+      "id": "207486f5-6059-5f13-b22f-2b1a1d03f6c5",
+      "name": "Delivery log row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3640,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "alarm_notifications"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ecdf7988-2800-51b2-bf0d-4a9bc67f19be",
+      "name": "Log notification",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3860,
+        380
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a5798b8e-f062-5225-a75b-796acffc7b9e",
+      "name": "Set up & test",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1180
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "flood_alarms",
+        "columns": {
+          "column": [
+            {
+              "name": "alarm_id",
+              "type": "string"
+            },
+            {
+              "name": "alarm_key",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "level",
+              "type": "number"
+            },
+            {
+              "name": "level_name",
+              "type": "string"
+            },
+            {
+              "name": "risk_class",
+              "type": "string"
+            },
+            {
+              "name": "model_case",
+              "type": "string"
+            },
+            {
+              "name": "target_id",
+              "type": "string"
+            },
+            {
+              "name": "target_name",
+              "type": "string"
+            },
+            {
+              "name": "value",
+              "type": "number"
+            },
+            {
+              "name": "value_unit",
+              "type": "string"
+            },
+            {
+              "name": "probability",
+              "type": "number"
+            },
+            {
+              "name": "issued_at",
+              "type": "string"
+            },
+            {
+              "name": "valid_at",
+              "type": "string"
+            },
+            {
+              "name": "model_name",
+              "type": "string"
+            },
+            {
+              "name": "source",
+              "type": "string"
+            },
+            {
+              "name": "tier",
+              "type": "number"
+            },
+            {
+              "name": "tier_name",
+              "type": "string"
+            },
+            {
+              "name": "escalations",
+              "type": "number"
+            },
+            {
+              "name": "notify_count",
+              "type": "number"
+            },
+            {
+              "name": "first_raised_at",
+              "type": "string"
+            },
+            {
+              "name": "last_forecast_at",
+              "type": "string"
+            },
+            {
+              "name": "last_notified_at",
+              "type": "string"
+            },
+            {
+              "name": "last_action",
+              "type": "string"
+            },
+            {
+              "name": "last_forecast_ref",
+              "type": "string"
+            },
+            {
+              "name": "acknowledged_by",
+              "type": "string"
+            },
+            {
+              "name": "acknowledged_at",
+              "type": "string"
+            },
+            {
+              "name": "resolved_at",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "e91f7a89-b0b0-547b-b353-07f044629fa6",
+      "name": "Create flood_alarms",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        340,
+        1180
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "alarm_events",
+        "columns": {
+          "column": [
+            {
+              "name": "alarm_id",
+              "type": "string"
+            },
+            {
+              "name": "event",
+              "type": "string"
+            },
+            {
+              "name": "level",
+              "type": "number"
+            },
+            {
+              "name": "tier",
+              "type": "number"
+            },
+            {
+              "name": "actor",
+              "type": "string"
+            },
+            {
+              "name": "detail",
+              "type": "string"
+            },
+            {
+              "name": "at",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "6b9c8121-d4cd-5cec-9799-567c28ded7b9",
+      "name": "Create alarm_events",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        1180
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "alarm_notifications",
+        "columns": {
+          "column": [
+            {
+              "name": "alarm_id",
+              "type": "string"
+            },
+            {
+              "name": "action",
+              "type": "string"
+            },
+            {
+              "name": "level",
+              "type": "number"
+            },
+            {
+              "name": "tier",
+              "type": "number"
+            },
+            {
+              "name": "channel",
+              "type": "string"
+            },
+            {
+              "name": "recipient",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "detail",
+              "type": "string"
+            },
+            {
+              "name": "message",
+              "type": "string"
+            },
+            {
+              "name": "sent_at",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "7b6b6ae6-8f8d-5ac5-bb0d-04552ee53bc3",
+      "name": "Create alarm_notifications",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        780,
+        1180
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "duty_roster",
+        "columns": {
+          "column": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "role",
+              "type": "string"
+            },
+            {
+              "name": "tier",
+              "type": "number"
+            },
+            {
+              "name": "email",
+              "type": "string"
+            },
+            {
+              "name": "whatsapp",
+              "type": "string"
+            },
+            {
+              "name": "gmail_on",
+              "type": "boolean"
+            },
+            {
+              "name": "whatsapp_on",
+              "type": "boolean"
+            },
+            {
+              "name": "on_duty",
+              "type": "boolean"
+            },
+            {
+              "name": "notes",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "8ecd3830-c24d-5781-ace7-ae625c740ab4",
+      "name": "Create duty_roster",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        1180
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "alert_channels",
+        "columns": {
+          "column": [
+            {
+              "name": "level",
+              "type": "number"
+            },
+            {
+              "name": "level_name",
+              "type": "string"
+            },
+            {
+              "name": "slack",
+              "type": "boolean"
+            },
+            {
+              "name": "gmail",
+              "type": "boolean"
+            },
+            {
+              "name": "whatsapp",
+              "type": "boolean"
+            },
+            {
+              "name": "notes",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "6a116f0e-6440-53e2-b7c0-963886770c6e",
+      "name": "Create alert_channels",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        1180
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "duty_roster"
+        },
+        "returnAll": true
+      },
+      "id": "04c9f847-4928-51af-98cd-529b0e57cc01",
+      "name": "Setup: read duty_roster",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        340,
+        1420
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Example duty roster, added only while duty_roster is empty: your own rows are never changed.\n// gmail_on / whatsapp_on switch each person's email and WhatsApp alerts on or off.\nif ($('Setup: read duty_roster').all().some((item) => item.json.name)) return [{ json: { skip: true } }];\nreturn [\n  { name: 'Duty officer A (Lahore)',  role: 'District duty officer', tier: 1, email: 'duty-officer-a@example.org', whatsapp: '+923000000011', gmail_on: true,  whatsapp_on: true,  on_duty: true,  notes: 'Example: email and WhatsApp' },\n  { name: 'Duty officer B (Multan)',  role: 'District duty officer', tier: 1, email: 'duty-officer-b@example.org', whatsapp: '+923000000012', gmail_on: true,  whatsapp_on: true,  on_duty: false, notes: 'Example: off duty' },\n  { name: 'Duty officer C (Sialkot)', role: 'District duty officer', tier: 1, email: '',                           whatsapp: '+923000000013', gmail_on: false, whatsapp_on: true,  on_duty: true,  notes: 'Example: WhatsApp only' },\n  { name: 'PDMA control room',        role: 'PDMA supervisor',       tier: 2, email: 'pdma-control@example.org',   whatsapp: '+923000000021', gmail_on: true,  whatsapp_on: false, on_duty: true,  notes: 'Example: email only' },\n  { name: 'NDMA national command',    role: 'NDMA coordinator',      tier: 3, email: 'ndma-command@example.org',   whatsapp: '+923000000031', gmail_on: true,  whatsapp_on: true,  on_duty: true,  notes: 'Example: email and WhatsApp' },\n].map((json) => ({ json }));\n"
+      },
+      "id": "2b18691f-3183-5a4b-a9f3-c4183f6381bf",
+      "name": "Example roster",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        1420
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.skip === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c0f04ca9-4de4-5ee1-85cb-8a1d09b6827f",
+      "name": "Roster already filled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        780,
+        1420
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "duty_roster"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "06779ca8-d980-503e-bce5-9e37f2da9e7c",
+      "name": "Add example roster",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        1560
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "alert_channels"
+        },
+        "returnAll": true
+      },
+      "id": "15833bb2-49d5-5a05-9e59-0daf070196b4",
+      "name": "Setup: read alert_channels",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        1420
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Default channels per alarm level, added only while alert_channels is empty.\nif ($('Setup: read alert_channels').all().some((item) => item.json.level !== undefined && item.json.level !== null)) return [{ json: { skip: true } }];\nreturn [\n  { level: 0, level_name: 'Normal (all-clear)', slack: true, gmail: true,  whatsapp: false, notes: 'Sent when an alarm closes' },\n  { level: 1, level_name: 'Watch',              slack: true, gmail: false, whatsapp: false, notes: '' },\n  { level: 2, level_name: 'Warning',            slack: true, gmail: true,  whatsapp: false, notes: '' },\n  { level: 3, level_name: 'Danger',             slack: true, gmail: true,  whatsapp: true,  notes: '' },\n  { level: 4, level_name: 'Extreme',            slack: true, gmail: true,  whatsapp: true,  notes: '' },\n].map((json) => ({ json }));\n"
+      },
+      "id": "18522d66-1a0b-508d-be2c-5cb327d5cdbb",
+      "name": "Example channels",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        1420
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.skip === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e9ace4d3-7444-571a-88b1-16a8218d004e",
+      "name": "Channels already filled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1660,
+        1420
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "alert_channels"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "bff392b0-7317-5ed4-91d4-d9d8d15fa68e",
+      "name": "Add example channels",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1880,
+        1560
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mock-slack",
+        "responseMode": "onReceived",
+        "options": {
+          "responseData": "ok"
+        }
+      },
+      "id": "a8fc019e-cafb-58d8-b379-ac800a1f403e",
+      "name": "Mock Slack",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        1700
+      ],
+      "webhookId": "86cb864c-7d4e-5e39-87c2-18bcc6fd4f3d"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mock-backend",
+        "responseMode": "onReceived",
+        "options": {
+          "responseData": "ok"
+        }
+      },
+      "id": "efc0d72d-58c1-5f41-935a-b356bf8107c8",
+      "name": "Mock backend",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        220,
+        1700
+      ],
+      "webhookId": "8f33ebf3-f0db-5b2b-9346-5ff108b3a1e3"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "alarm_notifications"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "eb5ff909-af1d-5749-b415-afebbe4e35d6",
+      "name": "Log callback",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        4040,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Test stand-ins\n**Mock Slack** and **Mock backend** answer like a Slack incoming webhook and the FloodGuard API, so alerts can be tested before the real ones are connected.",
+        "height": 110,
+        "width": 480,
+        "color": 7
+      },
+      "id": "ac05fa0a-8757-55fa-9f5e-c53b9c523902",
+      "name": "Test stand-ins",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        1560
+      ]
+    }
+  ],
+  "connections": {
+    "Forecast webhook": {
+      "main": [
+        [
+          {
+            "node": "Alarm settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dummy flood forecasts": {
+      "main": [
+        [
+          {
+            "node": "Alarm settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escalation check": {
+      "main": [
+        [
+          {
+            "node": "Alarm settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge link": {
+      "main": [
+        [
+          {
+            "node": "Alarm settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alarm settings": {
+      "main": [
+        [
+          {
+            "node": "Load duty roster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load duty roster": {
+      "main": [
+        [
+          {
+            "node": "Load alert channels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load alert channels": {
+      "main": [
+        [
+          {
+            "node": "Duty roster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Duty roster": {
+      "main": [
+        [
+          {
+            "node": "Which input?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Which input?": {
+      "main": [
+        [
+          {
+            "node": "Normalize & classify",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Load unacknowledged alarms",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark acknowledged",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize & classify": {
+      "main": [
+        [
+          {
+            "node": "Load open alarms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load open alarms": {
+      "main": [
+        [
+          {
+            "node": "Decide action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load unacknowledged alarms": {
+      "main": [
+        [
+          {
+            "node": "Due for escalation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark acknowledged": {
+      "main": [
+        [
+          {
+            "node": "Acknowledgement page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide action": {
+      "main": [
+        [
+          {
+            "node": "Alarm row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reply summary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alarm events",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Due for escalation": {
+      "main": [
+        [
+          {
+            "node": "Alarm row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alarm events",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alarm row": {
+      "main": [
+        [
+          {
+            "node": "Save alarm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply summary": {
+      "main": [
+        [
+          {
+            "node": "Reply to portal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alarm events": {
+      "main": [
+        [
+          {
+            "node": "Log event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log event": {
+      "main": [
+        [
+          {
+            "node": "Callback payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback payload": {
+      "main": [
+        [
+          {
+            "node": "Backend callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Backend callback": {
+      "main": [
+        [
+          {
+            "node": "Callback log row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build messages": {
+      "main": [
+        [
+          {
+            "node": "Route by channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by channel": {
+      "main": [
+        [
+          {
+            "node": "Send Slack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delivery log row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack": {
+      "main": [
+        [
+          {
+            "node": "Delivery log row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Gmail": {
+      "main": [
+        [
+          {
+            "node": "Delivery log row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Delivery log row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delivery log row": {
+      "main": [
+        [
+          {
+            "node": "Log notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback log row": {
+      "main": [
+        [
+          {
+            "node": "Log callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set up & test": {
+      "main": [
+        [
+          {
+            "node": "Create flood_alarms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create flood_alarms": {
+      "main": [
+        [
+          {
+            "node": "Create alarm_events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create alarm_events": {
+      "main": [
+        [
+          {
+            "node": "Create alarm_notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create alarm_notifications": {
+      "main": [
+        [
+          {
+            "node": "Create duty_roster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create duty_roster": {
+      "main": [
+        [
+          {
+            "node": "Create alert_channels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create alert_channels": {
+      "main": [
+        [
+          {
+            "node": "Setup: read duty_roster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup: read duty_roster": {
+      "main": [
+        [
+          {
+            "node": "Example roster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Example roster": {
+      "main": [
+        [
+          {
+            "node": "Roster already filled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Roster already filled?": {
+      "main": [
+        [
+          {
+            "node": "Setup: read alert_channels",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add example roster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add example roster": {
+      "main": [
+        [
+          {
+            "node": "Setup: read alert_channels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup: read alert_channels": {
+      "main": [
+        [
+          {
+            "node": "Example channels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Example channels": {
+      "main": [
+        [
+          {
+            "node": "Channels already filled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Channels already filled?": {
+      "main": [
+        [
+          {
+            "node": "Dummy flood forecasts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add example channels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add example channels": {
+      "main": [
+        [
+          {
+            "node": "Dummy flood forecasts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledgement page": {
+      "main": [
+        [
+          {
+            "node": "Alarm events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodeGroups": [
+    {
+      "id": "ff888fcd-ffd6-5c0c-a503-2a68c59acd69",
+      "name": "Load settings & duty roster",
+      "description": "Reads Alarm settings, who is on duty (duty_roster) and the channels per level (alert_channels), then routes by input.",
+      "nodeIds": [
+        "1939fa55-3e43-52b5-bb72-ac0263316d00",
+        "e0ddd5a6-b85f-5fcd-ba98-97a282d0fc1d",
+        "1c97ddbd-3f65-53a1-89e0-04acea9fceab",
+        "39cc2c4a-645d-5100-9f76-eac588c37ece",
+        "e8e9b668-b7e6-5d67-b517-bd255a7acfc9"
+      ]
+    },
+    {
+      "id": "db8f28fd-2df9-5ae9-8d78-a25923933858",
+      "name": "Validate & decide",
+      "description": "Checks each forecast, gives it an alarm level, compares it with the open alarm and decides: raise, escalate, remind, resolve or ignore.",
+      "nodeIds": [
+        "c5c7689f-eb17-55d6-8f4a-7710a46f94b3",
+        "c4e44476-bc27-5050-9f02-4d85b2df7b6c",
+        "3ff86cb9-9a8f-59bd-9748-235bfff2844d"
+      ]
+    },
+    {
+      "id": "2e97d7c8-edbd-55c4-aa94-8e320741b60a",
+      "name": "Reply to portal",
+      "description": "Answers the portal's request: 202 accepted, 400 nothing usable or 401 wrong key, with what happened to each forecast.",
+      "nodeIds": [
+        "cb25f2e0-71e0-5916-b354-1661aeec2f0e",
+        "cc65941d-133c-5fc1-a4d1-a155e56dc4d2"
+      ]
+    },
+    {
+      "id": "cd9948f8-ecfa-5cc1-bf6d-868275bed139",
+      "name": "Escalate unacknowledged alarms",
+      "description": "Every 5 min: open alarms nobody acknowledged in time move up a tier (District, PDMA, NDMA). Tiers nobody can be reached at are skipped.",
+      "nodeIds": [
+        "4517aae4-c990-503b-bb07-912bc785d597",
+        "cce6e162-aa9f-51e0-9882-066f64bdfd10"
+      ]
+    },
+    {
+      "id": "05db5fb8-79a2-552d-83fb-ce5a59cbbadf",
+      "name": "Record acknowledgement",
+      "description": "The Acknowledge link in an alert marks the alarm acknowledged, which stops tier escalation, and shows a confirmation page.",
+      "nodeIds": [
+        "6928a28c-9823-5fba-8485-d5c74bf6bfc8",
+        "4b9d0233-e07e-551b-9301-2e08753d6491"
+      ]
+    },
+    {
+      "id": "eac6c536-20ab-56d3-8ab7-3a75e739c6ff",
+      "name": "Save alarm",
+      "description": "Writes the alarm's new state to flood_alarms, one row per alarm.",
+      "nodeIds": [
+        "fbdb4cf9-2b2e-5c73-9324-dcbecbf34d47",
+        "b31a51ca-c435-5eb3-8101-1a25f7c32038"
+      ]
+    },
+    {
+      "id": "96cf2596-5bd3-5b2d-8463-2d69c4d82bf6",
+      "name": "Notify on duty officers",
+      "description": "Builds one message per channel and person on duty, sends by Slack, Gmail or WhatsApp, and logs every attempt in alarm_notifications.",
+      "nodeIds": [
+        "77fd7bbb-d54c-5847-a7ab-6998015c77c5",
+        "507e7999-0e50-5d36-9f31-931eae764bbb",
+        "9131252c-42f1-5e69-811e-378df0506615",
+        "47442378-c16d-510a-b61e-40c70ce55357",
+        "d38a0a28-11fb-59e4-a2e3-0344d11de737",
+        "207486f5-6059-5f13-b22f-2b1a1d03f6c5",
+        "ecdf7988-2800-51b2-bf0d-4a9bc67f19be"
+      ]
+    },
+    {
+      "id": "19cc23e6-f1d3-59ee-83a0-cebb3f336b18",
+      "name": "Audit trail & backend callback",
+      "description": "Writes each alarm change to alarm_events and posts it to the FloodGuard backend; the call is logged too.",
+      "nodeIds": [
+        "cee6c8d1-2d7d-5a13-b516-aebde509b5f7",
+        "2c4dbd10-c75c-5b04-84db-5c34c11834ca",
+        "b6f716c7-5fa1-50e5-ae5d-cd22ff9a1be5",
+        "8c3cd917-a2be-531f-ba36-49258669343b",
+        "604ec32d-2cba-5585-9434-54d6a75f48d5",
+        "eb5ff909-af1d-5749-b415-afebbe4e35d6"
+      ]
+    },
+    {
+      "id": "3e999e14-29c3-57b1-b5c2-9e5f9bbe35ee",
+      "name": "Set up tables & test data",
+      "description": "Creates missing tables, adds example rows to an empty duty_roster and alert_channels, then sends dummy forecasts.",
+      "nodeIds": [
+        "e91f7a89-b0b0-547b-b353-07f044629fa6",
+        "6b9c8121-d4cd-5cec-9799-567c28ded7b9",
+        "7b6b6ae6-8f8d-5ac5-bb0d-04552ee53bc3",
+        "8ecd3830-c24d-5781-ace7-ae625c740ab4",
+        "6a116f0e-6440-53e2-b7c0-963886770c6e",
+        "04c9f847-4928-51af-98cd-529b0e57cc01",
+        "2b18691f-3183-5a4b-a9f3-c4183f6381bf",
+        "c0f04ca9-4de4-5ee1-85cb-8a1d09b6827f",
+        "06779ca8-d980-503e-bce5-9e37f2da9e7c",
+        "15833bb2-49d5-5a05-9e59-0daf070196b4",
+        "18522d66-1a0b-508d-be2c-5cb327d5cdbb",
+        "e9ace4d3-7444-571a-88b1-16a8218d004e",
+        "bff392b0-7317-5ed4-91d4-d9d8d15fa68e",
+        "3ab37ef6-a0a4-5bf3-a7ba-1b24a441542d"
+      ]
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Karachi",
+    "saveManualExecutions": true
+  },
+  "active": false,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "85f20d852ebd55",
+  "tags": []
+}

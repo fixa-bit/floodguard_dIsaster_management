@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, CloudRain, Info, Mountain, Waves } from "lucide-react";
+import { Activity, AlertTriangle, CloudRain, Cpu, Info, Mountain, Waves } from "lucide-react";
 import { useMemo, useRef, useState, type KeyboardEvent } from "react";
 
 import type { DashboardData } from "../hooks/useDashboardData";
@@ -7,24 +7,65 @@ import { formatDateTime } from "../utils/format";
 import { PredictiveInputsDialog } from "./PredictiveInputsDialog";
 import { TenYearRiskOutlook } from "./TenYearRiskOutlook";
 import { MaralaMonthlyTab } from "./MaralaMonthlyTab";
+import { MaralaStationForecast } from "./MaralaStationForecast";
 import "../ten-year-risk-outlook.css";
+import "../near-term-screening.css";
 
 type RiskMode = "near-term" | "ten-year";
-type RiverineMode = "short-term" | "monthly-marala";
+type RiverineMode = "daily-gauge" | "monthly-marala";
+type ModelStatus = "model" | "trained" | "none";
 
-interface RiskView {
-  id: string;
+interface DummyView {
+  id: "flash" | "urban" | "seasonal" | "upstream";
   title: string;
-  horizon: string;
-  scope: string;
-  predicts: string;
-  model: string;
-  detail: string;
   issuedAt: string | null;
   target: string;
-  outputPoints?: string[];
+  inputs: string;
   Icon: typeof Waves;
 }
+
+interface RegisterRow {
+  id: string;
+  title: string;
+  status: ModelStatus;
+  statusLabel: string;
+  model: string;
+  evidence: string;
+  graph: string;
+}
+
+const REGISTER: RegisterRow[] = [
+  {
+    id: "riverine", title: "Riverine short-term", status: "model", statusLabel: "Model output",
+    model: "Marala station gauge forecast — ridge regression / baseline chosen per lead",
+    evidence: "2026 held-out season: +7 d 9.5% lower error than persistence; +1 d tie; +3 d worse",
+    graph: "Real model output",
+  },
+  {
+    id: "flash", title: "Flash flood", status: "trained", statusLabel: "Trained · not connected",
+    model: "LightGBM, 20 km grid, next-24 h report-onset chance (imported flood_model)",
+    evidence: "Test 2022 – Jan 2026: PR-AUC 0.062 vs 0.035 climatology; needs a daily grid input feed",
+    graph: "Dummy output",
+  },
+  {
+    id: "urban", title: "Urban flooding", status: "none", statusLabel: "No model",
+    model: "No trained urban model or artifact in the project",
+    evidence: "—",
+    graph: "Dummy output",
+  },
+  {
+    id: "seasonal", title: "Seasonal basin", status: "none", statusLabel: "No near-term model",
+    model: "Real Marala monthly outlook exists — see Riverine › Monthly Marala",
+    evidence: "Monthly model has its own validation in that tab",
+    graph: "Dummy output",
+  },
+  {
+    id: "upstream", title: "Upstream / transboundary", status: "none", statusLabel: "No project model",
+    model: "External GloFAS forecasts only — on the Upstream Source Flood Watch page",
+    evidence: "—",
+    graph: "Dummy output",
+  },
+];
 
 function maxNumber(values: Array<number | null | undefined>) {
   const numbers = values.filter((value): value is number => value !== null && value !== undefined && !Number.isNaN(value));
@@ -54,7 +95,34 @@ function pointsForTarget(points: ModelForecastPoint[], targetId: string | undefi
     .sort((a, b) => a.horizon_hours - b.horizon_hours);
 }
 
-function ForecastIntervalGraph({
+function ModelRegister({ onOpenMonthly }: { onOpenMonthly: () => void }) {
+  return (
+    <section className="near-term-register" aria-label="Which near-term views use a real model">
+      <header>
+        <h3>Model register</h3>
+        <p>Only one near-term view is backed by a trained model with saved output. Every other graph is dummy output and is marked as such.</p>
+      </header>
+      <div className="register-table-wrap">
+        <table className="register-table">
+          <thead><tr><th scope="col">View</th><th scope="col">Status</th><th scope="col">Model in project</th><th scope="col">Validation evidence</th><th scope="col">Graph shows</th></tr></thead>
+          <tbody>
+            {REGISTER.map((row) => (
+              <tr key={row.id} className={`register-${row.status}`}>
+                <th scope="row">{row.title}</th>
+                <td><span className={`register-pill pill-${row.status}`}>{row.statusLabel}</span></td>
+                <td>{row.id === "seasonal" ? <>Real Marala monthly outlook exists — <button type="button" className="register-link" onClick={onOpenMonthly}>open Riverine › Monthly Marala</button></> : row.model}</td>
+                <td>{row.evidence}</td>
+                <td className={row.status === "model" ? "graph-real" : "graph-dummy"}>{row.graph}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function DummyForecastGraph({
   points,
   selectedTarget,
   onTargetChange,
@@ -63,19 +131,12 @@ function ForecastIntervalGraph({
   selectedTarget: string | undefined;
   onTargetChange: (targetId: string) => void;
 }) {
-  const targetLabel = (point: ModelForecastPoint) => {
-    if (point.model_case === "riverine") {
-      if (point.target_id === "trimmu") return "Chenab — Marala";
-      if (point.target_id === "balloki") return "Ravi — Jassar";
-    }
-    return point.target_name;
-  };
-  const targets = Array.from(new Map(points.map((point) => [point.target_id, targetLabel(point)])).entries());
+  const targets = Array.from(new Map(points.map((point) => [point.target_id, point.target_name])).entries());
   const series = pointsForTarget(points, selectedTarget);
   if (!series.length) {
     return (
       <div className="forecast-graph-empty">
-        <span>No stored forecast series yet</span>
+        <span>No dummy series loaded</span>
       </div>
     );
   }
@@ -84,29 +145,21 @@ function ForecastIntervalGraph({
   const rawMax = Math.max(...series.map((point) => point.value), 1);
   const tickStep = 10 ** Math.floor(Math.log10(rawMax)) / 2;
   const maxValue = percentLike ? 100 : Math.ceil(rawMax * 1.1 / tickStep) * tickStep;
-  const minValue = 0;
-  const valueRange = Math.max(maxValue - minValue, 1);
   const width = 640;
   const height = 270;
   const left = 70, right = 30, top = 35, bottom = 55;
   const maxHorizon = Math.max(...series.map(point => point.horizon_hours), 1);
   const xFor = (hours: number) => left + hours / maxHorizon * (width - left - right);
-  const yFor = (value: number) => top + (1 - (value - minValue) / valueRange) * (height - top - bottom);
-  const axisLabel = unit === "cumecs" ? "Discharge (m³/s)" : unit.replaceAll("_", " ");
-  const path = series
-    .map((point, index) => {
-      const x = xFor(point.horizon_hours);
-      const y = yFor(point.value);
-      return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
-    })
-    .join(" ");
+  const yFor = (value: number) => top + (1 - value / Math.max(maxValue, 1)) * (height - top - bottom);
+  const unitLabel = unit === "cumecs" ? "m³/s" : unit.replaceAll("_", " ");
+  const axisLabel = unit === "cumecs" ? "Discharge (m³/s)" : unitLabel;
+  const path = series.map((point, index) => `${index === 0 ? "M" : "L"} ${xFor(point.horizon_hours).toFixed(2)} ${yFor(point.value).toFixed(2)}`).join(" ");
   const latest = series[series.length - 1];
-  const demonstration = series.some((point) => point.point_metadata.simulation_source === "dummy_model_forecast_v3");
 
   return (
-    <div className="forecast-graph">
-      {demonstration && <span className="forecast-example-label">Demonstration data · illustrative values</span>}
-      <div className="forecast-target-tabs" aria-label="Forecast target selector">
+    <div className="forecast-graph dummy-graph">
+      <div className="dummy-banner" role="note"><AlertTriangle size={12} /> Dummy output — not produced by any model. Shape and values are placeholders.</div>
+      {targets.length > 1 && <div className="forecast-target-tabs" aria-label="Dummy series selector">
         {targets.map(([targetId, targetName]) => (
           <button
             className={targetId === (selectedTarget ?? series[0].target_id) ? "active" : ""}
@@ -117,8 +170,15 @@ function ForecastIntervalGraph({
             {targetName}
           </button>
         ))}
-      </div>
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${targetLabel(latest)} forecast interval graph`}>
+      </div>}
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`Dummy output graph for ${latest.target_name}; not a forecast`}>
+        <defs>
+          <pattern id="dummy-hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" className="dummy-hatch-line" />
+          </pattern>
+        </defs>
+        <rect x={left} y={top} width={width - left - right} height={height - top - bottom} fill="url(#dummy-hatch)" />
+        <text className="dummy-watermark" x={left + (width - left - right) / 2} y={top + (height - top - bottom) / 2} textAnchor="middle" dominantBaseline="middle" transform={`rotate(-12 ${left + (width - left - right) / 2} ${top + (height - top - bottom) / 2})`}>DUMMY OUTPUT</text>
         <text x={left} y="16" className="forecast-axis-title">{axisLabel}</text>
         {[0, 1, 2, 3, 4].map(step => {
           const value = maxValue * step / 4;
@@ -129,68 +189,28 @@ function ForecastIntervalGraph({
           return <text key={step} x={xFor(hours)} y={height - bottom + 23} textAnchor="middle">{formatHorizon(hours)}</text>;
         })}
         <text x={left + (width - left - right) / 2} y={height - 5} textAnchor="middle">Hours after issue time</text>
-        <path d={path} />
-        {series.map((point) => {
-          const x = xFor(point.horizon_hours);
-          const y = yFor(point.value);
-          return <circle cx={x} cy={y} key={`${point.target_id}-${point.horizon_hours}`} r="3.5"><title>{formatHorizon(point.horizon_hours)}: {point.value.toLocaleString()} {unit === "cumecs" ? "m³/s" : unit.replaceAll("_", " ")}</title></circle>;
-        })}
+        <path className="dummy-line" d={path} />
+        {series.map((point) => (
+          <circle className="dummy-dot" cx={xFor(point.horizon_hours)} cy={yFor(point.value)} key={`${point.target_id}-${point.horizon_hours}`} r="3.5">
+            <title>Dummy {formatHorizon(point.horizon_hours)}: {point.value.toLocaleString()} {unitLabel} — placeholder, not a forecast</title>
+          </circle>
+        ))}
       </svg>
-      <div className="forecast-graph-summary">
-        <strong>{latest.value.toLocaleString()} {latest.value_unit.replaceAll("_", " ")}</strong>
-        <span>{latest.risk_class} at {formatHorizon(latest.horizon_hours)}</span>
-      </div>
     </div>
   );
 }
 
-function RiverineModelFlow() {
+function FlashFloodModelFacts() {
   return (
-    <div className="riverine-model-flow" aria-label="Riverine model flow">
-      <div className="riverine-flow-header">
-        <span>Current inputs</span>
-      </div>
-      <div className="riverine-feature-groups">
-        <span>Current risk summary</span>
-        <span>Current + next-day discharge</span>
-        <span>Rising or warning river status</span>
-      </div>
-      <div className="riverine-station-table">
-        <div><span>Example target</span><span>Horizon</span><span>Graph</span></div>
-        <div><strong>Chenab — Marala</strong><span>+24h</span><span>Demo series</span></div>
-        <div><strong>Ravi — Jassar</strong><span>+48h</span><span>Demo series</span></div>
-      </div>
-    </div>
-  );
-}
-
-function FlashFloodModelFlow() {
-  return (
-    <div className="flash-flood-model-flow" aria-label="Flash-flood model flow">
-      <div className="flash-flow-header">
-        <span>Current inputs</span>
-      </div>
-      <div className="flash-feature-grid">
-        <span>Current rainfall</span>
-        <span>Forecast rain 6h + 24h</span>
-        <span>Mean soil moisture</span>
-      </div>
-    </div>
-  );
-}
-
-function UrbanFloodModelFlow() {
-  return (
-    <div className="urban-flood-model-flow" aria-label="Urban flooding model flow">
-      <div className="urban-flow-header">
-        <span>Current inputs</span>
-      </div>
-      <div className="urban-feature-grid">
-        <span>Forecast rain 6h + 24h</span>
-        <span>Mean soil moisture</span>
-        <span>Any citizen report</span>
-      </div>
-      <p>Example grid curves are for illustration.</p>
+    <div className="trained-model-facts" aria-label="Trained flash-flood model in the project">
+      <strong><Cpu size={13} /> Trained model in the project — not yet connected</strong>
+      <p>LightGBM ranks every 20 km cell in Pakistan by the chance a flash-flood report starts there in the next 24 h. Labels are Groundsource news reports, so treat it as a ranking, not a probability of flooding.</p>
+      <dl>
+        <div><dt>PR-AUC (test)</dt><dd>0.062 <small>vs 0.035 climatology</small></dd></div>
+        <div><dt>Daily top 5% of cells</dt><dd>40% <small>of onsets caught</small></dd></div>
+        <div><dt>Chenab districts</dt><dd>0.070 <small>vs 0.048</small></dd></div>
+      </dl>
+      <p className="trained-model-gap">To connect: a daily IMERG rain + ERA5-Land grid feed for its inputs. Until then the graph above is dummy output.</p>
     </div>
   );
 }
@@ -198,12 +218,17 @@ function UrbanFloodModelFlow() {
 export function FloodRiskMultiView({ data }: { data: DashboardData }) {
   const [mode, setMode] = useState<RiskMode>("near-term");
   const modeTabs = useRef<HTMLDivElement>(null);
+  const riverineCard = useRef<HTMLElement>(null);
   const [selectedTargets, setSelectedTargets] = useState<Record<string, string>>({});
-  const [riverineMode, setRiverineMode] = useState<RiverineMode>("short-term");
+  const [riverineMode, setRiverineMode] = useState<RiverineMode>("daily-gauge");
   const [showInputs, setShowInputs] = useState(false);
   function selectMode(nextMode: RiskMode) {
     setShowInputs(false);
     setMode(nextMode);
+  }
+  function openMonthly() {
+    setRiverineMode("monthly-marala");
+    riverineCard.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
   function handleModeKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     const modes: RiskMode[] = ["near-term", "ten-year"];
@@ -218,78 +243,38 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
     selectMode(nextMode);
     modeTabs.current?.querySelector<HTMLButtonElement>(`#risk-mode-${nextMode}`)?.focus();
   }
-  const views = useMemo<RiskView[]>(() => {
+  const dummyViews = useMemo<DummyView[]>(() => {
     const maxRain24 = maxNumber(data.locationWeather.map((weather) => weather.forecast_rainfall_next_24h_mm));
     const maxRain6 = maxNumber(data.locationWeather.map((weather) => weather.forecast_rainfall_next_6h_mm));
     const maxRainCurrent = maxNumber(data.locationWeather.map((weather) => weather.rainfall_current_mm));
     const soil = average(data.locationWeather.map((weather) => weather.soil_moisture_percent));
-    const maxDischarge = maxNumber(data.locationRivers.map((river) => river.discharge_cumecs));
-    const maxForecastDischarge = maxNumber(data.locationRivers.map((river) => river.forecast_discharge_next_24h_cumecs));
     const maxPositiveChange = maxNumber(data.locationRivers.map((river) => Math.max(river.discharge_change_cumecs_per_day ?? 0, 0)));
     const driestRainSignal = data.locationWeather.length > 0 && maxRain24 <= 2 && maxRain6 <= 1;
     const riverIssuedAt = data.locationRivers[0]?.official_recording_time ?? data.river?.official_recording_time ?? data.locationRivers[0]?.timestamp ?? data.river?.timestamp ?? null;
     const weatherIssuedAt = data.locationWeather[0]?.timestamp ?? data.weather?.timestamp ?? null;
-    const urbanTargetLabel = "Islamabad / Rawalpindi / Lahore grid cells";
-
     return [
       {
-        id: "riverine",
-        title: "Riverine Short-Term",
-        horizon: "Current signal",
-        scope: "Regional river screening; example graphs for Chenab — Marala and Ravi — Jassar",
-        predicts: "Current and next-day discharge summary",
-        model: "Dashboard river inputs; graph uses example data",
-        detail: `Max discharge ${Math.round(maxDischarge).toLocaleString()} cumecs; forecast ${Math.round(maxForecastDischarge).toLocaleString()} cumecs.`,
-        issuedAt: riverIssuedAt,
-        target: "Stations: Chenab — Marala +24h; Ravi — Jassar +48h",
-        Icon: Waves,
-      },
-      {
-        id: "flash",
-        title: "Flash Flood",
-        horizon: "Current signal",
-        scope: "Regional rainfall screening; example catchment graphs",
-        predicts: "Rainfall and soil moisture summary",
-        model: "Dashboard weather inputs; graph uses example data",
-        detail: `Rain now ${maxRainCurrent.toFixed(1)} mm; 6h rain ${maxRain6.toFixed(1)} mm; soil moisture avg ${soil.toFixed(0)}%.`,
-        issuedAt: weatherIssuedAt,
-        target: "Catchments: hill torrents, streams, urban drains",
+        id: "flash", title: "Flash Flood", issuedAt: weatherIssuedAt,
+        target: "Dummy targets: hill torrents, Rawalpindi and Islamabad streams",
+        inputs: `Rain now ${maxRainCurrent.toFixed(1)} mm; next 6 h ${maxRain6.toFixed(1)} mm; mean soil moisture ${soil.toFixed(0)}%.`,
         Icon: CloudRain,
       },
       {
-        id: "urban",
-        title: "Urban Flooding",
-        horizon: "Current signal",
-        scope: "Regional urban screening; example city grids",
-        predicts: "Forecast rainfall and citizen report summary",
-        model: "Dashboard rain and reports; graph uses example data",
-        detail: `Forecast rain ${maxRain6.toFixed(1)} mm in 6h; ${data.reports.length} citizen reports in system.`,
-        issuedAt: weatherIssuedAt,
-        target: urbanTargetLabel,
+        id: "urban", title: "Urban Flooding", issuedAt: weatherIssuedAt,
+        target: "Dummy targets: Islamabad / Rawalpindi / Lahore grid cells",
+        inputs: `Forecast rain ${maxRain6.toFixed(1)} mm in 6 h; ${data.reports.length} citizen reports in the system.`,
         Icon: CloudRain,
       },
       {
-        id: "seasonal",
-        title: "Seasonal Basin Risk",
-        horizon: "Current signal",
-        scope: "National screening; example basin graph",
-        predicts: "Current national risk and weather context",
-        model: "Dashboard context; weeks-ahead graph is example data",
-        detail: "Current dashboard context only; the example graph is not a seasonal forecast.",
-        issuedAt: data.nationalRisk?.metadata.generated_at ?? data.risk?.timestamp ?? null,
-        target: "National basin summary",
+        id: "seasonal", title: "Seasonal Basin Risk", issuedAt: data.nationalRisk?.metadata.generated_at ?? data.risk?.timestamp ?? null,
+        target: "Dummy target: national basin summary",
+        inputs: "No near-term seasonal model. The real monthly Marala model is under Riverine › Monthly Marala.",
         Icon: Mountain,
       },
       {
-        id: "upstream",
-        title: "Upstream / Transboundary",
-        horizon: "Current signal",
-        scope: "Regional discharge-change screening; example downstream graph",
-        predicts: "Discharge change and local rainfall context",
-        model: "Dashboard flow and rain inputs; graph uses example data",
-        detail: `Positive modeled discharge change ${Math.round(maxPositiveChange).toLocaleString()} cumecs/day while local forecast rain signal is ${driestRainSignal ? "low" : "active"}.`,
-        issuedAt: riverIssuedAt,
-        target: "Downstream river reaches",
+        id: "upstream", title: "Upstream / Transboundary", issuedAt: riverIssuedAt,
+        target: "Dummy target: downstream river reaches",
+        inputs: `Largest rise in modeled discharge ${Math.round(maxPositiveChange).toLocaleString()} m³/s per day; local forecast rain is ${driestRainSignal ? "low" : "active"}.`,
         Icon: Activity,
       },
     ];
@@ -320,51 +305,55 @@ export function FloodRiskMultiView({ data }: { data: DashboardData }) {
         ))}
       </div>
       <div role="tabpanel" id="risk-panel-near-term" aria-labelledby="risk-mode-near-term" hidden={mode !== "near-term"} tabIndex={0}>
-        <div className="predictive-risk-toolbar"><p>Current flood-related inputs and example interval series.</p><button type="button" onClick={() => setShowInputs(true)}><Info size={15} /> Inputs & model</button></div>
+        <div className="predictive-risk-toolbar"><p>Riverine shows real model output. Every other graph is dummy output, marked on the graph.</p><button type="button" onClick={() => setShowInputs(true)}><Info size={15} /> Inputs & model</button></div>
         {showInputs && <PredictiveInputsDialog data={data} onClose={() => setShowInputs(false)} />}
+        <ModelRegister onOpenMonthly={openMonthly} />
         <div className="multiview-shell">
           <div className="multiview-grid">
-          {views.map(({ id, title, horizon, scope, predicts, model, detail, issuedAt, target, outputPoints, Icon }) => {
-            const isRiverineMonthly = id === "riverine" && riverineMode === "monthly-marala";
-            return <article className={`multiview-card${isRiverineMonthly ? " riverine-monthly-card" : ""}`} key={id}>
+            <article className={`multiview-card near-term-real-card${riverineMode === "monthly-marala" ? " riverine-monthly-card" : ""}`} ref={riverineCard}>
               <div className="multiview-card-head">
-                <Icon size={15} />
-                <div><strong>{isRiverineMonthly ? "Marala Monthly River Flow" : title}</strong><span>{isRiverineMonthly ? "Monthly dataset and outlook" : horizon}</span></div>
+                <Waves size={15} />
+                <div>
+                  <strong>{riverineMode === "monthly-marala" ? "Marala Monthly River Flow" : "Riverine Short-Term · Chenab at Marala"}</strong>
+                  <span>{riverineMode === "monthly-marala" ? "Monthly dataset and outlook" : "Measured inflow forecast, 1 · 3 · 7 days ahead"}</span>
+                </div>
+                <span className="card-status pill-model">Model output · research only</span>
               </div>
-              {id === "riverine" && <div className="riverine-case-tabs" role="tablist" aria-label="Riverine forecast view">
-                {([ ["short-term", "Short-term screening"], ["monthly-marala", "Monthly Marala"] ] as const).map(([tab, label]) => (
+              <div className="riverine-case-tabs" role="tablist" aria-label="Riverine forecast view">
+                {([ ["daily-gauge", "Daily gauge forecast"], ["monthly-marala", "Monthly Marala"] ] as const).map(([tab, label]) => (
                   <button type="button" role="tab" id={`riverine-tab-${tab}`} aria-controls={`riverine-panel-${tab}`} aria-selected={riverineMode === tab} tabIndex={riverineMode === tab ? 0 : -1} key={tab} onClick={() => setRiverineMode(tab)}>{label}</button>
                 ))}
-              </div>}
-              {isRiverineMonthly ? <div role="tabpanel" id="riverine-panel-monthly-marala" aria-labelledby="riverine-tab-monthly-marala" className="riverine-case-panel"><MaralaMonthlyTab /></div> : <div role={id === "riverine" ? "tabpanel" : undefined} id={id === "riverine" ? "riverine-panel-short-term" : undefined} aria-labelledby={id === "riverine" ? "riverine-tab-short-term" : undefined} className="riverine-case-panel">
-              <div className="multiview-forecast-meta">
-                <span>Issued {formatIssuedAt(issuedAt)}</span>
-                <strong>{target}</strong>
               </div>
-              <ForecastIntervalGraph
-                points={forecastPointsByCase[id] ?? []}
-                selectedTarget={selectedTargets[id]}
-                onTargetChange={(targetId) => setSelectedTargets((current) => ({ ...current, [id]: targetId }))}
-              />
-              {id === "riverine" ? (
-                <RiverineModelFlow />
-              ) : id === "flash" ? (
-                <FlashFloodModelFlow />
-              ) : id === "urban" ? (
-                <UrbanFloodModelFlow />
-              ) : null}
-              <div className="multiview-scope"><span>Scope</span><strong>{scope}</strong></div>
-              <div className="multiview-predicts"><span>Shows</span><strong>{predicts}</strong></div>
-              {outputPoints && (
-                <ul className="multiview-outputs">
-                  {outputPoints.map((point) => <li key={point}>{point}</li>)}
-                </ul>
-              )}
-              <p>{detail}</p>
-              <small><AlertTriangle size={11} /> {model}</small>
-              </div>}
+              <div role="tabpanel" id={`riverine-panel-${riverineMode}`} aria-labelledby={`riverine-tab-${riverineMode}`} className="riverine-case-panel">
+                {riverineMode === "monthly-marala" ? <MaralaMonthlyTab /> : <MaralaStationForecast />}
+              </div>
             </article>
-          })}
+
+            <div className="near-term-dummy-heading">
+              <AlertTriangle size={14} />
+              <div><strong>Dummy-output views</strong><span>No project model produces these graphs yet. The “current inputs” lines below each graph are live dashboard data.</span></div>
+            </div>
+
+            {dummyViews.map(({ id, title, issuedAt, target, inputs, Icon }) => (
+              <article className="multiview-card near-term-dummy-card" key={id}>
+                <div className="multiview-card-head">
+                  <Icon size={15} />
+                  <div><strong>{title}</strong><span>{target}</span></div>
+                  <span className={`card-status ${id === "flash" ? "pill-trained" : "pill-none"}`}>{id === "flash" ? "Trained · not connected" : "No model"}</span>
+                </div>
+                <DummyForecastGraph
+                  points={forecastPointsByCase[id] ?? []}
+                  selectedTarget={selectedTargets[id]}
+                  onTargetChange={(targetId) => setSelectedTargets((current) => ({ ...current, [id]: targetId }))}
+                />
+                {id === "flash" && <FlashFloodModelFacts />}
+                <div className="dummy-current-inputs">
+                  <span>Current inputs (live) · {formatIssuedAt(issuedAt)}</span>
+                  <p>{inputs}</p>
+                  {id === "seasonal" && <button type="button" className="register-link" onClick={openMonthly}>Open the Monthly Marala model</button>}
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
-/* Situation Reports screen (components/ReportsCenter.tsx) */
-.rp { display: grid; gap: 14px; max-width: 1180px; }
+/* Flood Reports screen (components/ReportsCenter.tsx) */
+.rp { display: grid; gap: 14px; width: 100%; max-width: none; }
 
 /* report type tabs */
 .rp-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -53,6 +53,17 @@
 /* daily list */
 .rp-list { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .rp-item { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding: 14px 2px; border-bottom: 1px solid var(--line); }
+.rp-daily-preview { flex: 1 0 100%; min-width: 0; }
+.rp-daily-preview summary { width: fit-content; padding: 7px 10px; color: var(--teal-dark); border: 1px solid var(--line); border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 700; }
+.rp-daily-preview[open] summary { margin-bottom: 10px; }
+.rp-notebook { width: 100%; }
+.rp-notebook-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 9px 14px; margin: 0 0 10px; padding: 10px 12px; color: var(--ink); background: rgba(80,245,208,.1); border: 1px solid var(--teal-dark); border-radius: 7px; }
+.rp-notebook-toolbar > b { margin-right: auto; font-size: 14px; }
+.rp-notebook-toolbar > span { color: var(--teal-dark); font-size: 13px; font-weight: 800; }
+.rp-notebook-toolbar > div { display: flex; gap: 8px; }
+.rp-notebook-toolbar button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 38px; padding: 0 13px; color: #061b18; background: var(--teal-dark); border: 1px solid var(--teal-dark); border-radius: 5px; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+.rp-notebook-toolbar button:disabled { color: var(--muted); background: rgba(255,255,255,.04); border-color: var(--line); cursor: default; }
+.rp-notebook iframe { display: block; width: 100%; height: min(78vh, 900px); min-height: 540px; background: #e8edef; border: 1px solid var(--line); border-radius: 6px; }
 .rp-item-main { flex: 1 1 420px; min-width: 0; }
 .rp-item-title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
 .rp-item-title b { color: var(--ink); font-size: 14px; }
@@ -134,6 +145,9 @@
   .rp-reading { grid-template-columns: 1fr 1fr; }
   .rp-reading select:first-child { grid-column: 1 / -1; }
   .rp-meta { display: none; }
+  .rp-notebook-toolbar > b { flex-basis: 100%; }
+  .rp-notebook-toolbar > div { width: 100%; }
+  .rp-notebook-toolbar button { flex: 1; }
 }
 
 /* AI notes: tags, review button and review dialog */

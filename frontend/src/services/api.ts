@@ -27,6 +27,7 @@ import type {
   SarInputRole,
   SarWaterOverlay,
   MaralaMonthlyModelData,
+  MaralaStationForecastData,
 } from "../types/api";
 
 interface ErrorPayload {
@@ -109,6 +110,7 @@ export const api = {
   risk: (locationId: string) => apiFetch<RiskResponse>(`/flood/risk?location_id=${locationId}`),
   modelForecasts: () => apiFetch<ModelForecastPoint[]>("/flood/model-forecasts"),
   maralaMonthlyModelData: () => apiFetch<MaralaMonthlyModelData>("/predictive/marala-monthly"),
+  maralaStationForecast: () => apiFetch<MaralaStationForecastData>("/predictive/marala-station-forecast"),
   weather: (locationId: string) => apiFetch<WeatherResponse>(`/weather/current?location_id=${locationId}`),
   river: (locationId: string) => apiFetch<RiverResponse>(`/river/current?location_id=${locationId}`),
   upstreamForecasts: () => apiFetch<UpstreamForecastResponse>("/river/upstream-forecasts"),

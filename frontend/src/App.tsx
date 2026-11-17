@@ -2,6 +2,7 @@ import { AlertCircle, BellRing, ChevronDown, Clock3, Compass, RefreshCw, X } fro
 import { useCallback, useRef, useState } from "react";
 
 import { ActivityTimeline } from "./components/ActivityTimeline";
+import { AlarmAutomation } from "./components/AlarmAutomation";
 import { AppShell, type ViewId } from "./components/AppShell";
 import { CitizenReportsPanel } from "./components/CitizenReportsPanel";
 import { IncidentTable } from "./components/IncidentTable";
@@ -23,7 +24,7 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   overview: { title: "Operational Overview", subtitle: "Live flood intelligence and emergency coordination" },
   gis: { title: "GIS Operations", subtitle: "National hazard screening and operational geography" },
   rainfall: { title: "Rainfall Heatmap", subtitle: "Observed and forecast rainfall across Pakistan" },
-  predictive: { title: "Predictive Risk Views", subtitle: "Early-stage risk screening with illustrative forecast series" },
+  predictive: { title: "Predictive Risk Views", subtitle: "Real model output where a model exists; dummy output is marked on every graph" },
   upstream: { title: "Upstream Source Flood Watch", subtitle: "Upper-basin stations, discharge forecasts, and past trends" },
   monitoring: { title: "River Monitoring", subtitle: "Barrages, headworks and river station readings" },
   alerts: { title: "Alerts", subtitle: "Monitoring alerts and recorded threshold crossings" },
@@ -31,7 +32,8 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   reports: { title: "Citizen Reports", subtitle: "Field observations awaiting authority verification" },
   activity: { title: "System Activity", subtitle: "Automated decisions, monitoring changes, and response events" },
   simulation: { title: "Simulation", subtitle: "Monitoring test scenarios" },
-  "situation-reports": { title: "Situation Reports", subtitle: "Daily and flood event reports: generate, test, download and manage" },
+  "situation-reports": { title: "Flood Reports", subtitle: "View daily flood reports and reports for individual flood events" },
+  "alarm-automation": { title: "Alarm Automation", subtitle: "The n8n flood alarm workflow: live runs, duty roster, alert channels and alarms" },
 };
 
 export default function App() {
@@ -93,6 +95,7 @@ export default function App() {
           )}
           {view === "activity" && <ActivityTimeline events={data.events} full />}
           {view === "situation-reports" && <ReportsCenter />}
+          {view === "alarm-automation" && <AlarmAutomation />}
           {view === "simulation" && <SimulationPanel onCompleted={(result) => { setSimulationNotice(result.alerts.length ? result : null); void refreshOperations(result); }} onOpenAlerts={() => setView("alerts")} onOpenIncidents={() => { setSelectedIncidentId(null); setView("incidents"); }} />}
         </div>
       )}
