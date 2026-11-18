@@ -1,0 +1,16 @@
+# Features to test by hand in DEVELOPMENT (http://localhost:3000) before promoting.
+# promote-to-production.ps1 asks about each line; any "no" stops the promotion.
+# One feature per line; lines starting with # are ignored. Edit freely.
+Overview: map loads (satellite and vector), top figures and tabs, hourly AI analytics ticker
+Overview: monitoring mode tour (3D terrain and 2D map), route rail, station windows open and close
+Map layers: boundaries, rivers/lakes/dams, catchments, priority monitoring points, dynamic layers
+Map: clicking a station or "Open station details" opens the station window in the right place
+GIS Operations and Rainfall heatmap screens load and respond
+Predictive Risk Views: charts and model outputs show; dummy output is labelled
+Upstream Source Flood Watch: stations, discharge forecasts and trends
+River Monitoring: station table, readings and station details
+Alerts, Incidents, Citizen Reports and System Activity screens load; actions work
+Flood Reports: daily and flood event reports open (two-column view), download, generate
+Alarm Automation: live flow, runs, duty roster and channel edits, acknowledge/resolve, test forecast
+Simulation: a test scenario runs and its alerts appear
+Sizing: the interface looks right at 100% browser zoom on the display screen
