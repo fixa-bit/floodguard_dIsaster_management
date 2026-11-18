@@ -27,6 +27,10 @@ powershell -ExecutionPolicy Bypass -File ops\production\stop-production.ps1
 Production keeps running in the background after the start command finishes; logs are in
 `floodguard-production\.local-logs`.
 
+One-click: `FloodGuard Production.cmd` on the desktop runs `launch-production.ps1`, which starts
+production if it is not already running (or restarts it if only half of it is up) and opens
+http://127.0.0.1:4100 in the default browser.
+
 ## Promoting a tested version
 
 1. Finish and commit your work in development.
