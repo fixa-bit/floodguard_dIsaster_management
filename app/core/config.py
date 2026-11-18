@@ -17,6 +17,15 @@ class Settings(BaseSettings):
     cors_origins: str = Field(default="http://localhost:3000,http://127.0.0.1:3000")
     weather_api_base_url: str = "https://api.open-meteo.com/v1/forecast"
     weather_api_timeout_seconds: float = 10.0
+    # Used when the main weather API is rate-limited or down: same parameters, separate daily limit. Empty disables it.
+    weather_api_fallback_base_url: str = "https://historical-forecast-api.open-meteo.com/v1/forecast"
+    # Disk cache for Open-Meteo weather calls (free tier: ~10,000 location-calls/day). Empty disables it.
+    weather_cache_dir: str = ".local-cache/open-meteo-weather"
+    weather_cache_ttl_seconds: int = Field(default=1800, ge=0)
+    weather_cache_max_stale_hours: float = Field(default=24, ge=0)
+    # Last good river gauge / Google Flood Hub responses, served when the live source fails. Empty disables it.
+    last_good_cache_dir: str = ".local-cache/last-good"
+    last_good_max_age_hours: float = Field(default=72, ge=0)
     flood_api_base_url: str = "https://flood-api.open-meteo.com/v1/flood"
     flood_api_timeout_seconds: float = 10.0
     google_flood_api_key: SecretStr = SecretStr("")

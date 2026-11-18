@@ -11,6 +11,7 @@ from app.core.config import get_settings
 from app.core.enums import DataMode, Scenario
 from app.core.exceptions import AppError
 from app.gis.geometry import bounds_intersect, geometry_bounds, representative_point
+from app.providers.open_meteo_weather_cache import get_weather_json
 
 
 DISTRICT_DATA_PATH = Path(__file__).parents[2] / "frontend" / "src" / "data" / "pakistan" / "pakistan_districts.geojson"
@@ -121,12 +122,10 @@ class NationalRiskService:
         }
         try:
             if self.client is not None:
-                response = await self.client.get(self.settings.weather_api_base_url, params=params)
+                payload = await get_weather_json(self.client, self.settings.weather_api_base_url, params)
             else:
                 async with httpx.AsyncClient(timeout=self.settings.weather_api_timeout_seconds) as client:
-                    response = await client.get(self.settings.weather_api_base_url, params=params)
-            response.raise_for_status()
-            payload = response.json()
+                    payload = await get_weather_json(client, self.settings.weather_api_base_url, params)
             return payload if isinstance(payload, list) else [payload]
         except (httpx.HTTPError, TypeError, ValueError) as exc:
             raise AppError(

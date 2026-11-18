@@ -11,6 +11,7 @@ import httpx
 from app.core.config import get_settings
 from app.core.exceptions import AppError
 from app.gis.geometry import point_in_geometry
+from app.providers.open_meteo_weather_cache import get_weather_json
 
 
 @lru_cache(maxsize=1)
@@ -76,14 +77,12 @@ class RainfallService:
             async def batch(samples):
                 async with semaphore:
                     try:
-                        response = await client.get(self.settings.weather_api_base_url, params={
+                        data = await get_weather_json(client, self.settings.weather_api_base_url, {
                             "longitude": ",".join(str(point[0]) for point in samples),
                             "latitude": ",".join(str(point[1]) for point in samples),
                             "hourly": "precipitation", "past_hours": 24, "forecast_hours": 73,
                             "timezone": "UTC",
                         })
-                        response.raise_for_status()
-                        data = response.json()
                         payloads = data if isinstance(data, list) else [data]
                         if len(payloads) != len(samples):
                             return []

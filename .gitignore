@@ -3,6 +3,7 @@
 .pytest_cache/
 .pip-tmp/
 .local-logs/
+.local-cache/
 __pycache__/
 *.py[cod]
 *.db

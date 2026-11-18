@@ -1,5 +1,6 @@
-import { AlertTriangle, CalendarClock, CheckCircle2, ChevronLeft, ChevronRight, Download, ExternalLink, FileText, FlaskConical, Loader2, Plus, Radar, RefreshCw, Settings2, Sparkles, Trash2, Undo2, Waves, X } from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle2, Download, ExternalLink, FileText, FlaskConical, Loader2, Plus, Radar, RefreshCw, Settings2, Sparkles, Trash2, Undo2, Waves, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { API_BASE_URL } from "../config";
 import { apiFetch } from "../services/api";
@@ -65,7 +66,7 @@ interface ReportOptions {
 interface EventGroup { eventNo: string; dir: string; river: string; peak: string; status: string; isTest: boolean; versions: GeneratedReport[] }
 
 const fileUrl = (id: string, path: "view" | "download") => `${API_BASE_URL}/generated-reports/${path}?id=${encodeURIComponent(id)}`;
-const previewUrl = (id: string) => `${fileUrl(id, "view")}&layout=notebook`;
+const previewUrl = (id: string) => `${fileUrl(id, "view")}&layout=columns`;
 const when = (iso: string) => new Date(iso).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const day = (iso: string) => new Date(iso).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 const levelTone = (level = "") => /Very high|Exceptionally|High/.test(level) ? "crit" : /Medium/.test(level) ? "serious" : /Low/.test(level) ? "warn" : "watch";
@@ -244,7 +245,7 @@ export function ReportsCenter() {
                     }}
                   >
                     <summary>{expandedDailyReports.has(r.id) ? "Hide this day’s full report" : "View this day’s full report"}</summary>
-                    <NotebookPreview reportId={r.id} title={`${day(r.created_at)} flood report`} />
+                    <iframe title={`${day(r.created_at)} flood report`} src={previewUrl(r.id)} loading="lazy" />
                   </details>
                 </li>
               ))}
@@ -296,6 +297,7 @@ export function ReportsCenter() {
                         <span className="rp-dot" aria-hidden="true" />
                         <div className="rp-version-text"><b>{v.reason}</b><span>{v.level} · {v.generated ?? when(v.created_at)}</span><AiTag ai={v.ai} /></div>
                         <ReportActions id={v.id} ai={v.ai} onReview={() => setReviewId(v.id)} compact />
+                        <NotebookPreview id={v.id} title={`${g.eventNo} ${v.reason ?? ""}`} />
                       </li>
                     ))}
                   </ol>
@@ -320,37 +322,29 @@ export function ReportsCenter() {
   );
 }
 
-function NotebookPreview({ reportId, title }: { reportId: string; title: string }) {
-  const frame = useRef<HTMLIFrameElement>(null);
-  const [spread, setSpread] = useState(0);
-  const [spreadCount, setSpreadCount] = useState(1);
-
+/* A report opened in a full-screen reader (the backend's two-column view), so both
+   columns fit even where the report card itself is narrow. */
+function NotebookPreview({ id, title }: { id: string; title: string }) {
+  const [open, setOpen] = useState(false);
   useEffect(() => {
-    const receive = (event: MessageEvent) => {
-      if (event.source !== frame.current?.contentWindow || event.data?.type !== "floodguard-notebook-state") return;
-      setSpread(Number(event.data.current) || 0);
-      setSpreadCount(Math.max(1, Number(event.data.total) || 1));
-    };
-    window.addEventListener("message", receive);
-    frame.current?.contentWindow?.postMessage({ type: "floodguard-notebook-state" }, "*");
-    return () => window.removeEventListener("message", receive);
-  }, []);
-
-  const move = (direction: -1 | 1) => frame.current?.contentWindow?.postMessage({ type: "floodguard-notebook-move", direction }, "*");
-  const requestState = () => frame.current?.contentWindow?.postMessage({ type: "floodguard-notebook-state" }, "*");
-
+    if (!open) return;
+    const close = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [open]);
   return (
-    <div className="rp-notebook">
-      <div className="rp-notebook-toolbar" aria-label="Report page controls">
-        <b>📖 Notebook pages</b>
-        <span>Spread {spread + 1} of {spreadCount}</span>
-        <div>
-          <button type="button" disabled={spread === 0} onClick={() => move(-1)}><ChevronLeft size={16} />Previous spread</button>
-          <button type="button" disabled={spread >= spreadCount - 1} onClick={() => move(1)}>Next spread<ChevronRight size={16} /></button>
-        </div>
-      </div>
-      <iframe ref={frame} title={title} src={previewUrl(reportId)} loading="lazy" onLoad={requestState} />
-    </div>
+    <>
+      <button type="button" className="rp-btn" onClick={() => setOpen(true)}><FileText size={14} />Read report</button>
+      {open && createPortal(
+        <div className="rp-reader" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}>
+          <div className="rp-reader-frame">
+            <header><b>{title}</b><button type="button" className="rp-icon" aria-label="Close" title="Close (Esc)" onClick={() => setOpen(false)}><X size={16} /></button></header>
+            <iframe title={title} src={previewUrl(id)} />
+          </div>
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }
 
@@ -371,7 +365,7 @@ function ReportActions({ id, meta, compact, onDelete, ai, onReview }: { id: stri
     <div className="rp-actions">
       {meta && <span className="rp-meta">{meta}</span>}
       {canReview && <button type="button" className={`rp-btn${ai!.review_mode === "portal" && ai!.to_review ? " rp-btn-due" : ""}`} onClick={onReview}><Sparkles size={14} />Review</button>}
-      <a className="rp-btn" href={fileUrl(id, "view")} target="_blank" rel="noreferrer"><ExternalLink size={14} />Open</a>
+      <a className="rp-btn" href={previewUrl(id)} target="_blank" rel="noreferrer" title="Open in two columns in a new tab"><ExternalLink size={14} />Open</a>
       <a className="rp-icon" href={fileUrl(id, "download")} download aria-label="Download" title="Download"><Download size={14} /></a>
       {!compact && onDelete && <button type="button" className="rp-icon rp-danger" aria-label="Delete" title="Delete" onClick={onDelete}><Trash2 size={14} /></button>}
     </div>

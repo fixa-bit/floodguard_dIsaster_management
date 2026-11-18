@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config";
+import { markStale, readLastGood, saveLastGood } from "./lastGoodCache";
 import type {
   ExperimentalHydrograph,
   GaugeKind,
@@ -46,7 +47,66 @@ export class ApiError extends Error {
   }
 }
 
+// Requests whose saved copy would be misleading if replayed (job progress polls).
+const NO_FALLBACK = [/^\/generated-reports\/jobs\//, /^\/population\/analyses\//];
+
+// Endpoints that answer 200 with an empty or "unavailable" body when their live
+// provider is down. That body must not replace the last good copy.
+const USABLE: Array<[RegExp, (payload: any) => boolean]> = [
+  [/^\/gis\/google-flood-hub/, (payload) => payload?.metadata?.status !== "unavailable"],
+  [/^\/river\/(monitoring|upstream-forecasts)$/, (payload) => Array.isArray(payload?.stations) && payload.stations.length > 0],
+];
+
+const LABELS: Array<[RegExp, string]> = [
+  [/^\/dashboard\/summary/, "Dashboard summary"], [/^\/flood\/risk/, "Flood risk"],
+  [/^\/flood\/model-forecasts/, "Model forecasts"], [/^\/weather\/current/, "Weather"],
+  [/^\/river\/current/, "River gauge"], [/^\/river\/upstream-forecasts/, "Upstream forecasts"],
+  [/^\/river\/monitoring\/[^/]+\/official-history/, "Official station history"],
+  [/^\/river\/monitoring\/[^/]+\/history/, "Station history"], [/^\/river\/monitoring/, "River monitoring"],
+  [/^\/gis\/national-risk/, "National risk map"], [/^\/gis\/rainfall/, "Rainfall"],
+  [/^\/gis\/google-flood-hub/, "Google Flood Hub"], [/^\/gis\/water-intelligence/, "Water intelligence"],
+  [/^\/stations\/[^/]+\/hydrograph/, "Hydrograph"], [/^\/predictive\/marala-monthly/, "Marala monthly model"],
+  [/^\/predictive\/marala-station-forecast/, "Marala station forecast"], [/^\/incidents/, "Incidents"],
+  [/^\/citizen-reports/, "Citizen reports"], [/^\/events/, "System events"], [/^\/alerts/, "Alerts"],
+  [/^\/system\/status/, "System status"], [/^\/simulation/, "Simulation"], [/^\/resources\/shelters/, "Shelters"],
+  [/^\/resources\/hospitals/, "Hospitals"], [/^\/resources\/emergency-contacts/, "Emergency contacts"],
+  [/^\/generated-reports/, "Reports"], [/^\/alarm-automation/, "Alarm automation"], [/^\/population|^\/exposure/, "Population analysis"],
+];
+
+function fallbackEligible(error: unknown): boolean {
+  return error instanceof ApiError && (error.status === 0 || error.status === 408 || error.status === 429 || error.status >= 500);
+}
+
+/** GET requests fall back to their last successful response when the backend or its live provider fails. */
 export async function apiFetch<T>(path: string, options?: RequestInit, baseUrl = API_BASE_URL, timeoutMs?: number): Promise<T> {
+  const method = (options?.method ?? "GET").toUpperCase();
+  if (method !== "GET" || NO_FALLBACK.some((pattern) => pattern.test(path))) return requestJson<T>(path, options, baseUrl, timeoutMs);
+  const key = `${baseUrl}${path}`;
+  const location = /[?&]location_id=([^&]+)/.exec(path)?.[1];
+  const label = `${LABELS.find(([pattern]) => pattern.test(path))?.[1] ?? path.split("?")[0]}${location ? ` (${decodeURIComponent(location)})` : ""}`;
+  const serveSaved = async (error: unknown): Promise<T> => {
+    const saved = await readLastGood(key);
+    if (!saved) throw error;
+    markStale(key, label, saved.savedAt);
+    return saved.data as T;
+  };
+  let payload: T;
+  try {
+    payload = await requestJson<T>(path, options, baseUrl, timeoutMs);
+  } catch (error) {
+    // A request the caller cancelled is not an outage.
+    if (options?.signal?.aborted || !fallbackEligible(error)) throw error;
+    return serveSaved(error);
+  }
+  const usable = USABLE.find(([pattern]) => pattern.test(path))?.[1];
+  if (usable && !usable(payload)) {
+    try { return await serveSaved(null); } catch { return payload; }
+  }
+  saveLastGood(key, payload);
+  return payload;
+}
+
+async function requestJson<T>(path: string, options?: RequestInit, baseUrl = API_BASE_URL, timeoutMs?: number): Promise<T> {
   let response: Response;
   const controller = new AbortController();
   const cancel = () => controller.abort();

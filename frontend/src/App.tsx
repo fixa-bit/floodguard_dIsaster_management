@@ -1,4 +1,4 @@
-import { AlertCircle, BellRing, ChevronDown, Clock3, Compass, RefreshCw, X } from "lucide-react";
+import { AlertCircle, BellRing, ChevronDown, Clock3, Compass, History, RefreshCw, X } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
 import { ActivityTimeline } from "./components/ActivityTimeline";
@@ -18,6 +18,7 @@ import { useDashboardData } from "./hooks/useDashboardData";
 import { OverviewPage } from "./pages/OverviewPage";
 import { GISPage } from "./pages/GISPage";
 import { api } from "./services/api";
+import { type StaleSource, useStaleSources } from "./services/lastGoodCache";
 import type { MonitoringSimulationResult } from "./types/api";
 
 const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
@@ -36,6 +37,22 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   "alarm-automation": { title: "Alarm Automation", subtitle: "The n8n flood alarm workflow: live runs, duty roster, alert channels and alarms" },
 };
 
+/** "Saved 15:20: River gauge (JHG_001), Alerts · Saved yesterday …" grouped by save time. */
+function staleSummary(sources: StaleSource[]): string {
+  const groups = new Map<string, string[]>();
+  for (const item of [...sources].sort((a, b) => b.savedAt - a.savedAt)) {
+    const time = savedTime(item.savedAt);
+    groups.set(time, [...(groups.get(time) ?? []), item.label]);
+  }
+  return [...groups].map(([time, labels]) => `Saved ${time}: ${labels.join(", ")}`).join(" · ");
+}
+
+function savedTime(savedAt: number): string {
+  const saved = new Date(savedAt);
+  const time = saved.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return saved.toDateString() === new Date().toDateString() ? time : `${saved.toLocaleDateString([], { day: "numeric", month: "short" })} ${time}`;
+}
+
 export default function App() {
   const [view, setView] = useState<ViewId>("overview");
   const [tourOpen, setTourOpen] = useState(false);
@@ -43,6 +60,7 @@ export default function App() {
   const [locationId, setLocationId] = useState<LocationId>("JHG_001");
   const includeLiveData = ["overview", "gis", "rainfall", "predictive"].includes(view);
   const { data, loading, errors, lastUpdated, autoRefreshMs, refresh, refreshOperations } = useDashboardData(locationId, includeLiveData);
+  const staleSources = useStaleSources();
   const [simulationNotice, setSimulationNotice] = useState<MonitoringSimulationResult | null>(null);
   const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(null);
   const pendingSimulationAlerts = simulationNotice ? data.alerts.filter((alert) => alert.event_metadata.run_id === simulationNotice.run_id && alert.event_metadata.approval_status !== "approved").length : 0;
@@ -70,7 +88,10 @@ export default function App() {
 
       <div className="update-strip"><Clock3 size={14} /><span>{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : "Waiting for first update"}</span><i /> River layer refresh every {Math.round(autoRefreshMs / 60000)} minutes</div>
 
-      {errors.length > 0 && <div className="error-banner" role="alert"><AlertCircle size={19} /><div><strong>{includeLiveData ? "Some dashboard data could not be refreshed" : "Some operational data could not be refreshed"}</strong><span>{errors.join(" · ")}</span></div><button onClick={() => void refresh(false)}>Retry</button></div>}
+      {(errors.length > 0 || staleSources.length > 0) && <div className="status-banners">
+        {errors.length > 0 && <div className="error-banner" role="alert"><AlertCircle size={19} /><div><strong>{includeLiveData ? "Some dashboard data could not be refreshed" : "Some operational data could not be refreshed"}</strong><span>{errors.join(" · ")}</span></div><button onClick={() => void refresh(false)}>Retry</button></div>}
+        {staleSources.length > 0 && <div className="error-banner stale-data-banner" role="status"><History size={19} /><div><strong>Live source unavailable: showing the last data that loaded</strong><span>{staleSummary(staleSources)}</span></div><button onClick={() => void refresh(false)}>Retry</button></div>}
+      </div>}
 
       {simulationNotice && <div className="simulation-alert-banner" role="alert"><BellRing size={20} /><div><strong>SIMULATED FLOW: {simulationNotice.station_name}</strong><span>{simulationNotice.alerts.length} threshold alerts saved / {pendingSimulationAlerts} awaiting review</span></div><button type="button" className="secondary-button" onClick={() => setView("alerts")}>View alerts</button><button type="button" className="icon-button" title="Dismiss simulation alert" aria-label="Dismiss simulation alert" onClick={() => setSimulationNotice(null)}><X size={17} /></button></div>}
 

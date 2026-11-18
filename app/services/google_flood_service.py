@@ -6,6 +6,7 @@ from time import monotonic
 import httpx
 
 from app.core.config import get_settings
+from app.providers import last_good_store
 
 
 SEVERITIES = {
@@ -131,10 +132,15 @@ class GoogleFloodService:
                 result = self.collection(features, "live", None if features else "No Google gauges are available in the configured area.", datetime.now(timezone.utc).isoformat())
             except (httpx.HTTPError, ValueError, KeyError, TypeError):
                 # Do not expose upstream responses, URLs, or credentials to the browser.
-                if self._cached and self._cached["metadata"]["fetched_at"]:
-                    result = self.collection(self._cached["features"], "stale", "Google forecasts could not be refreshed. Showing the last retrieved data.", self._cached["metadata"]["fetched_at"])
+                previous = self._cached if self._cached and self._cached["metadata"]["fetched_at"] else None
+                if previous is None and (saved := last_good_store.load("google-flood-hub")) is not None:
+                    previous = saved[1]  # last good copy from before a backend restart
+                if previous and previous.get("metadata", {}).get("fetched_at"):
+                    result = self.collection(previous["features"], "stale", "Google forecasts could not be refreshed. Showing the last retrieved data.", previous["metadata"]["fetched_at"])
                 else:
                     result = self.collection([], "unavailable", "Google forecasts are unavailable. Check API access and try again.")
+            if result["metadata"]["status"] == "live" and result["features"]:
+                last_good_store.save("google-flood-hub", result)
             self._cached = result
             self._expires = monotonic() + (settings.google_flood_cache_seconds if result["metadata"]["status"] == "live" else 60)
             return result

@@ -10,6 +10,7 @@ from app.db.session import SessionLocal
 from app.gis.river_stations import RIVER_CHAINS, STATIONS, upstream_ids
 from app.models.river_gauge_observation import RiverGaugeObservation, TypedRiverGaugeObservation
 from app.providers.live.live_river_provider import LiveRiverProvider
+from app.providers.open_meteo_weather_cache import get_weather_json
 from app.schemas.river_monitoring import RiverMonitoringResponse, RiverMonitoringStation
 from app.schemas.upstream_forecast import RainfallPoint
 from app.services.upstream_forecast_cache_service import UpstreamForecastCacheService
@@ -40,14 +41,12 @@ class RiverMonitoringService(UpstreamForecastService):
 
     async def _rainfall_contexts(self, client, definitions) -> list[list[RainfallPoint]]:
         try:
-            response = await client.get(self.weather_api_base_url, params={
+            payloads = await get_weather_json(client, self.weather_api_base_url, {
                 "latitude": ",".join(str(station["latitude"]) for station in definitions),
                 "longitude": ",".join(str(station["longitude"]) for station in definitions),
                 "daily": "precipitation_sum,precipitation_probability_max",
                 "past_days": 3, "forecast_days": 7, "timezone": "UTC",
             })
-            response.raise_for_status()
-            payloads = response.json()
             if isinstance(payloads, dict):
                 payloads = [payloads]
             if not isinstance(payloads, list) or len(payloads) != len(definitions):

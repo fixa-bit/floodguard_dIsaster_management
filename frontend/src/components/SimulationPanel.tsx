@@ -187,7 +187,7 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
     attempt.current = null; setResult(null); setError(null); setStartAt(localNow()); setStartPreset("now");
   }
 
-  return <div className="simulation-workspace">
+  return <div className="simulation-workspace" data-view={workspaceView}>
     <div className="simulation-workspace-header"><FlaskConical size={20} /><strong>{workspaceView === "monitoring" ? "Monitoring Scenario" : workspaceView === "spread" ? "Flood spread & population" : "Storm replay"}</strong><span className="simulated-flow-stamp">Simulated flow</span></div>
     <div className="simulation-workspace-tabs" role="tablist" aria-label="Simulation views" onKeyDown={(event) => {
       if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;

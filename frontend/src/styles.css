@@ -971,14 +971,17 @@ body { color: var(--ink); background: #071114; }
   min-height: 100vh;
   padding: 0;
 }
-.main-overview > .error-banner {
+.main-overview > .status-banners {
   position: absolute;
-  z-index: 42;
+  z-index: 47;
   right: 18px;
-  bottom: 18px;
+  bottom: 72px; /* above the hourly analytics ticker */
   left: 18px;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
+.main-overview > .status-banners > .error-banner { margin: 0; }
 .overview-command-canvas {
   position: relative;
   min-height: 100vh;
@@ -2166,7 +2169,9 @@ body { color: var(--ink); background: #071114; }
 .station-monitoring-view { margin-top: 3px; }
 .station-monitoring-view button { min-height: 22px; padding: 2px 6px; font-size: 9px; }
 .map-basemap-options:not(.station-monitoring-view) button { min-height: 28px; padding: 4px 7px; font-size: 10px; }
-.station-monitoring-view button[aria-pressed="true"], .map-basemap-options:not(.station-monitoring-view) button[aria-pressed="true"] { color: #1f1905; background: #f8d96a; border-color: #f8d96a; }
+.map-basemap-control .map-basemap-options { grid-template-columns: auto 1fr; align-items: center; }
+.map-basemap-options:not(.station-monitoring-view) .satellite-basemap-option { min-height: 24px; padding: 2px 6px; font-size: 9px; }
+.station-monitoring-view button[aria-pressed="true"], .map-basemap-options:not(.station-monitoring-view) button[aria-pressed="true"] { color: #d8e9dc; background: #315344; border-color: #63816d; }
 .station-monitoring-toggle:focus-visible { outline: 2px solid #f8d96a; outline-offset: 3px; }
 .map-layer-control .river-network-select { display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 4px; margin-top: 7px; }
 .river-network-select select { min-width: 0; width: 100%; padding: 4px; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }
@@ -2428,3 +2433,7 @@ body { color: var(--ink); background: #071114; }
 .station-point-focus { position: absolute; left: 8px; top: 8px; z-index: 9; width: 24px; height: 24px; opacity: 0; pointer-events: none; background: #123b3c; color: #fff; border: 2px solid #fff; border-radius: 4px; }
 .station-point-focus:focus-visible { opacity: 1; outline: 2px solid #52e6d0; pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .station-info-popup { transition: none; } }
+
+/* Banner shown while some data comes from the last saved copy */
+.error-banner.stale-data-banner { color: #ffe7ad; background: rgba(61, 42, 9, .72); border-color: rgba(255, 176, 46, .46); }
+.error-banner.stale-data-banner button { color: #071114; background: #ffd27a; border-color: rgba(255, 176, 46, .6); }

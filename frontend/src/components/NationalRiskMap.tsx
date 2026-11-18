@@ -474,7 +474,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const [requestedShowNormalFloodHub, setShowNormalFloodHub] = useState(true);
   const floodHubRef = useRef(floodHub);
   floodHubRef.current = floodHub;
-  const [requestedLayers, setLayers] = useState({ boundary: true, glaciers: false, borderTest: false, risk: false, districts: false, floodHub: false, catchments: false, water: false, waterForecasts: false, gauges: false, stations: false, incidents: false, reports: false, resources: false });
+  const [requestedLayers, setLayers] = useState({ boundary: false, glaciers: false, borderTest: false, risk: false, districts: false, floodHub: false, catchments: false, water: false, waterForecasts: false, gauges: false, stations: false, incidents: false, reports: false, resources: false });
   const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
   const [stationTicketArrival, setStationTicketArrival] = useState<{ stationId: string; map: MapLibreMap } | null>(null);
   const selectedStationIdRef = useRef(selectedStationId);
@@ -547,7 +547,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           setSelectedFloodHubFeature((selected) => selected ? response.features.find((feature) => feature.properties.id === selected.properties.id) ?? null : null);
         }
       } catch (error) {
-        if (active) { setFloodHubError(error instanceof Error ? error.message : "Google forecasts unavailable"); setFloodHub(null); setSelectedFloodHubFeature(null); }
+        // Keep whatever forecasts are already on the map; only report the failed refresh.
+        if (active) setFloodHubError(error instanceof Error ? error.message : "Google forecasts unavailable");
       } finally { pending = false; }
     };
     void load();
@@ -2054,7 +2055,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           <div className="map-basemap-control" role="group" aria-label="Map background">
             <strong>Map background</strong>
             <div className="map-basemap-options">
-              {(["satellite", "vector"] as const).map((value) => <button key={value} type="button" aria-pressed={basemap === value} onClick={() => setBasemap(value)}>{value === "satellite" ? "Satellite" : "Vector"}</button>)}
+              {(["satellite", "vector"] as const).map((value) => <button key={value} type="button" className={value === "satellite" ? "satellite-basemap-option" : undefined} aria-pressed={basemap === value} onClick={() => setBasemap(value)}>{value === "satellite" ? "Satellite" : "Vector"}</button>)}
             </div>
             <small>Vector gives rainfall colors a clearer background.</small>
           </div>

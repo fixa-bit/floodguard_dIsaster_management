@@ -7,6 +7,7 @@ from app.core.enums import Scenario
 from app.core.exceptions import AppError
 from app.locations import get_location
 from app.providers.base.weather_provider import WeatherProvider
+from app.providers.open_meteo_weather_cache import get_weather_json
 from app.schemas.weather import WeatherResponse
 
 
@@ -35,12 +36,11 @@ class LiveWeatherProvider(WeatherProvider):
         }
         try:
             if self.client is not None:
-                response = await self.client.get(self.base_url, params=params)
+                payload = await get_weather_json(self.client, self.base_url, params)
             else:
                 async with httpx.AsyncClient(timeout=self.timeout) as client:
-                    response = await client.get(self.base_url, params=params)
-            response.raise_for_status()
-            return self._normalize(location_id, scenario, response.json())
+                    payload = await get_weather_json(client, self.base_url, params)
+            return self._normalize(location_id, scenario, payload)
         except (httpx.HTTPError, KeyError, TypeError, ValueError, IndexError) as exc:
             raise AppError(
                 "WEATHER_PROVIDER_ERROR",

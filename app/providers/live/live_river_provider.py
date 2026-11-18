@@ -9,6 +9,7 @@ from app.core.config import get_settings
 from app.core.enums import RiverStatus, Scenario
 from app.core.exceptions import AppError
 from app.locations import get_location
+from app.providers import last_good_store
 from app.providers.base.river_provider import RiverProvider
 from app.schemas.river import RiverResponse
 
@@ -46,10 +47,26 @@ class LiveRiverProvider(RiverProvider):
 
     async def get_current(self, location_id: str, scenario: Scenario) -> RiverResponse:
         try:
-            station = await self._get_ffd_station(location_id)
-            return self._from_official_station(location_id, scenario, station)
-        except (httpx.HTTPError, KeyError, TypeError, ValueError, IndexError):
-            return await self._get_glofas_current(location_id, scenario)
+            try:
+                station = await self._get_ffd_station(location_id)
+                result = self._from_official_station(location_id, scenario, station)
+            except (httpx.HTTPError, KeyError, TypeError, ValueError, IndexError):
+                result = await self._get_glofas_current(location_id, scenario)
+        except AppError:
+            # Both FFD and GloFAS failed: serve the last reading that loaded, if any.
+            saved = last_good_store.load(f"river-current-{location_id}")
+            if saved is None:
+                raise
+            saved_at, payload = saved
+            try:
+                stale = RiverResponse.model_validate(payload)
+            except ValueError:
+                raise AppError("RIVER_PROVIDER_ERROR", "Live river data is unavailable", 502) from None
+            when = datetime.fromtimestamp(saved_at, self.PKT).strftime("%d %b %H:%M PKT")
+            stale.data_note = f"Live river sources are unavailable; showing the last reading saved {when}. {stale.data_note or ''}".strip()
+            return stale
+        last_good_store.save(f"river-current-{location_id}", result.model_dump(mode="json"))
+        return result
 
     async def _get_glofas_current(self, location_id: str, scenario: Scenario) -> RiverResponse:
         location = get_location(location_id)

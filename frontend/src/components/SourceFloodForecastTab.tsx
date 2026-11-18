@@ -201,8 +201,10 @@ function StationLocationMap({ station }: { station: UpstreamStationForecast }) {
 
 function SourceFloodContent({ station }: { station: UpstreamStationForecast }) {
   const rainfallForecast = station.rainfall.filter((point) => point.phase === "forecast");
-  const maxRain = station.stats.max_forecast_rain_mm;
-  const rainProbability = station.stats.max_rain_probability_percent;
+  // No rainfall points means the weather provider failed, not that it is dry: show "-" instead of 0.
+  const hasRainfall = rainfallForecast.length > 0;
+  const maxRain = hasRainfall ? station.stats.max_forecast_rain_mm : null;
+  const rainProbability = hasRainfall ? station.stats.max_rain_probability_percent : null;
   const thresholdRatio = statNumber(station.stats.peak_to_low_flood_threshold);
   const thresholdValue = statNumber(station.stats.low_flood_threshold_cumecs);
   const thresholdLabel = typeof station.stats.low_flood_threshold_label === "string" ? station.stats.low_flood_threshold_label : "Flood reference";
@@ -255,6 +257,7 @@ function SourceFloodContent({ station }: { station: UpstreamStationForecast }) {
         <div>
           <div className="source-section-head"><CloudRain size={16} /><strong>Rainfall context</strong></div>
           <div className="source-rain-strip">
+            {!hasRainfall && <em className="source-rain-unavailable">Rainfall forecast unavailable from the weather provider right now.</em>}
             {rainfallForecast.map((point) => (
               <div key={point.date}>
                 <span>{formatCompactDate(point.date)}</span>

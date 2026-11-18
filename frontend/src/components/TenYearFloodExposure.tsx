@@ -11,7 +11,7 @@ const sourceIds = ["outlook-population-data", "outlook-water-data", "outlook-riv
 
 export function TenYearFloodExposure({ maps, ready, selection, onSelectionChange, onInteract, children,
   context = "outlook", initialLayers = false, level: controlledLevel, onLevelChange, onAvailabilityChange,
-  onDataChange, onLayerVisibilityChange, cinematic = false,
+  onDataChange, onLayerVisibilityChange, cinematic = false, rail,
 }: {
   maps: MapLibreMap[]; ready: boolean; selection: PreviewSelection;
   onSelectionChange: (id: PreviewSelection) => void; onInteract: () => void; children: ReactNode;
@@ -20,6 +20,8 @@ export function TenYearFloodExposure({ maps, ready, selection, onSelectionChange
   onDataChange?: (data: FloodExposurePreview | null) => void;
   onLayerVisibilityChange?: (layers: { water: boolean; population: boolean }) => void;
   cinematic?: boolean;
+  /** Split layout: this content plus the layer controls form a left rail; children and results form the right stage. */
+  rail?: ReactNode;
 }) {
   const [water, setWater] = useState(initialLayers);
   const [population, setPopulation] = useState(initialLayers);
@@ -131,7 +133,7 @@ export function TenYearFloodExposure({ maps, ready, selection, onSelectionChange
   const percentage = selected?.exposed_population != null && data?.known_population_2025 ? selected.exposed_population / data.known_population_2025 * 100 : null;
   const maxPeople = Math.max(1, ...(data?.levels.map((item) => item.exposed_population ?? 0) ?? []));
 
-  return <div className="outlook-exposure" data-exposure-active={active} data-exposure-level={level} data-exposure-area={data?.id ?? ""}>
+  const controls = <>
     <div className="outlook-layer-toolbar">
       <div><span className="outlook-layer-eyebrow"><Layers size={14} aria-hidden="true" /> MAP LAYERS</span><h4>Water spread &amp; population</h4><p>Explore who could be inside an example river-flood footprint.</p></div>
       <div className="outlook-layer-buttons" data-tour-target="simulation-spread-layers"><button className="outlook-quiet-button" type="button" aria-pressed={water} onClick={() => toggleLayer("water")}><Droplets size={16} aria-hidden="true" /> Flood spread</button><button className="outlook-quiet-button" type="button" aria-pressed={population} onClick={() => toggleLayer("population")}><Users size={16} aria-hidden="true" /> Population map</button></div>
@@ -151,8 +153,8 @@ export function TenYearFloodExposure({ maps, ready, selection, onSelectionChange
       </div>}
       {data && <div className="outlook-overlay-context">{cinematic ? <><span>Stylized population columns · fixed 2025 baseline</span><span>{water && data.supported ? `Example flood level ${level}` : "Population / district context"}</span></> : <><span>Left: {population ? "2025 population context" : "district context"} · no example flooding</span><span>Right: {water && data.supported ? `example flood level ${level}` : "population / district context"}</span></>}</div>}
     </div>}
-    {children}
-    {active && <>
+  </>;
+  const results = active && <>
       <div className="outlook-map-legend outlook-exposure-legend" aria-label="Flood spread and population legend">
         {water && <span><i style={{ background: "#428fee" }} /> Hypothetical water spread{cinematic ? "" : " · right map"}</span>}
         {population && <><span><i className="outlook-density-key" /> Population {cinematic ? "columns" : "density"}: sparse → dense</span><span>People/km²: 0 · 100 · 500 · 2,000 · 10,000+</span></>}
@@ -167,6 +169,12 @@ export function TenYearFloodExposure({ maps, ready, selection, onSelectionChange
         {water && data.supported && <div className="outlook-exposure-levels"><div><h4>Population by example flood level</h4><p>Click a bar or drag the slider to compare.</p></div><div className="outlook-exposure-bars" role="group" aria-label="Population exposed by flood level">{data.levels.map((item) => <button type="button" key={item.level} aria-label={`Use flood level ${item.level}: ${approximatePeople(item.exposed_population)} people`} aria-pressed={level === item.level} onClick={() => chooseLevel(item.level)}><span>{approximatePeople(item.exposed_population)}</span><i style={{ "--exposure-bar-height": `${(item.exposed_population ?? 0) / maxPeople * 100}%` } as CSSProperties}><b /></i><small>L{item.level}</small></button>)}</div></div>}
         <p className="outlook-exposure-footnote">Approximate exposure, not confirmed affected people: population is assumed uniform within each 2 km cell and intersected by footprint area. NoData is excluded; no population growth is projected. District outlines and reference rivers are approximate. <a href="https://doi.org/10.5258/SOTON/WP00839" target="_blank" rel="noreferrer">WorldPop R2025A v1</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>. River references: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>. See Inputs &amp; Method for assumptions.</p>
       </div>}
-    </>}
+    </>;
+  const attributes = { "data-exposure-active": active, "data-exposure-level": level, "data-exposure-area": data?.id ?? "" };
+
+  if (rail !== undefined) return <div className="outlook-exposure" data-layout="split" {...attributes}>
+    <aside className="outlook-exposure-rail" aria-label="Flood spread controls">{rail}{controls}</aside>
+    <div className="outlook-exposure-stage">{children}{results}</div>
   </div>;
+  return <div className="outlook-exposure" {...attributes}>{controls}{children}{results}</div>;
 }

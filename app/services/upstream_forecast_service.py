@@ -6,6 +6,7 @@ from typing import Any
 import httpx
 
 from app.core.config import get_settings
+from app.providers.open_meteo_weather_cache import get_weather_json
 from app.schemas.upstream_forecast import (
     FloodTypeSignal,
     HydroSeriesPoint,
@@ -284,9 +285,10 @@ class UpstreamForecastService:
 
     async def _rainfall(self, client: httpx.AsyncClient, station: dict[str, Any]) -> list[RainfallPoint]:
         try:
-            response = await client.get(
+            daily = (await get_weather_json(
+                client,
                 self.weather_api_base_url,
-                params={
+                {
                     "latitude": station["latitude"],
                     "longitude": station["longitude"],
                     "daily": "precipitation_sum,precipitation_probability_max",
@@ -294,9 +296,7 @@ class UpstreamForecastService:
                     "forecast_days": 7,
                     "timezone": "UTC",
                 },
-            )
-            response.raise_for_status()
-            daily = response.json()["daily"]
+            ))["daily"]
             today = date.today()
             return [
                 RainfallPoint(
