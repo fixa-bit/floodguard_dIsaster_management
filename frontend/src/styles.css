@@ -1,3 +1,9 @@
+/* Desktop screens draw the whole interface at 80%, the size it was designed to look right at
+   (like 80% browser zoom). Viewport units are corrected for this at build time (build/uiZoom.ts). */
+@media (min-width: 1100px) {
+  :root { zoom: 0.8; --ui-zoom: 0.8; }
+}
+
 :root {
   font-family: Inter, "Segoe UI", Arial, sans-serif;
   color: #1d292d;
@@ -395,6 +401,9 @@ body { color: var(--ink); background: #071114; }
   box-shadow: inset 3px 0 0 #50f5d0;
 }
 .sidebar nav { min-height: 0; overflow-y: auto; }
+/* The list can scroll on short screens, but without a scrollbar that would narrow every item. */
+.sidebar nav { scrollbar-width: none; }
+.sidebar nav::-webkit-scrollbar { display: none; }
 .sidebar nav button { padding-top: 8px; padding-bottom: 8px; }
 .sidebar nav button span { min-width: 0; font-size: 13px; line-height: 1.35; }
 .sidebar nav .sidebar-external-map { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 42px; padding: 8px 12px; color: #aebdc0; background: transparent; border: 1px solid transparent; border-radius: 5px; text-align: left; }
@@ -2167,11 +2176,7 @@ body { color: var(--ink); background: #071114; }
 .station-monitoring-toggle[aria-pressed="true"] > i::after { transform: translateX(11px); background: #50f5d0; }
 .station-monitoring-toggle:disabled { opacity: .5; cursor: not-allowed; }
 .station-monitoring-view { margin-top: 3px; }
-.station-monitoring-view button { min-height: 22px; padding: 2px 6px; font-size: 9px; }
-.map-basemap-options:not(.station-monitoring-view) button { min-height: 28px; padding: 4px 7px; font-size: 10px; }
-.map-basemap-control .map-basemap-options { grid-template-columns: auto 1fr; align-items: center; }
-.map-basemap-options:not(.station-monitoring-view) .satellite-basemap-option { min-height: 24px; padding: 2px 6px; font-size: 9px; }
-.station-monitoring-view button[aria-pressed="true"], .map-basemap-options:not(.station-monitoring-view) button[aria-pressed="true"] { color: #d8e9dc; background: #315344; border-color: #63816d; }
+.station-monitoring-view button { min-height: 26px; padding: 3px 8px; font-size: 10px; }
 .station-monitoring-toggle:focus-visible { outline: 2px solid #f8d96a; outline-offset: 3px; }
 .map-layer-control .river-network-select { display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 4px; margin-top: 7px; }
 .river-network-select select { min-width: 0; width: 100%; padding: 4px; color: #dffefa; background: #0b2429; border: 1px solid rgba(125, 232, 219, .3); border-radius: 4px; font-size: 10px; }

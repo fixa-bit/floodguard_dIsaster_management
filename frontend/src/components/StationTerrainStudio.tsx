@@ -44,6 +44,7 @@ export function StationTerrainStudio({mapRef,selectedStationId,onSelectStation,o
   const [pitch,setPitch] = useState(0);
   const [terrainReady,setTerrainReady] = useState(false);
   const marker = useRef<maplibregl.Marker | null>(null);
+  const terrainWasOn = useRef(false);
   const {canAnimate} = useOutlookMotion(true);
   const activeRef = useRef(active); activeRef.current = active;
   const stateRef = useRef({relief,bird,monitoring});stateRef.current={relief,bird,monitoring};
@@ -112,7 +113,11 @@ export function StationTerrainStudio({mapRef,selectedStationId,onSelectStation,o
     map.getContainer().dataset.stationTerrain=String(terrainActive);
     map.getContainer().dataset.monitoringTerrain=String(monitoring && terrainActive);
     map.getContainer().dataset.terrainExaggeration=String(heightScale);
-    if (!terrainOn && map.getPitch()>0) map.easeTo({pitch:0,bearing:0,duration:canAnimate ? 700 : 0});
+    // Flatten only as the terrain goes off: re-running for other reasons (terrainReady flips as a
+    // camera flight crosses zoom 7) must not cancel that flight with an easeTo.
+    const turnedOff=terrainWasOn.current && !terrainOn;
+    terrainWasOn.current=terrainOn;
+    if (turnedOff && map.getPitch()>0) map.easeTo({pitch:0,bearing:0,duration:canAnimate ? 700 : 0});
   }, [readyMap,relief,bird,exaggeration,canAnimate,terrainReady,monitoring]);
 
   function focus(id:string,tilted:boolean) {

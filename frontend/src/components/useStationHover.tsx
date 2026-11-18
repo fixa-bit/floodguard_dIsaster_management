@@ -221,7 +221,7 @@ export function useStationHover(options: Options) {
       if (map.getSource("station-hover-halo")) return;
       map.addSource("station-hover-halo", { type: "geojson", data: empty });
       map.addLayer({ id: "station-hover-halo", type: "circle", source: "station-hover-halo", paint: {
-        "circle-radius": 17, "circle-color": "#ffffff", "circle-opacity": 0.12, "circle-stroke-color": "#ffffff", "circle-stroke-width": 2,
+        "circle-radius": 22, "circle-color": "#ffffff", "circle-opacity": 0.12, "circle-stroke-color": "#ffffff", "circle-stroke-width": 2,
       } });
     };
     const keyboardHits = () => {

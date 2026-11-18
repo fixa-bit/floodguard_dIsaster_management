@@ -40,6 +40,7 @@ import { SarValidationView } from "./SarValidationView";
 import { api } from "../services/api";
 import type { GoogleFloodCollection, GoogleFloodFeature, RegionalRainfallCollection } from "../types/api";
 import { RiverStationInspector } from "./RiverStationInspector";
+import { StationDetailsPanel } from "./StationDetailsPanel";
 import { RiverDataSource } from "./RiverDataSource";
 import { alignDistrictScreeningGeometry, districtDisplayGeometry, type DistrictBoundaries } from "./districtGeometry";
 import { glacierColors, glacierConnectionLabels, glacierFilter, type GlacierCollection, type GlacierFeature, type GlacierView } from "./glaciers";
@@ -257,6 +258,20 @@ function buildRainfallHeatmapData(
   });
   return renderRainfallRaster([...weatherAnchors, ...districtAnchors], coverageOverride ?? pakistanOperationalBase);
 }
+/** Keeps a clicked station clear of the map controls (left) and its floating details card (right). */
+function detailsCameraPadding(map: MapLibreMap) {
+  const padding = stationCameraPadding(map);
+  const element = map.getContainer();
+  const width = element.clientWidth;
+  if (width < 700) return padding;
+  const container = element.getBoundingClientRect();
+  // Screen boxes include the page zoom (the portal zooms <html> on some widths); map padding does not.
+  const zoom = width > 0 ? container.width / width : 1;
+  const card = document.querySelector(".station-details-classic")?.getBoundingClientRect();
+  const right = card && card.width > 0 ? (container.right - card.left) / zoom + 24 : 400;
+  return { ...padding, top: Math.min(padding.top, 150), right: Math.max(40, Math.min(right, width - padding.left - 160)) };
+}
+
 function addIcon(map: MapLibreMap, name: string, draw: (context: CanvasRenderingContext2D) => void) {
   if (map.hasImage(name)) return;
   const canvas = document.createElement("canvas");
@@ -675,6 +690,13 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     setLayers((current) => ({ ...current, water: true, waterForecasts: true }));
   }
 
+  // A station the user clicks opens its details panel; the monitoring tour pauses
+  // so its next stop does not replace the panel.
+  function inspectStation(id: string) {
+    setStationRotationEnabled(false);
+    selectStation(id);
+  }
+
   function selectCatchment(id: string, fit = true) {
     const feature = catchmentAreas.features.find((item) => item.properties.basin_id === id) ?? null;
     setCatchmentId(id);
@@ -805,8 +827,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     const focusStation = () => {
       if (mapRef.current !== map) return;
       const previous = lastCameraStation.current;
-      // Leaving monitoring mode at the same stop: the terrain studio eases the camera back to flat.
-      if (!stationRotationEnabled && previous?.monitoring && previous.id === station.id) {
+      // Leaving monitoring mode at the same stop, already close in: the terrain studio eases the
+      // camera back to flat. From a wide tour shot (a catchment overview), fly in to the station.
+      if (!stationRotationEnabled && previous?.monitoring && previous.id === station.id && map.getZoom() >= 10.5) {
         lastCameraStation.current = { ...previous, monitoring: false };
         return;
       }
@@ -843,11 +866,13 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       map.flyTo({
         center: [station.longitude, station.latitude],
         zoom,
+        // Coming out of the tour's tilted 3D view: land flat, as the terrain studio would have.
+        ...(previous?.monitoring ? { pitch: 0, bearing: 0 } : {}),
         curve: 1.35,
         speed: 0.72,
         duration: 2300,
         essential: true,
-        padding: stationCameraPadding(map),
+        padding: detailsCameraPadding(map),
       });
       // Register after flyTo has stopped any earlier animation, so an old
       // moveend cannot reveal this station's ticket before its own flight lands.
@@ -1468,6 +1493,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           "text-size": 12, "text-anchor": "left", "text-offset": [1.15, 0], "text-max-width": 19,
           "text-padding": 6, "text-allow-overlap": true, "text-ignore-placement": true },
         paint: { "text-color": "#ffffff", "text-halo-color": "#06272b", "text-halo-width": 2.5 } });
+      // Station icons above the highlighted river and catchment (whose glow otherwise washes them
+      // out), but below the selected station's own marker and label.
+      map.moveLayer("priority-monitoring-points", "active-monitoring-station-halo");
+      map.moveLayer("priority-monitoring-labels", "active-monitoring-station-halo");
       map.on("mouseenter", "priority-monitoring-points", () => { if (!coordinatePickingRef.current) map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", "priority-monitoring-points", () => { if (!coordinatePickingRef.current) map.getCanvas().style.cursor = ""; });
       const hoverCheckpointPopup = new maplibregl.Popup({ className: "border-checkpoint-popup", closeButton: false, closeOnClick: false });
@@ -1587,7 +1616,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           const monitoringId = hit?.properties?.monitoring_station_id as string | undefined;
           if (monitoringId) {
             suppressDistrictFallbackRef.current = true;
-            selectStation(monitoringId);
+            inspectStation(monitoringId);
             return;
           }
           const id = hit?.id ?? hit?.properties?.id;
@@ -1992,7 +2021,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       setSelectedDistrict(null); setSelectedCatchment(null); setSelectedGlacier(null);
       setSelectedWaterFeature(null); setSelectedFloodHubFeature(null); setSelectedStationId(null); setCoordinateDetailsPoint(null);
       if (touch) setMapControlsOpen(false);
-    }, onInspect: selectStation });
+    }, onInspect: (id) => inspectStation(id) });
 
   useEffect(() => {
     if (selectedDistrict || selectedCatchment || selectedWaterFeature || selectedFloodHubFeature || selectedStationId) setSelectedGlacier(null);
@@ -2010,7 +2039,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         <div><span><MapPinned size={18} /></span><div><h2>Pakistan National Flood Risk &amp; Operations Map</h2><p>{metadata ? `${metadata.returned_feature_count} districts Â· observed ${new Date(metadata.observed_at).toLocaleString()}` : "Loading national coverage"}</p></div></div>
         <div className="map-header-meta"><StatusBadge value={metadata?.data_mode ?? "LOADING"} /><span><Database size={13} /> {metadata?.cache_status ?? "waiting"}</span></div>
       </header>
-      <div className={`river-monitoring-layout ${selectedStationId || (layers.catchments && selectedCatchment) ? "has-station" : ""}`}>
+      <div className={`river-monitoring-layout ${selectedStationId || (layers.catchments && selectedCatchment) ? "has-station" : ""} ${!stationRotationEnabled && selectedStationId ? "has-station-details" : ""}`}>
       <div className="map-workspace">
         <div ref={containerRef} className={`national-map ${coordinatePicking ? "coordinate-picking" : ""}`} aria-label="Interactive Pakistan district flood risk map" aria-busy={staticMapLoading} />
         {staticMapLoading && <div className="map-loading-indicator" role="status" aria-label="Loading map layers">
@@ -2188,7 +2217,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
             <span className="rainfall-source-note" role="status">{monitoring ? `${waterData.observedStations.features.length} matching stations` : monitoringError ? "Station data unavailable" : "Loading station data"}</span>
           </div>
           <label className="river-network-select"><span>River</span><select aria-label="Monitoring river" disabled={studyActive} value={monitoringRiver} onChange={(event) => setMonitoringRiver(event.target.value)}><option>All</option>{Object.keys(monitoring?.chains ?? {}).map((river) => <option key={river}>{river}</option>)}</select></label>
-          <label className="river-network-select"><span>Station</span><select aria-label="Monitoring station" value={selectedStationId ?? ""} onChange={(event) => { if (event.target.value) selectStation(event.target.value); }}><option value="">Select station</option>{Object.entries(monitoring?.chains ?? {}).filter(([river]) => monitoringRiver === "All" || monitoringRiver === river).map(([river, ids]) => <optgroup key={river} label={river}>{ids.filter((id) => catchmentStations.some((station) => station.id === id)).map((id) => <option value={id} key={`${river}-${id}`}>{monitoring?.stations.find((station) => station.id === id)?.name ?? id}</option>)}</optgroup>)}</select></label>
+          <label className="river-network-select"><span>Station</span><select aria-label="Monitoring station" value={selectedStationId ?? ""} onChange={(event) => { if (event.target.value) inspectStation(event.target.value); }}><option value="">Select station</option>{Object.entries(monitoring?.chains ?? {}).filter(([river]) => monitoringRiver === "All" || monitoringRiver === river).map(([river, ids]) => <optgroup key={river} label={river}>{ids.filter((id) => catchmentStations.some((station) => station.id === id)).map((id) => <option value={id} key={`${river}-${id}`}>{monitoring?.stations.find((station) => station.id === id)?.name ?? id}</option>)}</optgroup>)}</select></label>
             {layers.floodHub && <div className="floodhub-controls">
               <label><input type="checkbox" disabled={studyActive} checked={showNormalFloodHub} onChange={(event) => setShowNormalFloodHub(event.target.checked)} />Show normal conditions</label>
               <span className="rainfall-source-note" role="status">{floodHubError ?? floodHub?.metadata.message ?? (floodHub ? `${floodHub.features.length} Google river forecast points` : "Loading Google forecasts...")}</span>
@@ -2317,7 +2346,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         </dl>
         <h4>{waterQuantity === "status" ? "Current discharge" : quantityLabel}</h4>
         {catchmentStations.map((station) => <div className="catchment-station-reading" key={station.id}>
-          <button type="button" onClick={() => selectStation(station.id)}>{station.name} / {station.river}</button>
+          <button type="button" onClick={() => inspectStation(station.id)}>{station.name} / {station.river}</button>
           <strong>{formatFlow(stationQuantity(station, waterQuantity === "status" ? "current" : waterQuantity), flowUnit)}</strong>
           <RiverDataSource source={waterQuantity === "status" || waterQuantity === "current" ? station.current_source : "GloFAS modeled forecast"} station={station} />
         </div>)}
@@ -2326,7 +2355,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         <p>HydroBASINS level 5; full transboundary sub-basin, simplified for display.</p>
         <footer><a href="https://www.hydrosheds.org/products/hydrobasins" target="_blank" rel="noreferrer">HydroBASINS / HydroSHEDS</a></footer>
       </aside>}
-      {(showStationTicket || departingTicket) && <RiverStationInspector key={showStationTicket ? selectedStationId! : departingTicket!} leaving={!showStationTicket} stationId={showStationTicket ? selectedStationId! : departingTicket!} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => { setStationTicketArrival(null); setSelectedStationId(null); }} onSelect={selectStation} flowUnit={flowUnit} />}
+      {stationRotationEnabled && (showStationTicket || departingTicket) && <RiverStationInspector key={showStationTicket ? selectedStationId! : departingTicket!} leaving={!showStationTicket} stationId={showStationTicket ? selectedStationId! : departingTicket!} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => { setStationTicketArrival(null); setSelectedStationId(null); }} onSelect={selectStation} flowUnit={flowUnit} />}
+      {!stationRotationEnabled && selectedStationId && <StationDetailsPanel stationId={selectedStationId} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => { setStationTicketArrival(null); setSelectedStationId(null); }} onSelect={inspectStation} flowUnit={flowUnit} />}
       </div>
       {sarValidationOpen && sarOverlay?.validation && <SarValidationView result={sarOverlay} onClose={() => setSarValidationOpen(false)} />}
       <footer className="map-provenance">

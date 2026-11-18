@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 import type { RiverMonitoringResponse } from "../types/api";
 import { api } from "../services/api";
 import { RiverDataSource, riverTimestamp } from "./RiverDataSource";
-import { RiverStationInspector } from "./RiverStationInspector";
+import { StationDetailsPanel } from "./StationDetailsPanel";
 import { formatFlow, type FlowUnit } from "./waterQuantities";
 
 export function RiverMonitoringView({ compact = false, onClose }: { compact?: boolean; onClose?: () => void }) {
@@ -43,7 +43,7 @@ export function RiverMonitoringView({ compact = false, onClose }: { compact?: bo
       <td><strong>{formatFlow(station.forecast_discharge_cumecs, unit)}</strong><RiverDataSource source="GloFAS modeled" station={station} /><small>{riverTimestamp(station.forecast_valid_at)}</small></td>
       <td><span className={`monitoring-flood-status ${/below|normal/i.test(station.flood_category) ? "is-normal" : /unavailable/i.test(station.flood_category) ? "is-unknown" : "is-alert"}`}>{station.flood_category === "Below low" ? "Below flood level" : station.flood_category}</span><RiverDataSource source="FFD observed status" station={station} /></td>
       {!compact && <><td>{station.change_24h_cumecs != null && station.change_24h_cumecs > 0 ? "+" : ""}{formatFlow(station.change_24h_cumecs, unit)}<RiverDataSource source={station.change_source} station={station} /></td><td>{formatFlow(station.expected_peak_cumecs, unit)}<RiverDataSource source="GloFAS modeled peak" station={station} /><small>{riverTimestamp(station.expected_peak_at)}</small></td></>}
-    </tr>{!compact && selected === station.id && <tr className="monitoring-detail-row"><td colSpan={6}><RiverStationInspector stationId={selected} data={data} error={error} refreshing={busy} onRefresh={() => void refresh()} onClose={() => setSelected(null)} onSelect={(id) => { setRiver("All"); setQuery(""); setSelected(id); }} flowUnit={unit} /></td></tr>}</Fragment>)}</tbody></table>{!stations.length && <p role="status">{data ? "No matching stations" : error ? "Readings unavailable" : "Loading monitoring readings..."}</p>}</div>
+    </tr>{!compact && selected === station.id && <tr className="monitoring-detail-row"><td colSpan={6}><StationDetailsPanel stationId={selected} data={data} error={error} refreshing={busy} onRefresh={() => void refresh()} onClose={() => setSelected(null)} onSelect={(id) => { setRiver("All"); setQuery(""); setSelected(id); }} flowUnit={unit} /></td></tr>}</Fragment>)}</tbody></table>{!stations.length && <p role="status">{data ? "No matching stations" : error ? "Readings unavailable" : "Loading monitoring readings..."}</p>}</div>
     <footer><span>Flow in {unit === "cumecs" ? "cubic metres per second" : "cubic feet per second"}. Measured water height unavailable.</span><RiverDataSource source="FFD observations" /><RiverDataSource source="GloFAS via Open-Meteo" /></footer>
   </section>;
 }

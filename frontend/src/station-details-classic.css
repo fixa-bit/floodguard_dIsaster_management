@@ -1,0 +1,22 @@
+/* Station details opened by a station click (StationDetailsPanel): the 23 Oct panel's content,
+   floated as a card over the map's right side, under the top stats bar and above the legend
+   (StationDetailsPanel sets its top and bottom). The monitoring tour's console keeps station-console.css. */
+.river-monitoring-layout.has-station.has-station-details .map-home-button { right: 388px; }
+.river-monitoring-layout.has-station.has-station-details .station-terrain-studio { right: 392px; }
+.river-station-inspector.station-details-classic { position: absolute; z-index: 6; top: 12px; right: 16px; bottom: 12px; display: block; width: 360px; min-width: 0; max-height: none; padding: 16px;
+  color: #dffefa; background: rgba(8, 28, 32, .96); border: 1px solid rgba(125, 232, 219, .28); border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .42); overflow-x: hidden; overflow-y: auto; animation: station-details-in 260ms cubic-bezier(.2, .8, .2, 1) both; }
+.overview-command-canvas .river-station-inspector.station-details-classic { max-height: none; padding: 16px; }
+.station-details-classic h3 { margin: 4px 0 12px; font-size: 18px; }
+.station-details-classic h4 { margin: 18px 0 10px; font-size: 12px; }
+.station-details-classic > footer { margin-top: 0; }
+@keyframes station-details-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .river-station-inspector.station-details-classic { animation: none; } }
+/* River Monitoring page: the panel sits inside the station's table row. */
+.monitoring-detail-row .river-station-inspector.station-details-classic { position: static; width: auto; max-height: none; overflow: visible; border: 0; border-radius: 0; box-shadow: none; animation: none; }
+@media (max-width: 700px) {
+  .river-station-inspector.station-details-classic, .overview-command-canvas .river-station-inspector.station-details-classic { position: static; grid-column: 1 / -1; width: auto; max-height: none; padding: 16px;
+    border: 0; border-top: 1px solid rgba(125, 232, 219, .25); border-radius: 0; box-shadow: none; animation: none; }
+  .river-monitoring-layout.has-station.has-station-details .map-home-button { right: 52px; }
+  .river-monitoring-layout.has-station.has-station-details .station-terrain-studio { right: 52px; }
+}
