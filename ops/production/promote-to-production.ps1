@@ -31,7 +31,8 @@ Write-Host "Production now runs $($current.Substring(0,8)) ($(git -C $ProdRoot d
 
 Write-Step "2/4 Backend tests"
 Push-Location $DevRoot
-& (Join-Path $DevRoot ".venv\Scripts\python.exe") -m pytest -q -p no:warnings
+# Only the app's tests: models/flood_model_import carries the imported model projects' own suites.
+& (Join-Path $DevRoot ".venv\Scripts\python.exe") -m pytest tests -q -p no:warnings
 $testsOk = $LASTEXITCODE -eq 0
 Pop-Location
 if (-not $testsOk) { Stop-Promotion "backend tests failed." }
