@@ -46,13 +46,31 @@ export function catchmentLabelPoint(catchment: Feature<Polygon | MultiPolygon>):
 const byZoom = (atZoom5: number, atZoom9: number): ExpressionSpecification => ["interpolate", ["linear"], ["zoom"], 5, atZoom5, 9, atZoom9];
 
 // The selected station's catchment.
-export const catchmentSpotlightPaint: FillLayerSpecification["paint"] = { "fill-color": "#01090b", "fill-opacity": 0.34, "fill-antialias": false };
-export const activeCatchmentFillPaint: FillLayerSpecification["paint"] = { "fill-color": "#22d3b5", "fill-opacity": 0.06 };
-export const activeCatchmentGlowPaint: LineLayerSpecification["paint"] = {
-  "line-color": "#46f2cf", "line-width": byZoom(12, 22), "line-blur": byZoom(9, 15), "line-opacity": 0.5,
+export const catchmentSpotlightPaint: FillLayerSpecification["paint"] = { "fill-color": "#01090b", "fill-opacity": 0.42, "fill-antialias": false };
+// The selected catchment, revealed like a neon map (see catchmentLight.ts): a cyan line traces
+// the boundary while the inside lights up, deep navy glowing cyan along the edge. These line layers draw the boundary
+// from catchmentOutline; their colour along the line (line-gradient) is set every frame.
+export const activeCatchmentFillPaint: FillLayerSpecification["paint"] = { "fill-color": "#0a3a9a", "fill-opacity": 0 };
+const wholeOutline = (color: string): ExpressionSpecification => ["interpolate", ["linear"], ["line-progress"], 0, color, 1, color];
+/** A wide, soft blue halo around the boundary. */
+export const activeCatchmentHaloPaint: LineLayerSpecification["paint"] = {
+  "line-color": "#30acff", "line-gradient": wholeOutline("#30acff"), "line-width": byZoom(18, 30), "line-blur": byZoom(16, 26), "line-opacity": 0.6,
 };
-export const activeCatchmentCasingPaint: LineLayerSpecification["paint"] = { "line-color": "#03191d", "line-width": byZoom(4, 6.5), "line-opacity": 0.75 };
-export const activeCatchmentLinePaint: LineLayerSpecification["paint"] = { "line-color": "#a6ffe9", "line-width": byZoom(1.8, 3), "line-opacity": 1 };
+/** The neon glow of the boundary. */
+export const activeCatchmentGlowPaint: LineLayerSpecification["paint"] = {
+  "line-color": "#30acff", "line-gradient": wholeOutline("#30acff"), "line-width": byZoom(5.5, 9), "line-blur": byZoom(3.5, 6), "line-opacity": 0.95,
+};
+export const activeCatchmentCasingPaint: LineLayerSpecification["paint"] = { "line-color": "#2a1700", "line-width": byZoom(4, 6.5), "line-opacity": 0 };
+/** The bright centre of the boundary line. */
+export const activeCatchmentLinePaint: LineLayerSpecification["paint"] = {
+  "line-color": "#a8eaff", "line-gradient": wholeOutline("#a8eaff"), "line-width": byZoom(1.6, 2.6), "line-blur": byZoom(0.5, 0.9), "line-opacity": 1,
+};
+/** The catchment's boundary as lines, one per outer ring (for a source with `lineMetrics`, so the trace can follow it). */
+export function catchmentOutline(catchment: Feature<Polygon | MultiPolygon>): FeatureCollection {
+  const rings = catchment.geometry.type === "Polygon" ? [catchment.geometry.coordinates[0]]
+    : catchment.geometry.coordinates.map((polygon) => polygon[0]);
+  return { type: "FeatureCollection", features: rings.map((ring): Feature => ({ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: ring } })) };
+}
 /** "SUB-BASIN 1734" with "69,087 km² catchment" beneath, written inside the catchment like a region name. */
 export const activeCatchmentLabel: Pick<SymbolLayerSpecification, "layout" | "paint"> = {
   layout: {
@@ -62,7 +80,7 @@ export const activeCatchmentLabel: Pick<SymbolLayerSpecification, "layout" | "pa
     "text-font": ["Open Sans Semibold"], "text-size": byZoom(13, 17), "text-letter-spacing": 0.24, "text-line-height": 1.5,
     "text-max-width": 16, "text-padding": 6,
   },
-  paint: { "text-color": "#c4fff1", "text-opacity": 0.85, "text-halo-color": "#03191d", "text-halo-width": 1.8, "text-halo-blur": 0.6 },
+  paint: { "text-color": "#e3f4ff", "text-opacity": 0.94, "text-halo-color": "#03143a", "text-halo-width": 1.8, "text-halo-blur": 0.6 },
 };
 
 // The "Catchment areas" layer: every basin in its own colour.

@@ -37,7 +37,7 @@ export interface TourStation {
 // holds it for a few seconds with a slow drift, then descends to the first
 // station; it then moves from station to station within the catchment, along
 // the river where one links them, before rising to the next catchment.
-const catchmentHold = 2000;   // how long the establishing shot of a catchment is held, in ms
+const catchmentHold = 3400;   // how long the establishing shot of a catchment is held, in ms (the catchment's outline is traced meanwhile)
 const orbitTurn = 35;         // how far the slow pass at a station turns, in degrees
 
 let sequence: TourStation[] = [];
@@ -52,7 +52,7 @@ let lastStation: TourStation | null = null;
 
 const closeZoom = 10;     // stop zoom for a station without a known catchment
 const minStopZoom = 5.6, maxStopZoom = 9.6;
-const closeUpZoom = 11.6, closeUpPitch = 64;   // the 3D view of the station itself
+const closeUpZoom = 12.3, closeUpPitch = 64;   // the 3D view of the station itself
 const travelMargin = 0.15;    // how far above the lower of the two views a hop flies, in zoom levels
 const maxTravelSpans = 3.5;   // a longer hop rises until it is this many screen widths long
 // The highest camera zoom at which the always-loaded coarse imagery is the detail the view asks for.
@@ -524,15 +524,56 @@ function orbitEnd(stop: StopCamera): { zoom: number; bearing?: number; pitch?: n
         : { zoom: stop.zoom + 0.2, bearing: stop.bearing + side * 16, pitch: stop.pitch + 4 };
 }
 
+// A turn that eases in and out over its first and last 18% and keeps one steady speed in
+// between, so the circle never whips round in the middle.
+function steadyTurn(t: number, ramp = 0.18) {
+  const peak = 1 / (1 - ramp);
+  if (t < ramp) return (peak * t * t) / (2 * ramp);
+  if (t > 1 - ramp) { const u = 1 - t; return 1 - (peak * u * u) / (2 * ramp); }
+  return peak * (t - ramp / 2);
+}
+
+// The running 360° pass round a station, if any.
+let orbitFrame = 0;
+let endOrbitListeners: (() => void) | null = null;
+/** Stops a running 360° pass (the next flight starting, or the viewer taking the map). */
+export function cancelHoldOrbit() {
+  cancelAnimationFrame(orbitFrame);
+  orbitFrame = 0;
+  endOrbitListeners?.();
+  endOrbitListeners = null;
+}
+
 /**
- * A slow drone pass while a stop is held: the 3D tour orbits and drifts closer
- * (a wider orbit round a close-up station), the 2D tour only drifts closer.
+ * A slow drone pass while a stop is held. At a close-up station the camera circles the
+ * station once (a full 360°) while its stats are shown, ending on the heading it will
+ * leave on; a catchment shot drifts in, and the 2D tour only drifts closer.
  * Skipped when the viewer prefers reduced motion.
  */
 function holdOrbit(map: MapLibreMap, station: TourStation, stop: StopCamera, duration = 9500) {
   const end = orbitEnd(stop);
   heldView = { id: station.id, zoom: end.zoom, bearing: end.bearing ?? stop.bearing };
-  if (!reducedMotion()) map.easeTo({ ...end, duration, easing: easeInOutSine, essential: true });
+  if (reducedMotion()) return;
+  if (!stop.closeUp) { map.easeTo({ ...end, duration, easing: easeInOutSine, essential: true }); return; }
+  // easeTo always takes the short way round, so the full circle is driven frame by frame.
+  cancelHoldOrbit();
+  const startBearing = map.getBearing(), startZoom = map.getZoom();
+  const turn = wrap((end.bearing ?? stop.bearing) - startBearing);
+  const direction = Math.sign(turn) || Math.sign(stop.bearing) || 1;
+  const total = turn + 360 * direction;
+  const began = performance.now();
+  const step = (now: number) => {
+    const t = Math.min(1, (now - began) / Math.max(1, duration)), eased = steadyTurn(t);
+    map.jumpTo({ bearing: startBearing + total * eased, zoom: startZoom + (end.zoom - startZoom) * eased });
+    if (t < 1) orbitFrame = requestAnimationFrame(step);
+    else cancelHoldOrbit();
+  };
+  // A drag, scroll or touch hands the camera back to the viewer at once.
+  const canvas = map.getCanvasContainer();
+  const takeOver = () => cancelHoldOrbit();
+  for (const type of ["mousedown", "wheel", "touchstart"]) canvas.addEventListener(type, takeOver, { passive: true });
+  endOrbitListeners = () => { for (const type of ["mousedown", "wheel", "touchstart"]) canvas.removeEventListener(type, takeOver); };
+  orbitFrame = requestAnimationFrame(step);
 }
 
 /**
@@ -540,7 +581,9 @@ function holdOrbit(map: MapLibreMap, station: TourStation, stop: StopCamera, dur
  * hold orbit. Stops early once `isCurrent()` turns false; resolves true when
  * the camera actually landed at the stop.
  */
-export async function runMonitoringHop(map: MapLibreMap, station: TourStation, isCurrent: () => boolean, onCatchment?: (showing: boolean) => void) {
+export async function runMonitoringHop(map: MapLibreMap, station: TourStation, isCurrent: () => boolean, onCatchment?: (showing: boolean) => void, onOverCatchment?: () => void) {
+  // The previous station's 360° pass ends as the next flight begins.
+  cancelHoldOrbit();
   // A flight nobody loaded the route for (a station picked by hand mid-tour) keeps to the backdrop.
   if (preloadedFor !== station.id) { flightDetail.set(station.id, detailFloor); routePlanned.delete(station.id); }
   followDetail(map, station.id, "flight");
@@ -566,6 +609,8 @@ export async function runMonitoringHop(map: MapLibreMap, station: TourStation, i
     const arrived = await (leg.track ? trackFlight(map, leg.track, leg.to) : cinematicFlight(map, leg.to, routePlanned.has(station.id))) && isCurrent();
     if (!arrived) { landed = false; break; }
     if (leg.hold) {
+      // The camera is now above the catchment: its outline starts drawing.
+      onOverCatchment?.();
       measureStopFootprint(map, leg.to);
       const end = orbitEnd(leg.to);
       if (!await cameraStep(map, { center: leg.to.center, ...end, padding: leg.to.padding, duration: leg.hold, easing: easeInOutSine }) || !isCurrent()) { landed = false; break; }
@@ -580,7 +625,7 @@ export async function runMonitoringHop(map: MapLibreMap, station: TourStation, i
     measureStopFootprint(map, stop);
     // The station's details open as the camera lands; the slow pass waits for them to settle.
     heldView = { id: station.id, zoom: orbitEnd(stop).zoom, bearing: orbitEnd(stop).bearing ?? stop.bearing };
-    void steadyFrames().then((waited) => { if (isCurrent()) holdOrbit(map, station, stop, 6500 - waited); });
+    void steadyFrames().then((waited) => { if (isCurrent()) holdOrbit(map, station, stop, 8000 - waited); });
   }
   return landed;
 }
@@ -610,6 +655,7 @@ export function prepareMonitoringTour() {
 
 /** Ends the tour's hold on the map's imagery detail (monitoring mode turned off). */
 export function endMonitoringTour(map: MapLibreMap) {
+  cancelHoldOrbit();
   detailFollows = null;
   lastStation = null;
   setImageryMaxzoom(map, null);

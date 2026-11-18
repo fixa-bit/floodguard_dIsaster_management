@@ -1,6 +1,6 @@
 import { AlertTriangle, Building2, ChevronDown, ChevronUp, CloudRain, Crosshair, Dam, Database, Fence, Gauge, Layers3, LoaderCircle, MapPinned, Merge, MessageSquareText, MousePointer2, RadioTower, Waves, X } from "lucide-react";
 import * as maplibregl from "maplibre-gl";
-import type { GeoJSONSource, ImageSource, Map as MapLibreMap, MapLayerMouseEvent, MapMouseEvent, StyleSpecification } from "maplibre-gl";
+import type { CanvasSource, GeoJSONSource, ImageSource, Map as MapLibreMap, MapLayerMouseEvent, MapMouseEvent, StyleSpecification } from "maplibre-gl";
 import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePopulationLayers } from './usePopulationLayers';
@@ -10,7 +10,8 @@ import { TourRouteRail } from "./TourRouteRail";
 import { endMonitoringTour, monitoringTourTiles, preloadMonitoringHop, prepareMonitoringTour, setTourRivers, setTourSequence, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
 import { cachedImageryTiles, imageryAttribution, imageryBackdropMaxZoom } from "./imageryTiles";
 import {
-  activeCatchmentCasingPaint, activeCatchmentFillPaint, activeCatchmentGlowPaint, activeCatchmentLabel, activeCatchmentLinePaint,
+  activeCatchmentCasingPaint, activeCatchmentFillPaint, activeCatchmentGlowPaint, activeCatchmentHaloPaint,
+  catchmentOutline, activeCatchmentLabel, activeCatchmentLinePaint,
   catchmentAreaFillPaint, catchmentAreaGlowPaint, catchmentAreaLabel, catchmentAreaLinePaint, catchmentLabelPoint, catchmentSpotlight, catchmentSpotlightPaint,
 } from "./catchmentStyle";
 import {
@@ -41,6 +42,7 @@ import { api } from "../services/api";
 import type { GoogleFloodCollection, GoogleFloodFeature, RegionalRainfallCollection } from "../types/api";
 import { RiverStationInspector } from "./RiverStationInspector";
 import { StationDetailsPanel } from "./StationDetailsPanel";
+import { CatchmentLight } from "./catchmentLight";
 import { RiverDataSource } from "./RiverDataSource";
 import { alignDistrictScreeningGeometry, districtDisplayGeometry, type DistrictBoundaries } from "./districtGeometry";
 import { glacierColors, glacierConnectionLabels, glacierFilter, type GlacierCollection, type GlacierFeature, type GlacierView } from "./glaciers";
@@ -381,16 +383,23 @@ function locationCoordinates(locationId: string) {
   return LOCATIONS.find((location) => location.id === locationId);
 }
 
-function fitPakistanExtent(map: MapLibreMap, duration = 0) {
-  map.resize();
+function pakistanFit(map: MapLibreMap) {
   const [west, south, east, north] = pakistanOverviewBounds;
   const mobile = map.getContainer().clientWidth < 700;
-  map.fitBounds([[west, south], [east, north]], {
-    padding: { top: mobile ? 240 : 190, bottom: 110, left: mobile ? 16 : 240, right: mobile ? 16 : 50 },
-    maxZoom: 5,
-    duration,
-  });
+  return {
+    bounds: [[west, south], [east, north]] as [[number, number], [number, number]],
+    options: { padding: { top: mobile ? 240 : 190, bottom: 110, left: mobile ? 16 : 240, right: mobile ? 16 : 50 }, maxZoom: 5 },
+  };
 }
+
+function fitPakistanExtent(map: MapLibreMap, duration = 0, easing?: (t: number) => number) {
+  map.resize();
+  const { bounds, options } = pakistanFit(map);
+  map.fitBounds(bounds, { ...options, duration, ...(easing ? { easing } : {}) });
+}
+
+const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
 
 function fitCoordinate(map: MapLibreMap, point: MapCoordinate, duration = 800) {
   const mobile = map.getContainer().clientWidth < 700;
@@ -751,11 +760,16 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   // fade is driven here instead: one opacity step per frame, which repaints every tile together.
   const catchmentOpacities = useRef(new Map<string, number>());
   const catchmentFade = useRef({ level: 1, frame: 0 });
+  // The catchment's animated light, drawn on a canvas the map drapes over the terrain.
+  const [catchmentLight] = useState(() => new CatchmentLight());
+  // Whether the selected station has a catchment on the map (the light animation runs only then).
+  const hasActiveCatchment = Boolean(selectedStationId && stationCatchments.get(selectedStationId));
   useEffect(() => {
     const map = stationMapInstance;
     if (!map) return;
     const paint = map as unknown as { getPaintProperty(id: string, property: string): unknown; setPaintProperty(id: string, property: string, value: unknown): void };
-    const layers = ["active-monitoring-catchment-spotlight", "active-monitoring-catchment-fill", "active-monitoring-catchment-glow",
+    // The layers fade with the highlight; the neon reveal itself (outline colour, canvas inside) is driven below.
+    const layers = ["active-monitoring-catchment-spotlight", "active-monitoring-catchment-fill", "active-monitoring-catchment-halo", "active-monitoring-catchment-glow",
       "active-monitoring-catchment-casing", "active-monitoring-catchment-line", "active-monitoring-catchment-label"];
     const setLevel = (level: number) => {
       for (const id of layers) {
@@ -771,23 +785,59 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         }
       }
     };
+    // The boundary is traced, then a pulse of light runs round it: its colour along the line, each frame.
+    const setAnimated = (seconds: number, level: number) => {
+      if (level <= 0.005 || !catchmentLight.active) return;
+      const glow = catchmentLight.outlineGradient(seconds, false), core = catchmentLight.outlineGradient(seconds, true);
+      for (const [id, gradient] of [["active-monitoring-catchment-halo", glow], ["active-monitoring-catchment-glow", glow], ["active-monitoring-catchment-line", core]] as const) {
+        if (map.getLayer(id)) paint.setPaintProperty(id, "line-gradient", gradient);
+      }
+    };
     const fade = catchmentFade.current;
     const target = stationRotationEnabled && monitoringView === "3d" && !tourShowingCatchment ? 0 : 1;
     cancelAnimationFrame(fade.frame);
     const from = fade.level, duration = target ? 1500 : 2200, began = performance.now();
-    const step = () => {
-      const t = Math.min(1, (performance.now() - began) / duration), eased = t * t * (3 - 2 * t);
-      fade.level = from + (target - from) * eased;
-      setLevel(fade.level);
-      if (t < 1) fade.frame = requestAnimationFrame(step);
+    // The catchment coming back on screen (the tour's next establishing shot) plays the reveal again.
+    // In the 3D tour it waits, unlit, until the camera is above the catchment (runMonitoringHop says when).
+    if (target === 1 && from < 0.3) {
+      if (stationRotationEnabled && monitoringView === "3d") catchmentLight.holdReveal(); else catchmentLight.restartReveal();
+    }
+    // The light moves only while a catchment is on the map (and not for viewers who prefer less motion).
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const animate = target === 1 && hasActiveCatchment && !still;
+    // The lit inside (a canvas): it fades out once the view is far closer than the whole catchment,
+    // and the map copies the canvas only on frames where the picture changed.
+    const drawLight = (seconds: number, level: number) => {
+      const source = map.getSource("active-monitoring-catchment-aurora") as CanvasSource | undefined;
+      const closer = map.getZoom() - catchmentLight.fitZoom;
+      const strength = catchmentLight.active ? level * Math.max(0, Math.min(1, 1 - (closer - 1.5) / 1.5)) : 0;
+      if (catchmentLight.draw(seconds, strength) && source?.play) { source.play(); source.pause(); }
     };
-    if (from === target) setLevel(target);
-    else fade.frame = requestAnimationFrame(step);
+    let painted = 0;
+    const step = (now: number) => {
+      const t = Math.min(1, (now - began) / duration), eased = t * t * (3 - 2 * t);
+      fade.level = from + (target - from) * eased;
+      if (t < 1) setLevel(fade.level);
+      const running = t < 1 || (animate && fade.level > 0.005);
+      // The light moves at about 30 frames a second.
+      if (t < 1 || now - painted > 33) {
+        const seconds = still ? catchmentLight.settledSeconds : now / 1000;
+        setAnimated(seconds, fade.level);
+        drawLight(seconds, fade.level);
+        painted = now;
+      }
+      if (running) fade.frame = requestAnimationFrame(step);
+      else {
+        const seconds = still ? catchmentLight.settledSeconds : now / 1000;
+        setLevel(fade.level); setAnimated(seconds, fade.level); drawLight(seconds, fade.level);
+      }
+    };
+    fade.frame = requestAnimationFrame(step);
     // Layers added again later (a style reload) take the current level at once.
-    const reapply = () => setLevel(fade.level);
+    const reapply = () => { setLevel(fade.level); setAnimated(performance.now() / 1000, fade.level); };
     map.on("styledata", reapply);
     return () => { cancelAnimationFrame(fade.frame); map.off("styledata", reapply); };
-  }, [stationMapInstance, stationRotationEnabled, monitoringView, tourShowingCatchment]);
+  }, [stationMapInstance, stationRotationEnabled, monitoringView, tourShowingCatchment, hasActiveCatchment]);
   const tourRailStations = useMemo(() => rotationStations.map((station) => {
     const catchment = stationCatchments.get(station.id);
     return { id: station.id, name: station.name, catchmentId: catchment?.id || undefined, catchmentName: catchment?.name };
@@ -824,8 +874,15 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     if (!station || !map) return;
     let current = true;
     let cameraMoveEnd: (() => void) | null = null;
+    let waitForIntro: (() => void) | null = null;
     const focusStation = () => {
       if (mapRef.current !== map) return;
+      // The tour's first flight waits for the opening globe animation to finish.
+      if (stationRotationEnabled && map.getContainer().dataset.globeIntro === "playing") {
+        waitForIntro = () => { waitForIntro = null; if (current) focusStation(); };
+        map.getContainer().addEventListener("globeintroend", waitForIntro, { once: true });
+        return;
+      }
       const previous = lastCameraStation.current;
       // Leaving monitoring mode at the same stop, already close in: the terrain studio eases the
       // camera back to flat. From a wide tour shot (a catchment overview), fly in to the station.
@@ -844,7 +901,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         if (!hop) void preloadMonitoringHop(map, null, toTourStation(station));
         // A flight cut short (a drag, a resize) still counts as arriving: the
         // station's stats appear and the hold timer runs, so the tour never stalls.
-        void runMonitoringHop(map, toTourStation(station), () => current, (showing) => { if (current) setTourShowingCatchment(showing); }).catch((error) => { console.error("Monitoring hop failed", error); return false; }).then(() => {
+        void runMonitoringHop(map, toTourStation(station), () => current, (showing) => { if (current) setTourShowingCatchment(showing); }, () => { if (current) catchmentLight.restartReveal(); }).catch((error) => { console.error("Monitoring hop failed", error); return false; }).then(() => {
           if (!current || mapRef.current !== map || selectedStationIdRef.current !== station.id) return;
           setMonitoringArrival(station.id);
           setStationTicketArrival({ stationId: station.id, map });
@@ -887,10 +944,11 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       current = false;
       map.off("style.load", focusStation);
       if (cameraMoveEnd) map.off("moveend", cameraMoveEnd);
+      if (waitForIntro) map.getContainer().removeEventListener("globeintroend", waitForIntro);
     };
   }, [stationMapInstance, selectedStationId, selectedMonitoringStation?.latitude, selectedMonitoringStation?.longitude, stationRotationEnabled, monitoringView]);
 
-  // Hold each monitoring stop for 10 s after the camera lands, preloading the
+  // Hold each monitoring stop for 8.5 s after the camera lands (the 360° pass round the station), preloading the
   // next hop's terrain and imagery meanwhile (waiting up to 4 s more if needed).
   useEffect(() => {
     const map = stationMapInstance;
@@ -911,7 +969,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     const timer = window.setTimeout(() => {
       void Promise.race([preloaded, new Promise((resolve) => window.setTimeout(resolve, 4000))])
         .then(() => { if (active) setSelectedStationId(next.id); });
-    }, 7000);
+    }, 8500);
     return () => { active = false; window.clearTimeout(startPreload); window.clearTimeout(timer); };
   }, [stationMapInstance, stationRotationEnabled, selectedStationId, monitoringArrival, rotationKey]);
 
@@ -993,6 +1051,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       "active-monitoring-catchment": emptyCollection,
       "active-monitoring-catchment-spotlight": emptyCollection,
       "active-monitoring-catchment-label": emptyCollection,
+      "active-monitoring-catchment-outline": emptyCollection,
       "active-monitoring-river": emptyCollection,
     } satisfies Record<string, FeatureCollection>;
 
@@ -1034,9 +1093,25 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       "active-monitoring-catchment": catchmentCollection,
       "active-monitoring-catchment-spotlight": catchment ? catchmentSpotlight(catchment as Feature<Polygon | MultiPolygon>) : emptyCollection,
       "active-monitoring-catchment-label": catchment ? catchmentLabelPoint(catchment as Feature<Polygon | MultiPolygon>) : emptyCollection,
+      "active-monitoring-catchment-outline": catchment ? catchmentOutline(catchment as Feature<Polygon | MultiPolygon>) : emptyCollection,
       "active-monitoring-river": { type: "FeatureCollection", features: riverFeatures } as FeatureCollection,
     } satisfies Record<string, FeatureCollection>;
   }, [monitoring, selectedStationId, districtDisplayData, riverStatusLines]);
+  useEffect(() => {
+    const catchment = activeStationMapLayers["active-monitoring-catchment"].features[0] as Feature<Polygon | MultiPolygon> | undefined;
+    const point = activeStationMapLayers["active-monitoring-station"].features[0]?.geometry;
+    const origin = point?.type === "Point" ? point.coordinates.slice(0, 2) as [number, number] : null;
+    if (!catchmentLight.setCatchment(catchment ?? null, origin)) return;
+    // Outside the 3D tour (a station picked by hand) the reveal plays at once; the tour starts it on arrival.
+    if (!(stationRotationEnabled && monitoringView === "3d")) catchmentLight.restartReveal();
+    const source = stationMapInstance?.getSource("active-monitoring-catchment-aurora") as CanvasSource | undefined;
+    if (!source?.setCoordinates) return;
+    source.setCoordinates(catchmentLight.coordinates);
+    // The first frame of the new catchment's reveal; the animation takes over from here.
+    catchmentLight.draw(performance.now() / 1000, catchmentFade.current.level);
+    source.play();
+    source.pause();
+  }, [stationMapInstance, activeStationMapLayers, catchmentLight, stationRotationEnabled, monitoringView]);
   const [preparedRainfall, setPreparedRainfall] = useState<{
     weather: WeatherResponse[]; risk: NationalRiskCollection | null; window: RainfallWindowId;
     regional: RegionalRainfallCollection | null; data: ReturnType<typeof buildRainfallHeatmapData>;
@@ -1218,8 +1293,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: MAP_STYLE_URL || baseStyle,
-      center: playGlobeIntro ? [52, 22] : [69.35, 30.45],
-      zoom: playGlobeIntro ? 1.5 : expanded ? 3.45 : 3.25,
+      center: [69.35, 30.45],
+      zoom: playGlobeIntro ? 0.9 : expanded ? 3.45 : 3.25,
       minZoom: 0,
       maxZoom: 15,
       maxPitch: 70,
@@ -1272,19 +1347,42 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         : (rainfallEnabledRef.current ? fitRainfallExtent : glacierEnabledRef.current ? fitGlacierExtent : fitPakistanExtent)(map, 0);
       if (playGlobeIntro) {
         map.setProjection(globeToFlatProjection);
-        // Wait for the globe's imagery (at most 4.5 s), show it for a moment, then fly
-        // in; the projection flattens into the normal map on the way down.
+        // Wait for the globe's imagery (at most 4.5 s) and show it for a moment. The globe stays
+        // centred on Pakistan throughout: it expands, then zooms in on Pakistan, flattening into
+        // the normal map on the way down. The tour's first flight (turning and zooming to the
+        // first station together) starts after that.
+        // The monitoring tour waits for this (its first flight starts from the Pakistan view).
+        map.getContainer().dataset.globeIntro = "playing";
+        const finishIntro = () => {
+          globeIntroFlying = false;
+          delete map.getContainer().dataset.globeIntro;
+          map.getContainer().dispatchEvent(new Event("globeintroend"));
+        };
         let introQueued = false;
-        const queueIntro = () => { if (!introQueued) { introQueued = true; window.setTimeout(flyIn, 1100); } };
+        const queueIntro = () => { if (!introQueued) { introQueued = true; window.setTimeout(expandGlobe, 900); } };
         map.once("idle", queueIntro);
         window.setTimeout(queueIntro, 4500);
-        const flyIn = () => {
-          if (mapRef.current !== map || !globeIntroFlying) return;
-          if (selectedStationIdRef.current || selectedCoordinateRef.current) { globeIntroFlying = false; fitOverview(); return; }
-          fitPakistanExtent(map, 5200);
+        const introInterrupted = () => {
+          if (mapRef.current !== map || !globeIntroFlying) return true;
+          // A coordinate, or a station picked by hand, ends the intro at once; the tour's own
+          // first station waits for the intro instead.
+          if (selectedCoordinateRef.current || (selectedStationIdRef.current && !stationRotationRef.current)) {
+            finishIntro(); fitOverview(); return true;
+          }
+          return false;
+        };
+        const expandGlobe = () => {
+          if (introInterrupted()) return;
+          map.easeTo({ zoom: 2.6, duration: 1900, easing: easeOutCubic });
+          map.once("moveend", () => window.setTimeout(zoomIn, 150));
+        };
+        const zoomIn = () => {
+          if (introInterrupted()) return;
+          // Pakistan is already in the centre, so this zooms (and flattens) without turning.
+          fitPakistanExtent(map, 3600, easeInOutCubic);
           // Listen after starting: fitPakistanExtent resizes first, which ends with its own moveend.
-          if (map.isMoving()) map.once("moveend", () => { globeIntroFlying = false; });
-          else globeIntroFlying = false;
+          if (map.isMoving()) map.once("moveend", finishIntro);
+          else finishIntro();
         };
       } else {
         requestAnimationFrame(fitOverview);
@@ -1329,6 +1427,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       map.addSource("active-monitoring-catchment", { type: "geojson", data: emptyCollection });
       map.addSource("active-monitoring-catchment-spotlight", { type: "geojson", data: emptyCollection });
       map.addSource("active-monitoring-catchment-label", { type: "geojson", data: emptyCollection });
+      map.addSource("active-monitoring-catchment-outline", { type: "geojson", data: emptyCollection, lineMetrics: true });
+      map.addSource("active-monitoring-catchment-aurora", { type: "canvas", canvas: catchmentLight.canvas, coordinates: catchmentLight.coordinates, animate: false });
       map.addSource("active-monitoring-river", { type: "geojson", data: emptyCollection });
       map.addSource("rainfall-heatmap", { type: "image", url: rainfallHeatmapData.imageUrl, coordinates: rainfallImageCoordinates });
       map.addLayer({
@@ -1462,12 +1562,17 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       // The station's catchment: the map outside it dims, its edge glows, and its name runs along the boundary.
       map.addLayer({ id: "active-monitoring-catchment-spotlight", type: "fill", source: "active-monitoring-catchment-spotlight", paint: catchmentSpotlightPaint });
       map.addLayer({ id: "active-monitoring-catchment-fill", type: "fill", source: "active-monitoring-catchment", paint: activeCatchmentFillPaint });
-      map.addLayer({ id: "active-monitoring-catchment-glow", type: "line", source: "active-monitoring-catchment",
-        layout: { "line-join": "round" }, paint: activeCatchmentGlowPaint });
+      // The neon reveal: the lit inside (a canvas), then the boundary's halo, glow and bright centre.
+      map.addLayer({ id: "active-monitoring-catchment-aurora", type: "raster", source: "active-monitoring-catchment-aurora",
+        paint: { "raster-opacity": 1, "raster-fade-duration": 0, "raster-resampling": "linear" } });
+      map.addLayer({ id: "active-monitoring-catchment-halo", type: "line", source: "active-monitoring-catchment-outline",
+        layout: { "line-join": "round", "line-cap": "round" }, paint: activeCatchmentHaloPaint });
+      map.addLayer({ id: "active-monitoring-catchment-glow", type: "line", source: "active-monitoring-catchment-outline",
+        layout: { "line-join": "round", "line-cap": "round" }, paint: activeCatchmentGlowPaint });
       map.addLayer({ id: "active-monitoring-catchment-casing", type: "line", source: "active-monitoring-catchment",
         layout: { "line-join": "round" }, paint: activeCatchmentCasingPaint });
-      map.addLayer({ id: "active-monitoring-catchment-line", type: "line", source: "active-monitoring-catchment",
-        layout: { "line-join": "round" }, paint: activeCatchmentLinePaint });
+      map.addLayer({ id: "active-monitoring-catchment-line", type: "line", source: "active-monitoring-catchment-outline",
+        layout: { "line-join": "round", "line-cap": "round" }, paint: activeCatchmentLinePaint });
       map.addLayer({ id: "active-monitoring-catchment-label", type: "symbol", source: "active-monitoring-catchment-label", ...activeCatchmentLabel });
       map.addLayer({ id: "active-monitoring-district-casing", type: "line", source: "active-monitoring-district",
         layout: { "line-join": "round" }, paint: { "line-color": "#fff6ce", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 3.2, 9, 5], "line-opacity": 0.78 } });
@@ -1914,7 +2019,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     map.setLayoutProperty("water-lines-flow", "visibility", visibility((layers.water || layers.waterForecasts) && riverFlowEnabled));
     map.setLayoutProperty("water-lines-label", "visibility", visibility(layers.water || layers.waterForecasts));
     const stationContextVisibility = visibility(Boolean(selectedStationId));
-    for (const id of ["active-monitoring-catchment-spotlight", "active-monitoring-catchment-fill", "active-monitoring-catchment-glow",
+    for (const id of ["active-monitoring-catchment-spotlight", "active-monitoring-catchment-fill", "active-monitoring-catchment-halo", "active-monitoring-catchment-glow",
+      "active-monitoring-catchment-aurora",
       "active-monitoring-catchment-casing", "active-monitoring-catchment-line", "active-monitoring-catchment-label",
       "active-monitoring-district-casing", "active-monitoring-district-line", "active-monitoring-river-glow",
       "active-monitoring-river-casing", "active-monitoring-river-line", "active-monitoring-river-core",
