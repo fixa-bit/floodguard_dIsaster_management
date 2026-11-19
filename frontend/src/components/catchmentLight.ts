@@ -1,24 +1,30 @@
 import type { Feature, MultiPolygon, Polygon, Position } from "geojson";
 import type { ExpressionSpecification } from "maplibre-gl";
+import { catchmentColors, rgba, rgbOf } from "./catchmentColors";
 
 /**
- * The selected catchment's neon reveal. When a catchment comes on screen, a glowing cyan line
- * traces its boundary and the inside lights up behind it, a deep navy glowing cyan along the
- * edge, like a glowing glass orb. Once the whole catchment is lit, a brighter pulse of light keeps running around the edge.
+ * The selected catchment's neon reveal, after the user's reference video. The catchment waits
+ * faintly blue; then a glowing cyan line traces its boundary at a steady pace while the inside
+ * fills in rich blue behind it, sweeping round as the line goes; when the line closes, the whole
+ * catchment brightens and glossy cyan highlights shine along its edges. A soft pulse of light
+ * then keeps running round the boundary.
  *
  * The inside is drawn on a canvas that the map drapes over the terrain (a MapLibre canvas source).
  * The boundary is drawn by the map's own line layers, coloured each frame by `outlineGradient`.
  */
 
 type Corners = [[number, number], [number, number], [number, number], [number, number]];
-type Ring = { points: [number, number][]; lengths: number[]; total: number };
+type Ring = { points: [number, number][]; lengths: number[]; total: number; middle: [number, number] };
 
 const maxSize = 1100;
-const traceSeconds = 2.2;   // the boundary is traced in this long
-const fillSeconds = 0.9;    // then the whole inside lights up
+const traceSeconds = 6;     // the boundary is traced in this long, at a steady pace
+const shineSeconds = 1.6;   // then the catchment brightens and its edges shine
 const orbitSeconds = 7;     // then a pulse of light runs once round the edge in this long
+const waitingGlow = 0.32;   // how lit the inside is before the line starts
+const maskScale = 0.25;     // the sweep's soft mask is worked out at this fraction of the canvas size
 
-const blue = [48, 172, 255], paleBlue = [168, 234, 255], white = [236, 252, 255];
+// The colours themselves live in catchmentColors.ts.
+const blue = rgbOf(catchmentColors.lineGlow), paleBlue = rgbOf(catchmentColors.lineCore), white = rgbOf(catchmentColors.lineHot);
 
 // Web Mercator, 0..1 across the world.
 const mercatorX = (lng: number) => (lng + 180) / 360;
@@ -32,6 +38,11 @@ const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const easeInOut = (t: number) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(t));
 const easeOut = (t: number) => 1 - (1 - clamp(t)) ** 3;
 const mix = (a: number[], b: number[], t: number) => a.map((value, index) => Math.round(value + (b[index] - value) * t));
+/** How far round the boundary the line has reached: a steady pace, easing only at the very start and end. */
+const traceProgress = (elapsed: number) => {
+  const t = clamp(elapsed / traceSeconds);
+  return 0.85 * t + 0.15 * easeInOut(t);
+};
 
 export class CatchmentLight {
   readonly canvas: HTMLCanvasElement;
@@ -41,7 +52,9 @@ export class CatchmentLight {
   fitZoom = 0;
   private ctx: CanvasRenderingContext2D;
   private inner: HTMLCanvasElement | null = null;
-  private innerPattern: CanvasPattern | null = null;
+  private shine: HTMLCanvasElement | null = null;
+  private swept: HTMLCanvasElement | null = null;
+  private mask: HTMLCanvasElement | null = null;
   private shape: Path2D | null = null;
   private rings: Ring[] = [];
   private edge = 1;
@@ -58,15 +71,20 @@ export class CatchmentLight {
   get active() { return this.shape !== null; }
 
   /** A time at which the reveal has long finished (the still picture, for viewers who prefer less motion). */
-  get settledSeconds() { return (Number.isFinite(this.revealStart) ? this.revealStart : 0) + traceSeconds + fillSeconds + 1; }
+  get settledSeconds() { return (Number.isFinite(this.revealStart) ? this.revealStart : 0) + traceSeconds + shineSeconds + 1; }
 
-  /** Plays the reveal again from the start (the catchment has just come on screen). */
   /** Keeps the catchment unlit (nothing traced yet) until `restartReveal`: the tour camera is still on its way. */
   holdReveal() {
     this.revealStart = Infinity;
     this.drawn = "";
   }
 
+  /** Shows the catchment already fully drawn, with no reveal (monitoring mode off). */
+  settle() {
+    this.restartReveal(performance.now() / 1000 - 1000);
+  }
+
+  /** Plays the reveal again from the start (the catchment has just come on screen). */
   restartReveal(seconds = performance.now() / 1000) {
     this.revealStart = seconds;
     this.drawn = "";
@@ -80,8 +98,7 @@ export class CatchmentLight {
     this.drawn = "";
     if (!catchment || !origin) {
       this.shape = null;
-      this.inner = null;
-      this.innerPattern = null;
+      this.inner = this.shine = this.swept = this.mask = null;
       this.rings = [];
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       return true;
@@ -110,128 +127,227 @@ export class CatchmentLight {
     this.rings = outlines.map((ring) => {
       const points = ring.map(toPixel);
       const lengths = [0];
+      let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
       points.forEach((point, index) => {
         if (index === 0) shape.moveTo(...point); else shape.lineTo(...point);
         if (index > 0) lengths.push(lengths[index - 1] + Math.hypot(point[0] - points[index - 1][0], point[1] - points[index - 1][1]));
+        left = Math.min(left, point[0]); right = Math.max(right, point[0]); top = Math.min(top, point[1]); bottom = Math.max(bottom, point[1]);
       });
       shape.closePath();
-      return { points, lengths, total: lengths[lengths.length - 1] || 1 };
+      return { points, lengths, total: lengths[lengths.length - 1] || 1, middle: [(left + right) / 2, (top + bottom) / 2] as [number, number] };
     });
     this.shape = shape;
     this.edge = Math.max(width, height) * 0.03;
     this.inner = this.paintInner(width, height);
-    this.innerPattern = this.ctx.createPattern(this.inner, "no-repeat");
+    this.shine = this.paintShine(width, height);
+    this.swept = document.createElement("canvas");
+    this.swept.width = width;
+    this.swept.height = height;
+    this.mask = document.createElement("canvas");
+    this.mask.width = Math.ceil(width * maskScale);
+    this.mask.height = Math.ceil(height * maskScale);
     this.holdReveal();
     return true;
   }
 
+  /** The middle of all the rings together (for the inside's depth). */
+  private bounds() {
+    let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
+    for (const { points } of this.rings) for (const [x, y] of points) {
+      left = Math.min(left, x); right = Math.max(right, x); top = Math.min(top, y); bottom = Math.max(bottom, y);
+    }
+    return { middleX: (left + right) / 2, middleY: (top + bottom) / 2, radius: Math.max(right - left, bottom - top) / 2 };
+  }
+
   /**
-   * The lit inside, after a glowing glass orb: a deep, nearly opaque navy, darkest in the middle,
-   * with faint glossy layers of cyan light inside the edge and a bright cyan glow along it.
+   * The lit inside: a soft, subtle blue that glows strongest along the edge and grows more and more
+   * see-through toward the middle, so the terrain shows clearly through the heart of the catchment.
    */
   private paintInner(width: number, height: number) {
     const inner = document.createElement("canvas");
     inner.width = width;
     inner.height = height;
     const ctx = inner.getContext("2d")!;
-    const shape = this.shape!, edge = this.edge;
-    let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
-    for (const { points } of this.rings) for (const [x, y] of points) {
-      left = Math.min(left, x); right = Math.max(right, x); top = Math.min(top, y); bottom = Math.max(bottom, y);
-    }
-    const middleX = (left + right) / 2, middleY = (top + bottom) / 2, radius = Math.max(right - left, bottom - top) / 2;
+    const shape = this.shape!, edge = this.edge, { middleX, middleY } = this.bounds();
     ctx.save();
     ctx.clip(shape);
-    ctx.fillStyle = "rgba(3,16,34,0.82)";
+    // A faint wash everywhere; the colour itself comes from the glow rising in from the edge (below).
+    ctx.fillStyle = rgba(catchmentColors.wash, 0.08);
     ctx.fillRect(0, 0, width, height);
-    const depth = ctx.createRadialGradient(middleX, middleY, 0, middleX, middleY, radius);
-    depth.addColorStop(0, "rgba(0,3,10,0.55)");
-    depth.addColorStop(0.6, "rgba(0,6,16,0.2)");
-    depth.addColorStop(1, "rgba(0,8,20,0)");
-    ctx.fillStyle = depth;
-    ctx.fillRect(0, 0, width, height);
+    // Glow from the edge inward, in widening, fainter bands: dense at the edge, clear in the middle.
+    ctx.lineJoin = "round";
+    [[7, 2.6, 0.16], [4, 1.5, 0.22]].forEach(([band, blur, alpha]) => {
+      ctx.filter = `blur(${edge * blur}px)`;
+      ctx.strokeStyle = rgba(catchmentColors.insideGlow, alpha);
+      ctx.lineWidth = edge * band;
+      ctx.stroke(shape);
+    });
+    ctx.filter = "none";
     // Glossy layers of light inside the edge: the outline again, smaller and slightly turned each time.
     ctx.lineJoin = "round";
-    [[0.94, 0.03, 0.2], [0.87, -0.025, 0.13], [0.79, 0.04, 0.08]].forEach(([size, turn, alpha]) => {
+    [[0.94, 0.03, 0.22], [0.87, -0.025, 0.14], [0.79, 0.04, 0.09]].forEach(([size, turn, alpha]) => {
       ctx.save();
       ctx.translate(middleX, middleY);
       ctx.rotate(turn);
       ctx.scale(size, size * 0.985);
       ctx.translate(-middleX, -middleY);
       ctx.filter = `blur(${edge * 0.35}px)`;
-      ctx.strokeStyle = `rgba(70,190,255,${alpha})`;
+      ctx.strokeStyle = rgba(catchmentColors.innerLayers, alpha * 0.8);
       ctx.lineWidth = edge * 0.5 / size;
       ctx.stroke(shape);
       ctx.restore();
     });
-    // Cyan light glowing in from the edge: a wide soft band, then a tight bright one.
-    ctx.filter = `blur(${edge * 0.75}px)`;
-    ctx.strokeStyle = "rgba(30,155,255,0.75)";
-    ctx.lineWidth = edge * 1.7;
+    // Blue light glowing in from the edge: a wide soft band, then a tight brighter one.
+    ctx.filter = `blur(${edge * 0.8}px)`;
+    ctx.strokeStyle = rgba(catchmentColors.edgeGlow, 0.5);
+    ctx.lineWidth = edge * 1.8;
     ctx.stroke(shape);
-    ctx.filter = `blur(${edge * 0.2}px)`;
-    ctx.strokeStyle = "rgba(150,228,255,0.85)";
-    ctx.lineWidth = edge * 0.45;
+    ctx.filter = `blur(${edge * 0.25}px)`;
+    ctx.strokeStyle = rgba(catchmentColors.edgeRim, 0.55);
+    ctx.lineWidth = edge * 0.35;
     ctx.stroke(shape);
     ctx.filter = "none";
     ctx.restore();
     return inner;
   }
 
-  /** The boundary traced so far (`progress` 0 to 1 of each ring), and where each trace has reached. */
+  /** The shine once the line closes: a brighter wash, cyan light along the edge and a few glossy highlights. */
+  private paintShine(width: number, height: number) {
+    const shine = document.createElement("canvas");
+    shine.width = width;
+    shine.height = height;
+    const ctx = shine.getContext("2d")!;
+    const shape = this.shape!, edge = this.edge;
+    ctx.save();
+    ctx.clip(shape);
+    ctx.fillStyle = rgba(catchmentColors.shineWash, 0.06);
+    ctx.fillRect(0, 0, width, height);
+    ctx.lineJoin = "round";
+    ctx.filter = `blur(${edge * 0.4}px)`;
+    ctx.strokeStyle = rgba(catchmentColors.shineEdge, 0.55);
+    ctx.lineWidth = edge * 0.7;
+    ctx.stroke(shape);
+    ctx.filter = "none";
+    // Glossy highlights where light pools inside the edge (the same places every time for a catchment).
+    let seed = 11;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    for (const { points, lengths, total, middle } of this.rings) {
+      const count = 5;
+      for (let spot = 0; spot < count; spot += 1) {
+        const reach = ((spot + random() * 0.6) / count) * total;
+        const index = Math.max(1, lengths.findIndex((length) => length >= reach));
+        const [x, y] = points[index];
+        // A little inside the edge, toward the ring's middle.
+        const inward = 0.06 + random() * 0.05;
+        const cx = x + (middle[0] - x) * inward, cy = y + (middle[1] - y) * inward;
+        const size = edge * (1.8 + random() * 1.8);
+        const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, size);
+        glow.addColorStop(0, rgba(catchmentColors.highlight, 0.75));
+        glow.addColorStop(0.35, rgba(catchmentColors.highlightMid, 0.35));
+        glow.addColorStop(1, rgba(catchmentColors.highlightOuter, 0));
+        ctx.fillStyle = glow;
+        ctx.fillRect(cx - size, cy - size, size * 2, size * 2);
+      }
+    }
+    ctx.restore();
+    return shine;
+  }
+
+  /**
+   * The boundary traced so far (`progress` 0 to 1 of each ring), where each trace has reached, and
+   * the area the line has swept round (from each ring's middle to the traced boundary).
+   */
   private traced(progress: number) {
-    const path = new Path2D(), tips: [number, number][] = [];
-    for (const { points, lengths, total } of this.rings) {
+    const path = new Path2D(), sweep = new Path2D(), tips: [number, number][] = [];
+    for (const { points, lengths, total, middle } of this.rings) {
       const reach = progress * total;
       path.moveTo(...points[0]);
+      sweep.moveTo(...middle);
+      sweep.lineTo(...points[0]);
       let tip = points[0];
       for (let index = 1; index < points.length; index += 1) {
-        if (lengths[index] <= reach) { path.lineTo(...points[index]); tip = points[index]; continue; }
+        if (lengths[index] <= reach) { tip = points[index]; path.lineTo(...tip); sweep.lineTo(...tip); continue; }
         const part = (reach - lengths[index - 1]) / (lengths[index] - lengths[index - 1] || 1);
         tip = [points[index - 1][0] + (points[index][0] - points[index - 1][0]) * part, points[index - 1][1] + (points[index][1] - points[index - 1][1]) * part];
         path.lineTo(...tip);
+        sweep.lineTo(...tip);
         break;
       }
+      sweep.closePath();
       tips.push(tip);
     }
-    return { path, tips };
+    return { path, sweep, tips };
+  }
+
+  /** The inside as far as the line has swept, with a soft edge to the sweep. */
+  private paintSwept(sweep: Path2D, path: Path2D) {
+    const mask = this.mask!, swept = this.swept!, inner = this.inner!;
+    const maskCtx = mask.getContext("2d")!;
+    maskCtx.setTransform(1, 0, 0, 1, 0, 0);
+    maskCtx.clearRect(0, 0, mask.width, mask.height);
+    maskCtx.setTransform(maskScale, 0, 0, maskScale, 0, 0);
+    maskCtx.filter = `blur(${this.edge * 0.5 * maskScale}px)`;
+    maskCtx.fillStyle = "#fff";
+    maskCtx.fill(sweep);
+    // Light spills a little ahead along the edge just traced.
+    maskCtx.strokeStyle = "#fff";
+    maskCtx.lineWidth = this.edge * 2.4;
+    maskCtx.lineJoin = "round";
+    maskCtx.lineCap = "round";
+    maskCtx.stroke(path);
+    maskCtx.filter = "none";
+    const ctx = swept.getContext("2d")!;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.clearRect(0, 0, swept.width, swept.height);
+    ctx.drawImage(inner, 0, 0);
+    ctx.globalCompositeOperation = "destination-in";
+    ctx.drawImage(mask, 0, 0, swept.width, swept.height);
+    ctx.globalCompositeOperation = "source-over";
+    return swept;
   }
 
   /** Draws the inside at time `seconds` and strength `level` (0 to 1); returns false when the picture did not change. */
   draw(seconds: number, level: number) {
     const elapsed = seconds - this.revealStart;
-    const trace = clamp(elapsed / traceSeconds), fill = clamp((elapsed - traceSeconds * 0.8) / fillSeconds);
-    const settled = trace >= 1 && fill >= 1;
-    const state = !this.shape || level <= 0.003 || !Number.isFinite(this.revealStart) ? "blank" : settled ? `lit:${level.toFixed(3)}` : "";
+    const progress = traceProgress(elapsed);
+    const whole = easeOut((elapsed - traceSeconds * 0.96) / 0.7);
+    const shining = easeOut((elapsed - traceSeconds) / shineSeconds);
+    const settled = elapsed >= traceSeconds + shineSeconds;
+    // Before the line starts (the tour camera still on its way) the catchment is already faintly blue.
+    const waiting = !Number.isFinite(this.revealStart) || elapsed <= 0;
+    const state = !this.shape || level <= 0.003 ? "blank" : waiting ? `waiting:${level.toFixed(3)}` : settled ? `lit:${level.toFixed(3)}` : "";
     if (state && state === this.drawn) return false;
     this.drawn = state;
     const ctx = this.ctx, { width, height } = this.canvas;
     ctx.clearRect(0, 0, width, height);
     if (state === "blank" || !this.inner) return true;
-    const progress = easeInOut(trace), lit = 0.18 * progress + 0.82 * easeOut(fill);
     ctx.save();
-    ctx.globalAlpha = level * lit;
-    ctx.drawImage(this.inner, 0, 0);
-    if (!settled && this.innerPattern) {
-      // The inside lights up just behind the tracing line.
-      const { path, tips } = this.traced(progress);
-      ctx.clip(this.shape!);
-      ctx.globalAlpha = level * (1 - lit) * 0.85;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-      ctx.strokeStyle = this.innerPattern;
-      ctx.lineWidth = this.edge * 3.2;
-      ctx.stroke(path);
-      // A bright spark where the trace has reached.
-      if (trace > 0 && trace < 1) for (const [x, y] of tips) {
-        const spark = ctx.createRadialGradient(x, y, 0, x, y, this.edge * 2.2);
-        spark.addColorStop(0, "rgba(220,244,255,0.9)");
-        spark.addColorStop(0.4, "rgba(60,160,255,0.45)");
-        spark.addColorStop(1, "rgba(30,120,255,0)");
-        ctx.globalAlpha = level;
+    if (whole < 1) {
+      ctx.globalAlpha = level * waitingGlow;
+      ctx.drawImage(this.inner, 0, 0);
+    }
+    if (!waiting && whole < 1 && progress > 0) {
+      // The inside fills in behind the line as it goes round.
+      const { path, sweep, tips } = this.traced(progress);
+      ctx.globalAlpha = level;
+      ctx.drawImage(this.paintSwept(sweep, path), 0, 0);
+      // A bright spark where the line has reached.
+      if (progress < 1) for (const [x, y] of tips) {
+        const spark = ctx.createRadialGradient(x, y, 0, x, y, this.edge * 1.3);
+        spark.addColorStop(0, rgba(catchmentColors.spark, 0.9));
+        spark.addColorStop(0.4, rgba(catchmentColors.sparkMid, 0.45));
+        spark.addColorStop(1, rgba(catchmentColors.sparkOuter, 0));
         ctx.fillStyle = spark;
-        ctx.fillRect(x - this.edge * 2.2, y - this.edge * 2.2, this.edge * 4.4, this.edge * 4.4);
+        ctx.fillRect(x - this.edge * 1.3, y - this.edge * 1.3, this.edge * 2.6, this.edge * 2.6);
       }
+    }
+    if (whole > 0) {
+      ctx.globalAlpha = level * whole;
+      ctx.drawImage(this.inner, 0, 0);
+    }
+    if (shining > 0 && this.shine) {
+      ctx.globalAlpha = level * shining * 0.9;
+      ctx.drawImage(this.shine, 0, 0);
     }
     ctx.restore();
     return true;
@@ -243,22 +359,27 @@ export class CatchmentLight {
    * pulse of light running round it. `core` is the bright centre line; otherwise the glow around it.
    */
   outlineGradient(seconds: number, core: boolean): ExpressionSpecification {
-    const elapsed = seconds - this.revealStart, trace = clamp(elapsed / traceSeconds);
-    const progress = easeInOut(trace), orbit = (((elapsed - traceSeconds) / orbitSeconds) % 1 + 1) % 1;
+    const elapsed = seconds - this.revealStart, traced = elapsed >= traceSeconds;
+    const progress = traceProgress(elapsed), orbit = (((elapsed - traceSeconds) / orbitSeconds) % 1 + 1) % 1;
     const base = core ? paleBlue : blue, hot = core ? white : paleBlue;
-    const samples = 72, stops: (number | string)[] = [];
+    const samples = 120, stops: (number | string)[] = [];
     for (let index = 0; index <= samples; index += 1) {
       const along = index / samples;
       let alpha = 1, heat: number;
-      if (trace < 1) {
-        alpha = progress > 0 && along <= progress ? 1 : 0;
-        heat = along <= progress ? clamp(1 - (progress - along) / 0.07) : 0;
+      if (!traced) {
+        alpha = elapsed > 0 && progress > 0 && along <= progress ? 1 : 0;
+        heat = along <= progress ? clamp(1 - (progress - along) / 0.06) : 0;
       } else {
         const behind = (orbit - along + 1) % 1;
         heat = behind < 0.18 ? (1 - behind / 0.18) ** 2 : 0;
       }
-      const [red, green, blueValue] = mix(base, hot, heat);
-      stops.push(along, `rgba(${red},${green},${blueValue},${alpha})`);
+      // Glossy: the line's brightness ripples along it, with small bright glints drifting slowly round,
+      // so it reads as polished light rather than a solid painted stroke.
+      const sheen = 0.5 + 0.5 * Math.sin(along * Math.PI * 2 * 7 + seconds * 0.7);
+      const glint = sheen ** 8;
+      alpha *= core ? 0.45 + 0.4 * sheen : 0.35 + 0.5 * sheen;
+      const [red, green, blueValue] = mix(base, hot, Math.max(heat, glint * 0.85));
+      stops.push(along, `rgba(${red},${green},${blueValue},${+alpha.toFixed(3)})`);
     }
     return ["interpolate", ["linear"], ["line-progress"], ...stops] as unknown as ExpressionSpecification;
   }

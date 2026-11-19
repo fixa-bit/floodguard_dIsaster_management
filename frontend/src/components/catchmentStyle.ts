@@ -1,6 +1,7 @@
 import { bbox } from "@turf/bbox";
 import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
 import type { Feature, FeatureCollection, MultiPolygon, Polygon, Position } from "geojson";
+import { catchmentColors, rgba } from "./catchmentColors";
 import type { ExpressionSpecification, FillLayerSpecification, LineLayerSpecification, SymbolLayerSpecification } from "maplibre-gl";
 
 // Catchment styling. The selected station's catchment is spotlit (the map
@@ -54,16 +55,16 @@ export const activeCatchmentFillPaint: FillLayerSpecification["paint"] = { "fill
 const wholeOutline = (color: string): ExpressionSpecification => ["interpolate", ["linear"], ["line-progress"], 0, color, 1, color];
 /** A wide, soft blue halo around the boundary. */
 export const activeCatchmentHaloPaint: LineLayerSpecification["paint"] = {
-  "line-color": "#30acff", "line-gradient": wholeOutline("#30acff"), "line-width": byZoom(18, 30), "line-blur": byZoom(16, 26), "line-opacity": 0.6,
+  "line-color": rgba(catchmentColors.lineGlow, 1), "line-gradient": wholeOutline(rgba(catchmentColors.lineGlow, 1)), "line-width": byZoom(14, 22), "line-blur": byZoom(13, 20), "line-opacity": 0.65,
 };
 /** The neon glow of the boundary. */
 export const activeCatchmentGlowPaint: LineLayerSpecification["paint"] = {
-  "line-color": "#30acff", "line-gradient": wholeOutline("#30acff"), "line-width": byZoom(5.5, 9), "line-blur": byZoom(3.5, 6), "line-opacity": 0.95,
+  "line-color": rgba(catchmentColors.lineGlow, 1), "line-gradient": wholeOutline(rgba(catchmentColors.lineGlow, 1)), "line-width": byZoom(5, 7.5), "line-blur": byZoom(4.5, 6.5), "line-opacity": 0.6,
 };
 export const activeCatchmentCasingPaint: LineLayerSpecification["paint"] = { "line-color": "#2a1700", "line-width": byZoom(4, 6.5), "line-opacity": 0 };
 /** The bright centre of the boundary line. */
 export const activeCatchmentLinePaint: LineLayerSpecification["paint"] = {
-  "line-color": "#a8eaff", "line-gradient": wholeOutline("#a8eaff"), "line-width": byZoom(1.6, 2.6), "line-blur": byZoom(0.5, 0.9), "line-opacity": 1,
+  "line-color": rgba(catchmentColors.lineCore, 1), "line-gradient": wholeOutline(rgba(catchmentColors.lineCore, 1)), "line-width": byZoom(1, 1.5), "line-blur": byZoom(0.7, 1), "line-opacity": 0.7,
 };
 /** The catchment's boundary as lines, one per outer ring (for a source with `lineMetrics`, so the trace can follow it). */
 export function catchmentOutline(catchment: Feature<Polygon | MultiPolygon>): FeatureCollection {
@@ -80,7 +81,7 @@ export const activeCatchmentLabel: Pick<SymbolLayerSpecification, "layout" | "pa
     "text-font": ["Open Sans Semibold"], "text-size": byZoom(13, 17), "text-letter-spacing": 0.24, "text-line-height": 1.5,
     "text-max-width": 16, "text-padding": 6,
   },
-  paint: { "text-color": "#e3f4ff", "text-opacity": 0.94, "text-halo-color": "#03143a", "text-halo-width": 1.8, "text-halo-blur": 0.6 },
+  paint: { "text-color": rgba(catchmentColors.label, 1), "text-opacity": 0.94, "text-halo-color": rgba(catchmentColors.labelHalo, 1), "text-halo-width": 1.8, "text-halo-blur": 0.6 },
 };
 
 // The "Catchment areas" layer: every basin in its own colour.

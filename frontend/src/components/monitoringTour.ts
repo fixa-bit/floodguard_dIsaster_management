@@ -37,7 +37,9 @@ export interface TourStation {
 // holds it for a few seconds with a slow drift, then descends to the first
 // station; it then moves from station to station within the catchment, along
 // the river where one links them, before rising to the next catchment.
-const catchmentHold = 3400;   // how long the establishing shot of a catchment is held, in ms (the catchment's outline is traced meanwhile)
+/** How long a 3D station stop's full 360° turn takes, in ms (the stop itself lasts 13 s). */
+export const stationOrbitMs = 12500;
+const catchmentHold = 8000;   // how long the establishing shot of a catchment is held, in ms (its outline is traced and it lights up meanwhile, about 7.6 s)
 const orbitTurn = 35;         // how far the slow pass at a station turns, in degrees
 
 let sequence: TourStation[] = [];
@@ -517,10 +519,10 @@ function orbitEnd(stop: StopCamera): { zoom: number; bearing?: number; pitch?: n
   if (reducedMotion()) return { zoom: stop.zoom };
   const side = Math.sign(stop.bearing || 1);
   // A station's slow pass turns to face the way the camera will leave; a
-  // catchment's establishing shot drifts in a little.
+  // catchment's establishing shot drifts in a little and turns slowly (about 14°) while its outline is drawn.
   return stop.flat ? { zoom: stop.zoom + 0.25 }
     : stop.closeUp ? { zoom: stop.zoom + 0.25, bearing: stop.orbitTo ?? stop.bearing + side * 16 }
-      : stop.establishing ? { zoom: stop.zoom + 0.15, bearing: stop.bearing + side * 6, pitch: stop.pitch + 3 }
+      : stop.establishing ? { zoom: stop.zoom + 0.15, bearing: stop.bearing + side * 14, pitch: stop.pitch + 3 }
         : { zoom: stop.zoom + 0.2, bearing: stop.bearing + side * 16, pitch: stop.pitch + 4 };
 }
 
@@ -625,7 +627,7 @@ export async function runMonitoringHop(map: MapLibreMap, station: TourStation, i
     measureStopFootprint(map, stop);
     // The station's details open as the camera lands; the slow pass waits for them to settle.
     heldView = { id: station.id, zoom: orbitEnd(stop).zoom, bearing: orbitEnd(stop).bearing ?? stop.bearing };
-    void steadyFrames().then((waited) => { if (isCurrent()) holdOrbit(map, station, stop, 8000 - waited); });
+    void steadyFrames().then((waited) => { if (isCurrent()) holdOrbit(map, station, stop, stationOrbitMs - waited); });
   }
   return landed;
 }

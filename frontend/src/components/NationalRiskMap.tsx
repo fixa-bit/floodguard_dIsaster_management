@@ -7,7 +7,7 @@ import { usePopulationLayers } from './usePopulationLayers';
 import { useMapBasemap, type MapBasemap } from "./useMapBasemap";
 import { StationTerrainStudio } from "./StationTerrainStudio";
 import { TourRouteRail } from "./TourRouteRail";
-import { endMonitoringTour, monitoringTourTiles, preloadMonitoringHop, prepareMonitoringTour, setTourRivers, setTourSequence, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
+import { cancelHoldOrbit, endMonitoringTour, stationOrbitMs, monitoringTourTiles, preloadMonitoringHop, prepareMonitoringTour, setTourRivers, setTourSequence, runMonitoringHop, stationCameraPadding, warmMonitoringTour } from "./monitoringTour";
 import { cachedImageryTiles, imageryAttribution, imageryBackdropMaxZoom } from "./imageryTiles";
 import {
   activeCatchmentCasingPaint, activeCatchmentFillPaint, activeCatchmentGlowPaint, activeCatchmentHaloPaint,
@@ -43,6 +43,8 @@ import type { GoogleFloodCollection, GoogleFloodFeature, RegionalRainfallCollect
 import { RiverStationInspector } from "./RiverStationInspector";
 import { StationDetailsPanel } from "./StationDetailsPanel";
 import { CatchmentLight } from "./catchmentLight";
+import { districtsInCatchment } from "./catchmentDistricts";
+import { CatchmentBriefing, type BriefingLine } from "./CatchmentBriefing";
 import { RiverDataSource } from "./RiverDataSource";
 import { alignDistrictScreeningGeometry, districtDisplayGeometry, type DistrictBoundaries } from "./districtGeometry";
 import { glacierColors, glacierConnectionLabels, glacierFilter, type GlacierCollection, type GlacierFeature, type GlacierView } from "./glaciers";
@@ -73,6 +75,8 @@ interface NationalRiskMapProps {
   initialRainfallEnabled?: boolean;
   mapOverlay?: ReactNode;
   populationOverlay?: PopulationOverlay | null;
+  /** GIS Operations: the terrain studio's Relief tools. Elsewhere (the Overview) the studio offers bird's-eye only. */
+  reliefTools?: boolean;
 }
 
 // Globe on app load: rendered as a globe below zoom 3, blending to the flat
@@ -466,7 +470,7 @@ function matchRiverTelemetry(feature: WaterIntelligenceFeature, rivers: RiverRes
   });
 }
 
-export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeather, locationRivers, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false, initialRainfallEnabled = false, mapOverlay, populationOverlay }: NationalRiskMapProps) {
+export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeather, locationRivers, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false, initialRainfallEnabled = false, mapOverlay, populationOverlay, reliefTools = false }: NationalRiskMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const coordinateReadoutRef = useRef<HTMLOutputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -754,6 +758,18 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const [monitoringArrival, setMonitoringArrival] = useState<string | null>(null);
   // While the camera shows a catchment's establishing shot, the route rail lights the catchment up.
   const [tourShowingCatchment, setTourShowingCatchment] = useState(false);
+  // Turning monitoring mode off on the Overview glides out to a flat, straight-down view of Pakistan.
+  const flyHomeRef = useRef(false);
+  useEffect(() => {
+    const map = stationMapInstance;
+    if (!map || stationRotationEnabled || !flyHomeRef.current) return;
+    flyHomeRef.current = false;
+    cancelHoldOrbit();
+    map.stop();
+    const { bounds, options } = pakistanFit(map);
+    const camera = map.cameraForBounds(bounds, { ...options, bearing: 0 });
+    if (camera) map.flyTo({ ...camera, pitch: 0, bearing: 0, curve: 1.2, duration: 4200, easing: (t) => 0.5 - 0.5 * Math.cos(Math.PI * t), essential: true });
+  }, [stationRotationEnabled, stationMapInstance]);
   // In the 3D tour the catchment is highlighted only while its establishing shot is on screen.
   // The highlight fades in and out slowly. MapLibre's own paint transitions would leave the
   // layers draped on the 3D terrain repainting tile by tile (blocks of brightness), so the
@@ -800,43 +816,49 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     // The catchment coming back on screen (the tour's next establishing shot) plays the reveal again.
     // In the 3D tour it waits, unlit, until the camera is above the catchment (runMonitoringHop says when).
     if (target === 1 && from < 0.3) {
-      if (stationRotationEnabled && monitoringView === "3d") catchmentLight.holdReveal(); else catchmentLight.restartReveal();
+      if (stationRotationEnabled && monitoringView === "3d") catchmentLight.holdReveal(); else if (stationRotationEnabled) catchmentLight.restartReveal();
     }
+    // With monitoring mode off the catchment is simply shown, fully drawn and still: no trace, no running light.
+    if (!stationRotationEnabled) catchmentLight.settle();
     // The light moves only while a catchment is on the map (and not for viewers who prefer less motion).
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches || !stationRotationEnabled;
     const animate = target === 1 && hasActiveCatchment && !still;
     // The lit inside (a canvas): it fades out once the view is far closer than the whole catchment,
     // and the map copies the canvas only on frames where the picture changed.
+    // Zoomed in on the station (far closer than the whole catchment), the whole highlight fades away.
+    const zoomedOut = () => {
+      if (!catchmentLight.active) return 1;
+      const closer = map.getZoom() - catchmentLight.fitZoom;
+      return Math.max(0, Math.min(1, 1 - (closer - 1.5) / 1.5));
+    };
     const drawLight = (seconds: number, level: number) => {
       const source = map.getSource("active-monitoring-catchment-aurora") as CanvasSource | undefined;
-      const closer = map.getZoom() - catchmentLight.fitZoom;
-      const strength = catchmentLight.active ? level * Math.max(0, Math.min(1, 1 - (closer - 1.5) / 1.5)) : 0;
+      const strength = catchmentLight.active ? level : 0;
       if (catchmentLight.draw(seconds, strength) && source?.play) { source.play(); source.pause(); }
     };
-    let painted = 0;
+    let painted = 0, looping = true;
+    const paintAll = (now: number) => {
+      const seconds = still ? catchmentLight.settledSeconds : now / 1000, level = fade.level * zoomedOut();
+      setLevel(level); setAnimated(seconds, level); drawLight(seconds, level);
+    };
     const step = (now: number) => {
       const t = Math.min(1, (now - began) / duration), eased = t * t * (3 - 2 * t);
       fade.level = from + (target - from) * eased;
-      if (t < 1) setLevel(fade.level);
       const running = t < 1 || (animate && fade.level > 0.005);
-      // The light moves at about 30 frames a second.
-      if (t < 1 || now - painted > 33) {
-        const seconds = still ? catchmentLight.settledSeconds : now / 1000;
-        setAnimated(seconds, fade.level);
-        drawLight(seconds, fade.level);
-        painted = now;
-      }
+      // The light moves at about 30 frames a second (the opacity follows the zoom every frame).
+      if (t < 1 || now - painted > 33) { paintAll(now); painted = now; }
+      else setLevel(fade.level * zoomedOut());
       if (running) fade.frame = requestAnimationFrame(step);
-      else {
-        const seconds = still ? catchmentLight.settledSeconds : now / 1000;
-        setLevel(fade.level); setAnimated(seconds, fade.level); drawLight(seconds, fade.level);
-      }
+      else { looping = false; paintAll(now); }
     };
     fade.frame = requestAnimationFrame(step);
+    // When nothing is animating, zooming still fades the highlight in and out.
+    const onZoom = () => { if (!looping) paintAll(performance.now()); };
+    map.on("zoom", onZoom);
     // Layers added again later (a style reload) take the current level at once.
-    const reapply = () => { setLevel(fade.level); setAnimated(performance.now() / 1000, fade.level); };
+    const reapply = () => { const level = fade.level * zoomedOut(); setLevel(level); setAnimated(performance.now() / 1000, level); };
     map.on("styledata", reapply);
-    return () => { cancelAnimationFrame(fade.frame); map.off("styledata", reapply); };
+    return () => { cancelAnimationFrame(fade.frame); map.off("styledata", reapply); map.off("zoom", onZoom); };
   }, [stationMapInstance, stationRotationEnabled, monitoringView, tourShowingCatchment, hasActiveCatchment]);
   const tourRailStations = useMemo(() => rotationStations.map((station) => {
     const catchment = stationCatchments.get(station.id);
@@ -901,7 +923,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         if (!hop) void preloadMonitoringHop(map, null, toTourStation(station));
         // A flight cut short (a drag, a resize) still counts as arriving: the
         // station's stats appear and the hold timer runs, so the tour never stalls.
-        void runMonitoringHop(map, toTourStation(station), () => current, (showing) => { if (current) setTourShowingCatchment(showing); }, () => { if (current) catchmentLight.restartReveal(); }).catch((error) => { console.error("Monitoring hop failed", error); return false; }).then(() => {
+        void runMonitoringHop(map, toTourStation(station), () => current, (showing) => { if (!current) return; setTourShowingCatchment(showing); if (!showing) setBriefingStartedAt(null); }, () => { if (!current) return; catchmentLight.restartReveal(); setBriefingStartedAt(Date.now()); }).catch((error) => { console.error("Monitoring hop failed", error); return false; }).then(() => {
           if (!current || mapRef.current !== map || selectedStationIdRef.current !== station.id) return;
           setMonitoringArrival(station.id);
           setStationTicketArrival({ stationId: station.id, map });
@@ -909,6 +931,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         });
         return;
       }
+      // Monitoring mode off: the terrain studio flies to its stations in bird's-eye instead.
+      if (monitoringSites.features.some((site) => site.properties.id === station.id)) return;
       const radians = Math.PI / 180;
       const latitudeDelta = (station.latitude - (previous?.latitude ?? station.latitude)) * radians;
       const longitudeDelta = (station.longitude - (previous?.longitude ?? station.longitude)) * radians;
@@ -969,7 +993,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     const timer = window.setTimeout(() => {
       void Promise.race([preloaded, new Promise((resolve) => window.setTimeout(resolve, 4000))])
         .then(() => { if (active) setSelectedStationId(next.id); });
-    }, 8500);
+      // A 3D stop lasts as long as its slow 360° turn (plus a moment); a 2D stop 8.5 s.
+    }, monitoringViewRef.current === "3d" ? stationOrbitMs + 500 : 8500);
     return () => { active = false; window.clearTimeout(startPreload); window.clearTimeout(timer); };
   }, [stationMapInstance, stationRotationEnabled, selectedStationId, monitoringArrival, rotationKey]);
 
@@ -1102,8 +1127,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     const point = activeStationMapLayers["active-monitoring-station"].features[0]?.geometry;
     const origin = point?.type === "Point" ? point.coordinates.slice(0, 2) as [number, number] : null;
     if (!catchmentLight.setCatchment(catchment ?? null, origin)) return;
-    // Outside the 3D tour (a station picked by hand) the reveal plays at once; the tour starts it on arrival.
-    if (!(stationRotationEnabled && monitoringView === "3d")) catchmentLight.restartReveal();
+    // Monitoring mode off: shown fully drawn and still. The 2D tour plays the reveal at once; the 3D tour starts it on arrival.
+    if (!stationRotationEnabled) catchmentLight.settle();
+    else if (monitoringView !== "3d") catchmentLight.restartReveal();
     const source = stationMapInstance?.getSource("active-monitoring-catchment-aurora") as CanvasSource | undefined;
     if (!source?.setCoordinates) return;
     source.setCoordinates(catchmentLight.coordinates);
@@ -1112,6 +1138,54 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     source.play();
     source.pause();
   }, [stationMapInstance, activeStationMapLayers, catchmentLight, stationRotationEnabled, monitoringView]);
+  // The briefing the 3D tour types out while it draws the catchment's outline (all from live data).
+  const [briefingStartedAt, setBriefingStartedAt] = useState<number | null>(null);
+  // The districts the highlighted catchment covers (worked out once per catchment).
+  const activeCatchmentShape = activeStationMapLayers["active-monitoring-catchment"].features[0];
+  const catchmentDistricts = useMemo(() => districtsInCatchment(activeCatchmentShape, districtDisplayData), [activeCatchmentShape, districtDisplayData]);
+  const catchmentBriefing = useMemo((): { title: string; lines: BriefingLine[] } | null => {
+    const properties = activeStationMapLayers["active-monitoring-catchment"].features[0]?.properties;
+    const catchmentId = selectedStationId ? stationCatchments.get(selectedStationId)?.id : undefined;
+    if (!properties || !catchmentId) return null;
+    const stations = (monitoring?.stations ?? []).filter((station) => stationCatchments.get(station.id)?.id === catchmentId);
+    const lines: BriefingLine[] = [];
+    if (typeof properties.area_km2 === "number") lines.push({ label: "Area", text: `${Math.round(properties.area_km2).toLocaleString()} km²` });
+    const names = stations.map((station) => station.name);
+    lines.push({ label: "Stations", text: `${stations.length} monitored · ${names.slice(0, 6).join(", ")}${names.length > 6 ? ` +${names.length - 6} more` : ""}` });
+    const rivers = [...new Set(stations.map((station) => station.river).filter(Boolean))];
+    if (rivers.length) lines.push({ label: "Rivers", text: rivers.join(", ") });
+    const flowing = stations.filter((station) => typeof station.current_discharge_cumecs === "number");
+    if (flowing.length) {
+      const peak = flowing.reduce((top, station) => (station.current_discharge_cumecs! > top.current_discharge_cumecs! ? station : top));
+      lines.push({ label: "Peak flow", text: `${peak.name} · ${formatFlow(peak.current_discharge_cumecs, flowUnit)}` });
+    }
+    const categories = new Map<string, number>();
+    for (const station of stations) {
+      const category = station.flood_category === "Below low" ? "below flood level" : /unavailable/i.test(station.flood_category ?? "") ? "no reading" : (station.flood_category || "no reading").toLowerCase();
+      categories.set(category, (categories.get(category) ?? 0) + 1);
+    }
+    if (categories.size) lines.push({ label: "Flood status", text: [...categories].map(([category, count]) => `${count} ${category}`).join(" · ") });
+    if (catchmentDistricts.length) {
+      lines.push({ label: "Districts", text: `${catchmentDistricts.length} · ${catchmentDistricts.map((district) => district.name).join(", ")}` });
+      const regions = [...new Set(catchmentDistricts.map((district) => district.province).filter(Boolean))];
+      if (regions.length) lines.push({ label: "Regions", text: regions.join(", ") });
+      // Today's district screening (rainfall and flood risk) for the districts in this catchment.
+      const names = new Set(catchmentDistricts.map((district) => district.name.toLowerCase()));
+      const risks = (nationalRisk?.features ?? []).filter((feature) => names.has(feature.properties.district_name.toLowerCase())).map((feature) => feature.properties);
+      if (risks.length) {
+        const order = ["CRITICAL", "HIGH", "MEDIUM", "LOW"] as const;
+        const counts = order.map((severity) => [severity, risks.filter((risk) => risk.severity === severity).length] as const).filter(([, count]) => count);
+        lines.push({ label: "District risk", text: counts.map(([severity, count]) => `${count} ${severity.toLowerCase()}`).join(" · ") });
+        const wettest = risks.filter((risk) => typeof risk.rainfall_24h_mm === "number").sort((a, b) => b.rainfall_24h_mm! - a.rainfall_24h_mm!)[0];
+        if (wettest) lines.push({ label: "Rain 24 h", text: wettest.rainfall_24h_mm! >= 0.1 ? `${wettest.district_name} wettest · ${Math.round(wettest.rainfall_24h_mm! * 10) / 10} mm` : "Dry across the catchment" });
+        const forecast = risks.filter((risk) => typeof risk.forecast_rainfall_24h_mm === "number").sort((a, b) => b.forecast_rainfall_24h_mm! - a.forecast_rainfall_24h_mm!)[0];
+        if (forecast) lines.push({ label: "Rain outlook", text: forecast.forecast_rainfall_24h_mm! >= 0.1 ? `${forecast.district_name} · ${Math.round(forecast.forecast_rainfall_24h_mm! * 10) / 10} mm next 24 h` : "No rain expected in the next 24 h" });
+      }
+    }
+    const next = stations.find((station) => station.id === selectedStationId);
+    if (next) lines.push({ label: "Next stop", text: `${next.name} station` });
+    return { title: String(properties.name ?? "Catchment"), lines };
+  }, [activeStationMapLayers, selectedStationId, stationCatchments, monitoring?.stations, flowUnit, catchmentDistricts, nationalRisk]);
   const [preparedRainfall, setPreparedRainfall] = useState<{
     weather: WeatherResponse[]; risk: NationalRiskCollection | null; window: RainfallWindowId;
     regional: RegionalRainfallCollection | null; data: ReturnType<typeof buildRainfallHeatmapData>;
@@ -2154,7 +2228,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         </div>}
         <output ref={coordinateReadoutRef} className="map-coordinate-readout" aria-label="Map cursor coordinates" aria-live="off" hidden />
         {mapOverlay && <div className="map-command-overlay">{mapOverlay}</div>}
-        <StationTerrainStudio mapRef={mapRef} selectedStationId={selectedStationId} onSelectStation={selectStation} onEnter={()=>{setMapControlsOpen(false);setLayers(current=>({...current,water:true}));}} monitoring={stationRotationEnabled && monitoringView === "3d"}/>
+        <StationTerrainStudio mapRef={mapRef} selectedStationId={selectedStationId} onSelectStation={selectStation} onEnter={()=>{setMapControlsOpen(false);setLayers(current=>({...current,water:true}));}} monitoring={stationRotationEnabled && monitoringView === "3d"} birdsEye={!reliefTools && !stationRotationEnabled} allowRelief={reliefTools}
+          padding={() => mapRef.current ? detailsCameraPadding(mapRef.current) : { top: 0, bottom: 0, left: 0, right: 0 }}
+          catchmentBounds={(id) => stationCatchments.get(id)?.bounds} hidden={stationRotationEnabled}/>
+        {stationRotationEnabled && monitoringView === "3d" && catchmentBriefing && <CatchmentBriefing title={catchmentBriefing.title} lines={catchmentBriefing.lines} startedAt={briefingStartedAt} />}
         {stationRotationEnabled && <TourRouteRail stations={tourRailStations} currentId={selectedStationId}
           arrived={monitoringArrival === selectedStationId} showingCatchment={tourShowingCatchment} />}
         <div className="map-layer-control">
@@ -2165,6 +2242,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
             <button type="button" className="station-monitoring-toggle" aria-pressed={stationRotationEnabled}
               disabled={!rotationStations.length}
               onClick={() => {
+                // Overview: turning monitoring off clears the station and returns to a top view of Pakistan.
+                if (stationRotationEnabled && !reliefTools) { flyHomeRef.current = true; setStationTicketArrival(null); setSelectedStationId(null); }
                 if (!stationRotationEnabled && rotationStations.length) {
                   const current = rotationStations.find((station) => station.id === selectedStationId);
                   selectStation(current?.id ?? rotationStations[0].id);

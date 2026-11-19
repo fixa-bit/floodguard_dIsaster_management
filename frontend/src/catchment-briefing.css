@@ -1,0 +1,50 @@
+/* The catchment briefing typed out while the tour draws the catchment's outline (CatchmentBriefing.tsx). */
+.catchment-briefing {
+  position: absolute;
+  z-index: 2;
+  right: 16px;
+  bottom: 104px;
+  width: min(340px, calc(100% - 120px));
+  max-height: calc(100% - 200px);
+  overflow: hidden;
+  padding: 12px 14px 10px;
+  border: 1px solid rgba(110, 225, 250, .35);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(4, 34, 44, .82), rgba(3, 22, 30, .82));
+  box-shadow: 0 0 18px rgba(40, 196, 238, .22), inset 0 1px 0 rgba(150, 238, 255, .15);
+  color: #dcfbff;
+  font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+.catchment-briefing[data-shown] { opacity: 1; transform: none; }
+.catchment-briefing h3 {
+  min-height: 1.3em;
+  margin: 0 0 8px;
+  color: #96eeff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(40, 196, 238, .6);
+}
+.catchment-briefing dl { display: grid; gap: 5px; margin: 0; }
+.catchment-briefing dl > div { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
+.catchment-briefing dt { color: rgba(150, 238, 255, .7); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding-top: 1px; }
+.catchment-briefing dd { margin: 0; font-size: 11.5px; line-height: 1.4; overflow-wrap: anywhere; }
+.catchment-briefing__cursor {
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: #96eeff;
+  box-shadow: 0 0 6px #28c4ee;
+  animation: catchment-briefing-blink 900ms steps(1) infinite;
+}
+@keyframes catchment-briefing-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .catchment-briefing__cursor { animation: none; }
+}

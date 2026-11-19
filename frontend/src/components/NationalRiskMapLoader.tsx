@@ -22,6 +22,8 @@ interface NationalRiskMapLoaderProps {
   initialRainfallEnabled?: boolean;
   mapOverlay?: ReactNode;
   populationOverlay?: PopulationOverlay | null;
+  /** GIS Operations: the terrain studio's Relief tools. Elsewhere (the Overview) the studio offers bird's-eye only. */
+  reliefTools?: boolean;
 }
 
 export function NationalRiskMapLoader(props: NationalRiskMapLoaderProps) {
