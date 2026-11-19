@@ -28,13 +28,13 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   predictive: { title: "Predictive Risk Views", subtitle: "Real model output where a model exists; dummy output is marked on every graph" },
   upstream: { title: "Upstream Source Flood Watch", subtitle: "Upper-basin stations, discharge forecasts, and past trends" },
   monitoring: { title: "River Monitoring", subtitle: "Barrages, headworks and river station readings" },
-  alerts: { title: "Alerts", subtitle: "Monitoring alerts and recorded threshold crossings" },
+  alerts: { title: "Alerts & Alarms", subtitle: "Threshold alerts, and the n8n flood alarm workflow: live runs, duty roster, alert channels and alarms" },
   incidents: { title: "Incident Management", subtitle: "Review active and historical emergency incidents" },
   reports: { title: "Citizen Reports", subtitle: "Field observations awaiting authority verification" },
   activity: { title: "System Activity", subtitle: "Automated decisions, monitoring changes, and response events" },
   simulation: { title: "Simulation", subtitle: "Monitoring test scenarios" },
   "situation-reports": { title: "Flood Reports", subtitle: "View daily flood reports and reports for individual flood events" },
-  "alarm-automation": { title: "Alarm Automation", subtitle: "The n8n flood alarm workflow: live runs, duty roster, alert channels and alarms" },
+  "alarm-automation": { title: "Alerts & Alarms", subtitle: "Threshold alerts, and the n8n flood alarm workflow: live runs, duty roster, alert channels and alarms" },
 };
 
 /** "Saved 15:20: River gauge (JHG_001), Alerts · Saved yesterday …" grouped by save time. */
@@ -65,11 +65,16 @@ export default function App() {
   const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(null);
   const pendingSimulationAlerts = simulationNotice ? data.alerts.filter((alert) => alert.event_metadata.run_id === simulationNotice.run_id && alert.event_metadata.approval_status !== "approved").length : 0;
   const location = LOCATIONS.find((item) => item.id === locationId)!;
+  // Alerts & Alarms can also show the whole of Pakistan instead of one operational area.
+  // It opens on the whole country; choosing an area narrows it.
+  const [wholePakistan, setWholePakistan] = useState(true);
+  const alarmsView = view === "alerts" || view === "alarm-automation";
+  const showWholePakistan = alarmsView && wholePakistan;
   const heading = viewTitles[view];
   const navigateToTourView = useCallback((next: ViewId) => {
     setSelectedIncidentId(null);
     setView(next);
-    if (["alerts", "incidents"].includes(next)) void refreshOperations();
+    if (["alerts", "incidents", "alarm-automation"].includes(next)) void refreshOperations();
   }, [refreshOperations]);
   const closeTour = useCallback(() => {
     setTourOpen(false);
@@ -82,7 +87,7 @@ export default function App() {
         <div><p className="eyebrow">Emergency Command Dashboard</p><h1 data-tour-target="page-title">{heading.title}</h1><span>{heading.subtitle}</span></div>
         <div className="topbar-actions">
           <button ref={tourButton} type="button" className="portal-tour-trigger" aria-haspopup="dialog" aria-expanded={tourOpen} onClick={() => setTourOpen(true)}><Compass size={17} /><span>Portal tour</span></button>
-          <label className="location-select"><span>Operational area</span><div data-tour-target="tour-location-control"><strong>{location.name}</strong><small>{location.river} River · {location.id}</small><ChevronDown size={17} /></div><select data-tour-target="tour-location-select" aria-label="Operational location" value={locationId} onChange={(event) => setLocationId(event.target.value as LocationId)}>{LOCATIONS.map((item) => <option value={item.id} key={item.id}>{item.name} ({item.id})</option>)}</select></label>
+          <label className="location-select"><span>Operational area</span><div data-tour-target="tour-location-control">{showWholePakistan ? <><strong>Whole Pakistan</strong><small>All areas</small></> : <><strong>{location.name}</strong><small>{location.river} River · {location.id}</small></>}<ChevronDown size={17} /></div><select data-tour-target="tour-location-select" aria-label="Operational location" value={showWholePakistan ? "PK" : locationId} onChange={(event) => { if (event.target.value === "PK") { setWholePakistan(true); return; } setWholePakistan(false); setLocationId(event.target.value as LocationId); }}>{alarmsView && <option value="PK">Whole Pakistan</option>}{LOCATIONS.map((item) => <option value={item.id} key={item.id}>{item.name} ({item.id})</option>)}</select></label>
         </div>
       </header>
 
@@ -95,7 +100,7 @@ export default function App() {
 
       {simulationNotice && <div className="simulation-alert-banner" role="alert"><BellRing size={20} /><div><strong>SIMULATED FLOW: {simulationNotice.station_name}</strong><span>{simulationNotice.alerts.length} threshold alerts saved / {pendingSimulationAlerts} awaiting review</span></div><button type="button" className="secondary-button" onClick={() => setView("alerts")}>View alerts</button><button type="button" className="icon-button" title="Dismiss simulation alert" aria-label="Dismiss simulation alert" onClick={() => setSimulationNotice(null)}><X size={17} /></button></div>}
 
-      {loading && !["overview", "gis", "rainfall", "simulation", "alerts", "incidents", "situation-reports"].includes(view) ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
+      {loading && !["overview", "gis", "rainfall", "simulation", "alerts", "incidents", "situation-reports", "alarm-automation"].includes(view) ? <div className="dashboard-loading"><RefreshCw className="spinning" /><strong>Connecting to FloodGuard services</strong><span>Loading live operational data…</span></div> : (
         <div className="page-content">
           {view === "overview" && <OverviewPage data={data} locationId={locationId} onLocationChange={setLocationId} onRefresh={() => refresh(false)} />}
           {view === "gis" && <GISPage data={data} locationId={locationId} onLocationChange={setLocationId} />}
@@ -103,7 +108,10 @@ export default function App() {
           {view === "predictive" && <FloodRiskMultiView data={data} />}
           {view === "upstream" && <SourceFloodForecastTab />}
           {view === "monitoring" && <RiverMonitoringView />}
-          {view === "alerts" && <AlertTable alerts={data.alerts} onOpenIncident={(id) => { setSelectedIncidentId(id); setView("incidents"); }} onApprove={async (id) => { await api.approveSimulatedAlert(id); await refreshOperations(); }} />}
+          {/* Alerts live in the Alerts & Alarms page, as its first tab (the page opens on it). */}
+          {(view === "alerts" || view === "alarm-automation") && <AlarmAutomation initialTab="alerts" area={wholePakistan ? null : location}
+            renderAlerts={(shown) => { const inArea = data.alerts.filter(shown); return <AlertTable alerts={inArea}
+              emptyNote={!inArea.length && data.alerts.length ? `No alerts within 150 km of ${location.name}. ${data.alerts.length} alert${data.alerts.length === 1 ? " is" : "s are"} elsewhere: choose Whole Pakistan under Operational area to see ${data.alerts.length === 1 ? "it" : "them"}.` : undefined} onOpenIncident={(id) => { setSelectedIncidentId(id); setView("incidents"); }} onApprove={async (id) => { await api.approveSimulatedAlert(id); await refreshOperations(); }} />; }} />}
           {view === "incidents" && <IncidentTable incidents={data.incidents} initialIncidentId={selectedIncidentId} full />}
           {view === "reports" && (
             <CitizenReportsPanel
@@ -116,7 +124,6 @@ export default function App() {
           )}
           {view === "activity" && <ActivityTimeline events={data.events} full />}
           {view === "situation-reports" && <ReportsCenter />}
-          {view === "alarm-automation" && <AlarmAutomation />}
           {view === "simulation" && <SimulationPanel onCompleted={(result) => { setSimulationNotice(result.alerts.length ? result : null); void refreshOperations(result); }} onOpenAlerts={() => setView("alerts")} onOpenIncidents={() => { setSelectedIncidentId(null); setView("incidents"); }} />}
         </div>
       )}

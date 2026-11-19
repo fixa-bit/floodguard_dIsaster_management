@@ -121,7 +121,7 @@ const tourSteps: TourStep[] = [
     highlights: ["Filter or select a monitoring station", "Open station details and forecast history when available", "Treat source and update status as part of reading each value"],
   },
   {
-    title: "Alerts",
+    title: "Alerts & Alarms",
     view: "alerts",
     target: "[data-tour-target='page-title']",
     description: "Review threshold alerts, including records created by the simulation workflow. Simulated records are labeled so they can be distinguished from operational alerts.",

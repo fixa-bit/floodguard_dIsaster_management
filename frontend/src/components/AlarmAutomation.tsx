@@ -1,12 +1,24 @@
 import { AlertTriangle, BellRing, CheckCircle2, CircleDashed, ExternalLink, History, Loader2, Mail, MessageCircle, Plus, RefreshCw, Hash, Send, ShieldCheck, Trash2, Users, Workflow, XCircle, Zap } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { ApiError, apiFetch } from "../services/api";
+import { ApiError, api, apiFetch } from "../services/api";
+import type { SystemEvent } from "../types/api";
+import { AREA_RADIUS_KM, inArea, pointOf, useStationPoints, type AlarmArea } from "./alarmArea";
 import "../alarm-automation.css";
 
 /* The n8n flood alarm workflow, seen and edited from FloodGuard (backend: /api/v1/alarm-automation). */
 
-interface Status { connected: boolean; message: string | null; editor_url: string; workflow_url?: string; active?: boolean; workflow_name: string }
+interface Status {
+  connected: boolean; message: string | null; editor_url: string; workflow_url?: string; active?: boolean; workflow_name: string;
+  /** While n8n is down: the workflow as it was when last saved. */
+  last_seen?: { saved_at: string; active?: boolean; workflow_url?: string } | null;
+}
+/** While n8n is down the page shows the saved copy, read-only: nothing can be changed or sent. */
+const ReadOnly = createContext(false);
+/** The operational area the alerts, alarms and logs are filtered to (`area` null: the whole of Pakistan). */
+const AreaFilter = createContext<{ area: AlarmArea; stations: Map<string, { latitude: number; longitude: number }> | null }>({ area: null, stations: null });
+const alarmInArea = (row: Row, filter: { area: AlarmArea; stations: Map<string, { latitude: number; longitude: number }> | null }) =>
+  inArea(filter.area, pointOf(row.target_id, filter.stations), row.model_case === "seasonal");
 interface Layout {
   id: string; name: string; active: boolean;
   triggers: { name: string; type: string }[];
@@ -19,6 +31,7 @@ type Row = Record<string, string | number | boolean | null> & { id: number };
 
 const BASE = "/alarm-automation";
 const TABS = [
+  { id: "alerts", label: "Alerts", icon: BellRing },
   { id: "flow", label: "Live flow", icon: Workflow },
   { id: "runs", label: "Runs", icon: History },
   { id: "roster", label: "Duty roster", icon: Users },
@@ -41,8 +54,19 @@ function StatusIcon({ status }: { status?: string }) {
   return <CircleDashed size={15} className="aa-idle" />;
 }
 
-export function AlarmAutomation() {
-  const [tab, setTab] = useState<TabId>("flow");
+/**
+ * Alerts & Alarms: the portal's threshold alerts (`alerts`, its first tab) together with the n8n
+ * flood alarm workflow. `initialTab` picks the tab it opens on.
+ */
+export function AlarmAutomation({ renderAlerts, area = null, initialTab = "flow" }: {
+  /** The alerts table, given a test for which alerts are in the area. */
+  renderAlerts?: (shown: (alert: SystemEvent) => boolean) => ReactNode; area?: AlarmArea; initialTab?: TabId;
+}) {
+  const [tab, setTab] = useState<TabId>(initialTab);
+  const stations = useStationPoints();
+  const areaFilter = useMemo(() => ({ area, stations }), [area, stations]);
+  const alertShown = useCallback((alert: SystemEvent) => inArea(area, pointOf(alert.event_metadata.station ?? alert.location_id, stations)), [area, stations]);
+  const alerts = renderAlerts?.(alertShown);
   const [status, setStatus] = useState<Status | null>(null);
   const [layout, setLayout] = useState<Layout | null>(null);
   const [runs, setRuns] = useState<Run[]>([]);
@@ -58,17 +82,25 @@ export function AlarmAutomation() {
     } catch (e) { setError(errorText(e)); }
   }, []);
 
+  // While n8n is down the backend answers with the copy it saved last (the page says so);
+  // the status is checked again every 15 s, and the live data returns as soon as n8n does.
+  const [check, setCheck] = useState(0);
   useEffect(() => {
     void (async () => {
       try {
         const s = await apiFetch<Status>(`${BASE}/status`);
         setStatus(s);
-        if (!s.connected) return;
-        setLayout(await apiFetch<Layout>(`${BASE}/workflow`));
+        try { setLayout(await apiFetch<Layout>(`${BASE}/workflow`)); } catch (e) { if (s.connected) throw e; }
         await loadRuns();
       } catch (e) { setError(errorText(e)); }
     })();
-  }, [loadRuns]);
+  }, [loadRuns, check]);
+  const offline = status?.connected === false;
+  useEffect(() => {
+    if (!offline) return;
+    const timer = window.setInterval(() => setCheck((n) => n + 1), 15000);
+    return () => window.clearInterval(timer);
+  }, [offline]);
 
   // Live: check for new runs every 4 s while the flow or runs tab is open.
   useEffect(() => {
@@ -79,55 +111,72 @@ export function AlarmAutomation() {
 
   const run = runs.find((r) => r.id === runId) ?? runs[0];
 
-  if (status && !status.connected) {
-    return (
-      <div className="aa">
-        <section className="aa-card aa-offline">
-          <AlertTriangle size={22} />
-          <div><h2>n8n is not connected</h2><p>{status.message}</p><p>Start n8n (<code>automation/n8n/start-n8n-docker.ps1</code>) and check <code>N8N_API_KEY</code> in the backend <code>.env</code>.</p></div>
-        </section>
-      </div>
-    );
-  }
+  const tabs = (
+    <nav className="aa-tabs">
+      {TABS.map(({ id, label, icon: Icon }) => (
+        <button key={id} type="button" className={tab === id ? "on" : ""} onClick={() => setTab(id)}><Icon size={15} /> {label}</button>
+      ))}
+    </nav>
+  );
+
+  const savedAt = status?.last_seen?.saved_at;
+  const workflowUrl = status?.workflow_url ?? status?.last_seen?.workflow_url;
+  const published = status?.active ?? status?.last_seen?.active;
 
   return (
+    <ReadOnly.Provider value={offline}>
+    <AreaFilter.Provider value={areaFilter}>
     <div className="aa">
       <header className="aa-card aa-head">
         <div>
           <h2><Workflow size={18} /> {layout?.name ?? status?.workflow_name ?? "Flood alarm workflow"}</h2>
           <p>Forecasts from the portal become alarms; on-duty officers are alerted on Slack, Gmail and WhatsApp, and unacknowledged alarms escalate District → PDMA → NDMA.</p>
           <div className="aa-facts">
-            <span className={status?.active ? "on" : "off"}>{status?.active ? "Published: running" : status ? "Not published" : "Connecting…"}</span>
+            {offline
+              ? <span className="off">n8n offline{savedAt ? ` · saved ${when(savedAt)}` : ""}</span>
+              : <span className={published ? "on" : "off"}>{published ? "Published: running" : status ? "Not published" : "Connecting…"}</span>}
             {run && <span>Last run {when(run.started_at)} · {run.trigger ?? run.mode}</span>}
           </div>
         </div>
         <div className="aa-head-actions">
-          <TestForecast onSent={(text) => { setNotice(text); setTab("flow"); setRunId(null); window.setTimeout(() => void loadRuns(), 1500); }} />
-          {status?.workflow_url && <a className="secondary-button aa-link" href={status.workflow_url} target="_blank" rel="noreferrer"><ExternalLink size={14} /> Open in n8n</a>}
+          {!offline && <TestForecast onSent={(text) => { setNotice(text); setTab("flow"); setRunId(null); window.setTimeout(() => void loadRuns(), 1500); }} />}
+          {workflowUrl && !offline && <a className="secondary-button aa-link" href={workflowUrl} target="_blank" rel="noreferrer"><ExternalLink size={14} /> Open in n8n</a>}
         </div>
       </header>
 
-      {error && <div className="aa-msg bad"><AlertTriangle size={15} /> {error}</div>}
+      {offline && (
+        <div className="aa-msg bad aa-offline-note"><AlertTriangle size={15} />
+          <span><b>n8n is not running.</b> {savedAt
+            ? <>Showing the alarm data as it was saved on {when(savedAt)}. New alarms, runs and deliveries will appear once n8n is back; until then nothing can be edited or sent.</>
+            : <>No copy of the alarm data has been saved yet (it is saved the first time n8n is reached).</>}
+            {" "}Start n8n with <code>automation/n8n/start-n8n-docker.ps1</code>; this page reconnects by itself.</span>
+        </div>
+      )}
+      {error && !offline && <div className="aa-msg bad"><AlertTriangle size={15} /> {error}</div>}
       {notice && <div className="aa-msg" onClick={() => setNotice(null)}><CheckCircle2 size={15} /> {notice}</div>}
 
-      <nav className="aa-tabs">
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button key={id} type="button" className={tab === id ? "on" : ""} onClick={() => setTab(id)}><Icon size={15} /> {label}</button>
-        ))}
-      </nav>
+      {tabs}
+      {["alerts", "alarms", "log"].includes(tab) && (
+        <p className="aa-area-note">{area
+          ? <>Showing <b>{area.name}</b>: alerts and alarms within {AREA_RADIUS_KM} km, plus national alarms. Choose <b>Whole Pakistan</b> under Operational area to see everything.</>
+          : <>Showing <b>the whole of Pakistan</b>.</>}</p>
+      )}
 
-      {tab === "flow" && <LiveFlow layout={layout} run={run} runs={runs} onPick={setRunId} />}
+      {tab === "alerts" && alerts}
+      {tab === "flow" && <LiveFlow layout={layout} run={run} runs={runs} onPick={setRunId} offline={offline} />}
       {tab === "runs" && <RunList runs={runs} selected={run?.id} onOpen={(id) => { setRunId(id); setTab("flow"); }} />}
       {tab === "roster" && <RosterEditor />}
       {tab === "channels" && <ChannelEditor />}
       {tab === "alarms" && <AlarmList />}
       {tab === "log" && <LogView />}
     </div>
+    </AreaFilter.Provider>
+    </ReadOnly.Provider>
   );
 }
 
 /* ---- live flow: the workflow's blocks, coloured by the selected run ------------ */
-function LiveFlow({ layout, run, runs, onPick }: { layout: Layout | null; run?: Run; runs: Run[]; onPick: (id: string) => void }) {
+function LiveFlow({ layout, run, runs, onPick, offline }: { layout: Layout | null; run?: Run; runs: Run[]; onPick: (id: string) => void; offline?: boolean }) {
   const [open, setOpen] = useState<string | null>(null);
   // Columns by distance from the triggers, following the workflow's links.
   const columns = useMemo(() => {
@@ -143,6 +192,7 @@ function LiveFlow({ layout, run, runs, onPick }: { layout: Layout | null; run?: 
     for (const block of layout.blocks) { const d = depth.get(block.name) ?? 1; (cols[d] ??= []).push(block.name); }
     return [layout.triggers.map((t) => t.name), ...cols.slice(1).filter(Boolean)];
   }, [layout]);
+  if (!layout && offline) return <div className="aa-card aa-loading"><CircleDashed size={18} /> No saved copy of the workflow yet.</div>;
   if (!layout) return <div className="aa-card aa-loading"><Loader2 size={18} className="aa-spin" /> Loading the workflow…</div>;
   const triggerNames = new Set(layout.triggers.map((t) => t.name));
   const blockOf = (name: string) => layout.blocks.find((b) => b.name === name);
@@ -215,22 +265,102 @@ function RunList({ runs, selected, onOpen }: { runs: Run[]; selected?: string; o
 }
 
 /* ---- test forecast ------------------------------------------------------------- */
+const FLOOD_TYPES = [
+  { id: "riverine", label: "Riverine flood", unit: "cumecs" },
+  { id: "flash", label: "Flash flood", unit: "mm" },
+  { id: "urban", label: "Urban flooding", unit: "mm" },
+  { id: "upstream", label: "Upstream inflow", unit: "cumecs" },
+  { id: "seasonal", label: "Seasonal outlook", unit: "" },
+] as const;
+const RISKS = [
+  { id: "Normal", note: "clears an open alarm (all-clear)" },
+  { id: "Moderate", note: "Watch" },
+  { id: "High", note: "Warning" },
+  { id: "Very high", note: "Severe" },
+  { id: "Extreme", note: "Emergency" },
+] as const;
+const TEST_STATION = "__test__";
+
+/**
+ * Sends one test forecast through the real workflow, with every choice the workflow uses:
+ * the station, flood type, risk level, chance, forecast value and lead time.
+ */
 function TestForecast({ onSent }: { onSent: (text: string) => void }) {
-  const [risk, setRisk] = useState("High");
+  const [open, setOpen] = useState(false);
+  const [stations, setStations] = useState<{ id: string; name: string; river: string }[]>([]);
+  const [form, setForm] = useState({ station: TEST_STATION, type: "riverine", risk: "High", chance: 70, value: "", hours: 6 });
   const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  useEffect(() => {
+    if (!open || stations.length) return;
+    api.riverMonitoring().then((r) => setStations(r.stations.map((st) => ({ id: st.id, name: st.name, river: st.river })))).catch(() => undefined);
+  }, [open, stations.length]);
+  const type = FLOOD_TYPES.find((t) => t.id === form.type)!;
+  const set = (change: Partial<typeof form>) => { setForm({ ...form, ...change }); setResult(null); };
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setBusy(true); setResult(null);
+    const station = stations.find((st) => st.id === form.station);
+    try {
+      const reply = await send<{ alarms?: { action: string; level_name: string; target: string }[]; alerts_sent?: number; problems?: string[] }>("/test-forecast", "POST", {
+        target_name: station ? `${station.name} (test)` : "App test station",
+        target_id: station ? station.id : undefined,
+        model_case: form.type, risk_class: form.risk, probability: form.chance / 100,
+        value: form.value === "" ? null : Number(form.value), value_unit: type.unit, horizon_hours: form.hours,
+      });
+      const a = reply.alarms?.[0];
+      const text = a ? `${a.target}: ${a.level_name} → ${a.action.replace(/_/g, " ")}, ${reply.alerts_sent ?? 0} alert(s) sent.` : `Accepted, ${reply.alerts_sent ?? 0} alert(s) sent.`;
+      setResult({ ok: true, text });
+      onSent(`Test forecast sent: ${text} Watch it run below.`);
+    } catch (e) {
+      setResult({ ok: false, text: `Not sent: ${errorText(e)}` });
+    } finally { setBusy(false); }
+  };
+
   return (
     <div className="aa-test">
-      <select value={risk} onChange={(e) => setRisk(e.target.value)} aria-label="Test forecast risk">
-        {["Moderate", "High", "Very high", "Extreme", "Normal"].map((r) => <option key={r}>{r}</option>)}
-      </select>
-      <button type="button" className="primary-button" disabled={busy} onClick={async () => {
-        setBusy(true);
-        try {
-          const reply = await send<{ alarms?: { action: string; level_name: string }[]; alerts_sent?: number }>("/test-forecast", "POST", { risk_class: risk, probability: risk === "Normal" ? 0.05 : 0.7 });
-          const a = reply.alarms?.[0];
-          onSent(`Test forecast sent: ${a ? `${a.level_name} → ${a.action}` : "accepted"}, ${reply.alerts_sent ?? 0} alert(s). Watch it run below.`);
-        } catch (e) { onSent(`Test forecast failed: ${errorText(e)}`); } finally { setBusy(false); }
-      }}>{busy ? <Loader2 size={14} className="aa-spin" /> : <Send size={14} />} Send test forecast</button>
+      <button type="button" className="primary-button" aria-expanded={open} onClick={() => setOpen(!open)}><Send size={14} /> Send test forecast</button>
+      {open && (
+        <form className="aa-test-form aa-card" onSubmit={submit}>
+          <h3>Test forecast</h3>
+          <label>Station / place
+            <select value={form.station} onChange={(e) => set({ station: e.target.value })}>
+              <option value={TEST_STATION}>App test station (test only)</option>
+              {stations.map((st) => <option key={st.id} value={st.id}>{st.name} · {st.river}</option>)}
+            </select>
+          </label>
+          <label>Flood type
+            <select value={form.type} onChange={(e) => set({ type: e.target.value })}>
+              {FLOOD_TYPES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+            </select>
+          </label>
+          <label>Risk level
+            <select value={form.risk} onChange={(e) => set({ risk: e.target.value, chance: e.target.value === "Normal" ? 5 : form.chance })}>
+              {RISKS.map((r) => <option key={r.id} value={r.id}>{r.id} ({r.note})</option>)}
+            </select>
+          </label>
+          <div className="aa-test-row">
+            <label>Chance (%)
+              <input type="number" min={0} max={100} value={form.chance} onChange={(e) => set({ chance: Math.max(0, Math.min(100, Number(e.target.value))) })} />
+            </label>
+            <label>Lead time (h)
+              <input type="number" min={0} max={720} value={form.hours} onChange={(e) => set({ hours: Math.max(0, Math.min(720, Number(e.target.value))) })} />
+            </label>
+          </div>
+          {type.unit && (
+            <label>Forecast value ({type.unit}, optional)
+              <input type="number" min={0} step="any" value={form.value} placeholder={type.unit === "cumecs" ? "e.g. 8500" : "e.g. 120"} onChange={(e) => set({ value: e.target.value })} />
+            </label>
+          )}
+          <p className="aa-test-warn"><AlertTriangle size={13} /> This runs the real workflow: on-duty officers get Slack, Gmail and WhatsApp alerts.</p>
+          {result && <p className={`aa-test-result ${result.ok ? "" : "bad"}`}>{result.ok ? <CheckCircle2 size={14} /> : <XCircle size={14} />} {result.text}</p>}
+          <div className="aa-test-actions">
+            <button type="button" className="secondary-button" onClick={() => setOpen(false)}>Close</button>
+            <button type="submit" className="primary-button" disabled={busy}>{busy ? <Loader2 size={14} className="aa-spin" /> : <Send size={14} />} Send</button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
@@ -253,6 +383,7 @@ function useTable(table: string, alarmId?: string) {
 const TIERS: Record<number, string> = { 1: "1 · District", 2: "2 · PDMA", 3: "3 · NDMA" };
 
 function RosterEditor() {
+  const readOnly = useContext(ReadOnly);
   const { rows, setRows, error, setError, load } = useTable("duty_roster");
   const [saving, setSaving] = useState<number | null>(null);
   const [confirm, setConfirm] = useState<number | null>(null);
@@ -267,10 +398,10 @@ function RosterEditor() {
     } catch (e) { setError(errorText(e)); void load(); } finally { setSaving(null); }
   };
   const text = (row: Row, key: string) => (
-    <input defaultValue={String(row[key] ?? "")} onBlur={(e) => { if (e.target.value !== String(row[key] ?? "")) void save(row, { [key]: e.target.value }); }} />
+    <input defaultValue={String(row[key] ?? "")} readOnly={readOnly} onBlur={(e) => { if (e.target.value !== String(row[key] ?? "")) void save(row, { [key]: e.target.value }); }} />
   );
   const toggle = (row: Row, key: string, disabled = false) => (
-    <input type="checkbox" checked={Boolean(row[key])} disabled={disabled || saving === row.id} onChange={(e) => void save(row, { [key]: e.target.checked })} />
+    <input type="checkbox" checked={Boolean(row[key])} disabled={readOnly || disabled || saving === row.id} onChange={(e) => void save(row, { [key]: e.target.checked })} />
   );
 
   return (
@@ -285,11 +416,11 @@ function RosterEditor() {
               <tr key={row.id} className={row.on_duty ? "" : "off"}>
                 <td>{toggle(row, "on_duty")}</td>
                 <td>{text(row, "name")}</td><td>{text(row, "role")}</td>
-                <td><select value={Number(row.tier)} onChange={(e) => void save(row, { tier: Number(e.target.value) })}>{[1, 2, 3].map((t) => <option key={t} value={t}>{TIERS[t]}</option>)}</select></td>
+                <td><select value={Number(row.tier)} disabled={readOnly} onChange={(e) => void save(row, { tier: Number(e.target.value) })}>{[1, 2, 3].map((t) => <option key={t} value={t}>{TIERS[t]}</option>)}</select></td>
                 <td>{text(row, "email")}</td><td>{toggle(row, "gmail_on", !row.email)}</td>
                 <td>{text(row, "whatsapp")}</td><td>{toggle(row, "whatsapp_on", !row.whatsapp)}</td>
                 <td>{text(row, "notes")}</td>
-                <td>{confirm === row.id
+                <td>{readOnly ? null : confirm === row.id
                   ? <span className="aa-confirm">Remove? <button type="button" className="secondary-button" onClick={async () => { try { await send(`/duty-roster/${row.id}`, "DELETE"); setConfirm(null); void load(); } catch (e) { setError(errorText(e)); } }}>Yes</button><button type="button" className="secondary-button" onClick={() => setConfirm(null)}>No</button></span>
                   : <button type="button" className="icon-button" title="Remove person" aria-label="Remove person" onClick={() => setConfirm(row.id)}><Trash2 size={14} /></button>}</td>
               </tr>
@@ -298,7 +429,7 @@ function RosterEditor() {
           </tbody>
         </table>
       </div>
-      <form className="aa-add" onSubmit={async (e) => {
+      {!readOnly && <form className="aa-add" onSubmit={async (e) => {
         e.preventDefault();
         try { await send("/duty-roster", "POST", draft); setDraft({ name: "", role: "", tier: 1, email: "", whatsapp: "" }); void load(); } catch (err) { setError(errorText(err)); }
       }}>
@@ -309,12 +440,13 @@ function RosterEditor() {
         <input type="email" placeholder="Email" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} />
         <input placeholder="WhatsApp (+92…)" value={draft.whatsapp} onChange={(e) => setDraft({ ...draft, whatsapp: e.target.value })} />
         <button type="submit" className="primary-button">Add</button>
-      </form>
+      </form>}
     </section>
   );
 }
 
 function ChannelEditor() {
+  const readOnly = useContext(ReadOnly);
   const { rows, setRows, error, setError } = useTable("alert_channels");
   const save = async (row: Row, key: string, value: boolean) => {
     try {
@@ -332,7 +464,7 @@ function ChannelEditor() {
           {rows?.map((row) => (
             <tr key={row.id}>
               <td><b>{String(row.level)}</b> {String(row.level_name ?? "")}</td>
-              {["slack", "gmail", "whatsapp"].map((k) => <td key={k}><input type="checkbox" checked={Boolean(row[k])} onChange={(e) => void save(row, k, e.target.checked)} aria-label={`${k} for ${row.level_name}`} /></td>)}
+              {["slack", "gmail", "whatsapp"].map((k) => <td key={k}><input type="checkbox" checked={Boolean(row[k])} disabled={readOnly} onChange={(e) => void save(row, k, e.target.checked)} aria-label={`${k} for ${row.level_name}`} /></td>)}
             </tr>
           ))}
         </tbody>
@@ -342,7 +474,10 @@ function ChannelEditor() {
 }
 
 function AlarmList() {
-  const { rows, error, setError, load } = useTable("flood_alarms");
+  const readOnly = useContext(ReadOnly);
+  const areaFilter = useContext(AreaFilter);
+  const { rows: allRows, error, setError, load } = useTable("flood_alarms");
+  const rows = allRows?.filter((row) => alarmInArea(row, areaFilter)) ?? null;
   const [busy, setBusy] = useState<string | null>(null);
   const [events, setEvents] = useState<string | null>(null);
   const act = async (alarmId: string, action: "acknowledge" | "resolve") => {
@@ -367,15 +502,15 @@ function AlarmList() {
                   <td>{when(String(a.first_raised_at))}</td><td>{String(a.last_action)} · {when(String(a.last_forecast_at))}</td>
                   <td>{a.acknowledged_by ? `${a.acknowledged_by}` : "—"}</td>
                   <td className="aa-btns">
-                    {a.status === "open" && <button type="button" className="secondary-button" disabled={busy === id} onClick={() => void act(id, "acknowledge")}>Acknowledge</button>}
-                    {a.status !== "resolved" && <button type="button" className="secondary-button" disabled={busy === id} onClick={() => void act(id, "resolve")}>Resolve</button>}
+                    {!readOnly && a.status === "open" && <button type="button" className="secondary-button" disabled={busy === id} onClick={() => void act(id, "acknowledge")}>Acknowledge</button>}
+                    {!readOnly && a.status !== "resolved" && <button type="button" className="secondary-button" disabled={busy === id} onClick={() => void act(id, "resolve")}>Resolve</button>}
                     <button type="button" className="secondary-button" onClick={() => setEvents(events === id ? null : id)}>{events === id ? "Hide" : "History"}</button>
                   </td>
                 </tr>,
                 events === id && <tr key={`${a.id}-ev`} className="aa-sub"><td colSpan={8}><EventRows alarmId={id} /></td></tr>,
               ];
             })}
-            {rows?.length === 0 && <tr><td colSpan={8}>No alarms yet.</td></tr>}
+            {rows?.length === 0 && <tr><td colSpan={8}>{allRows?.length ? "No alarms in this area." : "No alarms yet."}</td></tr>}
           </tbody>
         </table>
       </div>
@@ -391,7 +526,12 @@ function EventRows({ alarmId }: { alarmId: string }) {
 
 function LogView() {
   const [which, setWhich] = useState<"alarm_notifications" | "alarm_events">("alarm_notifications");
-  const { rows, error, load } = useTable(which);
+  const { rows: allRows, error, load } = useTable(which);
+  // In an area, only the deliveries and audit entries of that area's alarms.
+  const areaFilter = useContext(AreaFilter);
+  const alarms = useTable("flood_alarms");
+  const ids = useMemo(() => new Set((alarms.rows ?? []).filter((row) => alarmInArea(row, areaFilter)).map((row) => String(row.alarm_id))), [alarms.rows, areaFilter]);
+  const rows = areaFilter.area ? allRows?.filter((row) => ids.has(String(row.alarm_id))) ?? null : allRows;
   return (
     <section className="aa-card">
       <div className="aa-row-actions">

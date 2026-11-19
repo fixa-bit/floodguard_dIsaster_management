@@ -39,8 +39,11 @@ def save(name: str, payload: Any) -> None:
         logger.warning("Could not store last good response %s", name, exc_info=True)
 
 
-def load(name: str) -> tuple[float, Any] | None:
-    """Return (saved_at epoch seconds, payload), or None when nothing recent enough is stored."""
+def load(name: str, max_age_hours: float | None = None) -> tuple[float, Any] | None:
+    """Return (saved_at epoch seconds, payload), or None when nothing recent enough is stored.
+
+    ``max_age_hours`` overrides ``last_good_max_age_hours`` (records such as alarm history stay useful longer).
+    """
     path = _path(name)
     if path is None or not path.exists():
         return None
@@ -49,6 +52,6 @@ def load(name: str) -> tuple[float, Any] | None:
         saved_at = float(stored["saved_at"])
     except (OSError, ValueError, KeyError, TypeError):
         return None
-    if time.time() - saved_at > get_settings().last_good_max_age_hours * 3600:
+    if time.time() - saved_at > (max_age_hours if max_age_hours is not None else get_settings().last_good_max_age_hours) * 3600:
         return None
     return saved_at, stored["payload"]

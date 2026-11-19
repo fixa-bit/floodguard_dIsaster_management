@@ -9,12 +9,11 @@ const navItems = [
   { id: "predictive" as const, label: "Predictive Risk Views", icon: ChartNoAxesCombined },
   { id: "upstream" as const, label: "Upstream Source Flood Watch", icon: Waves },
   { id: "monitoring" as const, label: "River Monitoring", icon: Droplets },
-  { id: "alerts" as const, label: "Alerts", icon: BellRing },
   { id: "incidents" as const, label: "Incidents", icon: AlertTriangle },
   { id: "reports" as const, label: "Citizen Reports", icon: MessageSquareText },
   { id: "activity" as const, label: "System Activity", icon: Activity },
   { id: "situation-reports" as const, label: "Flood Reports", icon: FileText },
-  { id: "alarm-automation" as const, label: "Alarm Automation", icon: Workflow },
+  { id: "alarm-automation" as const, label: "Alerts & Alarms", icon: BellRing },
   { id: "simulation" as const, label: "Simulation", icon: FlaskConical },
 ];
 
@@ -25,7 +24,7 @@ export function AppShell({ activeView, onViewChange, children }: { activeView: V
       <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
         <div className="brand-lockup"><div><ShieldCheck size={24} /></div><span><strong>FloodGuard AI</strong><small>NDMA Command Screen</small></span><button className="mobile-close" onClick={() => setOpen(false)}><X size={20} /></button></div>
         <nav aria-label="Main navigation">
-          {navItems.map(({ id, label, icon: Icon }) => <button className={activeView === id ? "active" : ""} aria-current={activeView === id ? "page" : undefined} key={id} onClick={() => { onViewChange(id); setOpen(false); }}><Icon size={18} /><span>{label}</span></button>)}
+          {navItems.map(({ id, label, icon: Icon }) => { const on = activeView === id || (id === "alarm-automation" && activeView === "alerts"); return <button className={on ? "active" : ""} aria-current={on ? "page" : undefined} key={id} onClick={() => { onViewChange(id); setOpen(false); }}><Icon size={18} /><span>{label}</span></button>; })}
           <p className="sidebar-section-label">Feature visualization</p>
           <button className={activeView === "rainfall" ? "active" : ""} aria-current={activeView === "rainfall" ? "page" : undefined} onClick={() => { onViewChange("rainfall"); setOpen(false); }}><CloudRain size={18} /><span>Rainfall heatmap</span></button>
           <p className="sidebar-section-label">External maps</p>

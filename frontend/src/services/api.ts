@@ -70,7 +70,7 @@ const LABELS: Array<[RegExp, string]> = [
   [/^\/citizen-reports/, "Citizen reports"], [/^\/events/, "System events"], [/^\/alerts/, "Alerts"],
   [/^\/system\/status/, "System status"], [/^\/simulation/, "Simulation"], [/^\/resources\/shelters/, "Shelters"],
   [/^\/resources\/hospitals/, "Hospitals"], [/^\/resources\/emergency-contacts/, "Emergency contacts"],
-  [/^\/generated-reports/, "Reports"], [/^\/alarm-automation/, "Alarm automation"], [/^\/population|^\/exposure/, "Population analysis"],
+  [/^\/generated-reports/, "Reports"], [/^\/alarm-automation/, "Alerts & Alarms"], [/^\/population|^\/exposure/, "Population analysis"],
 ];
 
 function fallbackEligible(error: unknown): boolean {

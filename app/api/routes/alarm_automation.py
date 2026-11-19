@@ -2,6 +2,11 @@
 
 Runs (node by node) come from n8n's executions; the duty roster, channels per level
 and alarms are n8n data tables, edited here through n8n's public API.
+
+Every successful read is also saved on disk. When n8n cannot be reached, the reads answer
+with that saved copy (marked ``offline`` with its ``saved_at`` time), so the app still shows
+the roster, channels, alarms, runs and logs as they last were; nothing new arrives and
+nothing can be changed until n8n is back.
 """
 from __future__ import annotations
 
@@ -13,6 +18,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, field_validator
 
 from app.core.config import get_settings
+from app.providers import last_good_store
 from app.services.n8n_alarm import N8nAlarmClient, N8nError, summarize_execution, workflow_layout
 
 router = APIRouter(prefix="/alarm-automation", tags=["Alarm automation"])
@@ -33,6 +39,29 @@ def get_client() -> N8nAlarmClient:
 
 def _fail(error: N8nError) -> HTTPException:
     return HTTPException(status_code=error.status, detail=str(error))
+
+
+# Saved copies of the reads, served while n8n is unreachable (kept for a year: it is history).
+SNAPSHOT_MAX_AGE_HOURS = 24 * 365
+
+
+def _snapshot_name(key: str) -> str:
+    return f"n8n-alarm-{key}"
+
+
+def _remember(key: str, payload: dict) -> dict:
+    last_good_store.save(_snapshot_name(key), payload)
+    return payload
+
+
+def _saved_or_fail(key: str, error: N8nError) -> dict:
+    """The last saved copy of a read when n8n is down (5xx); otherwise the error itself."""
+    saved = last_good_store.load(_snapshot_name(key), SNAPSHOT_MAX_AGE_HOURS) if error.status >= 500 else None
+    if saved is None:
+        raise _fail(error) from error
+    saved_at, payload = saved
+    return {**payload, "offline": True, "offline_message": str(error),
+            "saved_at": datetime.fromtimestamp(saved_at, tz=timezone.utc).isoformat()}
 
 
 # ---- request bodies ----------------------------------------------------------
@@ -82,8 +111,14 @@ class AlarmAction(BaseModel):
 
 class TestForecast(BaseModel):
     target_name: str = Field(default="App test station", min_length=1, max_length=60)
+    # A river station's id (e.g. "TRIMMU"), so the test alarm matches that station; else made from the name.
+    target_id: str | None = Field(default=None, max_length=60, pattern=r"^[A-Za-z0-9_-]+$")
+    model_case: Literal["riverine", "flash", "urban", "upstream", "seasonal"] = "riverine"
     risk_class: Literal["Normal", "Moderate", "High", "Very high", "Extreme"] = "High"
     probability: float = Field(default=0.7, ge=0, le=1)
+    value: float | None = Field(default=None, ge=0)
+    value_unit: str = Field(default="cumecs", max_length=20)
+    horizon_hours: int = Field(default=6, ge=0, le=720)
 
 
 def _changes(body: BaseModel) -> dict:
@@ -101,31 +136,36 @@ async def status(client: N8nAlarmClient = Depends(get_client)):
     try:
         workflow = await client.workflow()
     except N8nError as error:
-        return {**base, "connected": False, "message": str(error)}
-    return {**base, "connected": True, "message": None, "workflow_id": workflow["id"], "active": bool(workflow.get("active")),
-            "workflow_url": f"{settings.n8n_editor_url.rstrip('/')}/workflow/{workflow['id']}"}
+        # The workflow as it last was, so the page can still name it and say when it was saved.
+        saved = last_good_store.load(_snapshot_name("status"), SNAPSHOT_MAX_AGE_HOURS)
+        last = {"saved_at": datetime.fromtimestamp(saved[0], tz=timezone.utc).isoformat(), "active": saved[1].get("active"),
+                "workflow_url": saved[1].get("workflow_url")} if saved else None
+        return {**base, "connected": False, "message": str(error), "last_seen": last}
+    return _remember("status", {**base, "connected": True, "message": None, "workflow_id": workflow["id"], "active": bool(workflow.get("active")),
+                                "workflow_url": f"{settings.n8n_editor_url.rstrip('/')}/workflow/{workflow['id']}"})
 
 
 @router.get("/workflow")
 async def workflow(client: N8nAlarmClient = Depends(get_client)):
     try:
-        return workflow_layout(await client.workflow())
+        return _remember("workflow", workflow_layout(await client.workflow()))
     except N8nError as error:
-        raise _fail(error) from error
+        return _saved_or_fail("workflow", error)
 
 
 @router.get("/runs")
 async def runs(limit: int = Query(default=20, ge=1, le=100), include_mocks: bool = False,
                client: N8nAlarmClient = Depends(get_client)):
+    key = f"runs-{limit}-{int(include_mocks)}"
     try:
         layout = workflow_layout(await client.workflow())
         executions = await client.executions(layout["id"], limit if include_mocks else min(100, limit * 3))
     except N8nError as error:
-        raise _fail(error) from error
+        return _saved_or_fail(key, error)
     summaries = [summarize_execution(execution, layout) for execution in executions]
     if not include_mocks:
         summaries = [run for run in summaries if not run["is_mock"]]
-    return {"runs": summaries[:limit]}
+    return _remember(key, {"runs": summaries[:limit]})
 
 
 @router.get("/runs/{execution_id}")
@@ -134,9 +174,9 @@ async def run(execution_id: str, client: N8nAlarmClient = Depends(get_client)):
         raise HTTPException(status_code=422, detail="Run ids are numbers.")
     try:
         layout = workflow_layout(await client.workflow())
-        return summarize_execution(await client.execution(execution_id), layout)
+        return _remember(f"run-{execution_id}", summarize_execution(await client.execution(execution_id), layout))
     except N8nError as error:
-        raise _fail(error) from error
+        return _saved_or_fail(f"run-{execution_id}", error)
 
 
 # ---- data tables ---------------------------------------------------------------
@@ -145,10 +185,11 @@ async def table_rows(table: TableName, limit: int = Query(default=200, ge=1, le=
                      alarm_id: str | None = Query(default=None, max_length=80),
                      client: N8nAlarmClient = Depends(get_client)):
     filters = [{"columnName": "alarm_id", "condition": "eq", "value": alarm_id}] if alarm_id and table in ("alarm_events", "alarm_notifications") else None
+    key = f"table-{table}-{limit}-{alarm_id or ''}"
     try:
-        return {"table": table, "rows": await client.rows(table, limit, TABLE_SORT[table], filters)}
+        return _remember(key, {"table": table, "rows": await client.rows(table, limit, TABLE_SORT[table], filters)})
     except N8nError as error:
-        raise _fail(error) from error
+        return _saved_or_fail(key, error)
 
 
 @router.post("/duty-roster", status_code=201)
@@ -222,10 +263,10 @@ async def resolve(alarm_id: str, body: AlarmAction, client: N8nAlarmClient = Dep
 async def test_forecast(body: TestForecast, client: N8nAlarmClient = Depends(get_client)):
     """Sends one test forecast through the whole workflow (it alerts like a real one)."""
     now = datetime.now(timezone.utc)
-    slug = re.sub(r"[^a-z0-9]+", "_", body.target_name.lower()).strip("_") or "app_test"
-    forecast = {"id": f"app-test-{int(now.timestamp())}", "model_case": "riverine", "target_id": slug,
-                "target_name": body.target_name, "issued_at": now.isoformat(), "valid_at": now.isoformat(), "horizon_hours": 6,
-                "value": None, "value_unit": "cumecs", "probability": body.probability, "risk_class": body.risk_class,
+    slug = (body.target_id or re.sub(r"[^a-z0-9]+", "_", body.target_name.lower()).strip("_") or "app_test").lower()
+    forecast = {"id": f"app-test-{int(now.timestamp())}", "model_case": body.model_case, "target_id": slug,
+                "target_name": body.target_name, "issued_at": now.isoformat(), "valid_at": now.isoformat(), "horizon_hours": body.horizon_hours,
+                "value": body.value, "value_unit": body.value_unit, "probability": body.probability, "risk_class": body.risk_class,
                 "model_name": "floodguard_app_test", "point_metadata": {"simulation_source": "floodguard_app_test"}}
     try:
         return await client.send_forecasts([forecast])

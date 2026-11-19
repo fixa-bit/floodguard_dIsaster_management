@@ -53,6 +53,7 @@ class FakeN8n:
         }
         self.ids = {name: f"id_{name}" for name in self.tables}
         self.calls = []
+        self.forecasts = []
 
     def _table(self, request):
         table_id = request.url.path.split("/")[4]
@@ -71,6 +72,8 @@ class FakeN8n:
             if path.endswith("/flood-alarm/ack"):
                 found = any(r["alarm_id"] == request.url.params["alarm_id"] for r in self.tables["flood_alarms"])
                 return httpx.Response(200, text="Alarm acknowledged" if found else "Alarm not found")
+            if path.endswith("/flood-forecast"):
+                self.forecasts.extend(json.loads(request.content)["forecasts"])
             return httpx.Response(202, json={"http_status": 202, "received": 1})
         if request.headers.get("x-n8n-api-key") != "test-key":
             return httpx.Response(401, json={"message": "unauthorized"})
@@ -182,3 +185,35 @@ def test_status_reports_missing_or_wrong_key(client):
         assert body["connected"] is False and "N8N_API_KEY" in body["message"]
         assert client.get("/api/v1/alarm-automation/workflow").status_code == 503
     app.dependency_overrides.pop(alarm_automation.get_client, None)
+
+
+def test_reads_serve_the_saved_copy_while_n8n_is_down(client, n8n, tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from app.providers import last_good_store
+    monkeypatch.setattr(last_good_store, "get_settings", lambda: SimpleNamespace(last_good_cache_dir=str(tmp_path), last_good_max_age_hours=72))
+    roster = client.get("/api/v1/alarm-automation/tables/duty_roster").json()
+    assert client.get("/api/v1/alarm-automation/status").json()["connected"] is True
+    # n8n goes away: the roster and status come from the saved copy, marked offline.
+    def down(request):
+        raise httpx.ConnectError("refused", request=request)
+    settings = Settings(n8n_api_key=SecretStr("test-key"), n8n_api_url="http://n8n.test/api/v1", n8n_editor_url="http://n8n.test")
+    app.dependency_overrides[alarm_automation.get_client] = lambda: N8nAlarmClient(settings=settings, transport=httpx.MockTransport(down))
+    saved = client.get("/api/v1/alarm-automation/tables/duty_roster").json()
+    assert saved["offline"] is True and saved["rows"] == roster["rows"] and saved["saved_at"]
+    status = client.get("/api/v1/alarm-automation/status").json()
+    assert status["connected"] is False and status["last_seen"]["saved_at"]
+    # Nothing saved for this read: still an error.
+    assert client.get("/api/v1/alarm-automation/tables/alarm_events").status_code == 503
+
+
+def test_test_forecast_sends_the_chosen_station_type_and_values(client, n8n):
+    body = {"target_name": "Trimmu (test)", "target_id": "TRIMMU", "model_case": "flash", "risk_class": "Very high",
+            "probability": 0.85, "value": 120, "value_unit": "mm", "horizon_hours": 12}
+    assert client.post("/api/v1/alarm-automation/test-forecast", json=body).status_code == 200
+    sent = n8n.forecasts[-1]
+    assert (sent["target_id"], sent["target_name"], sent["model_case"], sent["risk_class"]) == ("trimmu", "Trimmu (test)", "flash", "Very high")
+    assert (sent["value"], sent["value_unit"], sent["horizon_hours"], sent["probability"]) == (120, "mm", 12, 0.85)
+    # The old form's body still works (App test station, riverine).
+    assert client.post("/api/v1/alarm-automation/test-forecast", json={"risk_class": "High", "probability": 0.7}).status_code == 200
+    assert (n8n.forecasts[-1]["target_id"], n8n.forecasts[-1]["model_case"]) == ("app_test_station", "riverine")
+    assert client.post("/api/v1/alarm-automation/test-forecast", json={"model_case": "tsunami"}).status_code == 422
