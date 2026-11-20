@@ -1,5 +1,6 @@
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import { connect } from "node:net";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -72,5 +73,25 @@ startService(
   frontendRoot,
   windows ? { shell: true } : {},
 );
+
+// Optional: the separate Flood Simulation app's Python service (port 8010), shown under
+// Simulation → Flood simulation lab. Started only if its folder exists and the port is free;
+// if it stops, the rest of the portal keeps running.
+const floodSimDir = resolve(process.env.FLOOD_SIM_DIR ?? resolve(projectRoot, "..", "..", "flood sim cursor", "flood sim cursor"));
+const floodSimPython = resolve(floodSimDir, ".venv", "Scripts", "python.exe");
+const portFree = (port) => new Promise((done) => {
+  const socket = connect({ host: "127.0.0.1", port }, () => { socket.destroy(); done(false); });
+  socket.on("error", () => done(true));
+});
+if (existsSync(floodSimPython)) {
+  if (await portFree(8010)) {
+    console.log("[flood-sim] starting its data service on port 8010");
+    const child = spawn(floodSimPython, ["-m", "uvicorn", "server.app:app", "--host", "127.0.0.1", "--port", "8010"], { cwd: floodSimDir, stdio: "ignore" });
+    services.push({ name: "flood-sim", child });
+    child.on("exit", (code) => { if (!stopping) console.log(`[flood-sim] data service stopped (exit ${code ?? "unknown"}); the rest of the portal keeps running`); });
+  } else {
+    console.log("[flood-sim] port 8010 already in use; assuming its data service is running");
+  }
+}
 
 console.log("Open the app at http://127.0.0.1:3000 (API docs: http://127.0.0.1:8000/docs)");

@@ -99,3 +99,20 @@
 .alert-review-status { display: block; color: #7ae7b8; font-size: 10px; font-weight: 700; }
 @media (max-width: 900px) { .simulation-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } .simulation-thresholds { grid-template-columns: repeat(2, minmax(0, 1fr)); } .simulation-threshold-source { grid-column: 1 / -1; } }
 @media (max-width: 600px) { .simulation-fields { grid-template-columns: minmax(0, 1fr); } .simulation-alert-banner { margin: 12px 12px 0; } .simulation-segments { width: 100%; } .simulation-segments button { flex: 1; } .simulation-profile-label { width: 100%; } .simulation-profile-label select { flex: 1; } }
+
+/* Flood simulation lab: the separate Flood Simulation app in a same-origin frame (SimulationFloodLab.tsx). */
+/* The lab is a full application, so it uses the whole page width; the other views keep the 1220px cap. */
+.simulation-workspace[data-view="lab"] { max-width: none; }
+.flood-lab { display: grid; gap: 10px; }
+.flood-lab-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 14px; color: #dbe9e6; background: #0d1d20; border: 1px solid #24403f; border-radius: 10px; }
+.flood-lab-bar > svg { color: #50d8bd; }
+.flood-lab-bar > div { display: grid; flex: 1 1 320px; gap: 2px; min-width: 0; }
+.flood-lab-bar > div strong { font-size: 14px; }
+.flood-lab-bar > div span { color: #8fa9ab; font-size: 12px; }
+.flood-lab-bar a.secondary-button, .flood-lab-bar button.secondary-button { display: inline-flex; align-items: center; gap: 6px; }
+.flood-lab-state { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid #2c4b4a; border-radius: 999px; color: #8fa9ab; font-size: 12px; font-weight: 600; }
+.flood-lab-state.ready { color: #8be08b; border-color: rgba(12, 163, 12, .5); background: rgba(12, 163, 12, .1); }
+.flood-lab-state.no-service, .flood-lab-state.not-built { color: #ffd27a; border-color: rgba(250, 178, 25, .5); background: rgba(250, 178, 25, .08); }
+.flood-lab-note { margin: 0; padding: 10px 12px; color: #ffe2a8; background: rgba(250, 178, 25, .06); border: 1px dashed rgba(250, 178, 25, .4); border-radius: 10px; font-size: 12.5px; line-height: 1.55; }
+.flood-lab-note code { padding: 1px 5px; color: #e8f3f2; background: #0a1719; border-radius: 4px; font-size: 12px; }
+.flood-lab-frame { display: block; width: 100%; height: max(640px, calc(100vh - 260px)); background: #050c0e; border: 1px solid #24403f; border-radius: 10px; }

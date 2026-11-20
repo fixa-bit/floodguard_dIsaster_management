@@ -5,6 +5,7 @@ import { ApiError, api } from "../services/api";
 import type { MonitoringSimulationRequest, MonitoringSimulationResult, SimulationStation } from "../types/api";
 import { formatDateTime } from "../utils/format";
 import { StatusBadge } from "./StatusBadge";
+import { SimulationFloodLab } from "./SimulationFloodLab";
 import "../simulation.css";
 
 type DraftReading = { id: number; offset: string; value: string; p25: string; p75: string };
@@ -12,7 +13,7 @@ type Measurement = MonitoringSimulationRequest["measurement"];
 type Unit = MonitoringSimulationRequest["unit"];
 const FloodVisualization = lazy(() => import("./SimulationFloodVisualization").then((module) => ({ default: module.SimulationFloodVisualization })));
 const StormReplay = lazy(() => import("./SimulationReplayWorkspace").then((module) => ({ default: module.SimulationReplayWorkspace })));
-const simulationViews = ["monitoring", "spread", "replay"] as const;
+const simulationViews = ["monitoring", "spread", "replay", "lab"] as const;
 
 const scenarioNames = ["Flood threshold test", "Below threshold test", "Warning crossing test", "Danger crossing test", "Surge and recovery test"];
 const sliderLimits = { cusecs: { min: 0, max: 1000000, step: 1000 }, "m3/s": { min: 0, max: 30000, step: 10 }, m: { min: -20, max: 50, step: 0.1 }, ft: { min: -60, max: 160, step: 0.1 } };
@@ -77,6 +78,9 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<MonitoringSimulationResult | null>(null);
   const [workspaceView, setWorkspaceView] = useState<typeof simulationViews[number]>("monitoring");
+  // The lab stays mounted after it is first opened, so a running model survives tab switches.
+  const [labOpened, setLabOpened] = useState(false);
+  useEffect(() => { if (workspaceView === "lab") setLabOpened(true); }, [workspaceView]);
 
   useEffect(() => {
     let active = true;
@@ -188,7 +192,7 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
   }
 
   return <div className="simulation-workspace" data-view={workspaceView}>
-    <div className="simulation-workspace-header"><FlaskConical size={20} /><strong>{workspaceView === "monitoring" ? "Monitoring Scenario" : workspaceView === "spread" ? "Flood spread & population" : "Storm replay"}</strong><span className="simulated-flow-stamp">Simulated flow</span></div>
+    <div className="simulation-workspace-header"><FlaskConical size={20} /><strong>{workspaceView === "monitoring" ? "Monitoring Scenario" : workspaceView === "spread" ? "Flood spread & population" : workspaceView === "replay" ? "Storm replay" : "Flood simulation lab"}</strong><span className="simulated-flow-stamp">Simulated flow</span></div>
     <div className="simulation-workspace-tabs" role="tablist" aria-label="Simulation views" onKeyDown={(event) => {
       if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
       event.preventDefault();
@@ -198,6 +202,7 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
       <button type="button" role="tab" id="simulation-tab-monitoring" data-tour-target="simulation-monitoring" aria-controls="simulation-panel-monitoring" aria-selected={workspaceView === "monitoring"} tabIndex={workspaceView === "monitoring" ? 0 : -1} onClick={() => setWorkspaceView("monitoring")}>Monitoring scenario</button>
       <button type="button" role="tab" id="simulation-tab-spread" data-tour-target="simulation-spread" aria-controls="simulation-panel-spread" aria-selected={workspaceView === "spread"} tabIndex={workspaceView === "spread" ? 0 : -1} onClick={() => setWorkspaceView("spread")}>Flood spread &amp; population</button>
       <button type="button" role="tab" id="simulation-tab-replay" data-tour-target="simulation-replay" aria-controls="simulation-panel-replay" aria-selected={workspaceView === "replay"} tabIndex={workspaceView === "replay" ? 0 : -1} onClick={() => setWorkspaceView("replay")}>Storm replay</button>
+      <button type="button" role="tab" id="simulation-tab-lab" data-tour-target="simulation-lab" aria-controls="simulation-panel-lab" aria-selected={workspaceView === "lab"} tabIndex={workspaceView === "lab" ? 0 : -1} onClick={() => setWorkspaceView("lab")}>Flood simulation lab</button>
     </div>
     <section role="tabpanel" id="simulation-panel-monitoring" aria-labelledby="simulation-tab-monitoring" hidden={workspaceView !== "monitoring"}>
     {loading ? <div className="simulation-loading" role="status"><LoaderCircle className="spinning" size={18} /> Loading monitoring stations</div>
@@ -248,6 +253,9 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
     </section>
     <section role="tabpanel" id="simulation-panel-replay" aria-labelledby="simulation-tab-replay" hidden={workspaceView !== "replay"}>
       {workspaceView === "replay" && <Suspense fallback={<div className="simulation-loading" role="status">Loading storm replay…</div>}><StormReplay /></Suspense>}
+    </section>
+    <section role="tabpanel" id="simulation-panel-lab" aria-labelledby="simulation-tab-lab" hidden={workspaceView !== "lab"}>
+      {labOpened && <SimulationFloodLab />}
     </section>
   </div>;
 }
