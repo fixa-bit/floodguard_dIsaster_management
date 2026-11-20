@@ -24,6 +24,8 @@ interface NationalRiskMapLoaderProps {
   populationOverlay?: PopulationOverlay | null;
   /** GIS Operations: the terrain studio's Relief tools. Elsewhere (the Overview) the studio offers bird's-eye only. */
   reliefTools?: boolean;
+  /** GIS Operations: the relief & assessment panel beside the map, operations layers, no monitoring tour. */
+  reliefAssessment?: boolean;
 }
 
 export function NationalRiskMapLoader(props: NationalRiskMapLoaderProps) {

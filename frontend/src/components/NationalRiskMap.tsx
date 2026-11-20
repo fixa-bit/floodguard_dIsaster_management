@@ -44,6 +44,7 @@ import { RiverStationInspector } from "./RiverStationInspector";
 import { StationDetailsPanel } from "./StationDetailsPanel";
 import { CatchmentLight } from "./catchmentLight";
 import { districtsInCatchment } from "./catchmentDistricts";
+import { ReliefAssessment, type AssessmentTarget } from "./ReliefAssessment";
 import { CatchmentBriefing, type BriefingLine } from "./CatchmentBriefing";
 import { RiverDataSource } from "./RiverDataSource";
 import { alignDistrictScreeningGeometry, districtDisplayGeometry, type DistrictBoundaries } from "./districtGeometry";
@@ -77,6 +78,8 @@ interface NationalRiskMapProps {
   populationOverlay?: PopulationOverlay | null;
   /** GIS Operations: the terrain studio's Relief tools. Elsewhere (the Overview) the studio offers bird's-eye only. */
   reliefTools?: boolean;
+  /** GIS Operations: the relief & assessment panel, operations layers and no monitoring tour. */
+  reliefAssessment?: boolean;
 }
 
 // Globe on app load: rendered as a globe below zoom 3, blending to the flat
@@ -470,7 +473,7 @@ function matchRiverTelemetry(feature: WaterIntelligenceFeature, rivers: RiverRes
   });
 }
 
-export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeather, locationRivers, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false, initialRainfallEnabled = false, mapOverlay, populationOverlay, reliefTools = false }: NationalRiskMapProps) {
+export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeather, locationRivers, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false, initialRainfallEnabled = false, mapOverlay, populationOverlay, reliefTools = false, reliefAssessment = false }: NationalRiskMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const coordinateReadoutRef = useRef<HTMLOutputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -502,7 +505,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   const [requestedShowNormalFloodHub, setShowNormalFloodHub] = useState(true);
   const floodHubRef = useRef(floodHub);
   floodHubRef.current = floodHub;
-  const [requestedLayers, setLayers] = useState({ boundary: false, glaciers: false, borderTest: false, risk: false, districts: false, floodHub: false, catchments: false, water: false, waterForecasts: false, gauges: false, stations: false, incidents: false, reports: false, resources: false });
+  // GIS Operations opens on the operations layers: district screening, incidents and citizen reports.
+  const [requestedLayers, setLayers] = useState({ boundary: false, glaciers: false, borderTest: false, risk: reliefAssessment, districts: false, floodHub: false, catchments: false, water: false, waterForecasts: false, gauges: false, stations: false, incidents: reliefAssessment, reports: reliefAssessment, resources: false });
   const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
   const [stationTicketArrival, setStationTicketArrival] = useState<{ stationId: string; map: MapLibreMap } | null>(null);
   const selectedStationIdRef = useRef(selectedStationId);
@@ -651,7 +655,8 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }, [showStationTicket, selectedStationId]);
   // Before the effect above has run, the panel that was showing is already the one leaving (no blank frame between).
   const departingTicket = leavingTicket ?? (!showStationTicket ? shownTicketRef.current : null);
-  const [stationRotationEnabled, setStationRotationEnabled] = useState(true);
+  // GIS Operations is for relief and assessment: no monitoring tour there.
+  const [stationRotationEnabled, setStationRotationEnabled] = useState(!reliefAssessment);
   // The monitoring tour's camera: tilted flights over 3D terrain, or a flat, north-up 2D map.
   const [monitoringView, setMonitoringView] = useState<"3d" | "2d">("3d");
   const monitoringViewRef = useRef(monitoringView);
@@ -932,7 +937,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         return;
       }
       // Monitoring mode off: the terrain studio flies to its stations in bird's-eye instead.
-      if (monitoringSites.features.some((site) => site.properties.id === station.id)) return;
+      if (!reliefTools && monitoringSites.features.some((site) => site.properties.id === station.id)) return;
       const radians = Math.PI / 180;
       const latitudeDelta = (station.latitude - (previous?.latitude ?? station.latitude)) * radians;
       const longitudeDelta = (station.longitude - (previous?.longitude ?? station.longitude)) * radians;
@@ -1140,6 +1145,18 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   }, [stationMapInstance, activeStationMapLayers, catchmentLight, stationRotationEnabled, monitoringView]);
   // The briefing the 3D tour types out while it draws the catchment's outline (all from live data).
   const [briefingStartedAt, setBriefingStartedAt] = useState<number | null>(null);
+  // GIS Operations' relief assessment follows the selection: a station, a district, a picked point,
+  // and with nothing selected the operational area chosen at the top.
+  const assessmentTarget = useMemo((): AssessmentTarget | null => {
+    if (!reliefAssessment) return null;
+    const station = selectedStationId ? monitoring?.stations.find((item) => item.id === selectedStationId) : undefined;
+    if (station) return { kind: "station", label: `${station.name} station`, latitude: station.latitude, longitude: station.longitude, stationId: station.id };
+    if (selectedDistrict) return { kind: "district", label: `${selectedDistrict.properties.district_name} district`, latitude: selectedDistrict.properties.latitude, longitude: selectedDistrict.properties.longitude };
+    const point = selectedCoordinate ?? coordinateDetailsPoint;
+    if (point) return { kind: "point", label: "Selected point", latitude: point.latitude, longitude: point.longitude };
+    const area = locationCoordinates(selectedLocation);
+    return area ? { kind: "area", label: `${area.name} (operational area)`, latitude: area.latitude, longitude: area.longitude } : null;
+  }, [reliefAssessment, selectedStationId, monitoring?.stations, selectedDistrict, selectedCoordinate, coordinateDetailsPoint, selectedLocation]);
   // The districts the highlighted catchment covers (worked out once per catchment).
   const activeCatchmentShape = activeStationMapLayers["active-monitoring-catchment"].features[0];
   const catchmentDistricts = useMemo(() => districtsInCatchment(activeCatchmentShape, districtDisplayData), [activeCatchmentShape, districtDisplayData]);
@@ -1765,6 +1782,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           suppressDistrictFallbackRef.current = false;
           return;
         }
+        if (map.getLayer("relief-facilities-points") && map.queryRenderedFeatures(event.point, { layers: ["relief-facilities-points"] }).length) return;
         if (map.queryRenderedFeatures(event.point, { layers: ["border-test-points", "google-flood-hub-points", "catchment-area-fill", "observed-water-stations", "water-quantity-labels", "water-bodies", "model-water-points"] }).length) return;
         const districtHit = map.queryRenderedFeatures(event.point, { layers: ["district-risk-fill"] })[0];
         const longitude = event.lngLat.wrap().lng;
@@ -2216,10 +2234,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
   return (
     <section className={`national-map-panel ${expanded ? "national-map-expanded" : ""}`}>
       <header className="map-panel-header">
-        <div><span><MapPinned size={18} /></span><div><h2>Pakistan National Flood Risk &amp; Operations Map</h2><p>{metadata ? `${metadata.returned_feature_count} districts Â· observed ${new Date(metadata.observed_at).toLocaleString()}` : "Loading national coverage"}</p></div></div>
+        <div><span><MapPinned size={18} /></span><div><h2>Pakistan National Flood Risk &amp; Operations Map</h2><p>{metadata ? `${metadata.returned_feature_count} districts · observed ${new Date(metadata.observed_at).toLocaleString()}` : "Loading national coverage"}</p></div></div>
         <div className="map-header-meta"><StatusBadge value={metadata?.data_mode ?? "LOADING"} /><span><Database size={13} /> {metadata?.cache_status ?? "waiting"}</span></div>
       </header>
-      <div className={`river-monitoring-layout ${selectedStationId || (layers.catchments && selectedCatchment) ? "has-station" : ""} ${!stationRotationEnabled && selectedStationId ? "has-station-details" : ""}`}>
+      <div className={`river-monitoring-layout ${selectedStationId || (layers.catchments && selectedCatchment) ? "has-station" : ""} ${!stationRotationEnabled && selectedStationId ? "has-station-details" : ""} ${reliefAssessment ? "has-assessment" : ""}`}>
       <div className="map-workspace">
         <div ref={containerRef} className={`national-map ${coordinatePicking ? "coordinate-picking" : ""}`} aria-label="Interactive Pakistan district flood risk map" aria-busy={staticMapLoading} />
         {staticMapLoading && <div className="map-loading-indicator" role="status" aria-label="Loading map layers">
@@ -2238,7 +2256,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           <button className="map-layer-toggle" data-tour-target="gis-map-layers-toggle" type="button" aria-label="Toggle map layers" title="Map layers" aria-expanded={mapControlsOpen} onClick={() => setMapControlsOpen((current) => !current)}><Layers3 size={14} /><span>Map layers</span>{mapControlsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</button>
           {coordinatePicking && <div className="coordinate-pick-status"><span role="status"><MousePointer2 size={14} /> Coordinate selection</span><button type="button" title="Cancel coordinate selection" aria-label="Cancel coordinate selection" onClick={() => setPickingMode(false)}><X size={14} /></button></div>}
           <div hidden={!mapControlsOpen}>
-          <div className="station-monitoring-control">
+          {!reliefAssessment && <div className="station-monitoring-control">
             <button type="button" className="station-monitoring-toggle" aria-pressed={stationRotationEnabled}
               disabled={!rotationStations.length}
               onClick={() => {
@@ -2263,9 +2281,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
               {selectedStationId && rotationStations.some((station) => station.id === selectedStationId)
                 ? `Station ${rotationStations.findIndex((station) => station.id === selectedStationId) + 1} of ${rotationStations.length}`
                 : `${rotationStations.length} stations available`}
-              {rotationStations.length === 1 ? " Â· one station in this selection" : " Â· live stats shown beside the map"}
+              {rotationStations.length === 1 ? " · one station in this selection" : " · live stats shown beside the map"}
             </span>}
-          </div>
+          </div>}
           <div className="map-basemap-control" role="group" aria-label="Map background">
             <strong>Map background</strong>
             <div className="map-basemap-options">
@@ -2337,9 +2355,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
           <details className="sar-water-control">
             <summary><strong><Waves size={14} /> Satellite water extent</strong></summary>
             <label className="sar-example-selection"><span>Suggested location</span><select aria-label="Satellite analysis location" value={sarSelection} disabled={sarBusy} onChange={(event) => { sarPickRef.current = false; setPickingMode(false); setSarSelection(event.target.value); }}>
-              <option value="historical">Pakistan Â· 28 Jun 2017 (example)</option>
-              <option value="permanent">Pakistan Â· permanent-water comparison</option>
-              <option value="map">Recent imagery Â· choose on map</option>
+              <option value="historical">Pakistan · 28 Jun 2017 (example)</option>
+              <option value="permanent">Pakistan · permanent-water comparison</option>
+              <option value="map">Recent imagery · choose on map</option>
             </select></label>
             {sarSelection !== "map" ? <>
               <small>Historical example with a visible model prediction. No imagery download needed.</small>
@@ -2365,7 +2383,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
                   <label><input type="checkbox" checked={sarEventBackground} onChange={event => setSarEventBackground(event.target.checked)} /><span>Use event-date radar background</span></label>
                   <button className="sar-compare-button" type="button" onClick={() => setSarValidationOpen(true)}>Compare imagery, labels & accuracy</button>
                 </>}
-                {sarView === "errors" && <small>Cyan: correct water Â· Pink: missed water Â· Orange: false detection Â· Gray: excluded</small>}
+                {sarView === "errors" && <small>Cyan: correct water · Pink: missed water · Orange: false detection · Gray: excluded</small>}
                 {sarOverlay.validation && <small>{sarEventBackground ? `Inside the box: event radar from ${sarOverlay.during_date}.` : "Context basemap may show a different date."}</small>}
               </div>
               <SarWaterSummary result={sarOverlay} />
@@ -2541,6 +2559,11 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         <footer><a href="https://www.hydrosheds.org/products/hydrobasins" target="_blank" rel="noreferrer">HydroBASINS / HydroSHEDS</a></footer>
       </aside>}
       {stationRotationEnabled && (showStationTicket || departingTicket) && <RiverStationInspector key={showStationTicket ? selectedStationId! : departingTicket!} leaving={!showStationTicket} stationId={showStationTicket ? selectedStationId! : departingTicket!} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => { setStationTicketArrival(null); setSelectedStationId(null); }} onSelect={selectStation} flowUnit={flowUnit} />}
+      {reliefAssessment && <ReliefAssessment map={stationMapInstance} target={assessmentTarget} picking={coordinatePicking}
+        onPick={() => setPickingMode(!coordinatePickingRef.current)}
+        onClear={() => { setStationTicketArrival(null); setSelectedStationId(null); setSelectedDistrict(null); clearCoordinate(false); }}
+        risk={nationalRisk} districts={districtDisplayData} stations={monitoring?.stations ?? []} incidents={incidents} reports={reports}
+        onSelectStation={selectStation} />}
       {!stationRotationEnabled && selectedStationId && <StationDetailsPanel stationId={selectedStationId} data={monitoring} error={monitoringError} refreshing={refreshRequested || Boolean(monitoring?.refreshing)} onRefresh={() => void refreshMonitoring()} onClose={() => { setStationTicketArrival(null); setSelectedStationId(null); }} onSelect={inspectStation} flowUnit={flowUnit} />}
       </div>
       {sarValidationOpen && sarOverlay?.validation && <SarValidationView result={sarOverlay} onClose={() => setSarValidationOpen(false)} />}

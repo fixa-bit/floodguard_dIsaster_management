@@ -23,7 +23,7 @@ import type { MonitoringSimulationResult } from "./types/api";
 
 const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   overview: { title: "Operational Overview", subtitle: "Live flood intelligence and emergency coordination" },
-  gis: { title: "GIS Operations", subtitle: "National hazard screening and operational geography" },
+  gis: { title: "GIS Operations", subtitle: "Relief and assessment: hazard, field reports and relief facilities around any place" },
   rainfall: { title: "Rainfall Heatmap", subtitle: "Observed and forecast rainfall across Pakistan" },
   predictive: { title: "Predictive Risk Views", subtitle: "Real model output where a model exists; dummy output is marked on every graph" },
   upstream: { title: "Upstream Source Flood Watch", subtitle: "Upper-basin stations, discharge forecasts, and past trends" },

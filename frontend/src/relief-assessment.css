@@ -1,0 +1,77 @@
+/* GIS Operations: the relief & assessment panel beside the map (ReliefAssessment.tsx). */
+.river-monitoring-layout.has-assessment { grid-template-columns: minmax(0, 1fr) 380px; }
+/* A station's details float over the map, left of the panel. */
+.river-monitoring-layout.has-assessment .river-station-inspector.station-details-classic { right: 396px; }
+.river-monitoring-layout.has-assessment > .river-station-inspector:not(.station-details-classic) { right: 396px; }
+
+.relief-assessment {
+  display: flex; flex-direction: column; gap: 12px; min-width: 0; max-height: calc(100vh - 260px); min-height: 640px;
+  padding: 14px 14px 16px; overflow-y: auto; color: #dffefa;
+  background: linear-gradient(180deg, rgba(8, 30, 34, .98), rgba(6, 22, 26, .98));
+  border-left: 1px solid rgba(125, 232, 219, .22);
+}
+.relief-head { display: flex; justify-content: space-between; gap: 10px; }
+.relief-head span { color: #50f5d0; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.relief-head h3 { margin: 3px 0 2px; font-size: 17px; line-height: 1.25; }
+.relief-head small { color: #8fb9b3; font-size: 11px; }
+.relief-head-actions { display: flex; align-items: flex-start; gap: 6px; }
+.relief-head-actions button, .relief-radius button {
+  display: inline-flex; align-items: center; gap: 5px; padding: 6px 9px; color: #dffefa; font: inherit; font-size: 12px;
+  background: rgba(255, 255, 255, .05); border: 1px solid rgba(125, 232, 219, .25); border-radius: 6px; cursor: pointer; white-space: nowrap;
+}
+.relief-head-actions button[aria-pressed="true"], .relief-radius button[aria-pressed="true"] { color: #06171a; background: #50f5d0; border-color: #50f5d0; font-weight: 700; }
+.relief-hint { margin: 0; color: #8fb9b3; font-size: 11.5px; line-height: 1.45; }
+.relief-radius { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.relief-radius > span { margin-right: 2px; color: #8fb9b3; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+.relief-radius .relief-zoom { margin-left: auto; }
+
+.relief-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.relief-summary > div { display: grid; gap: 2px; padding: 9px 10px; background: rgba(255, 255, 255, .04); border: 1px solid rgba(125, 232, 219, .16); border-radius: 8px; }
+.relief-summary > div.warn { border-color: rgba(255, 120, 120, .55); background: rgba(200, 59, 68, .12); }
+.relief-summary span { color: #8fb9b3; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+.relief-summary strong { font-size: 20px; text-transform: capitalize; }
+.relief-summary small { color: #8fb9b3; font-size: 11px; }
+
+.relief-section { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid rgba(125, 232, 219, .14); }
+.relief-section h4 { display: flex; align-items: center; gap: 6px; margin: 0; color: #50f5d0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.relief-section h4 small { margin-left: auto; color: #8fb9b3; font-size: 11px; letter-spacing: 0; text-transform: none; }
+.relief-section h5 { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; color: #bfe9e2; font-size: 11.5px; }
+.relief-facts { display: grid; gap: 5px; margin: 0; }
+.relief-facts > div { display: grid; grid-template-columns: 110px 1fr; gap: 8px; font-size: 12px; }
+.relief-facts dt { color: #8fb9b3; }
+.relief-facts dd { margin: 0; text-transform: none; }
+
+.relief-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.relief-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 6px 8px; background: rgba(255, 255, 255, .03); border-radius: 6px; font-size: 12px; }
+.relief-list li.relief-muted { display: block; background: none; }
+.relief-list li > button, .relief-list li > div { display: grid; gap: 1px; min-width: 0; padding: 0; color: inherit; font: inherit; text-align: left; background: none; border: 0; cursor: pointer; }
+.relief-list li > div { cursor: default; }
+.relief-list strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.relief-list small { overflow: hidden; color: #8fb9b3; text-overflow: ellipsis; white-space: nowrap; }
+.relief-list em { color: #bfe9e2; font-style: normal; font-size: 11px; white-space: nowrap; }
+.relief-status { padding: 2px 7px; color: #bfe9e2; font-size: 10.5px; text-transform: capitalize; white-space: nowrap; background: rgba(80, 245, 208, .1); border-radius: 10px; }
+.relief-status.warn { color: #ffd0d0; background: rgba(200, 59, 68, .25); }
+
+.relief-category > button {
+  display: grid; grid-template-columns: 10px 16px minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; column-gap: 7px;
+  width: 100%; padding: 8px 9px; color: inherit; font: inherit; text-align: left; background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(125, 232, 219, .14); border-radius: 7px; cursor: pointer;
+}
+.relief-category > button i { width: 10px; height: 10px; border-radius: 50%; }
+.relief-category > button span { font-size: 12.5px; }
+.relief-category > button strong { font-size: 15px; }
+.relief-category > button small { grid-column: 3 / -1; color: #8fb9b3; font-size: 11px; }
+.relief-category > button[aria-expanded="true"] { border-color: rgba(80, 245, 208, .5); }
+.relief-category .relief-list { margin-top: 4px; }
+.relief-muted { margin: 0; color: #8fb9b3; font-size: 11.5px; }
+.relief-error { margin: 0; color: #ffb4b4; font-size: 12px; }
+.relief-source { margin: 2px 0 0; color: #6f9993; font-size: 10.5px; line-height: 1.4; }
+.relief-popup .maplibregl-popup-content { display: grid; gap: 2px; padding: 8px 10px; color: #dffefa; background: rgba(8, 28, 32, .96); border: 1px solid rgba(125, 232, 219, .3); border-radius: 6px; font-size: 12px; }
+.relief-popup .maplibregl-popup-tip { display: none; }
+.relief-popup span { color: #8fb9b3; text-transform: capitalize; }
+
+@media (max-width: 1100px) {
+  .river-monitoring-layout.has-assessment { grid-template-columns: minmax(0, 1fr); }
+  .relief-assessment { max-height: none; min-height: 0; border-left: 0; border-top: 1px solid rgba(125, 232, 219, .22); }
+  .river-monitoring-layout.has-assessment .river-station-inspector.station-details-classic { right: 16px; }
+}
