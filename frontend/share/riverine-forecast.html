@@ -1,0 +1,58 @@
+<title>Marala River Outlook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Saved copy of the FloodGuard Riverine Forecast page for the Chenab at Marala: next 30 days, next 6 months, 2026–2040 climate outlook and a replay of 24 trained models on past floods.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="assets/riverine.css">
+<style>
+  /* Single dark look, matching the FloodGuard command dashboard. Page frame only; the tab brings its own styles. */
+  :root {
+    color-scheme: dark;
+    --page: #071315;
+    --band: #0b1b1e;
+    --line: #1f3b3d;
+    --ink: #e8f3f2;
+    --muted: #85a2a3;
+    --accent: #4fd6bc;
+    --amber: #ffd27a;
+    --font: Inter, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  }
+  html, body { background: var(--page); color: var(--ink); }
+  body { margin: 0; font-family: var(--font); font-size: 14px; -webkit-font-smoothing: antialiased; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--band); }
+  button, select { font: inherit; }
+  button { cursor: pointer; }
+  .share-top { background: var(--band); border-bottom: 1px solid var(--line); }
+  .share-top-inner, .share-main { max-width: 1440px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .share-top-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; padding-block: 14px; }
+  .share-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .share-mark { display: grid; place-items: center; width: 36px; height: 36px; color: #071315; background: var(--accent); border-radius: 9px; font-weight: 800; letter-spacing: -.02em; }
+  .share-brand strong { display: block; font-size: 15px; }
+  .share-brand small { display: block; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+  .share-stamp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; font-size: 12px; }
+  .share-stamp b { color: var(--amber); font-weight: 600; }
+  .share-main { padding-block: 22px 40px; }
+  .share-foot { margin-top: 28px; color: var(--muted); font-size: 12px; line-height: 1.6; max-width: 90ch; }
+  .spinning { animation: share-spin 1s linear infinite; }
+  @keyframes share-spin { to { transform: rotate(360deg); } }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .spinning { animation: none; } }
+</style>
+
+<header class="share-top">
+  <div class="share-top-inner">
+    <div class="share-brand">
+      <span class="share-mark" aria-hidden="true">FG</span>
+      <span><strong>FloodGuard AI · Riverine Forecast</strong><small>Chenab River at Marala Headworks</small></span>
+    </div>
+    <span class="share-stamp">Saved copy of <b id="share-stamp">the portal</b> · the live portal refreshes every 15 minutes</span>
+  </div>
+</header>
+
+<main class="share-main">
+  <div id="root"></div>
+  <p class="share-foot">All forecasts here are experimental model outputs to support planning. They do not replace official flood warnings from the Flood Forecasting Division (FFD) and the Pakistan Meteorological Department. Flood levels are the official FFD limits for Marala. Click any model name on the page for a short introduction to how it works.</p>
+</main>
+
+<script type="module" src="assets/riverine.js"></script>

@@ -1,6 +1,23 @@
-export const API_BASE_URL =
+const CONFIGURED_API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ??
   "http://127.0.0.1:8000/api/v1";
+
+const LOOPBACK = /^(localhost|127\.\d+\.\d+\.\d+|\[::1\])$/;
+
+/** A loopback API address only works on this PC. When the app is opened from elsewhere (the
+ * shared link served by ops/share/gateway.mjs), call the API on the page's own address instead. */
+function resolveApiBaseUrl(configured: string): string {
+  if (typeof window === "undefined" || LOOPBACK.test(window.location.hostname)) return configured;
+  try {
+    const url = new URL(configured);
+    if (LOOPBACK.test(url.hostname)) return `${window.location.origin}${url.pathname.replace(/\/$/, "")}`;
+  } catch {
+    return configured;
+  }
+  return configured;
+}
+
+export const API_BASE_URL = resolveApiBaseUrl(CONFIGURED_API_BASE_URL);
 
 export const REFRESH_INTERVAL_MS = Number(
   import.meta.env.VITE_REFRESH_INTERVAL_MS ?? 30_000,

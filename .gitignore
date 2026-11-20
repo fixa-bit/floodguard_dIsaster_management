@@ -33,3 +33,10 @@ docs/portal-video/glacier-recording.json
 docs/portal-video/inspection.json
 docs/portal-video/preflight-manifest.json
 docs/portal-video/recording-rest-manifest.json
+
+# Shared-link gateway: password and downloaded tunnel binary stay local.
+ops/share/.share-password
+ops/share/bin/
+frontend/share/dist/
+ops/share/.share-url
+frontend/share/data/
