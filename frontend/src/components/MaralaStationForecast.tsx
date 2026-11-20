@@ -11,6 +11,7 @@ type Lead = 1 | 3 | 7;
 type Role = "champion" | "best_learned";
 
 const DAY = 86_400_000;
+const REFRESH_INTERVAL_MS = 15 * 60_000;
 const HISTORY_SHOWN_DAYS = 21;
 const pkDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Karachi" });
 const pkDateYear = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Karachi" });
@@ -26,6 +27,12 @@ export function candidateLabel(id: string) {
   if (id.startsWith("xgboost")) return `XGBoost · ${id.replace(/^xgboost_?/, "").replaceAll("_", " ")}`;
   if (id.startsWith("damped")) return `Damped trend · ${id.replace(/^damped_?trend_?/, "").replaceAll("_", " ")}`;
   return id.replaceAll("_", " ");
+}
+
+function forecastCandidates(item: Data["forecasts"][number]) {
+  if (item.candidates?.length) return item.candidates.slice(0, 3);
+  const unique = new Map([item.champion, item.best_learned].map((candidate) => [candidate.candidate, candidate]));
+  return [...unique.values()];
 }
 
 function niceMax(value: number) {
@@ -49,29 +56,34 @@ function linePath(points: Array<[number, number | null]>, maxGapX: number) {
   return path.trim();
 }
 
-function ForecastChart({ data, rmseByLead }: { data: Data; rmseByLead: Record<number, number> }) {
+function ForecastChart({ data }: { data: Data }) {
   const box = useChartBox({ aspect: 0.36, minHeight: 230, maxHeight: 340 });
   const { width, height, narrow } = box;
+  const hasTopThree = data.forecasts.every((item) => (item.candidates?.length ?? 0) >= 3);
   const left = 58, right = 18, top = 22, bottom = 36;
   const origin = Date.parse(data.origin.observed_at);
   const history = data.history.filter((row) => row.inflow_cumecs !== null && Date.parse(row.observed_at) >= origin - (narrow ? 10 : HISTORY_SHOWN_DAYS) * DAY);
   const start = Date.parse(history[0].observed_at);
   const end = Math.max(...data.forecasts.map((item) => Date.parse(item.target_at))) + DAY;
   const low = data.thresholds_cumecs.Low;
-  const peakForecast = Math.max(...data.forecasts.map((item) => item.champion.inflow_cumecs + (rmseByLead[item.horizon_days] ?? 0)));
+  const peakForecast = Math.max(...data.forecasts.flatMap((item) => forecastCandidates(item).map((candidate) => candidate.inflow_cumecs)));
   const maxValue = niceMax(Math.max(low * 1.12, peakForecast, ...history.map((row) => row.inflow_cumecs ?? 0)));
   const x = (time: number) => left + (time - start) / (end - start) * (width - left - right);
   const y = (value: number) => top + (1 - Math.max(value, 0) / maxValue) * (height - top - bottom);
   const ticks: number[] = [];
   for (let time = start; time <= end; time += (narrow ? 4 : 7) * DAY) ticks.push(time);
-  const forecastPath = `M ${x(origin)} ${y(data.origin.inflow_cumecs)} ` + data.forecasts.map((item) => `L ${x(Date.parse(item.target_at))} ${y(item.champion.inflow_cumecs)}`).join(" ");
+  const forecastPaths = [0, 1, 2].map((rank) => `M ${x(origin)} ${y(data.origin.inflow_cumecs)} ` + data.forecasts.map((item) => {
+    const candidate = forecastCandidates(item)[rank];
+    return candidate ? `L ${x(Date.parse(item.target_at))} ${y(candidate.inflow_cumecs)}` : "";
+  }).filter(Boolean).join(" "));
 
   return (
     <figure className="station-chart">
       <ul className="station-legend" aria-label="Chart legend">
         <li><i className="key-measured" /> Measured inflow (FFD, 06:00 PKT)</li>
-        <li><i className="key-model" /> Model forecast ±1 held-out RMSE</li>
-        <li><i className="key-learned" /> Best learned alternative</li>
+        <li><i className="key-model" /> {hasTopThree ? "Top 1 by validation RMSE" : "Saved model"}</li>
+        <li><i className="key-model key-model-2" /> {hasTopThree ? "Top 2" : "Saved learned alternative"}</li>
+        {hasTopThree && <li><i className="key-model key-model-3" /> Top 3</li>}
         <li><i className="key-persistence" /> Persistence (no change)</li>
         <li><i className="key-threshold" /> Low-flood limit</li>
       </ul>
@@ -90,22 +102,16 @@ function ForecastChart({ data, rmseByLead }: { data: Data; rmseByLead: Record<nu
         <path className="station-measured" d={linePath(history.map((row) => [x(Date.parse(row.observed_at)), y(row.inflow_cumecs as number)]), x(start + 2.5 * DAY) - x(start))} />
         <line className="station-persistence" x1={x(origin)} x2={x(end - DAY)} y1={y(data.origin.inflow_cumecs)} y2={y(data.origin.inflow_cumecs)} />
         <line className="station-origin" x1={x(origin)} x2={x(origin)} y1={top} y2={height - bottom} />
-        <path className="station-model-line" d={forecastPath} />
+        {forecastPaths.map((path, rank) => <path key={rank} className={`station-model-line candidate-${rank + 1}`} d={path} />)}
         {data.forecasts.map((item, index) => {
           const last = index === data.forecasts.length - 1;
           const cx = x(Date.parse(item.target_at));
-          const rmse = rmseByLead[item.horizon_days] ?? 0;
-          const value = item.champion.inflow_cumecs;
-          const learned = item.best_learned.inflow_cumecs;
-          const differs = item.best_learned.candidate !== item.champion.candidate;
+          const candidates = forecastCandidates(item);
+          const value = candidates[0]?.inflow_cumecs ?? item.champion.inflow_cumecs;
           return <g key={item.horizon_days}>
-            <line className="station-whisker" x1={cx} x2={cx} y1={y(value + rmse)} y2={y(value - rmse)} />
-            <line className="station-whisker" x1={cx - 5} x2={cx + 5} y1={y(value + rmse)} y2={y(value + rmse)} />
-            <line className="station-whisker" x1={cx - 5} x2={cx + 5} y1={y(value - rmse)} y2={y(value - rmse)} />
-            {differs && <circle className="station-learned-dot" cx={cx} cy={y(learned)} r="5"><title>+{item.horizon_days} d best learned ({candidateLabel(item.best_learned.candidate)}): {flow(learned)} m³/s</title></circle>}
-            <circle className="station-model-dot" cx={cx} cy={y(value)} r="5.5" />
+            {candidates.map((candidate, rank) => <circle key={candidate.candidate} className={`station-model-dot candidate-${rank + 1}`} cx={cx} cy={y(candidate.inflow_cumecs)} r={rank === 0 ? 5.5 : 4.5}><title>Top {rank + 1}, +{item.horizon_days} d ({candidateLabel(candidate.candidate)}): {flow(candidate.inflow_cumecs)} m³/s · validation RMSE {flow(candidate.validation_rmse_cumecs)} m³/s</title></circle>)}
             {!narrow && <text className="station-point-label" x={last ? cx - 9 : cx + 9} y={y(value) - 9} textAnchor={last ? "end" : "start"}>+{item.horizon_days}d · {flow(value)}</text>}
-            <circle className="station-hit" cx={cx} cy={y(value)} r="14"><title>+{item.horizon_days} day ({day(item.target_at)} 06:00 PKT): {flow(value)} m³/s ± {flow(rmse)} — {candidateLabel(item.champion.candidate)}</title></circle>
+            <circle className="station-hit" cx={cx} cy={y(value)} r="14"><title>+{item.horizon_days} day ({day(item.target_at)} 06:00 PKT): {candidates.map((candidate, rank) => `Top ${rank + 1} ${flow(candidate.inflow_cumecs)} m³/s`).join(" · ")}</title></circle>
           </g>;
         })}
         <circle className="station-origin-dot" cx={x(origin)} cy={y(data.origin.inflow_cumecs)} r="4.5" />
@@ -187,9 +193,12 @@ export function MaralaStationForecast() {
       }
     }
   }, []);
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    void load();
+    const timer = window.setInterval(() => void load(), REFRESH_INTERVAL_MS);
+    return () => window.clearInterval(timer);
+  }, [load]);
 
-  const rmseByLead = useMemo(() => Object.fromEntries((data?.skill ?? []).map((item) => [item.horizon_days, item.test.champion.rmse_cumecs])), [data]);
   const holdoutRows = useMemo(() => (data?.holdout ?? []).filter((row) => row.horizon_days === lead).sort((a, b) => a.target_at.localeCompare(b.target_at)), [data, lead]);
 
   if (error) return <div className="station-state"><strong>Station forecast unavailable</strong><span>{error}</span><button type="button" onClick={() => void load()}>Retry</button></div>;
@@ -203,6 +212,7 @@ export function MaralaStationForecast() {
   const selectedSkill = data.skill.find((item) => item.horizon_days === lead)!;
   const roleDiffers = selectedSkill.champion.candidate !== selectedSkill.best_learned.candidate;
   const activeRole: Role = roleDiffers ? role : "champion";
+  const rollingForecast = data.forecast_mode === "rolling_live_origin";
 
   return (
     <section className="station-forecast" aria-label="Marala measured inflow forecast">
@@ -211,32 +221,30 @@ export function MaralaStationForecast() {
           <span>Issued from</span>
           <strong>FFD reading {pkDateYear.format(new Date(originTime))}, 06:00 PKT · {flow(data.origin.inflow_cumecs)} m³/s</strong>
         </div>
-        <p>{expired
-          ? `${ageDays} days old. All three target dates have passed — the model has not been re-run on newer FFD bulletins.`
-          : `${ageDays} day${ageDays === 1 ? "" : "s"} old. Targets run to ${day(new Date(lastTarget).toISOString())}.`}
+        <p>{rollingForecast
+          ? `Recomputed from the latest saved FFD reading (${ageDays} day${ageDays === 1 ? "" : "s"} old). Targets run to ${day(new Date(lastTarget).toISOString())}.`
+          : expired
+            ? `${ageDays} days old. All three target dates have passed — no fresh FFD origin was available, so this saved forecast was not re-run.`
+            : `Saved forecast from ${ageDays} day${ageDays === 1 ? "" : "s"} ago. Targets run to ${day(new Date(lastTarget).toISOString())}.`}
           {packaged && " Showing the packaged copy; the backend route is unavailable."}</p>
       </div>
 
-      <ForecastChart data={data} rmseByLead={rmseByLead} />
+      <ForecastChart data={data} />
 
       <div className="station-table-wrap">
         <table className="station-table">
-          <caption>Forecast by lead time</caption>
-          <thead><tr><th scope="col">Lead</th><th scope="col">Target (06:00 PKT)</th><th scope="col">Forecast</th><th scope="col">FFD class</th><th scope="col">Model used</th><th scope="col">2026 test vs persistence</th></tr></thead>
+          <caption>{data.forecast_mode === "rolling_live_origin" ? "Top three models by validation RMSE · forecast by lead time" : "Saved forecast candidates · forecast by lead time"}</caption>
+          <thead><tr><th scope="col">Lead</th><th scope="col">Target (06:00 PKT)</th><th scope="col">Rank</th><th scope="col">Model</th><th scope="col">Forecast (m³/s)</th><th scope="col">FFD class</th><th scope="col">Validation RMSE (m³/s)</th></tr></thead>
           <tbody>
-            {data.forecasts.map((item) => {
-              const skill = data.skill.find((entry) => entry.horizon_days === item.horizon_days)!;
-              const change = skill.rmse_improvement_over_persistence_percent;
-              const differs = item.best_learned.candidate !== item.champion.candidate;
-              return <tr key={item.horizon_days}>
-                <th scope="row">+{item.horizon_days} d</th>
-                <td>{day(item.target_at)}</td>
-                <td className="num"><strong>{flow(item.champion.inflow_cumecs)}</strong> <small>± {flow(rmseByLead[item.horizon_days])} m³/s</small>{differs && <small className="station-alt">learned alt. {flow(item.best_learned.inflow_cumecs)}</small>}</td>
-                <td>{floodClass(item.champion.inflow_cumecs, data.thresholds_cumecs)}</td>
-                <td>{candidateLabel(item.champion.candidate)}</td>
-                <td><span className={`station-verdict ${Math.abs(change) < 1 ? "neutral" : change > 0 ? "good" : "bad"}`}>{Math.abs(change) < 1 ? "Tie" : change > 0 ? `${change.toFixed(1)}% better` : `${Math.abs(change).toFixed(1)}% worse`}</span></td>
-              </tr>;
-            })}
+            {data.forecasts.flatMap((item) => forecastCandidates(item).map((candidate, rank, candidates) => <tr key={`${item.horizon_days}:${candidate.candidate}`}>
+              {rank === 0 && <th scope="rowgroup" rowSpan={candidates.length}>+{item.horizon_days} d</th>}
+              {rank === 0 && <td rowSpan={candidates.length}>{day(item.target_at)}</td>}
+              <td>#{rank + 1}</td>
+              <td>{candidateLabel(candidate.candidate)}</td>
+              <td className="num"><strong>{flow(candidate.inflow_cumecs)}</strong></td>
+              <td>{floodClass(candidate.inflow_cumecs, data.thresholds_cumecs)}</td>
+              <td className="num">{candidate.validation_rmse_cumecs == null ? "—" : flow(candidate.validation_rmse_cumecs)}</td>
+            </tr>))}
           </tbody>
         </table>
       </div>

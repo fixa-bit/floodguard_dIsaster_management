@@ -661,6 +661,10 @@ export interface StationForecastMetrics {
 export interface StationForecastCandidate {
   candidate: string;
   inflow_cumecs: number;
+  rank?: number;
+  family?: string;
+  validation_rmse_cumecs?: number;
+  validation_mae_cumecs?: number;
 }
 
 export interface MaralaStationForecastData {
@@ -669,6 +673,7 @@ export interface MaralaStationForecastData {
   deployment_eligible: boolean;
   trained_at: string;
   computed_at: string;
+  forecast_mode?: "rolling_live_origin" | "saved_snapshot";
   run_id: string;
   target: string;
   station: { id: string; name: string; river: string };
@@ -678,7 +683,7 @@ export interface MaralaStationForecastData {
   threshold_source: string;
   origin: { observed_at: string; inflow_cumecs: number; source_url: string };
   history: Array<{ observed_at: string; inflow_cumecs: number | null; source_url: string }>;
-  forecasts: Array<{ horizon_days: number; target_at: string; champion: StationForecastCandidate; best_learned: StationForecastCandidate }>;
+  forecasts: Array<{ horizon_days: number; target_at: string; champion: StationForecastCandidate; best_learned: StationForecastCandidate; candidates?: StationForecastCandidate[] }>;
   skill: Array<{
     horizon_days: number;
     champion: { candidate: string; family: string };
@@ -689,4 +694,153 @@ export interface MaralaStationForecastData {
   }>;
   holdout: Array<{ horizon_days: number; origin_at: string; target_at: string; actual: number | null; champion: number | null; best_learned: number | null; persistence: number | null }>;
   limitations: string[];
+}
+
+export interface RiverineExtendedForecastData {
+  station_id: string;
+  station_name: string;
+  river: string;
+  latitude: number;
+  longitude: number;
+  status: "live" | "stale";
+  generated_at: string;
+  source: string;
+  source_url: string;
+  refresh_error?: string;
+  daily_forecast: Array<{ date: string; mean_cumecs: number | null; median_cumecs: number | null; p25_cumecs: number | null; p75_cumecs: number | null }>;
+  annual_projection: {
+    period: string;
+    baseline_period: string;
+    model: string;
+    annual_mean_flow_change: Array<{
+      scenario: string;
+      median_percent: number;
+      low_percent: number;
+      high_percent: number;
+      annual_very_high_flood_probability_baseline: number;
+      annual_very_high_flood_probability_projected: number;
+      annual_very_high_flood_probability_low: number;
+      annual_very_high_flood_probability_high: number;
+    }>;
+    note: string;
+  };
+  limitations: string[];
+}
+
+export interface OutlookRange { median: number | null; low: number | null; high: number | null }
+export interface OutlookOdds { baseline: number | null; median: number | null; low: number | null; high: number | null }
+export interface OutlookDailyBand { date: string; p10: number | null; p50: number | null; p90: number | null; normal_p10: number | null; normal_p50: number | null; normal_p90: number | null }
+export interface OutlookClimatePeriod {
+  period: string;
+  gcms: number;
+  mean_flow_pct: OutlookRange;
+  snowmelt_season_pct: OutlookRange;
+  monsoon_pct: OutlookRange;
+  low_flow_season_pct: OutlookRange;
+  annual_max_daily_pct: OutlookRange;
+  precip_pct: OutlookRange;
+  temperature_c: OutlookRange;
+  p400k: OutlookOdds;
+  p600k: OutlookOdds;
+}
+export interface OutlookScenario {
+  id: "ssp245" | "ssp585";
+  label: string;
+  description: string;
+  periods: OutlookClimatePeriod[];
+  yearly_flood_odds: Array<{ year: number; p200k: number | null; p400k: number | null; p400k_low: number | null; p400k_high: number | null; p600k: number | null }>;
+  pooled_flood_odds: { p200k: number | null; p400k: number | null; p600k: number | null };
+}
+export interface OutlookTenDayModel {
+  model: string;
+  baseline: boolean;
+  hit_rate_by_lead: Array<number | null>;
+  hit_rate_day10: number | null;
+  false_alarm_ratio_day10: number | null;
+  csi_day10: number | null;
+  nse_day10: number | null;
+  rmse_day10: number | null;
+  flood_rmse_day10: number | null;
+}
+export interface RiverineOutlookUnavailable { available: false; station: { id: string }; reason: string }
+export interface RiverineOutlookAvailable {
+  available: true;
+  station: { id: string; name: string; river: string; latitude: number; longitude: number };
+  built_at: string;
+  issue_age_days: number;
+  stale: boolean;
+  flood_classes_cumecs: Record<string, number>;
+  flood_classes_cusecs: Record<string, number>;
+  flood_class_source: string;
+  seasonal: {
+    issue_date: string;
+    issue_basis: string;
+    model: string;
+    interval: string;
+    daily: OutlookDailyBand[];
+    monthly: Array<{ month: string; days: number; partial: boolean; p10: number | null; p50: number | null; p90: number | null; normal_p50: number | null; change_vs_normal_pct: number | null }>;
+    observed_last_365: Array<{ date: string; observed: number | null; normal_p10: number | null; normal_p50: number | null; normal_p90: number | null }>;
+    peak: { date: string; p50: number | null; p90: number | null };
+    mean_p50: number | null;
+    mean_normal_p50: number | null;
+    track_record: {
+      issue_date: string;
+      daily: Array<{ date: string; p10: number | null; p50: number | null; p90: number | null; observed: number | null; normal_p50: number | null }>;
+      observed_days: number;
+      share_inside_band: number | null;
+      share_inside_normal_range: number | null;
+      mae_p50: number | null;
+      mae_normal: number | null;
+    };
+  };
+  seasonal_means: {
+    issue_date: string;
+    model: string;
+    flow_history: string;
+    unavailable_reason?: string;
+    horizons: Array<{ horizon_days: number; window_start: string; window_end: string; mean_flow: number | null; normal_mean_flow: number | null; change_vs_normal_pct: number | null; missing_features: number }>;
+  };
+  climate: {
+    period: string;
+    baseline_period: string;
+    chain: string;
+    gcms: string[];
+    reference_era5land: { mean_flow: number | null; monsoon_mean: number | null; p400k: number | null; p600k: number | null };
+    baseline_flood_odds: { p200k: number | null; p400k: number | null; p600k: number | null };
+    scenarios: OutlookScenario[];
+    typical_year_hydrograph: { baseline: Array<number | null>; ssp245: Array<number | null>; ssp585: Array<number | null> };
+  };
+  peak_model: {
+    model: string;
+    brier_400k_loo: number | null;
+    brier_400k_no_predictor: number | null;
+    test_2025: { observed_peak: number | null; median: number | null; p10: number | null; p90: number | null; p400k: number | null };
+  };
+  evidence: {
+    test_period: string;
+    tft_forecast: { nse: number | null; kge: number | null; skill_vs_normal: number | null; pbias_pct: number | null; band_coverage: number | null; target_coverage: number };
+    tft_projection: { nse: number | null; kge: number | null; skill_vs_normal: number | null; pbias_pct: number | null; band_coverage: number | null; target_coverage: number };
+    normal_season_nse: number | null;
+    glofas_pbias_pct: number | null;
+    glofas_nse: number | null;
+    ridge: Array<{ horizon_days: number; skill_vs_normal: number | null; high_flow_hit_rate: number | null; false_alarm_rate: number | null; test_years: string }>;
+  };
+  ten_day_research: { cohort: string; flood_day_definition: string; forcing_caveat: string; flood_days: number; models: OutlookTenDayModel[] };
+  replay: ModelReplay;
+}
+export type RiverineOutlookData = RiverineOutlookAvailable | RiverineOutlookUnavailable;
+
+export type ReplayFamily = "baseline" | "statistical" | "ai" | "physics" | "hybrid";
+export interface ReplaySkill { n: number; rmse: number | null; nse: number | null; hit_rate: number | null; false_alarm_ratio: number | null; csi: number | null }
+export interface ReplaySeries { values: Array<number | null>; peak: number | null; peak_error_pct: number | null; peak_date: string; days_above: number }
+export interface ModelReplay {
+  threshold: number;
+  threshold_label: string;
+  test_period: string;
+  weather_caveat: string;
+  leads: number[];
+  models: Array<{ id: string; label: string; family: ReplayFamily; max_lead: number; source: string }>;
+  events: Array<{ id: string; label: string; peak_date: string; peak: number | null; start: string; end: string; high_flow_days: number; observed: Array<{ date: string; v: number | null }> }>;
+  scores: Record<string, { pairs: number; models: Record<string, ReplaySkill> }>;
+  series: Record<string, Record<string, Record<string, ReplaySeries>>>;
 }

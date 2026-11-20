@@ -1,12 +1,13 @@
 import { Activity, AlertTriangle, FileText, BellRing, CloudRain, ExternalLink, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves, Droplets, Workflow } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "upstream" | "monitoring" | "alerts" | "incidents" | "reports" | "activity" | "simulation" | "situation-reports" | "alarm-automation";
+export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "riverine-forecast" | "upstream" | "monitoring" | "alerts" | "incidents" | "reports" | "activity" | "simulation" | "situation-reports" | "alarm-automation";
 
 const navItems = [
   { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
   { id: "gis" as const, label: "GIS Operations", icon: Map },
   { id: "predictive" as const, label: "Predictive Risk Views", icon: ChartNoAxesCombined },
+  { id: "riverine-forecast" as const, label: "Riverine Forecast", icon: Waves },
   { id: "upstream" as const, label: "Upstream Source Flood Watch", icon: Waves },
   { id: "monitoring" as const, label: "River Monitoring", icon: Droplets },
   { id: "incidents" as const, label: "Incidents", icon: AlertTriangle },

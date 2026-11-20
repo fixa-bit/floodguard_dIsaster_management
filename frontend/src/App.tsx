@@ -11,6 +11,7 @@ import { SimulationPanel } from "./components/SimulationPanel";
 import { FloodRiskMultiView } from "./components/FloodRiskMultiView";
 import { SourceFloodForecastTab } from "./components/SourceFloodForecastTab";
 import { RiverMonitoringView } from "./components/RiverMonitoringView";
+import { RiverineForecastTab } from "./components/RiverineForecastTab";
 import { PortalTour } from "./components/PortalTour";
 import { ReportsCenter } from "./components/ReportsCenter";
 import { LOCATIONS, type LocationId } from "./config";
@@ -26,6 +27,7 @@ const viewTitles: Record<ViewId, { title: string; subtitle: string }> = {
   gis: { title: "GIS Operations", subtitle: "Relief and assessment: hazard, field reports and relief facilities around any place" },
   rainfall: { title: "Rainfall Heatmap", subtitle: "Observed and forecast rainfall across Pakistan" },
   predictive: { title: "Predictive Risk Views", subtitle: "Real model output where a model exists; dummy output is marked on every graph" },
+  "riverine-forecast": { title: "Riverine Forecast", subtitle: "What the river is likely to do: next days, next 6 months and 2026–2040, with how far to trust each outlook" },
   upstream: { title: "Upstream Source Flood Watch", subtitle: "Upper-basin stations, discharge forecasts, and past trends" },
   monitoring: { title: "River Monitoring", subtitle: "Barrages, headworks and river station readings" },
   alerts: { title: "Alerts & Alarms", subtitle: "Threshold alerts, and the n8n flood alarm workflow: live runs, duty roster, alert channels and alarms" },
@@ -106,6 +108,7 @@ export default function App() {
           {view === "gis" && <GISPage data={data} locationId={locationId} onLocationChange={setLocationId} />}
           {view === "rainfall" && <GISPage key="rainfall" data={data} locationId={locationId} onLocationChange={setLocationId} rainfall />}
           {view === "predictive" && <FloodRiskMultiView data={data} />}
+          {view === "riverine-forecast" && <RiverineForecastTab />}
           {view === "upstream" && <SourceFloodForecastTab />}
           {view === "monitoring" && <RiverMonitoringView />}
           {/* Alerts live in the Alerts & Alarms page, as its first tab (the page opens on it). */}

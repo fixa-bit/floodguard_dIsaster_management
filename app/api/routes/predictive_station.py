@@ -1,14 +1,19 @@
-"""Read-only API for the saved Marala measured-gauge forecast (1, 3 and 7 days).
+"""API for the Marala measured-gauge forecast (1, 3 and 7 days).
 
-Serves the sealed outputs of ``models/marala_station_forecast``: the latest
-as-of forecast, the 2026 held-out hindcast and its skill against persistence.
-Nothing is retrained or re-predicted here.
+Forecasts are re-run against the latest fresh FFD readings saved by river
+monitoring. The sealed hindcast and skill metrics remain read-only artifacts.
 """
 import csv
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
+from sqlalchemy import select
+
+from app.db.session import SessionLocal
+from app.models.river_gauge_observation import TypedRiverGaugeObservation
+from app.services.marala_forward_forecast import build_forward_forecast, daily_history_from_readings
 
 router = APIRouter(prefix="/predictive/marala-station-forecast", tags=["Predictive models"])
 ROOT = Path(__file__).resolve().parents[3]
@@ -44,6 +49,16 @@ def _metrics(block: dict) -> dict:
     return {key: block.get(key) for key in keys}
 
 
+def _recent_marala_readings(now: datetime) -> list[TypedRiverGaugeObservation]:
+    with SessionLocal() as db:
+        return list(db.scalars(select(TypedRiverGaugeObservation).where(
+            TypedRiverGaugeObservation.station_id == "MARALA",
+            TypedRiverGaugeObservation.recorded_at >= now - timedelta(days=30),
+            TypedRiverGaugeObservation.recorded_at <= now,
+            TypedRiverGaugeObservation.gauge.in_(("INFLOW", "OUTFLOW")),
+        )).all())
+
+
 def build_payload() -> dict:
     card = _read_json(ARTIFACTS / "model-card.json")
     latest = _read_json(ARTIFACTS / "latest_predictions.json")
@@ -52,13 +67,51 @@ def build_payload() -> dict:
     observations = _read_csv(MODEL_DIR / "data/observations.csv")
     holdout = _read_csv(ARTIFACTS / "holdout_predictions_2026.csv")
 
+    now = datetime.now(timezone.utc)
+    live_history = daily_history_from_readings(_recent_marala_readings(now))
+    live_forecast = build_forward_forecast(live_history, ARTIFACTS, now)
     forecasts: dict[int, dict] = {}
-    for item in latest["predictions"]:
-        lead = int(item["horizon_days"])
-        entry = forecasts.setdefault(lead, {"horizon_days": lead, "target_at": item["target_at"]})
-        entry[item["candidate_role"]] = {"candidate": item["candidate"],
-                                         "inflow_cumecs": round(item["predicted_inflow_cumecs"], 2)}
-    origin = latest["predictions"][0]
+    if live_forecast:
+        for item in live_forecast["forecasts"]:
+            lead = int(item["horizon_days"])
+            forecasts[lead] = {"horizon_days": lead, "target_at": item["target_at"]}
+            forecasts[lead]["candidates"] = [{
+                "rank": candidate["rank"],
+                "candidate": candidate["candidate"],
+                "family": candidate["family"],
+                "validation_rmse_cumecs": round(candidate["validation_rmse_cumecs"], 2),
+                "validation_mae_cumecs": round(candidate["validation_mae_cumecs"], 2),
+                "inflow_cumecs": round(candidate["predicted_inflow_cumecs"], 2),
+            } for candidate in item["candidates"]]
+            for role in ("champion", "best_learned"):
+                candidate = item[role]
+                forecasts[lead][role] = {"candidate": candidate["candidate"],
+                                         "inflow_cumecs": round(candidate["predicted_inflow_cumecs"], 2)}
+        origin = live_forecast["origin"]
+        computed_at = now.isoformat()
+    else:
+        for item in latest["predictions"]:
+            lead = int(item["horizon_days"])
+            entry = forecasts.setdefault(lead, {"horizon_days": lead, "target_at": item["target_at"]})
+            entry[item["candidate_role"]] = {"candidate": item["candidate"],
+                                             "inflow_cumecs": round(item["predicted_inflow_cumecs"], 2)}
+        for entry in forecasts.values():
+            candidates = []
+            seen = set()
+            for role in ("champion", "best_learned"):
+                candidate = entry.get(role)
+                if candidate and candidate["candidate"] not in seen:
+                    seen.add(candidate["candidate"])
+                    candidates.append({"rank": len(candidates) + 1, **candidate})
+            entry["candidates"] = candidates
+        origin = {"observed_at": latest["predictions"][0]["origin_observed_at"],
+                  "inflow_cumecs": latest["predictions"][0]["last_measured_inflow_cumecs"],
+                  "source_url": latest["origin_source"]}
+        computed_at = latest["computed_at"]
+
+    history_by_date = {row["date"]: row for row in observations}
+    history_by_date.update({day.isoformat(): row for day, row in live_history.items()})
+    history = sorted(history_by_date.values(), key=lambda row: row["observed_at"])
 
     skill = []
     for lead, result in sorted(card["results"].items(), key=lambda pair: int(pair[0])):
@@ -79,7 +132,8 @@ def build_payload() -> dict:
         "status": card["status"],
         "deployment_eligible": card["deployment_eligible"],
         "trained_at": card["trained_at"],
-        "computed_at": latest["computed_at"],
+        "computed_at": computed_at,
+        "forecast_mode": "rolling_live_origin" if live_forecast else "saved_snapshot",
         "run_id": run["run_id"],
         "target": card["target"],
         "station": {"id": config["station_id"], "name": "Marala", "river": "Chenab"},
@@ -89,11 +143,11 @@ def build_payload() -> dict:
         "thresholds_cumecs": {name: round(value * CUSECS_TO_CUMECS, 1)
                               for name, value in config["thresholds_cusecs"].items()},
         "threshold_source": config["threshold_source"],
-        "origin": {"observed_at": origin["origin_observed_at"],
-                   "inflow_cumecs": round(origin["last_measured_inflow_cumecs"], 2),
-                   "source_url": latest["origin_source"]},
+        "origin": {"observed_at": origin["observed_at"],
+                   "inflow_cumecs": round(origin["inflow_cumecs"], 2),
+                   "source_url": origin["source_url"]},
         "history": [{"observed_at": row["observed_at"], "inflow_cumecs": _float(row["inflow_cumecs"]),
-                     "source_url": row["source_url"]} for row in observations[-HISTORY_DAYS:]],
+                     "source_url": row["source_url"]} for row in history[-HISTORY_DAYS:]],
         "forecasts": [forecasts[lead] for lead in sorted(forecasts)],
         "skill": skill,
         "holdout": [{"horizon_days": int(row["horizon_days"]), "origin_at": row["origin_observed_at"],

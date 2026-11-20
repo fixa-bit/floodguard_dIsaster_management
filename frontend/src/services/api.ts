@@ -29,6 +29,8 @@ import type {
   SarWaterOverlay,
   MaralaMonthlyModelData,
   MaralaStationForecastData,
+  RiverineExtendedForecastData,
+  RiverineOutlookData,
 } from "../types/api";
 
 interface ErrorPayload {
@@ -65,7 +67,7 @@ const LABELS: Array<[RegExp, string]> = [
   [/^\/river\/monitoring\/[^/]+\/history/, "Station history"], [/^\/river\/monitoring/, "River monitoring"],
   [/^\/gis\/national-risk/, "National risk map"], [/^\/gis\/rainfall/, "Rainfall"],
   [/^\/gis\/google-flood-hub/, "Google Flood Hub"], [/^\/gis\/water-intelligence/, "Water intelligence"],
-  [/^\/stations\/[^/]+\/hydrograph/, "Hydrograph"], [/^\/predictive\/marala-monthly/, "Marala monthly model"],
+  [/^\/stations\/[^/]+\/hydrograph/, "Hydrograph"], [/^\/predictive\/riverine-extended-forecast/, "Extended riverine forecast"], [/^\/predictive\/riverine-outlook/, "Riverine outlook"],[/^\/predictive\/marala-monthly/, "Marala monthly model"],
   [/^\/predictive\/marala-station-forecast/, "Marala station forecast"], [/^\/incidents/, "Incidents"],
   [/^\/citizen-reports/, "Citizen reports"], [/^\/events/, "System events"], [/^\/alerts/, "Alerts"],
   [/^\/system\/status/, "System status"], [/^\/simulation/, "Simulation"], [/^\/resources\/shelters/, "Shelters"],
@@ -171,6 +173,8 @@ export const api = {
   modelForecasts: () => apiFetch<ModelForecastPoint[]>("/flood/model-forecasts"),
   maralaMonthlyModelData: () => apiFetch<MaralaMonthlyModelData>("/predictive/marala-monthly"),
   maralaStationForecast: () => apiFetch<MaralaStationForecastData>("/predictive/marala-station-forecast"),
+  riverineExtendedForecast: () => apiFetch<RiverineExtendedForecastData>("/predictive/riverine-extended-forecast"),
+  riverineOutlook: (stationId: string) => apiFetch<RiverineOutlookData>(`/predictive/riverine-outlook/${encodeURIComponent(stationId)}`),
   weather: (locationId: string) => apiFetch<WeatherResponse>(`/weather/current?location_id=${locationId}`),
   river: (locationId: string) => apiFetch<RiverResponse>(`/river/current?location_id=${locationId}`),
   upstreamForecasts: () => apiFetch<UpstreamForecastResponse>("/river/upstream-forecasts"),

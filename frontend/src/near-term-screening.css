@@ -108,6 +108,8 @@
 .station-legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
 .station-legend .key-measured { border-color: var(--nt-measured); }
 .station-legend .key-model { border-color: var(--nt-model); border-top-style: dashed; }
+.station-legend .key-model-2 { border-color: #8eaaff; border-top-style: dashed; }
+.station-legend .key-model-3 { border-color: #c59aff; border-top-style: dashed; }
 .station-legend .key-learned { width: 10px; height: 10px; border: 2px solid var(--nt-model); border-radius: 50%; }
 .station-legend .key-persistence { border-color: var(--nt-persistence); border-top-style: dotted; }
 .station-legend .key-threshold { border-color: var(--nt-threshold); border-top-style: dashed; }
@@ -126,10 +128,13 @@
 .station-forecast .station-origin { stroke: rgba(228, 246, 243, .45); stroke-width: 1; }
 .station-forecast .station-origin-dot { fill: var(--nt-measured); stroke: #0a2024; stroke-width: 2; }
 .station-forecast .station-model-line { fill: none; stroke: var(--nt-model); stroke-width: 2; stroke-dasharray: 6 5; }
+.station-forecast .station-model-line.candidate-2 { stroke: #8eaaff; stroke-dasharray: 4 4; }
+.station-forecast .station-model-line.candidate-3 { stroke: #c59aff; stroke-dasharray: 2 4; }
 .station-forecast .station-model-hindcast { fill: none; stroke: var(--nt-model); stroke-width: 1.8; stroke-linejoin: round; }
 .station-forecast .station-model-dot { fill: var(--nt-model); stroke: #0a2024; stroke-width: 2; }
+.station-forecast .station-model-dot.candidate-2 { fill: #8eaaff; }
+.station-forecast .station-model-dot.candidate-3 { fill: #c59aff; }
 .station-forecast .station-learned-dot { fill: #0a2024; stroke: var(--nt-model); stroke-width: 2; }
-.station-forecast .station-whisker { stroke: var(--nt-model); stroke-width: 1.5; opacity: .75; }
 .station-forecast .station-point-label { fill: var(--nt-text); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: #0a2024; stroke-width: 3px; }
 .station-forecast .station-hit { fill: transparent; stroke: none; cursor: crosshair; }
 .station-forecast .station-hit:hover { fill: rgba(228, 246, 243, .12); }
