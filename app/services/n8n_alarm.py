@@ -73,6 +73,13 @@ class N8nAlarmClient:
         result = await self._request("GET", "/executions", params={"workflowId": workflow_id, "limit": limit, "includeData": "true"})
         return result.get("data", [])
 
+    async def execution_page(self, workflow_id: str, cursor: str | None = None, limit: int = 250) -> dict:
+        """One page of runs without their data (fast), with n8n's cursor for the next page."""
+        params = {"workflowId": workflow_id, "limit": limit, "includeData": "false"}
+        if cursor:
+            params["cursor"] = cursor
+        return await self._request("GET", "/executions", params=params) or {}
+
     async def execution(self, execution_id: str) -> dict:
         return await self._request("GET", f"/executions/{execution_id}", params={"includeData": "true"})
 

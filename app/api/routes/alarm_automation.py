@@ -11,6 +11,7 @@ nothing can be changed until n8n is back.
 from __future__ import annotations
 
 import re
+import time
 from datetime import datetime, timezone
 from typing import Literal
 
@@ -166,6 +167,46 @@ async def runs(limit: int = Query(default=20, ge=1, le=100), include_mocks: bool
     if not include_mocks:
         summaries = [run for run in summaries if not run["is_mock"]]
     return _remember(key, {"runs": summaries[:limit]})
+
+
+# Alarm history: runs started by a forecast, an acknowledgement link or by hand (and failed runs),
+# searched further back than the recent runs, which are mostly routine escalation checks.
+_HISTORY_CACHE: dict[int, tuple[float, dict]] = {}
+HISTORY_CACHE_SECONDS = 60
+HISTORY_SCAN_LIMIT = 3000
+
+
+@router.get("/runs/history")
+async def run_history(limit: int = Query(default=20, ge=1, le=50), client: N8nAlarmClient = Depends(get_client)):
+    key = f"history-{limit}"
+    cached = _HISTORY_CACHE.get(limit)
+    if cached and time.monotonic() - cached[0] < HISTORY_CACHE_SECONDS:
+        return cached[1]
+    try:
+        layout = workflow_layout(await client.workflow())
+        picked: list[str] = []
+        cursor, scanned = None, 0
+        while len(picked) < limit * 2 and scanned < HISTORY_SCAN_LIMIT:
+            page = await client.execution_page(layout["id"], cursor)
+            for execution in page.get("data", []):
+                scanned += 1
+                if execution.get("mode") != "trigger" or execution.get("status") in ("error", "crashed"):
+                    picked.append(str(execution["id"]))
+            cursor = page.get("nextCursor")
+            if not cursor:
+                break
+        runs = []
+        for execution_id in picked:
+            summary = summarize_execution(await client.execution(execution_id), layout)
+            if not summary["is_mock"]:
+                runs.append(summary)
+            if len(runs) >= limit:
+                break
+    except N8nError as error:
+        return _saved_or_fail(key, error)
+    payload = _remember(key, {"runs": runs, "scanned": scanned})
+    _HISTORY_CACHE[limit] = (time.monotonic(), payload)
+    return payload
 
 
 @router.get("/runs/{execution_id}")

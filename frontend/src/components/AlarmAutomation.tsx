@@ -5,6 +5,7 @@ import { ApiError, api, apiFetch } from "../services/api";
 import type { SystemEvent } from "../types/api";
 import { AREA_RADIUS_KM, inArea, pointOf, useStationPoints, type AlarmArea } from "./alarmArea";
 import "../alarm-automation.css";
+import { AlarmNetwork } from "./AlarmNetwork";
 
 /* The n8n flood alarm workflow, seen and edited from FloodGuard (backend: /api/v1/alarm-automation). */
 
@@ -76,7 +77,7 @@ export function AlarmAutomation({ renderAlerts, area = null, initialTab = "flow"
 
   const loadRuns = useCallback(async () => {
     try {
-      const result = await apiFetch<{ runs: Run[] }>(`${BASE}/runs?limit=25`);
+      const result = await apiFetch<{ runs: Run[] }>(`${BASE}/runs?limit=60`);
       setRuns(result.runs);
       setError(null);
     } catch (e) { setError(errorText(e)); }
@@ -108,6 +109,16 @@ export function AlarmAutomation({ renderAlerts, area = null, initialTab = "flow"
     const timer = window.setInterval(() => void loadRuns(), 4000);
     return () => window.clearInterval(timer);
   }, [status?.connected, tab, loadRuns]);
+
+  // Older alarm runs (forecast alarms, acknowledgements, tests, failures) for the history panel.
+  const [history, setHistory] = useState<Run[]>([]);
+  useEffect(() => {
+    if (tab !== "flow") return;
+    const load = () => apiFetch<{ runs: Run[] }>(`${BASE}/runs/history?limit=30`).then((r) => setHistory(r.runs)).catch(() => undefined);
+    void load();
+    const timer = window.setInterval(load, 60000);
+    return () => window.clearInterval(timer);
+  }, [tab, check]);
 
   const run = runs.find((r) => r.id === runId) ?? runs[0];
 
@@ -163,7 +174,7 @@ export function AlarmAutomation({ renderAlerts, area = null, initialTab = "flow"
       )}
 
       {tab === "alerts" && alerts}
-      {tab === "flow" && <LiveFlow layout={layout} run={run} runs={runs} onPick={setRunId} offline={offline} />}
+      {tab === "flow" && <AlarmNetwork layout={layout} runs={runs} history={history} selectedId={runId} onPick={setRunId} offline={offline} />}
       {tab === "runs" && <RunList runs={runs} selected={run?.id} onOpen={(id) => { setRunId(id); setTab("flow"); }} />}
       {tab === "roster" && <RosterEditor />}
       {tab === "channels" && <ChannelEditor />}
@@ -172,74 +183,6 @@ export function AlarmAutomation({ renderAlerts, area = null, initialTab = "flow"
     </div>
     </AreaFilter.Provider>
     </ReadOnly.Provider>
-  );
-}
-
-/* ---- live flow: the workflow's blocks, coloured by the selected run ------------ */
-function LiveFlow({ layout, run, runs, onPick, offline }: { layout: Layout | null; run?: Run; runs: Run[]; onPick: (id: string) => void; offline?: boolean }) {
-  const [open, setOpen] = useState<string | null>(null);
-  // Columns by distance from the triggers, following the workflow's links.
-  const columns = useMemo(() => {
-    if (!layout) return [] as string[][];
-    const depth = new Map<string, number>(layout.triggers.map((t) => [t.name, 0]));
-    for (let pass = 0; pass < 12; pass += 1) {
-      for (const link of layout.links) {
-        const d = depth.get(link.from);
-        if (d !== undefined && link.to !== link.from && (depth.get(link.to) ?? -1) < d + 1 && d + 1 < 10) depth.set(link.to, d + 1);
-      }
-    }
-    const cols: string[][] = [];
-    for (const block of layout.blocks) { const d = depth.get(block.name) ?? 1; (cols[d] ??= []).push(block.name); }
-    return [layout.triggers.map((t) => t.name), ...cols.slice(1).filter(Boolean)];
-  }, [layout]);
-  if (!layout && offline) return <div className="aa-card aa-loading"><CircleDashed size={18} /> No saved copy of the workflow yet.</div>;
-  if (!layout) return <div className="aa-card aa-loading"><Loader2 size={18} className="aa-spin" /> Loading the workflow…</div>;
-  const triggerNames = new Set(layout.triggers.map((t) => t.name));
-  const blockOf = (name: string) => layout.blocks.find((b) => b.name === name);
-  const nodeRun = (name: string) => run?.nodes.find((n) => n.name === name);
-
-  return (
-    <section className="aa-card">
-      <div className="aa-flow-bar">
-        <label>Showing run <select value={run?.id ?? ""} onChange={(e) => onPick(e.target.value)}>
-          {runs.map((r) => <option key={r.id} value={r.id}>#{r.id} · {when(r.started_at)} · {r.trigger ?? r.mode} · {r.status}</option>)}
-        </select></label>
-        <span className="aa-legend"><span><CheckCircle2 size={13} className="aa-ok" /> ran</span><span><XCircle size={13} className="aa-bad" /> failed</span><span><CircleDashed size={13} className="aa-idle" /> not used in this run</span><span><Loader2 size={13} /> new runs appear by themselves</span></span>
-      </div>
-      <div className="aa-flow">
-        {columns.map((col, i) => (
-          <div className="aa-col" key={i}>
-            {col.map((name) => {
-              const isTrigger = triggerNames.has(name);
-              const state = isTrigger ? (run?.trigger === name ? "success" : undefined) : run?.blocks[name];
-              const block = blockOf(name);
-              return (
-                <button type="button" key={name} className={`aa-block ${isTrigger ? "trigger" : ""} ${state ?? "idle"} ${open === name ? "open" : ""}`}
-                  onClick={() => setOpen(open === name ? null : name)} title={block?.description}>
-                  <span className="aa-block-title">{isTrigger ? <Zap size={14} /> : <StatusIcon status={state} />} {name}</span>
-                  {block && <small>{block.nodes.length} nodes{block.nodes.some((n) => n.disabled) ? " · some switched off" : ""}</small>}
-                  {open === name && block && (
-                    <ul>
-                      <li className="aa-desc">{block.description}</li>
-                      {block.nodes.map((n) => {
-                        const r = nodeRun(n.name);
-                        return (
-                          <li key={n.name} className={r?.status ?? "idle"}>
-                            <StatusIcon status={r?.status} /> <b>{n.name}</b>
-                            <em>{n.disabled ? "switched off" : r ? `${r.items} items · ${r.ms} ms` : "—"}</em>
-                            {r?.error && <span className="aa-err">{r.error}</span>}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
 
