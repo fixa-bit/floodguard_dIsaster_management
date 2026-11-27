@@ -1021,7 +1021,7 @@ body { color: var(--ink); background: #071114; }
   min-height: 100vh;
 }
 .overview-command-canvas .map-command-overlay {
-  top: 60px;
+  top: 72px; /* below the floating header, now that its small text is readable */
   right: 70px;
   left: 14px;
 }
@@ -1093,12 +1093,12 @@ body { color: var(--ink); background: #071114; }
   backdrop-filter: blur(14px) saturate(140%);
 }
 .overview-command-canvas .map-layer-control {
-  top: 188px;
+  top: 200px;
   max-height: calc(100% - 340px);
   background: rgba(8, 22, 25, .68);
 }
 .overview-command-canvas .map-home-button {
-  top: 188px;
+  top: 200px;
 }
 .overview-command-canvas .map-water-notice {
   top: 382px;
@@ -1113,7 +1113,7 @@ body { color: var(--ink); background: #071114; }
   left: 18px;
 }
 .overview-command-canvas .district-inspector {
-  top: 188px;
+  top: 200px;
 }
 .overview-command-canvas .map-legend {
   bottom: 76px;

@@ -7,7 +7,7 @@ import { mapTestUrl } from "./map-test-url.mjs";
 const url = process.env.DASHBOARD_URL ?? "http://127.0.0.1:3000/";
 const basins = JSON.parse(await readFile(new URL("../src/data/pakistan/catchment_areas.geojson", import.meta.url), "utf8"));
 assert.equal(basins.metadata.boundary_type, "hydrological_sub_basin");
-assert.equal(basins.features.length, 54);
+assert.equal(basins.features.length, 53);
 const browser = await chromium.launch({ executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe", headless: true });
 try {
   await mkdir(new URL("../screenshots/", import.meta.url), { recursive: true });

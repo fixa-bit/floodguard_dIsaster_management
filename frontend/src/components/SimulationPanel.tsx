@@ -13,7 +13,7 @@ type Measurement = MonitoringSimulationRequest["measurement"];
 type Unit = MonitoringSimulationRequest["unit"];
 const FloodVisualization = lazy(() => import("./SimulationFloodVisualization").then((module) => ({ default: module.SimulationFloodVisualization })));
 const StormReplay = lazy(() => import("./SimulationReplayWorkspace").then((module) => ({ default: module.SimulationReplayWorkspace })));
-const simulationViews = ["monitoring", "spread", "replay", "lab"] as const;
+const simulationViews = ["lab", "monitoring", "spread", "replay"] as const;
 
 const scenarioNames = ["Flood threshold test", "Below threshold test", "Warning crossing test", "Danger crossing test", "Surge and recovery test"];
 const sliderLimits = { cusecs: { min: 0, max: 1000000, step: 1000 }, "m3/s": { min: 0, max: 30000, step: 10 }, m: { min: -20, max: 50, step: 0.1 }, ft: { min: -60, max: 160, step: 0.1 } };
@@ -77,7 +77,7 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<MonitoringSimulationResult | null>(null);
-  const [workspaceView, setWorkspaceView] = useState<typeof simulationViews[number]>("monitoring");
+  const [workspaceView, setWorkspaceView] = useState<typeof simulationViews[number]>("lab");
   // The lab stays mounted after it is first opened, so a running model survives tab switches.
   const [labOpened, setLabOpened] = useState(false);
   useEffect(() => { if (workspaceView === "lab") setLabOpened(true); }, [workspaceView]);
@@ -199,10 +199,10 @@ export function SimulationPanel({ onCompleted, onOpenAlerts, onOpenIncidents }: 
       const next = event.key === "Home" ? simulationViews[0] : event.key === "End" ? simulationViews.at(-1)! : simulationViews[(simulationViews.indexOf(workspaceView) + (event.key === "ArrowRight" ? 1 : -1) + simulationViews.length) % simulationViews.length];
       setWorkspaceView(next); document.getElementById(`simulation-tab-${next}`)?.focus();
     }}>
+      <button type="button" role="tab" id="simulation-tab-lab" data-tour-target="simulation-lab" aria-controls="simulation-panel-lab" aria-selected={workspaceView === "lab"} tabIndex={workspaceView === "lab" ? 0 : -1} onClick={() => setWorkspaceView("lab")}>Flood simulation lab</button>
       <button type="button" role="tab" id="simulation-tab-monitoring" data-tour-target="simulation-monitoring" aria-controls="simulation-panel-monitoring" aria-selected={workspaceView === "monitoring"} tabIndex={workspaceView === "monitoring" ? 0 : -1} onClick={() => setWorkspaceView("monitoring")}>Monitoring scenario</button>
       <button type="button" role="tab" id="simulation-tab-spread" data-tour-target="simulation-spread" aria-controls="simulation-panel-spread" aria-selected={workspaceView === "spread"} tabIndex={workspaceView === "spread" ? 0 : -1} onClick={() => setWorkspaceView("spread")}>Flood spread &amp; population</button>
       <button type="button" role="tab" id="simulation-tab-replay" data-tour-target="simulation-replay" aria-controls="simulation-panel-replay" aria-selected={workspaceView === "replay"} tabIndex={workspaceView === "replay" ? 0 : -1} onClick={() => setWorkspaceView("replay")}>Storm replay</button>
-      <button type="button" role="tab" id="simulation-tab-lab" data-tour-target="simulation-lab" aria-controls="simulation-panel-lab" aria-selected={workspaceView === "lab"} tabIndex={workspaceView === "lab" ? 0 : -1} onClick={() => setWorkspaceView("lab")}>Flood simulation lab</button>
     </div>
     <section role="tabpanel" id="simulation-panel-monitoring" aria-labelledby="simulation-tab-monitoring" hidden={workspaceView !== "monitoring"}>
     {loading ? <div className="simulation-loading" role="status"><LoaderCircle className="spinning" size={18} /> Loading monitoring stations</div>

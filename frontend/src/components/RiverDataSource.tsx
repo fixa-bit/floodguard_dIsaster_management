@@ -16,7 +16,7 @@ export function RiverDataSource({ source, station }: { source: string; station?:
   const official = source.includes("FFD");
   const model = source.includes("GloFAS");
   const url = official ? "https://ffd.pmd.gov.pk/river-state?zoom=6"
-    : model && station ? `https://flood-api.open-meteo.com/v1/flood?${new URLSearchParams({ latitude: String(station.latitude), longitude: String(station.longitude), daily: "river_discharge,river_discharge_p25,river_discharge_p75", past_days: "14", forecast_days: "14", cell_selection: "nearest" })}`
+    : model && station ? `https://flood-api.open-meteo.com/v1/flood?${new URLSearchParams({ latitude: String(station.model_latitude ?? station.latitude), longitude: String(station.model_longitude ?? station.longitude), daily: "river_discharge,river_discharge_p25,river_discharge_p75", past_days: "14", forecast_days: "14", cell_selection: "nearest" })}`
     : model ? "https://open-meteo.com/en/docs/flood-api" : null;
   return <small className="river-data-source">Source: {url ? <a href={url} target="_blank" rel="noreferrer">{source}<ExternalLink size={10} /></a> : source || "Unavailable"}</small>;
 }

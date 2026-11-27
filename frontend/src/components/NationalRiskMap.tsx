@@ -464,13 +464,15 @@ function riverStatusClass(river: RiverResponse | undefined) {
   return "NORMAL";
 }
 
+// Which river a name means: "Chenab River" and "Chenab" are both "chenab". River lines are matched on
+// their own name only: every line's water_system is "Indus Basin", which would tie them all to the Indus.
+function riverKey(value: string | null | undefined) {
+  return normalizeWaterName(value).replace(/river$/, "");
+}
+
 function matchRiverTelemetry(feature: WaterIntelligenceFeature, rivers: RiverResponse[]) {
-  const waterSystem = normalizeWaterName(feature.properties.water_system);
-  const name = normalizeWaterName(feature.properties.name);
-  return rivers.find((river) => {
-    const riverName = normalizeWaterName(river.river_name);
-    return Boolean(riverName) && (waterSystem.includes(riverName) || name.includes(riverName) || riverName.includes(waterSystem));
-  });
+  const line = riverKey(feature.properties.name);
+  return line ? rivers.find((river) => riverKey(river.river_name) === line) : undefined;
 }
 
 export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeather, locationRivers, incidents, reports, resources, selectedLocation, onLocationChange, expanded = false, initialRainfallEnabled = false, mapOverlay, populationOverlay, reliefTools = false, reliefAssessment = false }: NationalRiskMapProps) {
@@ -1064,7 +1066,7 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         properties: {
           ...waterFeature.properties,
           live_status: riverStatusClass(river),
-          live_river_name: river?.river_name ?? waterFeature.properties.water_system,
+          live_river_name: river?.river_name ?? waterFeature.properties.name,
           live_discharge_cumecs: river?.discharge_cumecs ?? null,
           live_forecast_cumecs: river?.forecast_discharge_next_24h_cumecs ?? null,
           live_fetched_at: river?.timestamp ?? null,
@@ -1106,15 +1108,9 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
         map_label: `${station.name}\n${districtName}${district ? " District" : ""}\n${catchmentName} catchment`,
       },
     }]);
-    const riverName = normalizeWaterName(station.river);
-    const riverFeatures = riverStatusLines.features.filter((feature) => {
-      const properties = feature.properties ?? {};
-      return [properties.live_river_name, properties.water_system, properties.name].some((value) => {
-        const lineName = normalizeWaterName(typeof value === "string" ? value : null);
-        return lineName.length > 3 && riverName.length > 3
-          && (lineName === riverName || lineName.startsWith(riverName) || riverName.startsWith(lineName));
-      });
-    });
+    const riverName = riverKey(station.river);
+    const riverFeatures = riverStatusLines.features.filter((feature) =>
+      Boolean(riverName) && riverKey(feature.properties?.name) === riverName);
     const catchmentCollection = catchment ? { type: "FeatureCollection", features: [catchment] } as FeatureCollection : emptyCollection;
     return {
       "active-monitoring-station": stationPoint,
@@ -1401,12 +1397,27 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
       && map.queryRenderedFeatures(event.point, { layers: ["priority-monitoring-points"] }).length);
     let pendingCoordinates: MapMouseEvent | null = null;
     let coordinateFrame: number | null = null;
+    // Over a station marker the readout shows that station's own coordinates. On 3D terrain the ground under
+    // the cursor can differ from the station: a ridge or a bump in the elevation data in front of it hides it
+    // (the marker is still drawn on top), or a narrow crest is stepped over by the terrain lookup — at Tarbela
+    // and Sukkur that read 65-350 m away.
+    const stationCoordinates = new Map(monitoringSites.features.map((site) => [site.properties.id, site.geometry.coordinates as [number, number]]));
+    const stationMarkerLayers = ["active-monitoring-station-point", "observed-water-stations", "priority-monitoring-points"];
+    const locate = (point: maplibregl.Point) => {
+      const layers = stationMarkerLayers.filter((id) => map.getLayer(id) && map.getLayoutProperty(id, "visibility") !== "none");
+      const marker = layers.length ? map.queryRenderedFeatures([[point.x - 6, point.y - 6], [point.x + 6, point.y + 6]], { layers })[0] : undefined;
+      const id = marker?.properties?.station_id ?? marker?.properties?.monitoring_station_id ?? marker?.properties?.id;
+      const exact = typeof id === "string" ? stationCoordinates.get(id) : undefined;
+      if (exact) return { lng: exact[0], lat: exact[1] };
+      return map.unproject(point);
+    };
     const renderCoordinates = () => {
       coordinateFrame = null;
       const event = pendingCoordinates;
       const readout = coordinateReadoutRef.current;
       if (!event || !readout) return;
-      readout.textContent = `Lat: ${event.lngLat.lat.toFixed(6)}  Lon: ${event.lngLat.lng.toFixed(6)}`;
+      const at = locate(event.point);
+      readout.textContent = `Lat: ${at.lat.toFixed(6)}  Lon: ${at.lng.toFixed(6)}`;
       readout.hidden = false;
       readout.style.left = `${Math.max(8, Math.min(event.point.x + 14, map.getContainer().clientWidth - readout.offsetWidth - 8))}px`;
       readout.style.top = `${Math.max(8, Math.min(event.point.y + 18, map.getContainer().clientHeight - readout.offsetHeight - 8))}px`;
@@ -1414,6 +1425,10 @@ export function NationalRiskMap({ nationalRisk, waterIntelligence, locationWeath
     map.on("mousemove", (event) => {
       pendingCoordinates = event;
       if (coordinateFrame === null) coordinateFrame = requestAnimationFrame(renderCoordinates);
+    });
+    // The camera moving under a still cursor (the monitoring tour's orbit) changes what is under it too.
+    map.on("move", () => {
+      if (pendingCoordinates && coordinateFrame === null && !coordinateReadoutRef.current?.hidden) coordinateFrame = requestAnimationFrame(renderCoordinates);
     });
     const hideCoordinates = () => {
       if (coordinateFrame !== null) cancelAnimationFrame(coordinateFrame);

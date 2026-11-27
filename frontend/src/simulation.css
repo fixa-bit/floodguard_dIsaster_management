@@ -92,7 +92,7 @@
 .simulation-alert-banner button { color: inherit; }
 .alert-filters { margin-bottom: 16px; }
 .alerts-table { min-width: 820px; }
-.alert-message { min-width: 220px; max-width: 480px; white-space: normal; line-height: 1.6; overflow-wrap: anywhere; }
+.data-table td.alert-message { min-width: 220px; max-width: 480px; white-space: normal; line-height: 1.6; overflow-wrap: anywhere; }
 .alert-incident-link { display: inline-flex; align-items: center; gap: 5px; padding: 5px; color: #50f5d0; background: transparent; border: 0; }
 .alert-approve-button { min-height: 30px; padding: 5px 9px; color: #09221e; background: #50f5d0; border: 1px solid #50f5d0; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .alert-approve-button:disabled { opacity: .55; cursor: wait; }

@@ -22,28 +22,30 @@ def _load_river_features() -> list[Feature]:
     return collection.get("features", [])
 
 
+# Barrage positions: the barrage structure as mapped in OpenStreetMap (checked 2026-11-24; the older
+# values put Taunsa 21 km and Kotri 8.5 km away from their barrages).
 WATER_BODY_FEATURES: list[Feature] = [
     ("Tarbela Reservoir", "dam_reservoir", 72.698, 34.088, "Indus", "WAPDA project; operational reservoir, not a live reading in this layer."),
     ("Mangla Reservoir", "dam_reservoir", 73.645, 33.142, "Jhelum", "WAPDA project; operational reservoir, not a live reading in this layer."),
     ("Warsak Dam", "dam", 71.37, 34.16, "Kabul", "Dam and reservoir reference point."),
-    ("Chashma Barrage", "barrage", 71.381, 32.431, "Indus", "Barrage reference point and known flow-control structure."),
-    ("Kalabagh Barrage", "barrage", 71.55, 32.96, "Indus", "Barrage reference point and known flow-control structure."),
-    ("Taunsa Barrage", "barrage", 70.848, 30.704, "Indus", "Barrage reference point and known flow-control structure."),
-    ("Guddu Barrage", "barrage", 69.706, 28.421, "Indus", "Barrage reference point and known flow-control structure."),
-    ("Sukkur Barrage", "barrage", 68.859, 27.692, "Indus", "Barrage reference point and known flow-control structure."),
-    ("Kotri Barrage", "barrage", 68.307, 25.366, "Indus", "Barrage reference point and known flow-control structure."),
+    ("Chashma Barrage", "barrage", 71.3801, 32.4359, "Indus", "Barrage reference point and known flow-control structure."),
+    ("Kalabagh Barrage", "barrage", 71.5222, 32.9185, "Indus", "Barrage reference point and known flow-control structure."),
+    ("Taunsa Barrage", "barrage", 70.8496, 30.5131, "Indus", "Barrage reference point and known flow-control structure."),
+    ("Guddu Barrage", "barrage", 69.7131, 28.4189, "Indus", "Barrage reference point and known flow-control structure."),
+    ("Sukkur Barrage", "barrage", 68.8457, 27.6796, "Indus", "Barrage reference point and known flow-control structure."),
+    ("Kotri Barrage", "barrage", 68.3160, 25.4424, "Indus", "Barrage reference point and known flow-control structure."),
     ("Rawal Lake", "reservoir", 73.12, 33.70, "Korang", "Reservoir reference point near Islamabad."),
 ]
 
 
 OBSERVED_STATIONS: list[tuple[str, str, str, float, float, str, str]] = [
     ("Indus at Tarbela", "Indus", "dam_gauge", 34.088, 72.698, "FFD/WAPDA operational network", "Public summaries report Tarbela dam level/flows; current station readings require official feed access."),
-    ("Indus at Kalabagh", "Indus", "barrage_gauge", 32.96, 71.55, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
-    ("Indus at Chashma", "Indus", "barrage_gauge", 32.431, 71.381, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
-    ("Indus at Taunsa", "Indus", "barrage_gauge", 30.704, 70.848, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
-    ("Indus at Guddu", "Indus", "barrage_gauge", 28.421, 69.706, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
-    ("Indus at Sukkur", "Indus", "barrage_gauge", 27.692, 68.859, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
-    ("Indus at Kotri", "Indus", "barrage_gauge", 25.366, 68.307, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
+    ("Indus at Kalabagh", "Indus", "barrage_gauge", 32.9185, 71.5222, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
+    ("Indus at Chashma", "Indus", "barrage_gauge", 32.4359, 71.3801, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
+    ("Indus at Taunsa", "Indus", "barrage_gauge", 30.5131, 70.8496, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
+    ("Indus at Guddu", "Indus", "barrage_gauge", 28.4189, 69.7131, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
+    ("Indus at Sukkur", "Indus", "barrage_gauge", 27.6796, 68.8457, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
+    ("Indus at Kotri", "Indus", "barrage_gauge", 25.4424, 68.3160, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
     ("Kabul at Nowshera", "Kabul", "river_gauge", 34.015, 71.975, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),
     ("Jhelum at Mangla", "Jhelum", "dam_gauge", 33.142, 73.645, "FFD/WAPDA operational network", "Public summaries report Mangla dam level/flows; current station readings require official feed access."),
     ("Jhelum at Rasul", "Jhelum", "headworks_gauge", 32.683, 73.517, "FFD/WAPDA/provincial irrigation", "Flood Forecasting Division river-state monitoring station."),

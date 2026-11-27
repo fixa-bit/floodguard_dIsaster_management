@@ -6,6 +6,18 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "frontend-only",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "frontend", "run", "dev", "--", "--host", "127.0.0.1", "--port", "3100"],
+      "port": 3100
+    },
+    {
+      "name": "carbon-portal",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "D:/projects/carbon_emission", "run", "dev", "--", "--host", "127.0.0.1"],
+      "port": 8484
     }
   ]
 }

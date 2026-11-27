@@ -48,3 +48,4 @@ const collection = {
 };
 await writeFile(new URL("../src/data/pakistan/catchment_areas.geojson", import.meta.url), `${JSON.stringify(collection)}\n`);
 console.log(`Downloaded ${features.length} HydroBASINS level-5 catchments (${JSON.stringify(collection).length} bytes)`);
+console.log("Next: python scripts/rebuild_catchments_from_hydrobasins.py (replaces the simplified service geometry with the original HydroBASINS polygons, shared edges kept exact)");

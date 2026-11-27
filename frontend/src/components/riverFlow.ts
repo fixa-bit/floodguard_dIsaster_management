@@ -8,7 +8,7 @@ import type { ExpressionSpecification, LineLayerSpecification, Map as MapLibreMa
 
 /** Relative channel width: the Indus widest, then its major tributaries. */
 const riverRank: ExpressionSpecification = ["match", ["get", "name"],
-  "Indus River", 1.45, "Chenab River", 1.15, "Jhelum River", 1.1, "Sutlej River", 1.05, "Kabul River", 1, "Ravi River", 0.9, 0.85];
+  "Indus River", 1.45, "Panjnad River", 1.2, "Chenab River", 1.15, "Jhelum River", 1.1, "Sutlej River", 1.05, "Kabul River", 1, "Ravi River", 0.9, 0.85];
 const riverWidth = (atZoom4: number, atZoom8: number, atZoom12: number): ExpressionSpecification =>
   ["interpolate", ["linear"], ["zoom"], 4, ["*", atZoom4, riverRank], 8, ["*", atZoom8, riverRank], 12, ["*", atZoom12, riverRank]];
 

@@ -491,6 +491,8 @@ export interface OfficialStationHistory {
 }
 
 export interface RiverMonitoringStation extends UpstreamStationForecast {
+  model_latitude?: number | null;
+  model_longitude?: number | null;
   gauge_readings?: Array<{ gauge: GaugeKind; value: number; time: string; source: string }>;
   observed_level_value?: number | null;
   observed_level_unit?: string | null;

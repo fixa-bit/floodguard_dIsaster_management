@@ -12,9 +12,21 @@ const portalRoot = fileURLToPath(new URL("../..", import.meta.url));
 export const floodSimDist = resolve(process.env.FLOOD_SIM_DIST ?? join(portalRoot, "..", "..", "flood sim cursor", "flood sim cursor", "dist-portal"));
 const floodSimApi = process.env.FLOOD_SIM_API ?? "http://127.0.0.1:8010";
 
+// The simulation service accepts changes (load/run a case) only from its own local origins.
+// A request from the portal opened on this machine carries the portal's origin (e.g. localhost:3000),
+// so present it as the service's own origin. Any other origin, such as a public share link,
+// is passed through unchanged and stays read-only.
+const LOCAL_ORIGIN = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
+const asServiceOrigin: ProxyOptions["configure"] = (proxy) => {
+  proxy.on("proxyReq", (proxyReq, req) => {
+    const origin = req.headers.origin;
+    if (origin && LOCAL_ORIGIN.test(origin)) proxyReq.setHeader("origin", new URL(floodSimApi).origin);
+  });
+};
+
 export const floodSimProxy: Record<string, ProxyOptions> = {
-  "/flood-sim/api": { target: floodSimApi, changeOrigin: true, rewrite: (path) => path.replace(/^\/flood-sim/, "") },
-  "/outputs": { target: floodSimApi, changeOrigin: true },
+  "/flood-sim/api": { target: floodSimApi, changeOrigin: true, rewrite: (path) => path.replace(/^\/flood-sim/, ""), configure: asServiceOrigin },
+  "/outputs": { target: floodSimApi, changeOrigin: true, configure: asServiceOrigin },
 };
 
 const TYPES: Record<string, string> = {

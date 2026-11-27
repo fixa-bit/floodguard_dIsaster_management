@@ -7,7 +7,7 @@ from sqlalchemy import delete
 
 from app.core.config import get_settings
 from app.db.session import SessionLocal
-from app.gis.river_stations import RIVER_CHAINS, STATIONS, upstream_ids
+from app.gis.river_stations import RIVER_CHAINS, STATIONS, glofas_point, upstream_ids
 from app.models.river_gauge_observation import RiverGaugeObservation, TypedRiverGaugeObservation
 from app.providers.live.live_river_provider import LiveRiverProvider
 from app.providers.open_meteo_weather_cache import get_weather_json
@@ -20,9 +20,11 @@ from app.services.upstream_forecast_service import UpstreamForecastService
 class RiverMonitoringService(UpstreamForecastService):
     async def _models(self, client, definitions):
         try:
+            # GloFAS is read at each station's fixed model cell (see GLOFAS_POINTS), not its map point.
+            cells = [(station.get("model_latitude", station["latitude"]), station.get("model_longitude", station["longitude"])) for station in definitions]
             response = await client.get(self.flood_api_base_url, params={
-                "latitude": ",".join(str(station["latitude"]) for station in definitions),
-                "longitude": ",".join(str(station["longitude"]) for station in definitions),
+                "latitude": ",".join(str(latitude) for latitude, _ in cells),
+                "longitude": ",".join(str(longitude) for _, longitude in cells),
                 "daily": self.DAILY_FIELDS, "past_days": 14, "forecast_days": 14, "cell_selection": "nearest",
             })
             response.raise_for_status()
@@ -74,7 +76,8 @@ class RiverMonitoringService(UpstreamForecastService):
         ]
 
     async def forecasts(self) -> RiverMonitoringResponse:
-        definitions = [dict(id=station_id, name=name, river=river, latitude=lat, longitude=lon, ffd_name=ffd)
+        definitions = [dict(id=station_id, name=name, river=river, latitude=lat, longitude=lon, ffd_name=ffd,
+                            model_latitude=glofas_point(station_id, lat, lon)[0], model_longitude=glofas_point(station_id, lat, lon)[1])
                        for station_id, name, river, lat, lon, ffd in STATIONS]
         async with httpx.AsyncClient(timeout=self.timeout, follow_redirects=True) as client:
             observations, models, rainfall_contexts = await asyncio.gather(

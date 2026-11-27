@@ -1,6 +1,6 @@
 // Password-protected gateway for sharing the full FloodGuard app through a tunnel.
 //
-//   /api/*    -> the FastAPI backend (default http://127.0.0.1:8000)
+//   /api/*    -> the FastAPI backend (default http://127.0.0.1:8300, the share's own; 8000 is npm run dev's)
 //   anything  -> the built frontend in frontend/dist (single-page app fallback to index.html)
 //
 // Every request needs HTTP Basic credentials: user "floodguard" and the password in
@@ -8,7 +8,9 @@
 // every page, API and map request automatically. Listens on 127.0.0.1 only; the tunnel
 // (cloudflared) is what makes it reachable from outside.
 //
-//   node ops/share/gateway.mjs [--port 4300] [--api http://127.0.0.1:8000]
+// --open turns the password off: anyone who has the link can open the app (start-share.ps1 -NoPassword).
+//
+//   node ops/share/gateway.mjs [--port 4300] [--api http://127.0.0.1:8300] [--open]
 import { createReadStream, existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { request as httpRequest, createServer } from "node:http";
 import { randomBytes, timingSafeEqual } from "node:crypto";
@@ -20,11 +22,12 @@ const root = resolve(here, "..", "..");
 const dist = resolve(root, "frontend", "dist");
 const arg = (name, fallback) => { const i = process.argv.indexOf(`--${name}`); return i > 0 ? process.argv[i + 1] : fallback; };
 const port = Number(arg("port", 4300));
-const api = new URL(arg("api", "http://127.0.0.1:8000"));
+const api = new URL(arg("api", "http://127.0.0.1:8300"));
 // The separate Flood Simulation app (Simulation → Flood simulation lab): its portal build and its data service.
 const simDist = resolve(process.env.FLOOD_SIM_DIST ?? join(root, "..", "..", "flood sim cursor", "flood sim cursor", "dist-portal"));
 const simApi = new URL(arg("sim-api", "http://127.0.0.1:8010"));
 const USER = "floodguard";
+const OPEN = process.argv.includes("--open");
 
 const passwordFile = join(here, ".share-password");
 if (!existsSync(passwordFile)) writeFileSync(passwordFile, `${randomBytes(9).toString("base64url")}\n`, { mode: 0o600 });
@@ -47,6 +50,7 @@ function noteFailure(ip) {
   else entry.count += 1;
 }
 function authorised(req) {
+  if (OPEN) return true;
   const header = req.headers.authorization ?? "";
   if (!header.startsWith("Basic ")) return false;
   const given = Buffer.from(header.slice(6), "base64");
@@ -117,5 +121,5 @@ const server = createServer((req, res) => {
 
 server.listen(port, "127.0.0.1", () => {
   console.log(`FloodGuard share gateway on http://127.0.0.1:${port} -> app ${dist}, API ${api.origin}`);
-  console.log(`Username: ${USER}. Password: see ${passwordFile}`);
+  console.log(OPEN ? "No password (--open): anyone with the link can open the app." : `Username: ${USER}. Password: see ${passwordFile}`);
 });

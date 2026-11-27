@@ -11,5 +11,5 @@
 @media(max-width:1050px){.station-terrain-studio{width:245px}}@media(max-width:700px){.station-terrain-studio{top:62px;right:52px;width:min(240px,calc(100% - 74px));padding:11px}.station-terrain-title strong{font-size:12px}.station-terrain-title small{font-size:8px}.station-terrain-studio.is-expanded{max-height:420px;overflow-y:auto}.station-terrain-modes button{font-size:9px}.terrain-station-presets small{font-size:7px}}
 @media(prefers-reduced-motion:reduce){.station-terrain-studio *{scroll-behavior:auto}}
 /* Overview: below the dashboard header and stats (which cover the map's top edge), level with the layers panel. */
-.overview-command-canvas .station-terrain-studio{top:188px}
+.overview-command-canvas .station-terrain-studio{top:200px}
 @media(max-width:980px){.overview-command-canvas .station-terrain-studio{top:220px}}

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.gis.river_stations import STATIONS
+from app.gis.river_stations import STATIONS, glofas_point
 
 
 class Thresholds(BaseModel):
@@ -37,7 +37,8 @@ class HydrographStation(BaseModel):
 def station_configs():
     # Existing monitored stations remain selectable, with explicitly unverified cells.
     configs = {row[0]: HydrographStation(station_id=row[0], name=row[1], river=row[2], lat=row[3], lon=row[4],
-                                       glofas_lat=row[3], glofas_lon=row[4]) for row in STATIONS}
+                                       glofas_lat=glofas_point(row[0], row[3], row[4])[0],
+                                       glofas_lon=glofas_point(row[0], row[3], row[4])[1]) for row in STATIONS}
     payload = json.loads(Path(__file__).with_name("hydrograph_stations.json").read_text(encoding="utf-8"))
     for item in payload["stations"]:
         config = HydrographStation.model_validate(item)

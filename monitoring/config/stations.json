@@ -12,8 +12,8 @@
       "station_id": "TAUNSA",
       "name": "Taunsa Barrage",
       "river": "Indus",
-      "lat": 30.518528,
-      "lon": 70.836721,
+      "lat": 30.513031,
+      "lon": 70.849405,
       "glofas_lat": 30.518528,
       "glofas_lon": 70.836721
     },
@@ -46,8 +46,8 @@
       "station_id": "RASUL",
       "name": "Rasul Barrage",
       "river": "Jhelum",
-      "lat": 32.683,
-      "lon": 73.517
+      "lat": 32.68169,
+      "lon": 73.519375
     },
     {
       "station_id": "BALLOKI",
@@ -67,8 +67,8 @@
       "station_id": "MARALA",
       "name": "Marala Headworks",
       "river": "Chenab",
-      "lat": 32.660583,
-      "lon": 74.41125,
+      "lat": 32.668632,
+      "lon": 74.467518,
       "glofas_lat": 32.660583,
       "glofas_lon": 74.41125
     },
@@ -76,15 +76,15 @@
       "station_id": "KHANKI",
       "name": "Khanki Headworks",
       "river": "Chenab",
-      "lat": 32.4088,
-      "lon": 73.9685
+      "lat": 32.40627,
+      "lon": 73.966999
     },
     {
       "station_id": "QADIRABAD",
       "name": "Qadirabad Barrage",
       "river": "Chenab",
-      "lat": 32.3209,
-      "lon": 73.6851
+      "lat": 32.321669,
+      "lon": 73.685414
     },
     {
       "station_id": "TRIMMU",
@@ -111,8 +111,8 @@
       "station_id": "ISLAM",
       "name": "Islam Headworks",
       "river": "Sutlej",
-      "lat": 29.8263,
-      "lon": 72.5485
+      "lat": 29.825603,
+      "lon": 72.549093
     },
     {
       "station_id": "KALABAGH",
@@ -127,8 +127,8 @@
       "station_id": "NOWSHERA",
       "name": "Nowshera River Station",
       "river": "Kabul",
-      "lat": 34.015,
-      "lon": 71.975,
+      "lat": 34.008815,
+      "lon": 71.985649,
       "glofas_lat": 34.015,
       "glofas_lon": 71.975
     },
@@ -164,8 +164,8 @@
       "station_id": "TARBELA",
       "name": "Tarbela Dam / Reservoir",
       "river": "Indus",
-      "lat": 34.1059,
-      "lon": 72.7338,
+      "lat": 34.08772,
+      "lon": 72.700691,
       "glofas_lat": 34.1059,
       "glofas_lon": 72.7338
     },
@@ -173,8 +173,8 @@
       "station_id": "MANGLA",
       "name": "Mangla Dam / Reservoir",
       "river": "Jhelum",
-      "lat": 33.142,
-      "lon": 73.645,
+      "lat": 33.141206,
+      "lon": 73.641977,
       "glofas_lat": 33.142,
       "glofas_lon": 73.645
     },

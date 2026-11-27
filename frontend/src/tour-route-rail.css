@@ -9,7 +9,7 @@
   top: 12px;
   left: 238px;
   display: flex;
-  width: 156px;
+  width: 184px;
   max-height: calc(100% - 72px);
   flex-direction: column;
   padding: 6px 8px 8px 0;
@@ -27,7 +27,7 @@
   will-change: transform;
   animation: tour-route-in .45s ease-out both;
 }
-.overview-command-canvas .tour-route-rail { top: 188px; max-height: calc(100% - 306px); }
+.overview-command-canvas .tour-route-rail { top: 200px; max-height: calc(100% - 318px); }
 
 /* Heading: a button that expands or collapses the route. */
 .tour-route-heading {
@@ -186,7 +186,7 @@
 }
 /* Narrower screens leave little map between the controls and the station panel. */
 @media (max-width: 1599px) {
-  .tour-route-rail { width: 138px; }
+  .tour-route-rail { width: 168px; }
   .tour-route-stop[data-current] { font-size: 12px; }
 }
 /* No room beside the map controls on a phone-width screen. */

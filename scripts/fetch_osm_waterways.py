@@ -10,6 +10,10 @@ from typing import Any
 
 BASE_URL = "https://waterwaymap.org"
 OUTPUT_PATH = Path("app/gis/data/pakistan_osm_waterways.geojson")
+# The saved file has hand repairs listed under metadata.patches (e.g. the Indus between Taunsa and
+# Rajanpur, where this source left a 114 km straight jump). The Panjnad River (OSM way 25349903) is
+# added by hand too, as WaterwayMap has no page for it. After rerunning this script, redo those
+# patches and run scripts/check_river_alignment.py.
 
 RIVERS = [
     {

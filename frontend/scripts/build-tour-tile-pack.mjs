@@ -69,13 +69,20 @@ async function plan() {
         if (index + 1 < count) await page.waitForFunction(() => (window.__floodguardMap.getContainer().dataset.monitoringArrival ?? "") === "", null, { timeout: 60000 });
       }
     };
+    // The overview opens with monitoring mode on (since 2026-11-20), so set the toggle to a state, never just flip it.
+    const setTour = async (on) => {
+      const toggle = page.locator(".station-monitoring-toggle");
+      if ((await toggle.getAttribute("aria-pressed")) !== String(on)) await toggle.click();
+    };
     await ready();
     console.log("Measuring stop views (3D close-up and catchment stops, then a 2D stop)...");
-    await page.locator(".station-monitoring-toggle").click();
+    await setTour(false);   // back to the overview, so the tour starts with its first flight
+    await page.waitForTimeout(6000);
+    await setTour(true);
     await arrivals(4);   // the first three stops are close-ups, the fourth a catchment view
     await page.locator(".station-monitoring-view button", { hasText: "2D map" }).click();
     await arrivals(1);
-    await page.locator(".station-monitoring-toggle").click();
+    await setTour(false);
     // A fresh page starts at the overview, where the tour's first flight begins; the measurements stay in local storage.
     await ready();
     const tours = await page.evaluate(() => ["3d", "2d"].map((view) => window.__monitoringTourTiles(view)));

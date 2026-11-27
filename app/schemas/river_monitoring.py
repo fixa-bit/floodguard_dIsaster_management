@@ -13,6 +13,9 @@ class GaugeReading(BaseModel):
 
 
 class RiverMonitoringStation(UpstreamStationForecast):
+    # The GloFAS grid point the modeled discharge is read at (the station's earlier FFD coordinates).
+    model_latitude: float | None = None
+    model_longitude: float | None = None
     gauge_readings: list[GaugeReading] = Field(default_factory=list)
     current_discharge_cumecs: float | None = None
     current_source: str

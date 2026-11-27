@@ -17,7 +17,7 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'frontend/public/station-terrain'
 SOURCE='https://elevation-tiles-prod.s3.amazonaws.com/terrarium/'
-STATIONS={'TARBELA':(72.7338,34.1059),'MANGLA':(73.645,33.142),'MARALA':(74.41125,32.660583),'TAUNSA':(70.836721,30.518528)}
+STATIONS={'TARBELA':(72.700691,34.08772),'MANGLA':(73.641977,33.141206),'MARALA':(74.467518,32.668632),'TAUNSA':(70.849405,30.513031)}
 
 
 def main():

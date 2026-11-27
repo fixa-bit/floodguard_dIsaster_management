@@ -43,9 +43,10 @@ def test_water_intelligence_separates_gis_stations_and_model_points(client):
     classes = {feature["properties"]["data_class"] for feature in data["features"]}
     assert {"gis_feature", "observed_station", "model_forecast"} <= classes
     rivers = [feature for feature in data["features"] if feature["properties"]["feature_kind"] == "river"]
-    assert len(rivers) == 6
+    assert len(rivers) == 7
     assert all(feature["geometry"]["type"] == "MultiLineString" for feature in rivers)
-    assert all(feature["properties"]["geometry_source"] == "WaterwayMap/OpenStreetMap" for feature in rivers)
+    # Panjnad is added straight from OpenStreetMap (WaterwayMap has no page for it).
+    assert {feature["properties"]["name"]: feature["properties"]["geometry_source"] for feature in rivers if feature["properties"]["geometry_source"] != "WaterwayMap/OpenStreetMap"} == {"Panjnad River": "OpenStreetMap"}
     assert data["metadata"]["map_notice"] == "River alignments are schematic unless source geometry is marked official."
     observed = [feature for feature in data["features"] if feature["properties"]["data_class"] == "observed_station"]
     assert all(feature["properties"]["coordinate_quality"] == "approximate" for feature in observed)

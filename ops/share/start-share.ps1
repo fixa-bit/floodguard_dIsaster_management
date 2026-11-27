@@ -2,15 +2,18 @@
 #
 #   powershell -ExecutionPolicy Bypass -File ops\share\start-share.ps1            # start (builds the app if needed)
 #   powershell -ExecutionPolicy Bypass -File ops\share\start-share.ps1 -Rebuild   # rebuild the app first, to include new changes
+#   powershell -ExecutionPolicy Bypass -File ops\share\start-share.ps1 -NoPassword  # no password: anyone with the link gets in
 #   powershell -ExecutionPolicy Bypass -File ops\share\stop-share.ps1             # stop
 #
 # Starts, each only if not already running:
-#   backend  : FastAPI on 127.0.0.1:8000 (reused if `npm run dev` already runs it)
+#   backend  : FastAPI on 127.0.0.1:8300, the share's own (ports 3000 and 8000 are kept for `npm run dev`).
+#              Its background jobs (daily report, flood-event watcher) are off, so they never run twice;
+#              `npm run dev` runs them.
 #   gateway  : ops/share/gateway.mjs on 127.0.0.1:4300 (password + serves frontend/dist + forwards /api)
 #   tunnel   : Cloudflare quick tunnel -> https://<random>.trycloudflare.com
 # The link works only while this PC is on and these keep running. A quick tunnel gets a new
 # address each time it starts; the current one is saved in ops/share/.share-url.
-param([switch]$Rebuild)
+param([switch]$Rebuild, [switch]$NoPassword)
 $ErrorActionPreference = "Stop"
 
 $share = $PSScriptRoot
@@ -25,19 +28,41 @@ function Test-Port([int]$port) {
   $client = New-Object Net.Sockets.TcpClient
   try { $client.Connect("127.0.0.1", $port); return $true } catch { return $false } finally { $client.Dispose() }
 }
-function Test-Alive($id) { if (-not $id) { return $false }; return [bool](Get-Process -Id $id -ErrorAction SilentlyContinue) }
+# A saved process id counts only if it is still that program: after a restart Windows reuses ids.
+function Test-Alive($id, [string]$name) {
+  if (-not $id) { return $false }
+  $process = Get-Process -Id $id -ErrorAction SilentlyContinue
+  return [bool]($process -and (-not $name -or $process.ProcessName -eq $name))
+}
 
-# 1. Backend
-if (Test-Port 8000) {
-  Write-Host "Backend already running on port 8000"
+# 1. Backend: the share's own, on 8300
+$apiPort = 8300
+# An older share backend on 8000 (before 8000 was kept for npm run dev) is stopped.
+if ($state.api -and $state.apiPort -ne $apiPort -and (Test-Alive $state.api "python")) {
+  taskkill /PID $state.api /T /F | Out-Null
+  Write-Host "Stopped the share's old backend on port 8000 (pid $($state.api))"
+  $state.Remove("api")
+}
+if (Test-Port $apiPort) {
+  Write-Host "Backend already running on port $apiPort"
 } else {
   $python = Join-Path $root ".venv\Scripts\python.exe"
-  $p = Start-Process -FilePath $python -ArgumentList "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "8000" `
-    -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $logs "share-api.log") -RedirectStandardError (Join-Path $logs "share-api.err.log")
+  # Read by the backend's settings (app/core/config.py); inherited by the process started below.
+  $env:FLOOD_EVENT_REPORTS_ENABLED = "false"
+  $env:DAILY_REPORT_SCHEDULE_ENABLED = "false"
+  $env:REPORT_API_BASE = "http://127.0.0.1:$apiPort/api/v1"
+  $env:REPORT_FRONTEND_URL = "http://127.0.0.1:4300"
+  try {
+    $p = Start-Process -FilePath $python -ArgumentList "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "$apiPort" `
+      -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $logs "share-api.log") -RedirectStandardError (Join-Path $logs "share-api.err.log")
+  } finally {
+    Remove-Item Env:FLOOD_EVENT_REPORTS_ENABLED, Env:DAILY_REPORT_SCHEDULE_ENABLED, Env:REPORT_API_BASE, Env:REPORT_FRONTEND_URL -ErrorAction SilentlyContinue
+  }
   $state.api = $p.Id
-  Write-Host "Starting backend (pid $($p.Id))"
-  for ($i = 0; $i -lt 60 -and -not (Test-Port 8000); $i++) { Start-Sleep -Seconds 1 }
-  if (-not (Test-Port 8000)) { throw "Backend did not start; see $logs\share-api.err.log" }
+  $state.apiPort = $apiPort
+  Write-Host "Starting backend on port $apiPort (pid $($p.Id))"
+  for ($i = 0; $i -lt 60 -and -not (Test-Port $apiPort); $i++) { Start-Sleep -Seconds 1 }
+  if (-not (Test-Port $apiPort)) { throw "Backend did not start; see $logs\share-api.err.log" }
 }
 
 # 1b. Flood Simulation app (Simulation -> Flood simulation lab): its data service on 8010 and its portal build
@@ -69,13 +94,21 @@ if ($Rebuild -or -not (Test-Path $dist)) {
   try { npx vite build | Out-Host; if ($LASTEXITCODE -ne 0) { throw "Frontend build failed" } } finally { Pop-Location }
 }
 
-# 3. Gateway
+# 3. Gateway (restarted when the password setting or backend port changes; the tunnel and its link stay the same)
+$mode = "$(if ($NoPassword) { 'open' } else { 'password' })@$apiPort"
+if ((Test-Port 4300) -and $state.gatewayMode -ne $mode -and (Test-Alive $state.gateway "node")) {
+  taskkill /PID $state.gateway /T /F | Out-Null
+  for ($i = 0; $i -lt 20 -and (Test-Port 4300); $i++) { Start-Sleep -Milliseconds 250 }
+  Write-Host "Restarting the gateway ($mode)"
+}
 if (Test-Port 4300) {
   Write-Host "Gateway already running on port 4300"
 } else {
-  $p = Start-Process -FilePath "node" -ArgumentList "`"$(Join-Path $share 'gateway.mjs')`"" -WorkingDirectory $root -WindowStyle Hidden -PassThru `
+  $gatewayArgs = @("`"$(Join-Path $share 'gateway.mjs')`"", "--api", "http://127.0.0.1:$apiPort") + $(if ($NoPassword) { @("--open") } else { @() })
+  $p = Start-Process -FilePath "node" -ArgumentList $gatewayArgs -WorkingDirectory $root -WindowStyle Hidden -PassThru `
     -RedirectStandardOutput (Join-Path $logs "share-gateway.log") -RedirectStandardError (Join-Path $logs "share-gateway.err.log")
   $state.gateway = $p.Id
+  $state.gatewayMode = $mode
   for ($i = 0; $i -lt 20 -and -not (Test-Port 4300); $i++) { Start-Sleep -Milliseconds 500 }
   if (-not (Test-Port 4300)) { throw "Gateway did not start; see $logs\share-gateway.err.log" }
   Write-Host "Gateway started (pid $($p.Id))"
@@ -83,7 +116,7 @@ if (Test-Port 4300) {
 
 # 4. Tunnel
 $urlFile = Join-Path $share ".share-url"
-if (Test-Alive $state.tunnel) {
+if (Test-Alive $state.tunnel "cloudflared") {
   Write-Host "Tunnel already running"
 } else {
   $exe = Join-Path $share "bin\cloudflared.exe"
@@ -105,5 +138,6 @@ if (Test-Alive $state.tunnel) {
 $state | ConvertTo-Json | Set-Content -Path $pidFile -Encoding utf8
 Write-Host ""
 Write-Host "FloodGuard is shared at: $((Get-Content $urlFile -Raw).Trim())"
-Write-Host "Username: floodguard   Password: in ops\share\.share-password"
+if ($state.gatewayMode -like "open*") { Write-Host "No password: anyone with the link can open the app." }
+else { Write-Host "Username: floodguard   Password: in ops\share\.share-password" }
 Write-Host "Keep this PC on. Stop sharing with ops\share\stop-share.ps1"
