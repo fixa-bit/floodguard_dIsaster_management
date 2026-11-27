@@ -115,4 +115,6 @@
 .flood-lab-state.no-service, .flood-lab-state.not-built { color: #ffd27a; border-color: rgba(250, 178, 25, .5); background: rgba(250, 178, 25, .08); }
 .flood-lab-note { margin: 0; padding: 10px 12px; color: #ffe2a8; background: rgba(250, 178, 25, .06); border: 1px dashed rgba(250, 178, 25, .4); border-radius: 10px; font-size: 12.5px; line-height: 1.55; }
 .flood-lab-note code { padding: 1px 5px; color: #e8f3f2; background: #0a1719; border-radius: 4px; font-size: 12px; }
-.flood-lab-frame { display: block; width: 100%; height: max(640px, calc(100vh - 260px)); background: #050c0e; border: 1px solid #24403f; border-radius: 10px; }
+/* The portal draws at --ui-zoom (80% on desktop). The lab is a full app of its own, so undo that zoom
+   for its frame: it is drawn 1:1 instead of shrunk; height and border keep their on-screen size. */
+.flood-lab-frame { display: block; width: 100%; zoom: calc(1 / var(--ui-zoom, 1)); height: max(560px, calc(100vh - 260px)); background: #050c0e; border: calc(1px * var(--ui-zoom, 1)) solid #24403f; border-radius: calc(10px * var(--ui-zoom, 1)); }

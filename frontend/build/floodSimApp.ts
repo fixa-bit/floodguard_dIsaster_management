@@ -50,6 +50,12 @@ function serve(req: IncomingMessage, res: ServerResponse, next: () => void) {
     if (extname(path)) { res.writeHead(404).end(); return; }
     file = join(floodSimDist, "index.html");
   }
+  // A rebuild rewrites these files; an empty file seen mid-write must never be cached for a year.
+  if (statSync(file).size === 0) {
+    res.writeHead(503, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store", "Retry-After": "2" })
+      .end("The Flood Simulation app is being rebuilt; reload in a moment.");
+    return;
+  }
   res.writeHead(200, {
     "Content-Type": TYPES[extname(file).toLowerCase()] ?? "application/octet-stream",
     "Content-Length": statSync(file).size,
