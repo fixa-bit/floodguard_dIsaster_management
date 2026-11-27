@@ -400,6 +400,20 @@ body { color: var(--ink); background: #071114; }
   border-color: rgba(80, 245, 208, .55);
   box-shadow: inset 3px 0 0 #50f5d0;
 }
+.sidebar nav button > svg:first-child,
+.sidebar nav .sidebar-external-map > svg:first-child {
+  flex: 0 0 auto;
+  box-sizing: content-box;
+  padding: 5px;
+  color: #78d9cf;
+  background: rgba(69, 220, 196, .09);
+  border: 1px solid rgba(125, 232, 219, .13);
+  border-radius: 9px;
+  transition: color .16s ease, background .16s ease, border-color .16s ease, transform .16s ease;
+}
+.sidebar nav button:hover > svg:first-child,
+.sidebar nav .sidebar-external-map:hover > svg:first-child { color: #9ffff0; background: rgba(69, 220, 196, .17); border-color: rgba(80, 245, 208, .3); transform: translateY(-1px); }
+.sidebar nav button.active > svg:first-child { color: #071b19; background: #50f5d0; border-color: rgba(80, 245, 208, .85); box-shadow: 0 0 14px rgba(80, 245, 208, .23); }
 .sidebar nav { min-height: 0; overflow-y: auto; }
 /* The list can scroll on short screens, but without a scrollbar that would narrow every item. */
 .sidebar nav { scrollbar-width: none; }
@@ -2455,7 +2469,7 @@ body { color: var(--ink); background: #071114; }
 .sidebar-toggle:hover, .sidebar-toggle:focus-visible { color: #fff; background: rgba(69, 220, 196, .12); border-color: rgba(80, 245, 208, .45); }
 .sidebar-toggle span { font-size: 13px; }
 .sidebar-tip {
-  position: fixed; left: 76px; z-index: 60; transform: translateY(-50%);
+  position: fixed; left: 84px; z-index: 60; transform: translateY(-50%);
   padding: 6px 11px; border-radius: 6px; white-space: nowrap; pointer-events: none;
   color: #eafff8; font-size: 13px; font-weight: 600;
   background: rgba(8, 26, 28, .96); border: 1px solid rgba(80, 245, 208, .45);
@@ -2470,13 +2484,13 @@ body { color: var(--ink); background: #071114; }
 @keyframes sidebar-tip-in { from { opacity: 0; transform: translate(-4px, -50%); } to { opacity: 1; transform: translate(0, -50%); } }
 
 @media (min-width: 981px) {
-  .sidebar-collapsed .sidebar { width: 68px; }
-  .sidebar-collapsed .main-content { margin-left: 68px; }
+  .sidebar-collapsed .sidebar { width: 76px; }
+  .sidebar-collapsed .main-content { margin-left: 76px; }
   .sidebar-collapsed .brand-lockup { justify-content: center; padding: 0; }
   .sidebar-collapsed .brand-lockup span { display: none; }
   .sidebar-collapsed .sidebar nav { padding: 14px 10px; }
   .sidebar-collapsed .sidebar nav button,
-  .sidebar-collapsed .sidebar nav .sidebar-external-map { justify-content: center; gap: 0; padding: 0; min-height: 44px; }
+  .sidebar-collapsed .sidebar nav .sidebar-external-map { justify-content: center; gap: 0; padding: 0; min-height: 52px; }
   .sidebar-collapsed .sidebar nav button > span,
   .sidebar-collapsed .sidebar nav .sidebar-external-map > span,
   .sidebar-collapsed .sidebar nav .sidebar-external-map > svg:last-child { display: none; }

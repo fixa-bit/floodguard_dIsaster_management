@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, FileText, BellRing, CloudRain, ExternalLink, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves, Droplets, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Activity, AlertTriangle, FileText, BellRing, CloudRain, ExternalLink, LayoutDashboard, Map, Menu, MessageSquareText, ShieldCheck, X, FlaskConical, ChartNoAxesCombined, Waves, Droplets, RadioTower, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect, useRef, useState, type FocusEvent, type MouseEvent, type ReactNode } from "react";
 
 export type ViewId = "overview" | "gis" | "rainfall" | "predictive" | "riverine-forecast" | "upstream" | "monitoring" | "alerts" | "incidents" | "reports" | "activity" | "simulation" | "situation-reports" | "alarm-automation";
@@ -8,7 +8,7 @@ const navItems = [
   { id: "gis" as const, label: "GIS Operations", icon: Map },
   { id: "predictive" as const, label: "Predictive Risk Views", icon: ChartNoAxesCombined },
   { id: "riverine-forecast" as const, label: "Riverine Forecast", icon: Waves },
-  { id: "upstream" as const, label: "Upstream Source Flood Watch", icon: Waves },
+  { id: "upstream" as const, label: "Upstream Source Flood Watch", icon: RadioTower },
   { id: "monitoring" as const, label: "River Monitoring", icon: Droplets },
   { id: "incidents" as const, label: "Incidents", icon: AlertTriangle },
   { id: "reports" as const, label: "Citizen Reports", icon: MessageSquareText },
@@ -70,11 +70,11 @@ export function AppShell({ activeView, onViewChange, children }: { activeView: V
       <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
         <div className="brand-lockup"><div><ShieldCheck size={24} /></div><span><strong>FloodGuard AI</strong><small>NDMA Command Screen</small></span><button className="mobile-close" onClick={() => setOpen(false)}><X size={20} /></button></div>
         <nav aria-label="Main navigation" onScroll={hideTip}>
-          {navItems.map(({ id, label, icon: Icon }) => { const on = activeView === id || (id === "alarm-automation" && activeView === "alerts"); return <button className={on ? "active" : ""} aria-current={on ? "page" : undefined} key={id} onClick={() => { onViewChange(id); setOpen(false); hideTip(); }} {...tipProps(label)}><Icon size={18} /><span>{label}</span></button>; })}
+          {navItems.map(({ id, label, icon: Icon }) => { const on = activeView === id || (id === "alarm-automation" && activeView === "alerts"); return <button className={on ? "active" : ""} aria-current={on ? "page" : undefined} key={id} onClick={() => { onViewChange(id); setOpen(false); hideTip(); }} {...tipProps(label)}><Icon className="sidebar-icon" size={22} strokeWidth={2.1} /><span>{label}</span></button>; })}
           <p className="sidebar-section-label"><span>Feature visualization</span></p>
-          <button className={activeView === "rainfall" ? "active" : ""} aria-current={activeView === "rainfall" ? "page" : undefined} onClick={() => { onViewChange("rainfall"); setOpen(false); hideTip(); }} {...tipProps("Rainfall heatmap")}><CloudRain size={18} /><span>Rainfall heatmap</span></button>
+          <button className={activeView === "rainfall" ? "active" : ""} aria-current={activeView === "rainfall" ? "page" : undefined} onClick={() => { onViewChange("rainfall"); setOpen(false); hideTip(); }} {...tipProps("Rainfall heatmap")}><CloudRain className="sidebar-icon" size={22} strokeWidth={2.1} /><span>Rainfall heatmap</span></button>
           <p className="sidebar-section-label"><span>External maps</span></p>
-          <a className="sidebar-external-map" href="https://sites.research.google/floods/l/30.36468142775536/76.22165549983335/6.182499999999997" target="_blank" rel="noopener noreferrer" title={expanded ? "Open the full Google Flood Hub map in a new tab" : undefined} onClick={() => setOpen(false)} {...tipProps("Google Flood Hub ↗")}><Waves size={18} /><span>Google Flood Hub</span><ExternalLink size={14} /></a>
+          <a className="sidebar-external-map" href="https://sites.research.google/floods/l/30.36468142775536/76.22165549983335/6.182499999999997" target="_blank" rel="noopener noreferrer" title={expanded ? "Open the full Google Flood Hub map in a new tab" : undefined} onClick={() => setOpen(false)} {...tipProps("Google Flood Hub ↗")}><Waves className="sidebar-icon" size={22} strokeWidth={2.1} /><span>Google Flood Hub</span><ExternalLink size={14} /></a>
         </nav>
         <button className="sidebar-toggle" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded} {...tipProps(expanded ? "Collapse menu" : "Expand menu")} aria-label={expanded ? "Collapse menu to icons" : "Expand menu to show names"}>
           {expanded ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
